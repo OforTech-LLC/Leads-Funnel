@@ -2,23 +2,33 @@
  * API client for lead submission
  */
 
-import type { UTMParams } from './utm';
+import type {
+  LeadInput,
+  LeadUtm,
+  LeadSubmitResponse,
+  LeadRequestPayload,
+} from '@kanjona/shared';
+
+// Re-export shared types for convenience
+export type { LeadInput, LeadUtm, LeadSubmitResponse, LeadRequestPayload };
 
 /**
- * Lead submission payload
+ * Client-side lead submission payload
+ * Uses 'message' field which maps to 'notes' in the API
  */
 export interface LeadPayload {
   name: string;
   email: string;
   phone?: string;
+  /** Message field (maps to 'notes' in API) */
   message?: string;
   pageUrl: string;
   referrer: string;
-  utm: UTMParams;
+  utm: LeadUtm;
 }
 
 /**
- * API response for lead submission
+ * Client-friendly API response
  */
 export interface LeadResponse {
   success: boolean;
@@ -55,16 +65,21 @@ function getApiBaseUrl(): string {
 export async function submitLeadToApi(payload: LeadPayload): Promise<LeadResponse> {
   const apiUrl = `${getApiBaseUrl()}/lead`;
 
-  // Prepare the request body
-  const body = JSON.stringify({
+  // Build API request payload (maps client fields to API fields)
+  const apiPayload: LeadRequestPayload = {
     name: payload.name.trim(),
     email: payload.email.trim().toLowerCase(),
     phone: payload.phone?.trim() || undefined,
-    message: payload.message?.trim() || undefined,
-    pageUrl: payload.pageUrl,
-    referrer: payload.referrer,
+    // Map 'message' to 'notes' for the API
+    notes: payload.message?.trim() || undefined,
     utm: payload.utm,
-  });
+    metadata: {
+      pageUrl: payload.pageUrl,
+      referrer: payload.referrer,
+    },
+  };
+
+  const body = JSON.stringify(apiPayload);
 
   try {
     const response = await fetch(apiUrl, {
@@ -77,12 +92,12 @@ export async function submitLeadToApi(payload: LeadPayload): Promise<LeadRespons
     });
 
     // Parse response
-    let data: LeadResponse;
+    let apiResponse: LeadSubmitResponse;
     try {
-      data = await response.json();
+      apiResponse = await response.json();
     } catch {
       // If JSON parsing fails, create a generic response
-      data = {
+      return {
         success: response.ok,
         error: response.ok ? undefined : 'Failed to parse response',
       };
@@ -90,14 +105,20 @@ export async function submitLeadToApi(payload: LeadPayload): Promise<LeadRespons
 
     // Handle non-2xx responses
     if (!response.ok) {
-      throw new ApiError(
-        data.error || data.message || `API error: ${response.status}`,
-        response.status,
-        data
-      );
+      const errorMsg = apiResponse.error?.message || `API error: ${response.status}`;
+      throw new ApiError(errorMsg, response.status, {
+        success: false,
+        error: errorMsg,
+      });
     }
 
-    return data;
+    // Map API response to client response
+    return {
+      success: apiResponse.success,
+      leadId: apiResponse.data?.id,
+      message: apiResponse.data ? 'Lead submitted successfully' : undefined,
+      error: apiResponse.error?.message,
+    };
   } catch (error) {
     // Re-throw ApiError as-is
     if (error instanceof ApiError) {

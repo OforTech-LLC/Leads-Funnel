@@ -43,11 +43,15 @@ A production-grade lead generation funnel monorepo for kanjona.com.
 ```
 kanjona-funnel/
 ├── apps/
-│   ├── web/           # Frontend landing page
+│   ├── web/           # Frontend landing page (Next.js, static export)
 │   │   ├── src/
 │   │   └── public/
 │   └── api/           # Backend API (Lambda code)
 │       └── src/
+│
+├── backend/           # Swift/Vapor API (standalone)
+│   ├── Sources/
+│   └── Tests/
 │
 ├── infra/
 │   └── terraform/     # Infrastructure as Code
@@ -57,7 +61,7 @@ kanjona-funnel/
 │           └── prod/
 │
 ├── packages/
-│   └── shared/        # Shared utilities and types
+│   └── shared/        # Shared TypeScript types (@kanjona/shared)
 │       └── src/
 │
 ├── scripts/           # Deployment and utility scripts
@@ -66,14 +70,44 @@ kanjona-funnel/
     └── workflows/     # CI/CD pipelines
 ```
 
+This is an **npm workspaces monorepo**. The frontend apps and shared packages are managed together.
+
 ## Quick Start
 
 ### Prerequisites
 
 - AWS CLI configured with appropriate credentials
 - Terraform >= 1.5.0
-- Node.js >= 18 (for frontend)
+- Node.js >= 18.0.0 (for frontend)
+- npm >= 9.0.0
+- Swift >= 5.9 (for backend, optional)
 - Domain registered and ready to configure
+
+### Install Dependencies
+
+```bash
+# Install all npm workspace dependencies
+npm install
+```
+
+### Development
+
+```bash
+# Run web app in development mode
+npm run dev
+
+# Build shared types package
+npm run build --workspace=@kanjona/shared
+```
+
+### Build for Production
+
+```bash
+# Build static export for S3 + CloudFront
+npm run build
+```
+
+The static files will be generated in `apps/web/out/`.
 
 ### 1. Bootstrap Infrastructure
 

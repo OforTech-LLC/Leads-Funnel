@@ -1,0 +1,20 @@
+{
+  "name": "kanjona-funnel",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Kanjona Lead Capture Funnel - Monorepo",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=apps/web",
+    "build": "npm run build --workspace=apps/web",
+    "export": "npm run export --workspace=apps/web",
+    "lint": "npm run lint --workspace=apps/web",
+    "test": "npm run test --workspace=apps/web"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

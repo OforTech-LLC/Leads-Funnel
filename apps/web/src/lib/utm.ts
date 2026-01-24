@@ -3,16 +3,12 @@
  * Extracts and manages UTM tracking parameters from URLs
  */
 
+import type { LeadUtm } from '@kanjona/shared';
+
 /**
- * UTM parameters interface
+ * UTM parameters interface (re-exported from shared)
  */
-export interface UTMParams {
-  utm_source?: string;
-  utm_medium?: string;
-  utm_campaign?: string;
-  utm_term?: string;
-  utm_content?: string;
-}
+export type UTMParams = LeadUtm;
 
 /**
  * Valid UTM parameter keys

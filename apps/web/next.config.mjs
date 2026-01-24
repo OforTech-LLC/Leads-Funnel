@@ -4,11 +4,19 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Enable static export for S3 + CloudFront deployment
+  output: 'export',
+
   // Enable strict mode for React
   reactStrictMode: true,
 
-  // Trailing slashes configuration
-  trailingSlash: false,
+  // Trailing slashes for S3 static hosting compatibility
+  trailingSlash: true,
+
+  // Disable image optimization for static export
+  images: {
+    unoptimized: true,
+  },
 
   // Environment variables validation
   env: {

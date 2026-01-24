@@ -4,12 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run build:shared && next build",
+    "build:shared": "npm run build --workspace=@kanjona/shared",
+    "export": "next build",
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@kanjona/shared": "*",
     "@reduxjs/toolkit": "^2.3.0",
     "next": "^15.1.4",
     "next-intl": "^3.26.3",

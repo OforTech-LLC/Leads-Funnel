@@ -2,6 +2,9 @@ import { MetadataRoute } from 'next';
 import { routing } from '@/i18n/routing';
 import { getBaseUrl } from '@/seo/metadata';
 
+// Required for static export
+export const dynamic = 'force-static';
+
 /**
  * Generate sitemap for all localized pages
  * Next.js automatically serves this at /sitemap.xml
