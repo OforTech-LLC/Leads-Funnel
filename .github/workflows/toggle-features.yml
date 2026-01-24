@@ -1,0 +1,376 @@
+name: Toggle Infrastructure Features
+
+on:
+  workflow_dispatch:
+    inputs:
+      # ===========================================
+      # AUTHENTICATION (Required)
+      # ===========================================
+      username:
+        description: '🔐 Username'
+        required: true
+        type: string
+      password:
+        description: '🔐 Password'
+        required: true
+        type: string
+
+      # ===========================================
+      # ENVIRONMENT SELECTION (Required)
+      # ===========================================
+      environment:
+        description: '🌍 Environment to update'
+        required: true
+        type: choice
+        options:
+          - dev
+          - prod
+          - both
+
+      # ===========================================
+      # FEATURE PRESET
+      # ===========================================
+      feature_set:
+        description: '⚡ Feature configuration preset'
+        required: true
+        type: choice
+        options:
+          - development    # All expensive features OFF (cheapest ~$2/mo)
+          - production     # All security features ON (~$17/mo)
+          - custom         # Use individual toggles below
+
+      # ===========================================
+      # SECURITY FEATURES (Expensive ~$10-15/mo)
+      # ===========================================
+      enable_waf:
+        description: '🛡️ WAF - Web Application Firewall (~$5-6/mo)'
+        type: boolean
+        default: false
+      enable_cloudfront_logging:
+        description: '📊 CloudFront access logging (~$1-2/mo)'
+        type: boolean
+        default: false
+      enable_api_logging:
+        description: '📝 API Gateway logging (~$1/mo)'
+        type: boolean
+        default: false
+      enable_xray:
+        description: '🔍 X-Ray tracing (~$1-2/mo)'
+        type: boolean
+        default: false
+      enable_alarms:
+        description: '🚨 CloudWatch alarms (~$1-2/mo)'
+        type: boolean
+        default: false
+      enable_pitr:
+        description: '💾 DynamoDB Point-in-Time Recovery (~$0.20/GB)'
+        type: boolean
+        default: false
+
+      # ===========================================
+      # SITE PROTECTION
+      # ===========================================
+      enable_basic_auth:
+        description: '🔒 Basic Auth - Password protect site (free)'
+        type: boolean
+        default: true
+
+      # ===========================================
+      # OPTIONAL FEATURES (Cheap/Free)
+      # ===========================================
+      enable_sqs:
+        description: '📬 SQS queues for async processing (~$0.50/mo)'
+        type: boolean
+        default: false
+      enable_ses:
+        description: '📧 SES email notifications (free in sandbox)'
+        type: boolean
+        default: false
+
+      # ===========================================
+      # LAMBDA CONFIGURATION
+      # ===========================================
+      lambda_memory_mb:
+        description: '🧠 Lambda memory (MB) - 128, 256, 512, 1024'
+        type: choice
+        options:
+          - '128'
+          - '256'
+          - '512'
+          - '1024'
+        default: '256'
+      lambda_reserved_concurrency:
+        description: '⚡ Lambda reserved concurrency (0 = unlimited)'
+        type: choice
+        options:
+          - '0'
+          - '10'
+          - '25'
+          - '50'
+          - '100'
+        default: '0'
+
+      # ===========================================
+      # NOTIFICATION SETTINGS
+      # ===========================================
+      alert_email:
+        description: '📧 Alert email (for alarms) - leave empty to skip'
+        type: string
+        default: ''
+      notification_email:
+        description: '📧 Notification email (for leads) - leave empty to skip'
+        type: string
+        default: ''
+
+env:
+  TFVARS_DEV: infra/terraform/envs/dev/terraform.tfvars
+  TFVARS_PROD: infra/terraform/envs/prod/terraform.tfvars
+
+jobs:
+  authenticate:
+    runs-on: ubuntu-latest
+    outputs:
+      authenticated: ${{ steps.auth.outputs.authenticated }}
+    steps:
+      - name: Verify credentials
+        id: auth
+        run: |
+          if [[ "${{ inputs.username }}" == "${{ secrets.DEPLOY_USERNAME }}" && \
+                "${{ inputs.password }}" == "${{ secrets.DEPLOY_PASSWORD }}" ]]; then
+            echo "authenticated=true" >> $GITHUB_OUTPUT
+            echo "✅ Authentication successful" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "authenticated=false" >> $GITHUB_OUTPUT
+            echo "❌ Authentication failed - invalid credentials" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+  toggle-features:
+    needs: authenticate
+    if: needs.authenticate.outputs.authenticated == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Determine feature values
+        id: features
+        run: |
+          if [[ "${{ inputs.feature_set }}" == "production" ]]; then
+            echo "waf=true" >> $GITHUB_OUTPUT
+            echo "cf_logging=true" >> $GITHUB_OUTPUT
+            echo "api_logging=true" >> $GITHUB_OUTPUT
+            echo "xray=true" >> $GITHUB_OUTPUT
+            echo "alarms=true" >> $GITHUB_OUTPUT
+            echo "pitr=true" >> $GITHUB_OUTPUT
+            echo "sqs=true" >> $GITHUB_OUTPUT
+            echo "ses=false" >> $GITHUB_OUTPUT
+            echo "basic_auth=false" >> $GITHUB_OUTPUT  # Disable auth for public release
+          elif [[ "${{ inputs.feature_set }}" == "development" ]]; then
+            echo "waf=false" >> $GITHUB_OUTPUT
+            echo "cf_logging=false" >> $GITHUB_OUTPUT
+            echo "api_logging=false" >> $GITHUB_OUTPUT
+            echo "xray=false" >> $GITHUB_OUTPUT
+            echo "alarms=false" >> $GITHUB_OUTPUT
+            echo "pitr=false" >> $GITHUB_OUTPUT
+            echo "sqs=false" >> $GITHUB_OUTPUT
+            echo "ses=false" >> $GITHUB_OUTPUT
+            echo "basic_auth=true" >> $GITHUB_OUTPUT  # Keep site protected during dev
+          else
+            # Custom - use individual inputs
+            echo "waf=${{ inputs.enable_waf }}" >> $GITHUB_OUTPUT
+            echo "cf_logging=${{ inputs.enable_cloudfront_logging }}" >> $GITHUB_OUTPUT
+            echo "api_logging=${{ inputs.enable_api_logging }}" >> $GITHUB_OUTPUT
+            echo "xray=${{ inputs.enable_xray }}" >> $GITHUB_OUTPUT
+            echo "alarms=${{ inputs.enable_alarms }}" >> $GITHUB_OUTPUT
+            echo "pitr=${{ inputs.enable_pitr }}" >> $GITHUB_OUTPUT
+            echo "sqs=${{ inputs.enable_sqs }}" >> $GITHUB_OUTPUT
+            echo "ses=${{ inputs.enable_ses }}" >> $GITHUB_OUTPUT
+            echo "basic_auth=${{ inputs.enable_basic_auth }}" >> $GITHUB_OUTPUT
+          fi
+
+          # Lambda settings
+          echo "lambda_memory=${{ inputs.lambda_memory_mb }}" >> $GITHUB_OUTPUT
+
+          if [[ "${{ inputs.lambda_reserved_concurrency }}" == "0" ]]; then
+            echo "lambda_concurrency=null" >> $GITHUB_OUTPUT
+          else
+            echo "lambda_concurrency=${{ inputs.lambda_reserved_concurrency }}" >> $GITHUB_OUTPUT
+          fi
+
+          # Email settings (escape empty strings)
+          if [[ -n "${{ inputs.alert_email }}" ]]; then
+            echo "alert_email=${{ inputs.alert_email }}" >> $GITHUB_OUTPUT
+          else
+            echo "alert_email=" >> $GITHUB_OUTPUT
+          fi
+
+          if [[ -n "${{ inputs.notification_email }}" ]]; then
+            echo "notification_email=${{ inputs.notification_email }}" >> $GITHUB_OUTPUT
+          else
+            echo "notification_email=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update Dev tfvars
+        if: inputs.environment == 'dev' || inputs.environment == 'both'
+        run: |
+          # Feature flags
+          sed -i 's/^enable_waf.*=.*/enable_waf                = ${{ steps.features.outputs.waf }}/' $TFVARS_DEV
+          sed -i 's/^enable_cloudfront_logging.*=.*/enable_cloudfront_logging = ${{ steps.features.outputs.cf_logging }}/' $TFVARS_DEV
+          sed -i 's/^enable_api_logging.*=.*/enable_api_logging        = ${{ steps.features.outputs.api_logging }}/' $TFVARS_DEV
+          sed -i 's/^enable_xray.*=.*/enable_xray               = ${{ steps.features.outputs.xray }}/' $TFVARS_DEV
+          sed -i 's/^enable_alarms.*=.*/enable_alarms             = ${{ steps.features.outputs.alarms }}/' $TFVARS_DEV
+          sed -i 's/^enable_pitr.*=.*/enable_pitr               = ${{ steps.features.outputs.pitr }}/' $TFVARS_DEV
+          sed -i 's/^enable_sqs.*=.*/enable_sqs = ${{ steps.features.outputs.sqs }}/' $TFVARS_DEV
+          sed -i 's/^enable_ses.*=.*/enable_ses = ${{ steps.features.outputs.ses }}/' $TFVARS_DEV
+          sed -i 's/^enable_basic_auth.*=.*/enable_basic_auth   = ${{ steps.features.outputs.basic_auth }}/' $TFVARS_DEV
+
+          # Lambda settings
+          sed -i 's/^lambda_memory_mb.*=.*/lambda_memory_mb            = ${{ steps.features.outputs.lambda_memory }}/' $TFVARS_DEV
+          sed -i 's/^lambda_reserved_concurrency.*=.*/lambda_reserved_concurrency = ${{ steps.features.outputs.lambda_concurrency }}/' $TFVARS_DEV
+
+          # Email settings
+          sed -i 's/^alert_email.*=.*/alert_email        = "${{ steps.features.outputs.alert_email }}"/' $TFVARS_DEV
+          sed -i 's/^notification_email.*=.*/notification_email = "${{ steps.features.outputs.notification_email }}"/' $TFVARS_DEV
+
+          echo "### ✅ Dev Environment Updated" >> $GITHUB_STEP_SUMMARY
+          echo '```hcl' >> $GITHUB_STEP_SUMMARY
+          grep -E "^enable_|^lambda_|^alert_email|^notification_email" $TFVARS_DEV >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Update Prod tfvars
+        if: inputs.environment == 'prod' || inputs.environment == 'both'
+        run: |
+          # Feature flags
+          sed -i 's/^enable_waf.*=.*/enable_waf                = ${{ steps.features.outputs.waf }}/' $TFVARS_PROD
+          sed -i 's/^enable_cloudfront_logging.*=.*/enable_cloudfront_logging = ${{ steps.features.outputs.cf_logging }}/' $TFVARS_PROD
+          sed -i 's/^enable_api_logging.*=.*/enable_api_logging        = ${{ steps.features.outputs.api_logging }}/' $TFVARS_PROD
+          sed -i 's/^enable_xray.*=.*/enable_xray               = ${{ steps.features.outputs.xray }}/' $TFVARS_PROD
+          sed -i 's/^enable_alarms.*=.*/enable_alarms             = ${{ steps.features.outputs.alarms }}/' $TFVARS_PROD
+          sed -i 's/^enable_pitr.*=.*/enable_pitr               = ${{ steps.features.outputs.pitr }}/' $TFVARS_PROD
+          sed -i 's/^enable_sqs.*=.*/enable_sqs = ${{ steps.features.outputs.sqs }}/' $TFVARS_PROD
+          sed -i 's/^enable_ses.*=.*/enable_ses = ${{ steps.features.outputs.ses }}/' $TFVARS_PROD
+          sed -i 's/^enable_basic_auth.*=.*/enable_basic_auth   = ${{ steps.features.outputs.basic_auth }}/' $TFVARS_PROD
+
+          # Lambda settings
+          sed -i 's/^lambda_memory_mb.*=.*/lambda_memory_mb            = ${{ steps.features.outputs.lambda_memory }}/' $TFVARS_PROD
+          sed -i 's/^lambda_reserved_concurrency.*=.*/lambda_reserved_concurrency = ${{ steps.features.outputs.lambda_concurrency }}/' $TFVARS_PROD
+
+          # Email settings
+          sed -i 's/^alert_email.*=.*/alert_email        = "${{ steps.features.outputs.alert_email }}"/' $TFVARS_PROD
+          sed -i 's/^notification_email.*=.*/notification_email = "${{ steps.features.outputs.notification_email }}"/' $TFVARS_PROD
+
+          # Update status comment
+          if [[ "${{ inputs.feature_set }}" == "production" ]]; then
+            sed -i 's/^# STATUS:.*/# STATUS: Production mode (security features ON)/' $TFVARS_PROD
+          else
+            sed -i 's/^# STATUS:.*/# STATUS: Development mode (expensive features OFF)/' $TFVARS_PROD
+          fi
+
+          echo "### ✅ Prod Environment Updated" >> $GITHUB_STEP_SUMMARY
+          echo '```hcl' >> $GITHUB_STEP_SUMMARY
+          grep -E "^enable_|^lambda_|^alert_email|^notification_email" $TFVARS_PROD >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Calculate estimated cost
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 💰 Estimated Monthly Cost" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          COST=2  # Base cost (Route53, minimal Lambda/DynamoDB)
+
+          if [[ "${{ steps.features.outputs.waf }}" == "true" ]]; then
+            COST=$((COST + 6))
+            echo "- 🛡️ WAF: +\$6" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [[ "${{ steps.features.outputs.cf_logging }}" == "true" ]]; then
+            COST=$((COST + 2))
+            echo "- 📊 CloudFront Logging: +\$2" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [[ "${{ steps.features.outputs.api_logging }}" == "true" ]]; then
+            COST=$((COST + 1))
+            echo "- 📝 API Logging: +\$1" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [[ "${{ steps.features.outputs.xray }}" == "true" ]]; then
+            COST=$((COST + 2))
+            echo "- 🔍 X-Ray: +\$2" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [[ "${{ steps.features.outputs.alarms }}" == "true" ]]; then
+            COST=$((COST + 2))
+            echo "- 🚨 CloudWatch Alarms: +\$2" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [[ "${{ steps.features.outputs.pitr }}" == "true" ]]; then
+            COST=$((COST + 1))
+            echo "- 💾 DynamoDB PITR: +\$1" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [[ "${{ steps.features.outputs.sqs }}" == "true" ]]; then
+            COST=$((COST + 1))
+            echo "- 📬 SQS: +\$1" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Lambda memory cost adjustment
+          MEMORY="${{ steps.features.outputs.lambda_memory }}"
+          if [[ "$MEMORY" == "512" ]]; then
+            COST=$((COST + 1))
+            echo "- 🧠 Lambda 512MB: +\$1" >> $GITHUB_STEP_SUMMARY
+          elif [[ "$MEMORY" == "1024" ]]; then
+            COST=$((COST + 2))
+            echo "- 🧠 Lambda 1024MB: +\$2" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Total: ~\$${COST}/month per environment**" >> $GITHUB_STEP_SUMMARY
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          git add infra/terraform/envs/*/terraform.tfvars
+
+          # Create commit message
+          if [[ "${{ inputs.feature_set }}" == "production" ]]; then
+            MSG="chore(infra): enable production features for ${{ inputs.environment }}"
+          elif [[ "${{ inputs.feature_set }}" == "development" ]]; then
+            MSG="chore(infra): enable development mode for ${{ inputs.environment }}"
+          else
+            MSG="chore(infra): update custom features for ${{ inputs.environment }}"
+          fi
+
+          # Add details
+          BODY="Environment: ${{ inputs.environment }}
+          Feature Set: ${{ inputs.feature_set }}
+          Lambda Memory: ${{ steps.features.outputs.lambda_memory }}MB"
+
+          git commit -m "$MSG" -m "$BODY" || echo "No changes to commit"
+          git push
+
+      - name: Next steps
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "### 🚀 Next Steps" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "1. **Pull changes locally:**" >> $GITHUB_STEP_SUMMARY
+          echo '   ```bash' >> $GITHUB_STEP_SUMMARY
+          echo '   git pull origin main' >> $GITHUB_STEP_SUMMARY
+          echo '   ```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "2. **Review the changes:**" >> $GITHUB_STEP_SUMMARY
+          echo '   ```bash' >> $GITHUB_STEP_SUMMARY
+          echo '   cat infra/terraform/envs/${{ inputs.environment }}/terraform.tfvars' >> $GITHUB_STEP_SUMMARY
+          echo '   ```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "3. **Apply with Terraform:**" >> $GITHUB_STEP_SUMMARY
+          echo '   ```bash' >> $GITHUB_STEP_SUMMARY
+          echo '   cd infra/terraform/envs/${{ inputs.environment }}' >> $GITHUB_STEP_SUMMARY
+          echo '   terraform init' >> $GITHUB_STEP_SUMMARY
+          echo '   terraform plan' >> $GITHUB_STEP_SUMMARY
+          echo '   terraform apply' >> $GITHUB_STEP_SUMMARY
+          echo '   ```' >> $GITHUB_STEP_SUMMARY

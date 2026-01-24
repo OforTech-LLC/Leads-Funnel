@@ -87,8 +87,10 @@ override.tf.json
 *_override.tf.json
 .terraformrc
 terraform.rc
-*.tfvars
-!*.tfvars.example
+# Ignore secret tfvars but allow environment configs
+*.auto.tfvars
+*secrets*.tfvars
+!terraform.tfvars
 
 # ===========================
 # Testing & Coverage
