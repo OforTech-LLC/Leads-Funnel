@@ -32,3 +32,9 @@ variable "tags" {
   description = "Tags to apply to all resources"
   default     = {}
 }
+
+variable "additional_sans" {
+  type        = list(string)
+  description = "Additional Subject Alternative Names for the certificate"
+  default     = []
+}

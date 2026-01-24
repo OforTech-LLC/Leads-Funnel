@@ -21,6 +21,7 @@ locals {
     [
       "https://${var.root_domain}",
       "https://www.${var.root_domain}",
+      "https://dev.${var.root_domain}",
     ],
     var.additional_cors_origins
   )
@@ -39,6 +40,8 @@ module "acm" {
   project_name = var.project_name
   environment  = var.environment
   root_domain  = var.root_domain
+
+  additional_sans = ["dev.${var.root_domain}"]
 
   tags = local.common_tags
 }
@@ -136,6 +139,7 @@ module "static_site" {
   domain_aliases = [
     var.root_domain,
     "www.${var.root_domain}",
+    "dev.${var.root_domain}",
   ]
 
   acm_certificate_arn = module.acm.validated_certificate_arn
@@ -172,6 +176,8 @@ module "dns" {
   api_gateway_hosted_zone_id = module.api.custom_domain_zone_id
 
   acm_validation_records = module.acm.validation_records
+
+  additional_subdomains = ["dev"]
 
   tags = local.common_tags
 }

@@ -58,6 +58,12 @@ variable "acm_validation_records" {
   default     = {}
 }
 
+variable "additional_subdomains" {
+  type        = list(string)
+  description = "Additional subdomains to create DNS records for (e.g., ['dev'] for dev.kanjona.com)"
+  default     = []
+}
+
 variable "tags" {
   type        = map(string)
   description = "Tags to apply to all resources"

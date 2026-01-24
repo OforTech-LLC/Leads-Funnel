@@ -90,6 +90,51 @@ resource "aws_route53_record" "api" {
   }
 }
 
+# IPv6 record for API
+resource "aws_route53_record" "api_aaaa" {
+  zone_id = aws_route53_zone.main.zone_id
+  name    = "api.${var.root_domain}"
+  type    = "AAAA"
+
+  alias {
+    name                   = var.api_gateway_domain_name
+    zone_id                = var.api_gateway_hosted_zone_id
+    evaluate_target_health = false
+  }
+}
+
+# -----------------------------------------------------------------------------
+# Additional Subdomain Records (e.g., dev.kanjona.com)
+# -----------------------------------------------------------------------------
+resource "aws_route53_record" "additional" {
+  for_each = toset(var.additional_subdomains)
+
+  zone_id = aws_route53_zone.main.zone_id
+  name    = "${each.value}.${var.root_domain}"
+  type    = "A"
+
+  alias {
+    name                   = var.cloudfront_domain_name
+    zone_id                = var.cloudfront_hosted_zone_id
+    evaluate_target_health = false
+  }
+}
+
+# IPv6 records for additional subdomains
+resource "aws_route53_record" "additional_aaaa" {
+  for_each = toset(var.additional_subdomains)
+
+  zone_id = aws_route53_zone.main.zone_id
+  name    = "${each.value}.${var.root_domain}"
+  type    = "AAAA"
+
+  alias {
+    name                   = var.cloudfront_domain_name
+    zone_id                = var.cloudfront_hosted_zone_id
+    evaluate_target_health = false
+  }
+}
+
 # -----------------------------------------------------------------------------
 # ACM Certificate Validation Records
 # -----------------------------------------------------------------------------

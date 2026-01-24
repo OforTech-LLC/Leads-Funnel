@@ -16,10 +16,13 @@ resource "aws_acm_certificate" "main" {
   domain_name       = var.root_domain
   validation_method = "DNS"
 
-  subject_alternative_names = [
-    "www.${var.root_domain}",
-    "api.${var.root_domain}",
-  ]
+  subject_alternative_names = concat(
+    [
+      "www.${var.root_domain}",
+      "api.${var.root_domain}",
+    ],
+    var.additional_sans
+  )
 
   tags = merge(var.tags, {
     Name = "${var.project_name}-${var.environment}-cert"
