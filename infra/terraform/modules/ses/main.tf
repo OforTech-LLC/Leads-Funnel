@@ -117,7 +117,7 @@ resource "aws_ses_configuration_set" "main" {
   sending_enabled            = true
 
   delivery_options {
-    tls_policy = "REQUIRE"
+    tls_policy = "Require"
   }
 }
 

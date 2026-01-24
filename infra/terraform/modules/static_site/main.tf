@@ -240,8 +240,6 @@ resource "aws_cloudfront_distribution" "site" {
   tags = merge(var.tags, {
     Name = "${var.project_name}-${var.environment}-distribution"
   })
-
-  depends_on = [aws_s3_bucket_policy.site]
 }
 
 # -----------------------------------------------------------------------------
