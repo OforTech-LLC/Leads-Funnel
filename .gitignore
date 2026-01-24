@@ -144,6 +144,42 @@ Package.resolved
 .#*
 
 # ===========================
+# Secrets & Credentials
+# ===========================
+
+# API Keys and Secrets
+*.key
+*.pem
+*.p12
+*.pfx
+*.cer
+*.crt
+secrets.json
+credentials.json
+service-account*.json
+*secret*
+*credential*
+!*.example
+
+# AWS Credentials
+.aws/credentials
+.aws/config
+
+# SSH Keys
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+*.ppk
+
+# ===========================
+# Docker
+# ===========================
+
+docker-compose.override.yml
+.docker/
+
+# ===========================
 # Misc
 # ===========================
 
@@ -152,7 +188,6 @@ Package.resolved
 .turbo/
 .vercel/
 .netlify/
-*.pem
 .npmrc
 !.npmrc.example
 
@@ -161,3 +196,49 @@ tmp/
 temp/
 *.tmp
 *.temp
+
+# Debug files
+*.debug
+*.trace
+*.heapsnapshot
+*.cpuprofile
+
+# Local configuration
+local.json
+local.yaml
+local.yml
+*.local.json
+*.local.yaml
+*.local.yml
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Archives
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Lambda deployment packages
+lambda/
+lambda-*.zip
+
+# LocalStack
+.localstack/
+localstack/
+
+# Cloudflare
+.wrangler/
+
+# Sentry
+.sentryclirc

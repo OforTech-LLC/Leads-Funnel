@@ -24,19 +24,32 @@ data "archive_file" "lambda" {
 # -----------------------------------------------------------------------------
 # Lambda Function
 # -----------------------------------------------------------------------------
+# NOTE: This Lambda is designed to run a Swift backend compiled as a Docker image.
+# The placeholder Python runtime below is for initial deployment only.
+# For production Swift deployment:
+#   1. Build Swift binary: swift build -c release
+#   2. Create Docker image with provided.al2023 runtime
+#   3. Push to ECR and update image_uri below
+#   4. Uncomment the package_type = "Image" line
+# -----------------------------------------------------------------------------
 resource "aws_lambda_function" "lead_capture" {
   function_name = "${var.project_name}-${var.environment}-lead-capture"
   description   = "Lead capture handler for ${var.project_name}"
 
+  # For Swift deployment, use Docker image:
+  # package_type = "Image"
+  # image_uri    = var.lambda_image_uri  # ECR image with compiled Swift binary
+
+  # Placeholder for initial Terraform deployment (replace with Docker for Swift)
   filename         = data.archive_file.lambda.output_path
   source_code_hash = data.archive_file.lambda.output_base64sha256
 
   handler     = "handler.lambda_handler"
-  runtime     = "python3.12"
+  runtime     = "python3.12"  # Placeholder - Swift requires Docker image
   architectures = ["arm64"] # Graviton - cheaper and faster
 
   memory_size = var.lambda_memory_mb
-  timeout     = 10
+  timeout     = 30  # Increased from 10s to handle multiple DynamoDB operations
 
   # Reserved concurrency (prevent runaway costs)
   reserved_concurrent_executions = var.lambda_reserved_concurrency

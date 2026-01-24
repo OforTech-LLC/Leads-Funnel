@@ -1,0 +1,55 @@
+{
+  "metadata": {
+    "title": "Obtener Mas Prospectos Calificados | Generacion de Leads y Adquisicion de Clientes",
+    "description": "Impulsa el crecimiento de tu negocio con nuestro embudo de generacion de leads. Captura prospectos de ventas calificados, agenda citas y convierte visitantes en clientes. Leads inmobiliarios, leads de servicios para el hogar y mas."
+  },
+  "home": {
+    "headline": "Obtener Mas Prospectos Calificados para Tu Negocio",
+    "subheadline": "Nuestro embudo de generacion de leads te ayuda a capturar prospectos de ventas de alta calidad, agendar mas citas y hacer crecer tu negocio. Ya sea que necesites leads inmobiliarios, leads de servicios para el hogar o leads de negocios locales - entregamos resultados.",
+    "features": {
+      "title": "Por Que Elegir Nuestra Solucion de Generacion de Leads",
+      "qualified": "Leads Calificados - Solo recibe prospectos que coincidan con tus criterios",
+      "conversion": "Optimizacion de Conversion - Maximiza el rendimiento de tu embudo de marketing",
+      "booking": "Agenda Facil de Llamadas - Programa citas directamente desde los leads",
+      "local": "Captura de Leads Locales - Llega a clientes en tu area de servicio"
+    }
+  },
+  "form": {
+    "title": "Comienza a Obtener Mas Leads Hoy",
+    "subtitle": "Completa el formulario a continuacion y te ayudaremos a crecer tu base de clientes",
+    "name": {
+      "label": "Nombre Completo",
+      "placeholder": "Ingresa tu nombre completo",
+      "required": "El nombre es requerido"
+    },
+    "email": {
+      "label": "Correo Electronico",
+      "placeholder": "Ingresa tu correo electronico",
+      "required": "El correo electronico es requerido",
+      "invalid": "Por favor ingresa un correo electronico valido"
+    },
+    "phone": {
+      "label": "Numero de Telefono (Opcional)",
+      "placeholder": "Ingresa tu numero de telefono"
+    },
+    "message": {
+      "label": "Mensaje (Opcional)",
+      "placeholder": "Cuentanos sobre tu negocio y tus objetivos de generacion de leads"
+    },
+    "submit": "Comenzar Ahora",
+    "submitting": "Enviando..."
+  },
+  "messages": {
+    "success": "Gracias! Hemos recibido tu informacion y nos pondremos en contacto pronto para discutir tu estrategia de generacion de leads.",
+    "error": "Algo salio mal. Por favor intenta de nuevo o contactanos directamente.",
+    "networkError": "Error de red. Por favor verifica tu conexion e intenta de nuevo."
+  },
+  "language": {
+    "switch": "Idioma",
+    "en": "Ingles",
+    "es": "Espanol"
+  },
+  "footer": {
+    "copyright": "Todos los derechos reservados."
+  }
+}

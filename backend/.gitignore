@@ -1,0 +1,208 @@
+# =============================================================================
+# Swift Backend .gitignore
+# =============================================================================
+
+# ===========================
+# Swift Build Artifacts
+# ===========================
+
+.build/
+.swiftpm/
+DerivedData/
+Package.resolved
+
+# ===========================
+# Xcode
+# ===========================
+
+*.xcodeproj/
+*.xcworkspace/
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+*.moved-aside
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+
+# ===========================
+# Lambda Deployment
+# ===========================
+
+lambda/
+*.zip
+bootstrap
+bootstrap.zip
+
+# ===========================
+# Environment Files
+# ===========================
+
+.env
+.env.local
+.env.*.local
+.env.development
+.env.staging
+.env.production
+!.env.example
+!.env.sample
+
+# ===========================
+# Secrets & Credentials
+# ===========================
+
+*.pem
+*.key
+*.p12
+*.pfx
+*.cer
+*.crt
+credentials.json
+secrets.json
+service-account*.json
+*secret*
+*credential*
+!*.example
+
+# AWS Credentials (if copied locally)
+.aws/
+
+# ===========================
+# macOS
+# ===========================
+
+.DS_Store
+.DS_Store?
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+
+# ===========================
+# IDEs & Editors
+# ===========================
+
+# VS Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# JetBrains (AppCode, etc.)
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Vim/Neovim
+*.swp
+*.swo
+*.swn
+*~
+.nvimrc
+.exrc
+
+# Emacs
+\#*\#
+.#*
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# ===========================
+# Logs
+# ===========================
+
+*.log
+logs/
+log/
+
+# ===========================
+# Testing & Coverage
+# ===========================
+
+coverage/
+.coverage
+*.lcov
+*.gcov
+*.gcda
+*.gcno
+htmlcov/
+.nyc_output/
+test-results/
+
+# ===========================
+# Local Development
+# ===========================
+
+# LocalStack for local AWS simulation
+localstack/
+.localstack/
+
+# Docker
+docker-compose.override.yml
+.docker/
+
+# DynamoDB Local
+dynamodb-local/
+shared-local-instance.db
+
+# ===========================
+# Temporary Files
+# ===========================
+
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+
+# Debug files
+*.debug
+*.trace
+*.heapsnapshot
+
+# ===========================
+# Archives
+# ===========================
+
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+
+# ===========================
+# Misc
+# ===========================
+
+# Output files
+output/
+out/
+
+# Profiling data
+*.profraw
+*.profdata
+
+# Core dumps
+core
+core.*
+
+# Crash reports
+*.crash
+*.ips
+
+# SPM cache (if separate from .build)
+.spm/

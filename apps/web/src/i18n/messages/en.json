@@ -1,0 +1,55 @@
+{
+  "metadata": {
+    "title": "Get More Qualified Leads | Lead Generation & Customer Acquisition",
+    "description": "Boost your business growth with our lead generation funnel. Capture qualified sales leads, book appointments, and convert visitors into customers. Real estate leads, home service leads, and more."
+  },
+  "home": {
+    "headline": "Get More Qualified Leads for Your Business",
+    "subheadline": "Our lead generation funnel helps you capture high-quality sales leads, book more appointments, and grow your business. Whether you need real estate leads, home service leads, or local business leads - we deliver results.",
+    "features": {
+      "title": "Why Choose Our Lead Generation Solution",
+      "qualified": "Qualified Leads - Only receive leads that match your criteria",
+      "conversion": "Conversion Optimization - Maximize your marketing funnel performance",
+      "booking": "Easy Call Booking - Schedule appointments directly from leads",
+      "local": "Local Lead Capture - Target customers in your service area"
+    }
+  },
+  "form": {
+    "title": "Start Getting More Leads Today",
+    "subtitle": "Fill out the form below and we'll help you grow your customer base",
+    "name": {
+      "label": "Full Name",
+      "placeholder": "Enter your full name",
+      "required": "Name is required"
+    },
+    "email": {
+      "label": "Email Address",
+      "placeholder": "Enter your email address",
+      "required": "Email is required",
+      "invalid": "Please enter a valid email address"
+    },
+    "phone": {
+      "label": "Phone Number (Optional)",
+      "placeholder": "Enter your phone number"
+    },
+    "message": {
+      "label": "Message (Optional)",
+      "placeholder": "Tell us about your business and lead generation goals"
+    },
+    "submit": "Get Started Now",
+    "submitting": "Submitting..."
+  },
+  "messages": {
+    "success": "Thank you! We've received your information and will be in touch shortly to discuss your lead generation strategy.",
+    "error": "Something went wrong. Please try again or contact us directly.",
+    "networkError": "Network error. Please check your connection and try again."
+  },
+  "language": {
+    "switch": "Language",
+    "en": "English",
+    "es": "Spanish"
+  },
+  "footer": {
+    "copyright": "All rights reserved."
+  }
+}

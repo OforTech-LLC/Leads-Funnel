@@ -9,10 +9,11 @@
 # - Deletion protection (prod only)
 #
 # Entity Schemas (for reference):
-# - Lead Record: PK=LEAD#<uuid>, SK=META
-# - Lead Event: PK=LEAD#<uuid>, SK=EVENT#<timestamp>#<type>
-# - Rate Limit: PK=RATELIMIT#<ip_hash>, SK=WINDOW#<bucket>
-# - Idempotency: PK=IDEMPOTENCY#<hash>, SK=META
+# - Lead Record: pk=LEAD#<uuid>, sk=META
+# - Lead Event: pk=LEAD#<uuid>, sk=EVENT#<timestamp>#<type>
+# - Rate Limit: pk=RATELIMIT#<ip_hash>, sk=WINDOW#<bucket>
+# - Idempotency: pk=IDEMPOTENCY#<hash>, sk=META
+# NOTE: All attribute names are lowercase to match Swift backend conventions
 # =============================================================================
 
 # -----------------------------------------------------------------------------
@@ -23,36 +24,37 @@ resource "aws_dynamodb_table" "main" {
   billing_mode = "PAY_PER_REQUEST" # On-demand capacity
 
   # Primary key (single-table design)
-  hash_key  = "PK"
-  range_key = "SK"
+  # NOTE: Using lowercase to match Swift backend code conventions
+  hash_key  = "pk"
+  range_key = "sk"
 
   # Primary key attributes
   attribute {
-    name = "PK"
+    name = "pk"
     type = "S"
   }
 
   attribute {
-    name = "SK"
+    name = "sk"
     type = "S"
   }
 
-  # GSI1 attributes
+  # GSI1 attributes (lowercase to match Swift backend)
   attribute {
-    name = "GSI1PK"
+    name = "gsi1pk"
     type = "S"
   }
 
   attribute {
-    name = "GSI1SK"
+    name = "gsi1sk"
     type = "S"
   }
 
   # Global Secondary Index for querying by email
   global_secondary_index {
     name            = "GSI1"
-    hash_key        = "GSI1PK"
-    range_key       = "GSI1SK"
+    hash_key        = "gsi1pk"
+    range_key       = "gsi1sk"
     projection_type = "ALL"
   }
 

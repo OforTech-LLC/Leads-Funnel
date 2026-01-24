@@ -1,0 +1,62 @@
+# =============================================================================
+# Dockerfile.lambda
+# =============================================================================
+# Multi-stage build for Swift Lambda function.
+# Produces a minimal container for AWS Lambda Custom Runtime.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Build Stage
+# -----------------------------------------------------------------------------
+FROM swift:5.10-amazonlinux2 AS builder
+
+# Install build dependencies
+RUN yum install -y \
+    git \
+    libuuid-devel \
+    libicu-devel \
+    libedit-devel \
+    libxml2-devel \
+    sqlite-devel \
+    python3-devel \
+    ncurses-devel \
+    curl-devel \
+    openssl-devel \
+    tzdata \
+    && yum clean all
+
+# Set up working directory
+WORKDIR /workspace
+
+# Copy package files first for better caching
+COPY Package.swift Package.resolved* ./
+
+# Fetch dependencies
+RUN swift package resolve
+
+# Copy source files
+COPY Sources/ Sources/
+COPY Tests/ Tests/
+
+# Build release with static linking
+RUN swift build \
+    -c release \
+    --static-swift-stdlib \
+    -Xlinker -s
+
+# Verify the binary was built
+RUN ls -la .build/release/
+
+# -----------------------------------------------------------------------------
+# Runtime Stage
+# -----------------------------------------------------------------------------
+FROM public.ecr.aws/lambda/provided:al2-arm64
+
+# Copy the built binary
+COPY --from=builder /workspace/.build/release/LeadCaptureAPI /var/runtime/bootstrap
+
+# Make it executable
+RUN chmod +x /var/runtime/bootstrap
+
+# Set the handler (required by Lambda runtime)
+CMD ["bootstrap"]
