@@ -24,28 +24,27 @@ data "archive_file" "lambda" {
 # -----------------------------------------------------------------------------
 # Lambda Function
 # -----------------------------------------------------------------------------
-# NOTE: This Lambda is designed to run a Swift backend compiled as a Docker image.
-# The placeholder Python runtime below is for initial deployment only.
-# For production Swift deployment:
-#   1. Build Swift binary: swift build -c release
-#   2. Create Docker image with provided.al2023 runtime
-#   3. Push to ECR and update image_uri below
-#   4. Uncomment the package_type = "Image" line
+# Lead capture Lambda function running Node.js 20.
+# The TypeScript code is compiled and deployed from apps/api/dist.
+#
+# Deployment options:
+#   1. ZIP deployment (default): Upload compiled JS from apps/api/dist
+#   2. Docker deployment: Build image with provided.al2023 for custom runtime
 # -----------------------------------------------------------------------------
 resource "aws_lambda_function" "lead_capture" {
   function_name = "${var.project_name}-${var.environment}-lead-capture"
   description   = "Lead capture handler for ${var.project_name}"
 
-  # For Swift deployment, use Docker image:
+  # For Docker deployment (alternative):
   # package_type = "Image"
-  # image_uri    = var.lambda_image_uri  # ECR image with compiled Swift binary
+  # image_uri    = var.lambda_image_uri  # ECR image
 
-  # Placeholder for initial Terraform deployment (replace with Docker for Swift)
+  # ZIP deployment (default)
   filename         = data.archive_file.lambda.output_path
   source_code_hash = data.archive_file.lambda.output_base64sha256
 
-  handler     = "handler.lambda_handler"
-  runtime     = "python3.12"  # Placeholder - Swift requires Docker image
+  handler       = "handler.handler"
+  runtime       = "nodejs20.x"
   architectures = ["arm64"] # Graviton - cheaper and faster
 
   memory_size = var.lambda_memory_mb
@@ -58,11 +57,24 @@ resource "aws_lambda_function" "lead_capture" {
 
   environment {
     variables = {
-      DYNAMODB_TABLE_NAME = var.dynamodb_table_name
-      EVENT_BUS_NAME      = var.event_bus_name
-      ENVIRONMENT         = var.environment
-      ALLOWED_ORIGINS     = join(",", var.cors_allowed_origins)
-      LOG_LEVEL           = var.environment == "prod" ? "INFO" : "DEBUG"
+      # DynamoDB configuration
+      DDB_TABLE_NAME = var.dynamodb_table_name
+
+      # EventBridge configuration
+      EVENT_BUS_NAME = var.event_bus_name
+
+      # Environment
+      ENV = var.environment
+
+      # Rate limiting
+      RATE_LIMIT_MAX        = tostring(var.rate_limit_max)
+      RATE_LIMIT_WINDOW_MIN = tostring(var.rate_limit_window_min)
+
+      # Idempotency TTL
+      IDEMPOTENCY_TTL_HOURS = tostring(var.idempotency_ttl_hours)
+
+      # IP hashing salt (should be set via secrets manager in production)
+      IP_HASH_SALT = var.ip_hash_salt
     }
   }
 

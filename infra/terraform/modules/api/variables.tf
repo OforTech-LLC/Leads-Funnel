@@ -104,6 +104,34 @@ variable "event_bus_arn" {
 }
 
 # -----------------------------------------------------------------------------
+# Rate Limiting and Security
+# -----------------------------------------------------------------------------
+variable "rate_limit_max" {
+  type        = number
+  description = "Maximum requests per rate limit window"
+  default     = 10
+}
+
+variable "rate_limit_window_min" {
+  type        = number
+  description = "Rate limit window size in minutes"
+  default     = 10
+}
+
+variable "idempotency_ttl_hours" {
+  type        = number
+  description = "Idempotency record TTL in hours"
+  default     = 24
+}
+
+variable "ip_hash_salt" {
+  type        = string
+  description = "Salt for IP address hashing (for privacy)"
+  default     = ""
+  sensitive   = true
+}
+
+# -----------------------------------------------------------------------------
 # Logging
 # -----------------------------------------------------------------------------
 variable "enable_logging" {
