@@ -206,8 +206,7 @@ export const ProcessSection: React.FC<ProcessSectionProps> = ({
     <motion.div
       variants={containerVariants}
       initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: '-100px' }}
+      animate="visible"
     >
       {/* Section Header */}
       <motion.div variants={itemVariants} style={{ textAlign: 'center', marginBottom: tokens.spacing[12] }}>
