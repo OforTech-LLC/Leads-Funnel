@@ -161,8 +161,7 @@ export const ServiceLandingLayout: React.FC<ServiceLandingLayoutProps> = ({
         return (
           <section
             key="hero"
-            className="reveal-on-scroll"
-            style={{
+                        style={{
               minHeight: '100vh',
               display: 'flex',
               alignItems: 'center',
@@ -193,8 +192,7 @@ export const ServiceLandingLayout: React.FC<ServiceLandingLayoutProps> = ({
         return (
           <section
             key="benefits"
-            className="reveal-on-scroll"
-            style={{
+                        style={{
               padding: `${tokens.spacing[20]} ${tokens.spacing[6]}`,
               position: 'relative',
             }}
@@ -215,8 +213,7 @@ export const ServiceLandingLayout: React.FC<ServiceLandingLayoutProps> = ({
         return (
           <section
             key="process"
-            className="reveal-on-scroll"
-            style={{
+                        style={{
               padding: `${tokens.spacing[20]} ${tokens.spacing[6]}`,
               background: tokens.colors.surface.glass,
               position: 'relative',
@@ -239,8 +236,7 @@ export const ServiceLandingLayout: React.FC<ServiceLandingLayoutProps> = ({
         return (
           <section
             key="testimonials"
-            className="reveal-on-scroll"
-            style={{
+                        style={{
               padding: `${tokens.spacing[20]} ${tokens.spacing[6]}`,
               position: 'relative',
             }}
@@ -262,8 +258,7 @@ export const ServiceLandingLayout: React.FC<ServiceLandingLayoutProps> = ({
         return (
           <section
             key="faq"
-            className="reveal-on-scroll"
-            style={{
+                        style={{
               padding: `${tokens.spacing[20]} ${tokens.spacing[6]}`,
               background: tokens.colors.surface.glass,
               position: 'relative',
@@ -286,8 +281,7 @@ export const ServiceLandingLayout: React.FC<ServiceLandingLayoutProps> = ({
           <section
             key="cta"
             id="contact"
-            className="reveal-on-scroll"
-            style={{
+                        style={{
               padding: `${tokens.spacing[24]} ${tokens.spacing[6]}`,
               position: 'relative',
               background: `linear-gradient(180deg, transparent 0%, ${service.accentColor}10 100%)`,
@@ -319,7 +313,7 @@ export const ServiceLandingLayout: React.FC<ServiceLandingLayoutProps> = ({
         color: tokens.colors.text.primary,
         fontFamily: tokens.typography.fontFamily.sans,
         position: 'relative',
-        overflow: 'hidden',
+        overflowX: 'hidden',
       }}
     >
       {/* Ambient background glows */}
