@@ -36,32 +36,52 @@ enum LeadCaptureApp {
         app.logger.info("Starting Lead Capture API", metadata: [
             "environment": .string(config.apiStage),
             "region": .string(config.awsRegion),
-            "table": .string(config.dynamoDBTableName)
+            "table": .string(config.dynamoDBTableName),
+            "project": .string(ProcessInfo.processInfo.environment["PROJECT"] ?? "kanjona")
         ])
 
         // Configure middleware (order matters)
         // 1. Error handling first (catches all errors from later middleware)
         // 2. Security headers (applied to all responses)
         // 3. CORS (must be before API key check for preflight)
-        // 4. API key authentication
-        // 5. Request logging (logs all requests)
+        // 4. Origin validation (validates request origins)
+        // 5. API key authentication
+        // 6. Request logging (logs all requests)
         app.middleware = Middlewares()
         app.middleware.use(CustomErrorMiddleware(config: config))
         app.middleware.use(SecurityHeadersMiddleware(config: config))
         app.middleware.use(CustomCORSMiddleware(configuration: CORSConfiguration.fromConfig(config)))
+        app.middleware.use(OriginValidationMiddleware(config: config, strictMode: config.isProduction))
         app.middleware.use(APIKeyMiddleware(config: config))
         app.middleware.use(RequestLoggingMiddleware(config: config))
 
-        // Create AWS client and services
+        // Create AWS client
         let awsClient = AWSClientFactory.createClient(config: config)
+
+        // Create services
+        let dynamoDBService = DynamoDBService(client: awsClient, config: config)
+        let configService = ConfigService(awsClient: awsClient, config: config)
+        let rateLimiterService = RateLimiterService(dynamoDBService: dynamoDBService, config: config)
+        let spamDetectorService = SpamDetectorService(config: config)
         let leadService = LeadService(awsClient: awsClient, config: config)
 
         // Store services in app storage
-        app.storage[LeadServiceKey.self] = leadService
-        app.storage[AWSClientKey.self] = awsClient
+        app.storage[LeadServiceStorageKey.self] = leadService
+        app.storage[AWSClientStorageKey.self] = awsClient
+        app.storage[DynamoDBServiceStorageKey.self] = dynamoDBService
+        app.storage[ConfigServiceKey.self] = configService
+        app.storage[RateLimiterServiceKey.self] = rateLimiterService
+        app.storage[SpamDetectorServiceStorageKey.self] = spamDetectorService
 
-        // Configure routes
-        configureRoutes(app, leadService: leadService)
+        // Configure routes using controllers
+        try configureRoutes(
+            app,
+            leadService: leadService,
+            rateLimiterService: rateLimiterService,
+            spamDetectorService: spamDetectorService,
+            configService: configService,
+            dynamoDBService: dynamoDBService
+        )
 
         // Cleanup on shutdown
         app.lifecycle.use(AWSClientLifecycle(client: awsClient))
@@ -69,90 +89,70 @@ enum LeadCaptureApp {
         app.logger.info("Application configured successfully")
     }
 
-    static func configureRoutes(_ app: Application, leadService: LeadService) {
-        // Health check
-        app.get("health") { req -> HealthResponse in
-            return HealthResponse(
-                status: "healthy",
-                version: "1.0.0",
-                timestamp: formatISO8601(Date())
-            )
-        }
+    static func configureRoutes(
+        _ app: Application,
+        leadService: LeadService,
+        rateLimiterService: RateLimiterService,
+        spamDetectorService: SpamDetectorService,
+        configService: ConfigService,
+        dynamoDBService: DynamoDBService
+    ) throws {
+        // Register Health Controller
+        let healthController = HealthController(
+            config: AppConfig.shared,
+            dynamoDBService: dynamoDBService
+        )
+        try app.register(collection: healthController)
 
-        // Create lead - main endpoint
-        app.post("lead") { req async throws -> Response in
-            let createRequest = try req.content.decode(CreateLeadRequest.self)
+        // Register Lead Controller
+        let leadController = LeadController(
+            leadService: leadService,
+            rateLimiterService: rateLimiterService,
+            spamDetectorService: spamDetectorService,
+            config: AppConfig.shared
+        )
+        try app.register(collection: leadController)
 
-            let result = try await leadService.createLead(
-                request: createRequest,
-                ipAddress: req.clientIP,
-                userAgent: req.clientUserAgent,
-                idempotencyKey: req.headers.first(name: "Idempotency-Key")
-            )
+        // Register Voice Controller
+        let voiceController = VoiceController(
+            config: AppConfig.shared,
+            configService: configService
+        )
+        try app.register(collection: voiceController)
 
-            // Handle idempotent response
-            if result.isIdempotent, let cachedResponse = result.cachedResponse {
-                let response = Response(status: HTTPResponseStatus(statusCode: result.statusCode))
-                response.headers.contentType = .json
-                response.body = .init(string: cachedResponse)
-                return response
-            }
-
-            guard let lead = result.lead else {
-                throw AppError.internalError(message: "No lead created")
-            }
-
-            let leadResponse = LeadResponse(from: lead)
-            let apiResponse = APIResponse.success(leadResponse, requestId: req.headers.first(name: "X-Request-ID"))
-
-            let response = Response(status: .created)
+        // Root endpoint
+        app.get { req -> Response in
+            let response = Response(status: .ok)
             response.headers.contentType = .json
-            response.body = try .init(data: encodeJSON(apiResponse))
-            return response
-        }
-
-        // Also support /leads endpoint
-        app.post("leads") { req async throws -> Response in
-            let createRequest = try req.content.decode(CreateLeadRequest.self)
-
-            let result = try await leadService.createLead(
-                request: createRequest,
-                ipAddress: req.clientIP,
-                userAgent: req.clientUserAgent,
-                idempotencyKey: req.headers.first(name: "Idempotency-Key")
-            )
-
-            // Handle idempotent response
-            if result.isIdempotent, let cachedResponse = result.cachedResponse {
-                let response = Response(status: HTTPResponseStatus(statusCode: result.statusCode))
-                response.headers.contentType = .json
-                response.body = .init(string: cachedResponse)
-                return response
+            response.body = .init(string: """
+            {
+                "name": "Kanjona Lead Capture API",
+                "version": "1.0.0",
+                "status": "running",
+                "documentation": "/docs"
             }
-
-            guard let lead = result.lead else {
-                throw AppError.internalError(message: "No lead created")
-            }
-
-            let leadResponse = LeadResponse(from: lead)
-            let apiResponse = APIResponse.success(leadResponse, requestId: req.headers.first(name: "X-Request-ID"))
-
-            let response = Response(status: .created)
-            response.headers.contentType = .json
-            response.body = try .init(data: encodeJSON(apiResponse))
+            """)
             return response
         }
     }
 }
 
-// MARK: - Storage Keys
+// MARK: - Vapor Storage Keys
 
-struct LeadServiceKey: StorageKey {
+struct LeadServiceStorageKey: Vapor.StorageKey {
     typealias Value = LeadService
 }
 
-struct AWSClientKey: StorageKey {
+struct AWSClientStorageKey: Vapor.StorageKey {
     typealias Value = AWSClient
+}
+
+struct DynamoDBServiceStorageKey: Vapor.StorageKey {
+    typealias Value = DynamoDBService
+}
+
+struct SpamDetectorServiceStorageKey: Vapor.StorageKey {
+    typealias Value = SpamDetectorService
 }
 
 // MARK: - AWS Client Lifecycle
@@ -163,12 +163,4 @@ struct AWSClientLifecycle: LifecycleHandler {
     func shutdown(_ app: Application) {
         try? client.syncShutdown()
     }
-}
-
-// MARK: - Health Response
-
-struct HealthResponse: Content {
-    let status: String
-    let version: String
-    let timestamp: String
 }

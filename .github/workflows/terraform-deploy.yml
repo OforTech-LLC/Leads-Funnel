@@ -1,0 +1,266 @@
+# =============================================================================
+# Terraform Infrastructure Deployment
+# =============================================================================
+# Plans and applies Terraform infrastructure changes
+# =============================================================================
+
+name: Terraform Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'infra/terraform/**'
+      - '.github/workflows/terraform-deploy.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'infra/terraform/**'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - prod
+      action:
+        description: 'Terraform action'
+        required: true
+        default: 'plan'
+        type: choice
+        options:
+          - plan
+          - apply
+          - destroy
+
+env:
+  TF_VERSION: '1.7.0'
+  AWS_REGION: us-east-1
+
+jobs:
+  validate:
+    name: Validate Terraform
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform Format Check
+        working-directory: infra/terraform
+        run: terraform fmt -check -recursive
+
+      - name: Validate Dev Configuration
+        working-directory: infra/terraform/envs/dev
+        run: |
+          terraform init -backend=false
+          terraform validate
+
+      - name: Validate Prod Configuration
+        working-directory: infra/terraform/envs/prod
+        run: |
+          terraform init -backend=false
+          terraform validate
+
+  plan-dev:
+    name: Plan Dev
+    needs: validate
+    if: |
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'pull_request') ||
+      (github.event_name == 'workflow_dispatch' && inputs.environment == 'dev')
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Terraform Init
+        working-directory: infra/terraform/envs/dev
+        run: terraform init
+
+      - name: Terraform Plan
+        id: plan
+        working-directory: infra/terraform/envs/dev
+        run: |
+          terraform plan -no-color -out=tfplan 2>&1 | tee plan-output.txt
+          echo "plan_output<<EOF" >> $GITHUB_OUTPUT
+          cat plan-output.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Upload Plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan-dev-${{ github.sha }}
+          path: infra/terraform/envs/dev/tfplan
+          retention-days: 7
+
+      - name: Post Plan Summary
+        run: |
+          echo "## Terraform Plan (Dev)" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.plan.outputs.plan_output }}" | tail -50 >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+  apply-dev:
+    name: Apply Dev
+    needs: plan-dev
+    if: |
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_dispatch' && inputs.environment == 'dev' && inputs.action == 'apply')
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Download Plan
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform-plan-dev-${{ github.sha }}
+          path: infra/terraform/envs/dev
+
+      - name: Terraform Init
+        working-directory: infra/terraform/envs/dev
+        run: terraform init
+
+      - name: Terraform Apply
+        working-directory: infra/terraform/envs/dev
+        run: terraform apply -auto-approve tfplan
+
+      - name: Get Outputs
+        id: outputs
+        working-directory: infra/terraform/envs/dev
+        run: |
+          echo "api_url=$(terraform output -raw api_url 2>/dev/null || echo 'N/A')" >> $GITHUB_OUTPUT
+          echo "site_url=$(terraform output -raw site_url 2>/dev/null || echo 'N/A')" >> $GITHUB_OUTPUT
+
+      - name: Post Apply Summary
+        run: |
+          echo "## Terraform Apply Complete (Dev)" >> $GITHUB_STEP_SUMMARY
+          echo "- **API URL:** ${{ steps.outputs.outputs.api_url }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Site URL:** ${{ steps.outputs.outputs.site_url }}" >> $GITHUB_STEP_SUMMARY
+
+  plan-prod:
+    name: Plan Prod
+    needs: validate
+    if: github.event_name == 'workflow_dispatch' && inputs.environment == 'prod'
+    runs-on: ubuntu-latest
+    environment: prod
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Terraform Init
+        working-directory: infra/terraform/envs/prod
+        run: terraform init
+
+      - name: Terraform Plan
+        id: plan
+        working-directory: infra/terraform/envs/prod
+        run: |
+          terraform plan -no-color -out=tfplan 2>&1 | tee plan-output.txt
+
+      - name: Upload Plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan-prod-${{ github.sha }}
+          path: infra/terraform/envs/prod/tfplan
+          retention-days: 7
+
+  apply-prod:
+    name: Apply Prod
+    needs: plan-prod
+    if: github.event_name == 'workflow_dispatch' && inputs.environment == 'prod' && inputs.action == 'apply'
+    runs-on: ubuntu-latest
+    environment: prod
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Download Plan
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform-plan-prod-${{ github.sha }}
+          path: infra/terraform/envs/prod
+
+      - name: Terraform Init
+        working-directory: infra/terraform/envs/prod
+        run: terraform init
+
+      - name: Terraform Apply
+        working-directory: infra/terraform/envs/prod
+        run: terraform apply -auto-approve tfplan
+
+      - name: Get Outputs
+        id: outputs
+        working-directory: infra/terraform/envs/prod
+        run: |
+          echo "api_url=$(terraform output -raw api_url 2>/dev/null || echo 'N/A')" >> $GITHUB_OUTPUT
+          echo "site_url=$(terraform output -raw site_url 2>/dev/null || echo 'N/A')" >> $GITHUB_OUTPUT
+
+      - name: Post Apply Summary
+        run: |
+          echo "## Terraform Apply Complete (Prod)" >> $GITHUB_STEP_SUMMARY
+          echo "- **API URL:** ${{ steps.outputs.outputs.api_url }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Site URL:** ${{ steps.outputs.outputs.site_url }}" >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,134 @@
+# =============================================================================
+# Full Stack Deployment
+# =============================================================================
+# Deploys infrastructure, backend, and frontend in sequence
+# =============================================================================
+
+name: Deploy All
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options:
+          - dev
+          - prod
+
+      deploy_terraform:
+        description: 'Deploy Terraform Infrastructure'
+        required: true
+        type: choice
+        default: 'yes'
+        options:
+          - 'yes'
+          - 'no'
+
+      deploy_backend:
+        description: 'Deploy Swift Backend'
+        required: true
+        type: choice
+        default: 'yes'
+        options:
+          - 'yes'
+          - 'no'
+
+      deploy_frontend:
+        description: 'Deploy Next.js Frontend'
+        required: true
+        type: choice
+        default: 'yes'
+        options:
+          - 'yes'
+          - 'no'
+
+jobs:
+  deploy-terraform:
+    name: Deploy Infrastructure
+    if: inputs.deploy_terraform == 'yes'
+    uses: ./.github/workflows/terraform-deploy.yml
+    with:
+      environment: ${{ inputs.environment }}
+      action: apply
+    secrets: inherit
+
+  deploy-backend:
+    name: Deploy Backend
+    needs: deploy-terraform
+    if: always() && (needs.deploy-terraform.result == 'success' || inputs.deploy_terraform == 'no') && inputs.deploy_backend == 'yes'
+    uses: ./.github/workflows/backend-deploy.yml
+    with:
+      environment: ${{ inputs.environment }}
+    secrets: inherit
+
+  deploy-frontend:
+    name: Deploy Frontend
+    needs: deploy-backend
+    if: always() && (needs.deploy-backend.result == 'success' || inputs.deploy_backend == 'no') && inputs.deploy_frontend == 'yes'
+    uses: ./.github/workflows/frontend-deploy.yml
+    with:
+      environment: ${{ inputs.environment }}
+    secrets: inherit
+
+  summary:
+    name: Deployment Summary
+    needs: [deploy-terraform, deploy-backend, deploy-frontend]
+    if: always()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Generate Summary
+        run: |
+          echo "# Full Stack Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** ${{ inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Triggered by:** ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Component Status" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Terraform status
+          if [ "${{ inputs.deploy_terraform }}" == "yes" ]; then
+            if [ "${{ needs.deploy-terraform.result }}" == "success" ]; then
+              echo "| Infrastructure | :white_check_mark: Success |" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "| Infrastructure | :x: ${{ needs.deploy-terraform.result }} |" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "| Infrastructure | :black_square_button: Skipped |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Backend status
+          if [ "${{ inputs.deploy_backend }}" == "yes" ]; then
+            if [ "${{ needs.deploy-backend.result }}" == "success" ]; then
+              echo "| Backend | :white_check_mark: Success |" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "| Backend | :x: ${{ needs.deploy-backend.result }} |" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "| Backend | :black_square_button: Skipped |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Frontend status
+          if [ "${{ inputs.deploy_frontend }}" == "yes" ]; then
+            if [ "${{ needs.deploy-frontend.result }}" == "success" ]; then
+              echo "| Frontend | :white_check_mark: Success |" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "| Frontend | :x: ${{ needs.deploy-frontend.result }} |" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "| Frontend | :black_square_button: Skipped |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## URLs" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ inputs.environment }}" == "prod" ]; then
+            echo "- **Site:** https://kanjona.com" >> $GITHUB_STEP_SUMMARY
+            echo "- **API:** https://api.kanjona.com" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- **Site:** https://dev.kanjona.com" >> $GITHUB_STEP_SUMMARY
+            echo "- **API:** https://api-dev.kanjona.com" >> $GITHUB_STEP_SUMMARY
+          fi

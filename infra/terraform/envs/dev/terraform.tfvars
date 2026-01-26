@@ -1,21 +1,22 @@
 # =============================================================================
 # Terraform Variables - Dev Environment
 # =============================================================================
-# This file contains environment-specific values for the dev environment.
-# Update these values according to your requirements.
+# Project: kanjona
+# 47-funnel lead generation platform
 # =============================================================================
 
 # Core settings
-environment = "dev"
-root_domain = "kanjona.com"
-aws_region  = "us-east-1"
+project_name = "kanjona"
+environment  = "dev"
+root_domain  = "kanjona.com"
+aws_region   = "us-east-1"
 
 # =============================================================================
-# FEATURE FLAGS - COST TIERS
+# FEATURE FLAGS
 # =============================================================================
 # Toggle via GitHub Action: .github/workflows/toggle-features.yml
 #
-# EXPENSIVE features (~$10-15/month combined):
+# EXPENSIVE features (disabled in dev to save costs):
 #   - WAF: ~$5-6/month base + per-request
 #   - CloudFront logging: ~$1-2/month (S3 storage)
 #   - API logging: ~$1-2/month (CloudWatch)
@@ -23,9 +24,10 @@ aws_region  = "us-east-1"
 #   - Alarms: ~$1-2/month (CloudWatch)
 #   - PITR: ~$0.20/GB/month
 #
-# CHEAP/FREE features:
-#   - SQS: ~$0.50/month
-#   - SES: Free (sandbox)
+# Voice Agent features (disabled by default):
+#   - enable_voice_agent: Master toggle for voice functionality
+#   - enable_twilio: Twilio integration for calls/SMS
+#   - enable_elevenlabs: ElevenLabs AI voice synthesis
 # =============================================================================
 
 # --- EXPENSIVE FEATURES (disabled for development) ---
@@ -34,7 +36,12 @@ enable_cloudfront_logging = false
 enable_api_logging        = false
 enable_xray               = false
 enable_alarms             = false
-enable_pitr               = false
+enable_pitr               = false  # Dev: PITR disabled
+
+# --- VOICE AGENT FEATURES (disabled by default) ---
+enable_voice_agent = false
+enable_twilio      = false
+enable_elevenlabs  = false
 
 # --- CHEAP/FREE FEATURES ---
 enable_sqs = false
@@ -59,7 +66,6 @@ notification_email = ""
 # BASIC AUTHENTICATION (Password Protection)
 # =============================================================================
 # Protects the site during development. Disable when ready for public release.
-# Toggle via GitHub Action or set enable_basic_auth = false
 # =============================================================================
 
 enable_basic_auth   = true

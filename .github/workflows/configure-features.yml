@@ -1,0 +1,428 @@
+# =============================================================================
+# Feature Flags & Configuration Management
+# =============================================================================
+# Configure feature flags and API keys via dropdown menus
+# Commits changes and deploys to selected environment
+# =============================================================================
+
+name: Configure Features & Secrets
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options:
+          - dev
+          - prod
+
+      # =============================================================
+      # FEATURE FLAGS
+      # =============================================================
+      enable_voice_agent:
+        description: 'Enable Voice Agent'
+        required: true
+        type: choice
+        default: 'no-change'
+        options:
+          - 'no-change'
+          - 'true'
+          - 'false'
+
+      enable_twilio:
+        description: 'Enable Twilio Integration'
+        required: true
+        type: choice
+        default: 'no-change'
+        options:
+          - 'no-change'
+          - 'true'
+          - 'false'
+
+      enable_elevenlabs:
+        description: 'Enable ElevenLabs AI Voice'
+        required: true
+        type: choice
+        default: 'no-change'
+        options:
+          - 'no-change'
+          - 'true'
+          - 'false'
+
+      enable_waf:
+        description: 'Enable WAF Protection'
+        required: true
+        type: choice
+        default: 'no-change'
+        options:
+          - 'no-change'
+          - 'true'
+          - 'false'
+
+      enable_email_notifications:
+        description: 'Enable Email Notifications'
+        required: true
+        type: choice
+        default: 'no-change'
+        options:
+          - 'no-change'
+          - 'true'
+          - 'false'
+
+      enable_sms_notifications:
+        description: 'Enable SMS Notifications'
+        required: true
+        type: choice
+        default: 'no-change'
+        options:
+          - 'no-change'
+          - 'true'
+          - 'false'
+
+      enable_rate_limiting:
+        description: 'Enable Rate Limiting'
+        required: true
+        type: choice
+        default: 'no-change'
+        options:
+          - 'no-change'
+          - 'true'
+          - 'false'
+
+      enable_deduplication:
+        description: 'Enable Lead Deduplication'
+        required: true
+        type: choice
+        default: 'no-change'
+        options:
+          - 'no-change'
+          - 'true'
+          - 'false'
+
+      enable_debug:
+        description: 'Enable Debug Mode'
+        required: true
+        type: choice
+        default: 'no-change'
+        options:
+          - 'no-change'
+          - 'true'
+          - 'false'
+
+      # =============================================================
+      # RATE LIMITING CONFIGURATION
+      # =============================================================
+      rate_limit_max:
+        description: 'Rate Limit Max Requests (leave empty for no change)'
+        required: false
+        type: string
+        default: ''
+
+      rate_limit_window:
+        description: 'Rate Limit Window (minutes, leave empty for no change)'
+        required: false
+        type: string
+        default: ''
+
+      # =============================================================
+      # API KEYS (Stored in Secrets Manager)
+      # =============================================================
+      update_twilio_credentials:
+        description: 'Update Twilio Credentials'
+        required: true
+        type: choice
+        default: 'no'
+        options:
+          - 'no'
+          - 'yes'
+
+      update_elevenlabs_key:
+        description: 'Update ElevenLabs API Key'
+        required: true
+        type: choice
+        default: 'no'
+        options:
+          - 'no'
+          - 'yes'
+
+      # =============================================================
+      # DEPLOYMENT OPTIONS
+      # =============================================================
+      commit_changes:
+        description: 'Commit tfvars changes to main'
+        required: true
+        type: choice
+        default: 'yes'
+        options:
+          - 'yes'
+          - 'no'
+
+      deploy_infrastructure:
+        description: 'Deploy infrastructure after update'
+        required: true
+        type: choice
+        default: 'yes'
+        options:
+          - 'yes'
+          - 'no'
+
+env:
+  AWS_REGION: us-east-1
+
+jobs:
+  update-ssm-parameters:
+    name: Update SSM Feature Flags
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    outputs:
+      changes_made: ${{ steps.update-ssm.outputs.changes_made }}
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Update SSM Parameters
+        id: update-ssm
+        run: |
+          PREFIX="/kanjona/${{ inputs.environment }}/feature-flags"
+          CHANGES_MADE="false"
+
+          # Function to update parameter if changed
+          update_param() {
+            local name=$1
+            local value=$2
+            if [ "$value" != "no-change" ]; then
+              echo "Updating $name to $value"
+              aws ssm put-parameter \
+                --name "${PREFIX}/${name}" \
+                --value "$value" \
+                --type "String" \
+                --overwrite
+              CHANGES_MADE="true"
+            fi
+          }
+
+          # Update feature flags
+          update_param "enable-voice-agent" "${{ inputs.enable_voice_agent }}"
+          update_param "enable-twilio" "${{ inputs.enable_twilio }}"
+          update_param "enable-elevenlabs" "${{ inputs.enable_elevenlabs }}"
+          update_param "enable-waf" "${{ inputs.enable_waf }}"
+          update_param "enable-email-notifications" "${{ inputs.enable_email_notifications }}"
+          update_param "enable-sms-notifications" "${{ inputs.enable_sms_notifications }}"
+          update_param "enable-rate-limiting" "${{ inputs.enable_rate_limiting }}"
+          update_param "enable-deduplication" "${{ inputs.enable_deduplication }}"
+          update_param "enable-debug" "${{ inputs.enable_debug }}"
+
+          # Update rate limiting config
+          CONFIG_PREFIX="/kanjona/${{ inputs.environment }}/config"
+          if [ -n "${{ inputs.rate_limit_max }}" ]; then
+            echo "Updating rate-limit-max to ${{ inputs.rate_limit_max }}"
+            aws ssm put-parameter \
+              --name "${CONFIG_PREFIX}/rate-limit-max" \
+              --value "${{ inputs.rate_limit_max }}" \
+              --type "String" \
+              --overwrite
+            CHANGES_MADE="true"
+          fi
+
+          if [ -n "${{ inputs.rate_limit_window }}" ]; then
+            echo "Updating rate-limit-window to ${{ inputs.rate_limit_window }}"
+            aws ssm put-parameter \
+              --name "${CONFIG_PREFIX}/rate-limit-window-minutes" \
+              --value "${{ inputs.rate_limit_window }}" \
+              --type "String" \
+              --overwrite
+            CHANGES_MADE="true"
+          fi
+
+          echo "changes_made=$CHANGES_MADE" >> $GITHUB_OUTPUT
+
+      - name: Post SSM Update Summary
+        run: |
+          echo "## SSM Parameters Updated" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment:** ${{ inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Feature Flags Changed:" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ inputs.enable_voice_agent }}" != "no-change" ]; then
+            echo "- enable-voice-agent: ${{ inputs.enable_voice_agent }}" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [ "${{ inputs.enable_twilio }}" != "no-change" ]; then
+            echo "- enable-twilio: ${{ inputs.enable_twilio }}" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [ "${{ inputs.enable_elevenlabs }}" != "no-change" ]; then
+            echo "- enable-elevenlabs: ${{ inputs.enable_elevenlabs }}" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [ "${{ inputs.enable_waf }}" != "no-change" ]; then
+            echo "- enable-waf: ${{ inputs.enable_waf }}" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  update-secrets:
+    name: Update Secrets Manager
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    if: inputs.update_twilio_credentials == 'yes' || inputs.update_elevenlabs_key == 'yes'
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Update Twilio Credentials
+        if: inputs.update_twilio_credentials == 'yes'
+        run: |
+          echo "Updating Twilio credentials from GitHub secrets..."
+          aws secretsmanager put-secret-value \
+            --secret-id "kanjona/${{ inputs.environment }}/twilio" \
+            --secret-string '{
+              "account_sid": "${{ secrets.TWILIO_ACCOUNT_SID }}",
+              "auth_token": "${{ secrets.TWILIO_AUTH_TOKEN }}",
+              "phone_number": "${{ secrets.TWILIO_PHONE_NUMBER }}",
+              "api_key_sid": "${{ secrets.TWILIO_API_KEY_SID }}",
+              "api_key_secret": "${{ secrets.TWILIO_API_KEY_SECRET }}"
+            }'
+          echo "Twilio credentials updated successfully"
+
+      - name: Update ElevenLabs API Key
+        if: inputs.update_elevenlabs_key == 'yes'
+        run: |
+          echo "Updating ElevenLabs API key from GitHub secrets..."
+          aws secretsmanager put-secret-value \
+            --secret-id "kanjona/${{ inputs.environment }}/elevenlabs" \
+            --secret-string '{
+              "api_key": "${{ secrets.ELEVENLABS_API_KEY }}",
+              "voice_id": "${{ secrets.ELEVENLABS_VOICE_ID || '21m00Tcm4TlvDq8ikWAM' }}",
+              "model_id": "eleven_monolingual_v1",
+              "stability": 0.5,
+              "similarity": 0.75
+            }'
+          echo "ElevenLabs API key updated successfully"
+
+      - name: Post Secrets Update Summary
+        run: |
+          echo "## Secrets Updated" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment:** ${{ inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ inputs.update_twilio_credentials }}" == "yes" ]; then
+            echo "- Twilio credentials updated" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [ "${{ inputs.update_elevenlabs_key }}" == "yes" ]; then
+            echo "- ElevenLabs API key updated" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  update-tfvars:
+    name: Update Terraform Variables
+    needs: update-ssm-parameters
+    runs-on: ubuntu-latest
+    if: inputs.commit_changes == 'yes'
+
+    outputs:
+      committed: ${{ steps.commit.outputs.committed }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update tfvars file
+        id: update-tfvars
+        run: |
+          ENV=${{ inputs.environment }}
+          TFVARS_FILE="infra/terraform/envs/${ENV}/terraform.tfvars"
+
+          # Function to update tfvars
+          update_var() {
+            local var_name=$1
+            local value=$2
+            if [ "$value" != "no-change" ] && [ -n "$value" ]; then
+              echo "Updating $var_name to $value in tfvars"
+              if grep -q "^${var_name}" "$TFVARS_FILE"; then
+                sed -i "s/^${var_name}.*=.*/${var_name} = ${value}/" "$TFVARS_FILE"
+              fi
+            fi
+          }
+
+          # Update boolean flags
+          update_var "enable_voice_agent" "${{ inputs.enable_voice_agent }}"
+          update_var "enable_twilio" "${{ inputs.enable_twilio }}"
+          update_var "enable_elevenlabs" "${{ inputs.enable_elevenlabs }}"
+          update_var "enable_waf" "${{ inputs.enable_waf }}"
+
+          # Check if file changed
+          if git diff --quiet "$TFVARS_FILE"; then
+            echo "No changes to tfvars"
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "tfvars file updated"
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push changes
+        id: commit
+        if: steps.update-tfvars.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add infra/terraform/envs/${{ inputs.environment }}/terraform.tfvars
+
+          git commit -m "chore(${{ inputs.environment }}): update feature flags via workflow
+
+          Updated flags:
+          - voice_agent: ${{ inputs.enable_voice_agent }}
+          - twilio: ${{ inputs.enable_twilio }}
+          - elevenlabs: ${{ inputs.enable_elevenlabs }}
+          - waf: ${{ inputs.enable_waf }}
+
+          Triggered by: ${{ github.actor }}"
+
+          git push origin main
+
+          echo "committed=true" >> $GITHUB_OUTPUT
+
+  trigger-deploy:
+    name: Trigger Infrastructure Deploy
+    needs: [update-ssm-parameters, update-tfvars]
+    if: always() && inputs.deploy_infrastructure == 'yes'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Terraform Deploy
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'terraform-deploy.yml',
+              ref: 'main',
+              inputs: {
+                environment: '${{ inputs.environment }}',
+                action: 'apply'
+              }
+            });
+            console.log('Triggered terraform-deploy workflow');
+
+      - name: Post Summary
+        run: |
+          echo "## Configuration Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Actions Taken:" >> $GITHUB_STEP_SUMMARY
+          echo "1. SSM Parameters updated" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ inputs.commit_changes }}" == "yes" ]; then
+            echo "2. Terraform tfvars committed to main" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [ "${{ inputs.deploy_infrastructure }}" == "yes" ]; then
+            echo "3. Infrastructure deployment triggered" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** ${{ inputs.environment }}" >> $GITHUB_STEP_SUMMARY

@@ -1,56 +1,61 @@
 # =============================================================================
 # Terraform Variables - Prod Environment
 # =============================================================================
-# This file contains environment-specific values for the prod environment.
+# Project: kanjona
+# 47-funnel lead generation platform
 #
 # IMPORTANT: Review all values before deploying to production!
 # =============================================================================
 
 # Core settings
-environment = "prod"
-root_domain = "kanjona.com"
-aws_region  = "us-east-1"
+project_name = "kanjona"
+environment  = "prod"
+root_domain  = "kanjona.com"
+aws_region   = "us-east-1"
 
 # =============================================================================
-# FEATURE FLAGS - COST TIERS
+# FEATURE FLAGS
 # =============================================================================
 # Toggle via GitHub Action: .github/workflows/toggle-features.yml
 #
-# EXPENSIVE features (~$10-15/month combined):
-#   - WAF: ~$5-6/month base + per-request
-#   - CloudFront logging: ~$1-2/month (S3 storage)
-#   - API logging: ~$1-2/month (CloudWatch)
-#   - X-Ray: ~$1-2/month
-#   - Alarms: ~$1-2/month (CloudWatch)
-#   - PITR: ~$0.20/GB/month
+# Production defaults:
+#   - WAF: ENABLED for security
+#   - CloudFront logging: ENABLED for auditing
+#   - API logging: ENABLED for debugging
+#   - X-Ray: ENABLED for tracing
+#   - Alarms: ENABLED for monitoring
+#   - PITR: ENABLED for data recovery
 #
-# CHEAP/FREE features:
-#   - SQS: ~$0.50/month
-#   - SES: Free (sandbox)
-#
-# STATUS: Development mode (expensive features OFF)
-# When ready for release, run GitHub Action "Enable Production Features"
+# Voice Agent features (disabled by default - enable when ready):
+#   - enable_voice_agent: Master toggle for voice functionality
+#   - enable_twilio: Twilio integration for calls/SMS
+#   - enable_elevenlabs: ElevenLabs AI voice synthesis
 # =============================================================================
 
-# --- EXPENSIVE FEATURES (enable for production release) ---
-enable_waf                = false
-enable_cloudfront_logging = false
-enable_api_logging        = false
-enable_xray               = false
-enable_alarms             = false
-enable_pitr               = false
+# --- PRODUCTION FEATURES (enable for production release) ---
+enable_waf                = true   # Prod: WAF enabled for security
+enable_cloudfront_logging = true   # Prod: Logging enabled for auditing
+enable_api_logging        = true   # Prod: Logging enabled for debugging
+enable_xray               = true   # Prod: Tracing enabled
+enable_alarms             = true   # Prod: Monitoring enabled
+enable_pitr               = true   # Prod: PITR enabled for data recovery
 
-# --- CHEAP/FREE FEATURES ---
-enable_sqs = false
-enable_ses = false
+# --- VOICE AGENT FEATURES (enable when ready) ---
+enable_voice_agent = false
+enable_twilio      = false
+enable_elevenlabs  = false
+
+# --- ASYNC PROCESSING ---
+enable_sqs = true   # Enable SQS for async lead processing
+enable_ses = false  # Enable when ready for email notifications
 
 # =============================================================================
 # RESOURCE CONFIGURATION
 # =============================================================================
 
-# Lambda settings
-lambda_memory_mb            = 256
-lambda_reserved_concurrency = 50
+# Lambda settings (production optimized)
+lambda_memory_mb            = 512
+lambda_reserved_concurrency = 100
 
 # CORS - production domains only (no localhost)
 additional_cors_origins = []
@@ -62,10 +67,9 @@ notification_email = ""
 # =============================================================================
 # BASIC AUTHENTICATION (Password Protection)
 # =============================================================================
-# Protects the site during development. Disable when ready for public release.
-# Toggle via GitHub Action or set enable_basic_auth = false
+# Disable for public release
 # =============================================================================
 
-enable_basic_auth   = true
-basic_auth_username = "admin"
-basic_auth_password = "admin"
+enable_basic_auth   = false
+basic_auth_username = ""
+basic_auth_password = ""

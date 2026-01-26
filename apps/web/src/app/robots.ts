@@ -16,11 +16,17 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: [
-          '/api/',
-          '/_next/',
-          '/private/',
-        ],
+        disallow: ['/api/', '/_next/', '/private/', '/admin/'],
+      },
+      {
+        userAgent: 'Googlebot',
+        allow: '/',
+        disallow: ['/api/', '/private/', '/admin/'],
+      },
+      {
+        userAgent: 'Bingbot',
+        allow: '/',
+        disallow: ['/api/', '/private/', '/admin/'],
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,

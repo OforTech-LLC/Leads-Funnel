@@ -17,6 +17,8 @@ export type { LeadInput, LeadUtm, LeadSubmitResponse, LeadRequestPayload };
  * Uses 'message' field which maps to 'notes' in the API
  */
 export interface LeadPayload {
+  /** Funnel ID (service slug) for routing the lead */
+  funnelId?: string;
   name: string;
   email: string;
   phone?: string;
@@ -25,6 +27,8 @@ export interface LeadPayload {
   pageUrl: string;
   referrer: string;
   utm: LeadUtm;
+  /** Additional custom fields */
+  customFields?: Record<string, string>;
 }
 
 /**
@@ -66,7 +70,8 @@ export async function submitLeadToApi(payload: LeadPayload): Promise<LeadRespons
   const apiUrl = `${getApiBaseUrl()}/lead`;
 
   // Build API request payload (maps client fields to API fields)
-  const apiPayload: LeadRequestPayload = {
+  const apiPayload: LeadRequestPayload & { funnelId?: string; customFields?: Record<string, string> } = {
+    funnelId: payload.funnelId,
     name: payload.name.trim(),
     email: payload.email.trim().toLowerCase(),
     phone: payload.phone?.trim() || undefined,
@@ -77,6 +82,7 @@ export async function submitLeadToApi(payload: LeadPayload): Promise<LeadRespons
       pageUrl: payload.pageUrl,
       referrer: payload.referrer,
     },
+    customFields: payload.customFields,
   };
 
   const body = JSON.stringify(apiPayload);

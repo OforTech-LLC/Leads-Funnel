@@ -20,13 +20,14 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-crypto.git", from: "3.0.0"),
     ],
     targets: [
-        // Main Lambda target
+        // Main API target
         .executableTarget(
             name: "LeadCaptureAPI",
             dependencies: [
                 .product(name: "Vapor", package: "vapor"),
                 .product(name: "SotoDynamoDB", package: "soto"),
                 .product(name: "SotoEventBridge", package: "soto"),
+                .product(name: "SotoSSM", package: "soto"),
                 .product(name: "Crypto", package: "swift-crypto"),
                 "Shared"
             ],
@@ -39,7 +40,7 @@ let package = Package(
             path: "Sources/Shared"
         ),
 
-        // Tests
+        // Tests using Swift Testing
         .testTarget(
             name: "LeadCaptureAPITests",
             dependencies: [

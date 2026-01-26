@@ -1,0 +1,215 @@
+# =============================================================================
+# Backend Deployment Workflow
+# =============================================================================
+# Builds and deploys the Swift/Vapor backend to AWS Lambda
+# =============================================================================
+
+name: Backend Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-deploy.yml'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - prod
+
+env:
+  AWS_REGION: us-east-1
+  SWIFT_VERSION: '5.10'
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Swift
+        uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: ${{ env.SWIFT_VERSION }}
+
+      - name: Cache Swift packages
+        uses: actions/cache@v4
+        with:
+          path: backend/.build
+          key: ${{ runner.os }}-swift-${{ hashFiles('backend/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-swift-
+
+      - name: Run tests
+        working-directory: backend
+        run: swift test --parallel
+
+  build:
+    name: Build for Lambda
+    needs: test
+    runs-on: ubuntu-latest
+    outputs:
+      artifact-name: ${{ steps.upload.outputs.artifact-name }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Swift
+        uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: ${{ env.SWIFT_VERSION }}
+
+      - name: Cache Swift packages
+        uses: actions/cache@v4
+        with:
+          path: backend/.build
+          key: ${{ runner.os }}-swift-${{ hashFiles('backend/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-swift-
+
+      - name: Build release binary
+        working-directory: backend
+        run: |
+          swift build -c release \
+            --static-swift-stdlib \
+            -Xswiftc -cross-module-optimization
+
+      - name: Package for Lambda
+        working-directory: backend
+        run: |
+          mkdir -p lambda-package
+          cp .build/release/LeadCaptureAPI lambda-package/bootstrap
+          chmod +x lambda-package/bootstrap
+          cd lambda-package
+          zip -r ../lambda-deployment.zip .
+
+      - name: Upload Lambda package
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-lambda-${{ github.sha }}
+          path: backend/lambda-deployment.zip
+          retention-days: 7
+
+  deploy-dev:
+    name: Deploy to Dev
+    needs: build
+    if: github.event_name == 'push' || inputs.environment == 'dev'
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+      - name: Download Lambda package
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-lambda-${{ github.sha }}
+          path: ./
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy Lead Handler Lambda
+        run: |
+          aws lambda update-function-code \
+            --function-name kanjona-dev-lead-handler \
+            --zip-file fileb://lambda-deployment.zip \
+            --publish
+
+      - name: Deploy Health Handler Lambda
+        run: |
+          aws lambda update-function-code \
+            --function-name kanjona-dev-health-handler \
+            --zip-file fileb://lambda-deployment.zip \
+            --publish
+
+      - name: Deploy Voice Start Lambda (if enabled)
+        continue-on-error: true
+        run: |
+          aws lambda update-function-code \
+            --function-name kanjona-dev-voice-start \
+            --zip-file fileb://lambda-deployment.zip \
+            --publish
+
+      - name: Deploy Voice Webhook Lambda (if enabled)
+        continue-on-error: true
+        run: |
+          aws lambda update-function-code \
+            --function-name kanjona-dev-voice-webhook \
+            --zip-file fileb://lambda-deployment.zip \
+            --publish
+
+      - name: Post deployment summary
+        run: |
+          echo "## Backend Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment:** dev" >> $GITHUB_STEP_SUMMARY
+          echo "- **API URL:** https://api-dev.kanjona.com" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+
+  deploy-prod:
+    name: Deploy to Production
+    needs: build
+    if: inputs.environment == 'prod'
+    runs-on: ubuntu-latest
+    environment: prod
+
+    steps:
+      - name: Download Lambda package
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-lambda-${{ github.sha }}
+          path: ./
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy Lead Handler Lambda
+        run: |
+          aws lambda update-function-code \
+            --function-name kanjona-prod-lead-handler \
+            --zip-file fileb://lambda-deployment.zip \
+            --publish
+
+      - name: Deploy Health Handler Lambda
+        run: |
+          aws lambda update-function-code \
+            --function-name kanjona-prod-health-handler \
+            --zip-file fileb://lambda-deployment.zip \
+            --publish
+
+      - name: Deploy Voice Lambdas (if enabled)
+        continue-on-error: true
+        run: |
+          aws lambda update-function-code \
+            --function-name kanjona-prod-voice-start \
+            --zip-file fileb://lambda-deployment.zip \
+            --publish
+
+          aws lambda update-function-code \
+            --function-name kanjona-prod-voice-webhook \
+            --zip-file fileb://lambda-deployment.zip \
+            --publish
+
+      - name: Post deployment summary
+        run: |
+          echo "## Backend Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment:** prod" >> $GITHUB_STEP_SUMMARY
+          echo "- **API URL:** https://api.kanjona.com" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY

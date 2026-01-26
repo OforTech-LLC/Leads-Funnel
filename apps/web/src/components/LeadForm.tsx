@@ -20,10 +20,17 @@ import {
 import { validateLeadForm, type LeadFormData, type FormErrors } from '@/lib/validators';
 import { getBestUTMParams, getCurrentPageUrl, getReferrer } from '@/lib/utm';
 
+interface LeadFormProps {
+  /** Optional funnel ID for service-specific submissions */
+  funnelId?: string;
+  /** Optional primary color for theming */
+  primaryColor?: string;
+}
+
 /**
  * Lead Form Component
  */
-export function LeadForm() {
+export function LeadForm({ funnelId, primaryColor = '#0070f3' }: LeadFormProps) {
   const t = useTranslations('form');
   const messagesT = useTranslations('messages');
   const dispatch = useAppDispatch();
@@ -91,9 +98,10 @@ export function LeadForm() {
       const pageUrl = getCurrentPageUrl();
       const referrer = getReferrer();
 
-      // Submit lead
+      // Submit lead with optional funnelId
       dispatch(
         submitLead({
+          funnelId,
           name: formData.name,
           email: formData.email,
           phone: formData.phone || undefined,
@@ -273,6 +281,7 @@ export function LeadForm() {
             disabled={isSubmitting}
             style={{
               ...styles.submitButton,
+              backgroundColor: isSubmitting ? `${primaryColor}80` : primaryColor,
               ...(isSubmitting ? styles.submitButtonDisabled : {}),
             }}
           >
