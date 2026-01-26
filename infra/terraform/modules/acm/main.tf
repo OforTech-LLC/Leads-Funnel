@@ -9,6 +9,15 @@
 # IMPORTANT: This certificate MUST be created in us-east-1 for CloudFront
 # =============================================================================
 
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
 # -----------------------------------------------------------------------------
 # ACM Certificate
 # -----------------------------------------------------------------------------

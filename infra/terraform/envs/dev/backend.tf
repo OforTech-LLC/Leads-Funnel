@@ -1,8 +1,8 @@
 # =============================================================================
 # Terraform Backend Configuration - Dev Environment
 # =============================================================================
-# The state bucket and DynamoDB lock table must be created first.
-# Run ./scripts/bootstrap-state.sh to create these resources.
+# The state bucket uses native S3 locking via .tflock files.
+# Run ./scripts/bootstrap-state.sh to create the state bucket.
 # =============================================================================
 
 terraform {
@@ -14,8 +14,8 @@ terraform {
     key    = "env/dev/terraform.tfstate"
     region = "us-east-1"
 
-    # DynamoDB table for state locking
-    dynamodb_table = "kanjona-funnel-terraform-locks"
+    # Use native S3 locking instead of DynamoDB
+    use_lockfile = true
 
     # Enable encryption at rest
     encrypt = true

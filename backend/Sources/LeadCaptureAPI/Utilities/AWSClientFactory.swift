@@ -35,14 +35,20 @@ public enum AWSClientFactory {
 
     /// Shutdown the shared client
     public static func shutdown() async throws {
-        lock.lock()
-        let client = _sharedClient
-        _sharedClient = nil
-        lock.unlock()
+        let client = clearSharedClient()
 
         if let client = client {
             try await client.shutdown()
         }
+    }
+
+    /// Clear the shared client synchronously and return it for shutdown
+    private static func clearSharedClient() -> AWSClient? {
+        lock.lock()
+        defer { lock.unlock() }
+        let client = _sharedClient
+        _sharedClient = nil
+        return client
     }
 
     // MARK: - Client Creation

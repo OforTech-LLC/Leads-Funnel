@@ -81,16 +81,14 @@ export function useScrollFadeUp(
   }
 ) {
   useEffect(() => {
-    let scrollTriggerInstance: unknown;
-
     const animate = async () => {
-      const { gsap, ScrollTrigger } = await loadGsap();
+      const { gsap } = await loadGsap();
 
       const elements = document.querySelectorAll(selector);
       if (elements.length === 0) return;
 
       elements.forEach((element) => {
-        const trigger = gsap.from(element, {
+        gsap.from(element, {
           y: options?.y ?? 60,
           opacity: 0,
           duration: options?.duration ?? 0.7,
@@ -101,8 +99,6 @@ export function useScrollFadeUp(
             toggleActions: 'play none none none',
           },
         });
-
-        scrollTriggerInstance = trigger;
       });
     };
 
@@ -131,7 +127,7 @@ export function useStaggerReveal(
 ) {
   useEffect(() => {
     const animate = async () => {
-      const { gsap, ScrollTrigger } = await loadGsap();
+      const { gsap } = await loadGsap();
 
       const container = document.querySelector(containerSelector);
       if (!container) return;
@@ -247,7 +243,7 @@ export function useParallax(
     if (!element) return;
 
     const animate = async () => {
-      const { gsap, ScrollTrigger } = await loadGsap();
+      const { gsap } = await loadGsap();
 
       gsap.to(element, {
         y: () => window.innerHeight * speed,

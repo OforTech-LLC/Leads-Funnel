@@ -239,8 +239,6 @@ public struct VoiceController: RouteCollection {
             throw AppError.validationFailed(field: "callId", message: "Call ID is required")
         }
 
-        let requestId = req.headers.first(name: "X-Request-ID") ?? UUID().uuidString
-
         // In a real implementation, fetch from database
         // For now, return 404 since we don't have actual calls
         throw AppError.leadNotFound(id: callId)

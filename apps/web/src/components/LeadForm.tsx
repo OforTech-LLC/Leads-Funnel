@@ -112,7 +112,7 @@ export function LeadForm({ funnelId, primaryColor = '#0070f3' }: LeadFormProps) 
         })
       );
     },
-    [formData, dispatch]
+    [formData, dispatch, funnelId]
   );
 
   /**

@@ -122,7 +122,7 @@ function Footer({ color }: { color: string }) {
         <a
           href="/"
           style={{
-            color: color,
+            color,
             fontWeight: 600,
             fontSize: '18px',
             textDecoration: 'none',
