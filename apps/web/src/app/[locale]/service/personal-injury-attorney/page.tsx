@@ -1,11 +1,13 @@
 /**
- * Personal Injury Attorney Landing Page
+ * UpersonalUinjuryUattorney Landing Page
+ *
+ * Individual landing page with localized content.
  */
 
 import { setRequestLocale } from 'next-intl/server';
-import { routing } from '@/i18n/routing';
+import { routing, type Locale } from '@/i18n/routing';
 import { ServiceLandingLayout } from '@/components/landing';
-import { getLandingPageConfig } from '@/config/landing-pages';
+import { getLocalizedLandingPageConfig } from '@/config/localized-landing-pages';
 import { notFound } from 'next/navigation';
 
 const SERVICE_ID = 'personal-injury-attorney';
@@ -20,13 +22,15 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  const config = getLandingPageConfig(SERVICE_ID);
-  if (!config) return { title: 'Not Found' };
+  const config = getLocalizedLandingPageConfig(SERVICE_ID, locale as Locale);
+
+  if (!config) {
+    return { title: 'Not Found' };
+  }
 
   return {
     title: config.seo.title,
     description: config.seo.description,
-    keywords: config.seo.keywords,
     openGraph: {
       title: config.seo.title,
       description: config.seo.description,
@@ -36,15 +40,19 @@ export async function generateMetadata({
   };
 }
 
-export default async function PersonalInjuryAttorneyPage({
+export default async function UpersonalUinjuryUattorneyPage({
   params,
 }: {
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const config = getLandingPageConfig(SERVICE_ID);
-  if (!config) notFound();
+
+  const config = getLocalizedLandingPageConfig(SERVICE_ID, locale as Locale);
+
+  if (!config) {
+    notFound();
+  }
 
   return (
     <ServiceLandingLayout

@@ -2,13 +2,13 @@
  * Real Estate Landing Page
  *
  * Individual landing page for real estate services.
- * Uses the glassmorphism design system.
+ * Uses the glassmorphism design system with localized content.
  */
 
 import { setRequestLocale } from 'next-intl/server';
 import { routing, type Locale } from '@/i18n/routing';
 import { ServiceLandingLayout } from '@/components/landing';
-import { getLandingPageConfig } from '@/config/landing-pages';
+import { getLocalizedLandingPageConfig } from '@/config/localized-landing-pages';
 import { notFound } from 'next/navigation';
 
 const SERVICE_ID = 'real-estate';
@@ -29,7 +29,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  const config = getLandingPageConfig(SERVICE_ID);
+  const config = getLocalizedLandingPageConfig(SERVICE_ID, locale as Locale);
 
   if (!config) {
     return { title: 'Not Found' };
@@ -61,8 +61,8 @@ export default async function RealEstatePage({
   // Enable static rendering
   setRequestLocale(locale);
 
-  // Get service configuration
-  const config = getLandingPageConfig(SERVICE_ID);
+  // Get localized service configuration
+  const config = getLocalizedLandingPageConfig(SERVICE_ID, locale as Locale);
 
   if (!config) {
     notFound();
@@ -72,36 +72,12 @@ export default async function RealEstatePage({
     <ServiceLandingLayout
       service={config.service}
       sections={[
-        {
-          type: 'hero',
-          enabled: true,
-          config: config.hero,
-        },
-        {
-          type: 'benefits',
-          enabled: true,
-          config: config.benefits,
-        },
-        {
-          type: 'process',
-          enabled: true,
-          config: config.process,
-        },
-        {
-          type: 'testimonials',
-          enabled: true,
-          config: config.testimonials,
-        },
-        {
-          type: 'faq',
-          enabled: true,
-          config: config.faq,
-        },
-        {
-          type: 'cta',
-          enabled: true,
-          config: config.form,
-        },
+        { type: 'hero', enabled: true, config: config.hero },
+        { type: 'benefits', enabled: true, config: config.benefits },
+        { type: 'process', enabled: true, config: config.process },
+        { type: 'testimonials', enabled: true, config: config.testimonials },
+        { type: 'faq', enabled: true, config: config.faq },
+        { type: 'cta', enabled: true, config: config.form },
       ]}
     />
   );

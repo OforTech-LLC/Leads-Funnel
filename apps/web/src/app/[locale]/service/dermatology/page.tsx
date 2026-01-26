@@ -1,14 +1,57 @@
-import { getLandingPageConfig } from '@/config/landing-pages';
+/**
+ * Udermatology Landing Page
+ *
+ * Individual landing page with localized content.
+ */
+
+import { setRequestLocale } from 'next-intl/server';
+import { routing, type Locale } from '@/i18n/routing';
 import { ServiceLandingLayout } from '@/components/landing';
+import { getLocalizedLandingPageConfig } from '@/config/localized-landing-pages';
+import { notFound } from 'next/navigation';
 
 const SERVICE_ID = 'dermatology';
 
-export default async function DermatologyPage({ params }: { params: Promise<{ locale: string }> }) {
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
   const { locale } = await params;
-  const config = getLandingPageConfig(SERVICE_ID);
+  const config = getLocalizedLandingPageConfig(SERVICE_ID, locale as Locale);
 
   if (!config) {
-    return <div>Service not found</div>;
+    return { title: 'Not Found' };
+  }
+
+  return {
+    title: config.seo.title,
+    description: config.seo.description,
+    openGraph: {
+      title: config.seo.title,
+      description: config.seo.description,
+      locale,
+      type: 'website',
+    },
+  };
+}
+
+export default async function UdermatologyPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+
+  const config = getLocalizedLandingPageConfig(SERVICE_ID, locale as Locale);
+
+  if (!config) {
+    notFound();
   }
 
   return (
@@ -24,13 +67,4 @@ export default async function DermatologyPage({ params }: { params: Promise<{ lo
       ]}
     />
   );
-}
-
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
-  const config = getLandingPageConfig(SERVICE_ID);
-  return {
-    title: config?.seo.title,
-    description: config?.seo.description,
-    keywords: config?.seo.keywords,
-  };
 }
