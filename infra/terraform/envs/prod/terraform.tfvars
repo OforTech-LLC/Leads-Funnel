@@ -33,12 +33,12 @@ aws_region   = "us-east-1"
 # =============================================================================
 
 # --- PRODUCTION FEATURES (enable for production release) ---
-enable_waf                = true   # Prod: WAF enabled for security
-enable_cloudfront_logging = true   # Prod: Logging enabled for auditing
-enable_api_logging        = true   # Prod: Logging enabled for debugging
-enable_xray               = true   # Prod: Tracing enabled
-enable_alarms             = true   # Prod: Monitoring enabled
-enable_pitr               = true   # Prod: PITR enabled for data recovery
+enable_waf                = true # Prod: WAF enabled for security
+enable_cloudfront_logging = true # Prod: Logging enabled for auditing
+enable_api_logging        = true # Prod: Logging enabled for debugging
+enable_xray               = true # Prod: Tracing enabled
+enable_alarms             = true # Prod: Monitoring enabled
+enable_pitr               = true # Prod: PITR enabled for data recovery
 
 # --- VOICE AGENT FEATURES (enable when ready) ---
 enable_voice_agent = false
@@ -46,8 +46,8 @@ enable_twilio      = false
 enable_elevenlabs  = false
 
 # --- ASYNC PROCESSING ---
-enable_sqs = true   # Enable SQS for async lead processing
-enable_ses = false  # Enable when ready for email notifications
+enable_sqs = true  # Enable SQS for async lead processing
+enable_ses = false # Enable when ready for email notifications
 
 # =============================================================================
 # RESOURCE CONFIGURATION

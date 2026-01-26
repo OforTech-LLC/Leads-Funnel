@@ -46,9 +46,9 @@ resource "aws_sqs_queue" "processing" {
 
   name = "${var.project_name}-${var.environment}-lead-processing"
 
-  visibility_timeout_seconds = 60       # Must be >= Lambda timeout
-  message_retention_seconds  = 345600   # 4 days
-  receive_wait_time_seconds  = 20       # Long polling
+  visibility_timeout_seconds = 60     # Must be >= Lambda timeout
+  message_retention_seconds  = 345600 # 4 days
+  receive_wait_time_seconds  = 20     # Long polling
 
   # Server-side encryption
   sqs_managed_sse_enabled = true

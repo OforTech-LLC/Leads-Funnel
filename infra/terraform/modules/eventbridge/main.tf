@@ -123,8 +123,8 @@ resource "aws_sqs_queue" "lead_processing" {
   name = "${var.project_name}-${var.environment}-lead-processing"
 
   visibility_timeout_seconds = 60
-  message_retention_seconds  = 345600  # 4 days
-  receive_wait_time_seconds  = 20      # Long polling
+  message_retention_seconds  = 345600 # 4 days
+  receive_wait_time_seconds  = 20     # Long polling
   delay_seconds              = 0
 
   sqs_managed_sse_enabled = true

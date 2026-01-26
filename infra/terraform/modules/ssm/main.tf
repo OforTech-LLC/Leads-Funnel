@@ -17,10 +17,10 @@ locals {
   # Build funnels config JSON
   funnels_config = jsonencode({
     funnels = [for id in var.funnel_ids : {
-      id          = id
-      table_name  = "${var.project_name}-${var.environment}-${id}"
-      active      = lookup(var.funnel_metadata, id, { active = true }).active
-      category    = lookup(var.funnel_metadata, id, { category = "default" }).category
+      id         = id
+      table_name = "${var.project_name}-${var.environment}-${id}"
+      active     = lookup(var.funnel_metadata, id, { active = true }).active
+      category   = lookup(var.funnel_metadata, id, { category = "default" }).category
     }]
     rate_limits_table = "${var.project_name}-${var.environment}-rate-limits"
     idempotency_table = "${var.project_name}-${var.environment}-idempotency"

@@ -36,7 +36,7 @@ enable_cloudfront_logging = false
 enable_api_logging        = false
 enable_xray               = false
 enable_alarms             = false
-enable_pitr               = false  # Dev: PITR disabled
+enable_pitr               = false # Dev: PITR disabled
 
 # --- VOICE AGENT FEATURES (disabled by default) ---
 enable_voice_agent = false

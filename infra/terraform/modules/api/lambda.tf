@@ -48,7 +48,7 @@ resource "aws_lambda_function" "lead_capture" {
   architectures = ["arm64"] # Graviton - cheaper and faster
 
   memory_size = var.lambda_memory_mb
-  timeout     = 30  # Increased from 10s to handle multiple DynamoDB operations
+  timeout     = 30 # Increased from 10s to handle multiple DynamoDB operations
 
   # Reserved concurrency (prevent runaway costs)
   reserved_concurrent_executions = var.lambda_reserved_concurrency

@@ -113,69 +113,69 @@ variable "funnel_metadata" {
   description = "Metadata for each funnel"
   default = {
     # Real Estate & Home Services
-    "real-estate"             = { display_name = "Real Estate", category = "real-estate", active = true }
-    "roofing"                 = { display_name = "Roofing", category = "home-services", active = true }
-    "cleaning"                = { display_name = "Cleaning", category = "home-services", active = true }
-    "hvac"                    = { display_name = "HVAC", category = "home-services", active = true }
-    "plumbing"                = { display_name = "Plumbing", category = "home-services", active = true }
-    "electrician"             = { display_name = "Electrician", category = "home-services", active = true }
-    "pest-control"            = { display_name = "Pest Control", category = "home-services", active = true }
-    "landscaping"             = { display_name = "Landscaping", category = "home-services", active = true }
-    "pool-service"            = { display_name = "Pool Service", category = "home-services", active = true }
-    "home-remodeling"         = { display_name = "Home Remodeling", category = "home-services", active = true }
-    "solar"                   = { display_name = "Solar", category = "home-services", active = true }
-    "pressure-washing"        = { display_name = "Pressure Washing", category = "home-services", active = true }
+    "real-estate"      = { display_name = "Real Estate", category = "real-estate", active = true }
+    "roofing"          = { display_name = "Roofing", category = "home-services", active = true }
+    "cleaning"         = { display_name = "Cleaning", category = "home-services", active = true }
+    "hvac"             = { display_name = "HVAC", category = "home-services", active = true }
+    "plumbing"         = { display_name = "Plumbing", category = "home-services", active = true }
+    "electrician"      = { display_name = "Electrician", category = "home-services", active = true }
+    "pest-control"     = { display_name = "Pest Control", category = "home-services", active = true }
+    "landscaping"      = { display_name = "Landscaping", category = "home-services", active = true }
+    "pool-service"     = { display_name = "Pool Service", category = "home-services", active = true }
+    "home-remodeling"  = { display_name = "Home Remodeling", category = "home-services", active = true }
+    "solar"            = { display_name = "Solar", category = "home-services", active = true }
+    "pressure-washing" = { display_name = "Pressure Washing", category = "home-services", active = true }
 
     # Home Maintenance & Repair
-    "locksmith"               = { display_name = "Locksmith", category = "home-maintenance", active = true }
+    "locksmith"                = { display_name = "Locksmith", category = "home-maintenance", active = true }
     "water-damage-restoration" = { display_name = "Water Damage Restoration", category = "home-maintenance", active = true }
-    "mold-remediation"        = { display_name = "Mold Remediation", category = "home-maintenance", active = true }
-    "flooring"                = { display_name = "Flooring", category = "home-maintenance", active = true }
-    "painting"                = { display_name = "Painting", category = "home-maintenance", active = true }
-    "windows-doors"           = { display_name = "Windows & Doors", category = "home-maintenance", active = true }
-    "fencing"                 = { display_name = "Fencing", category = "home-maintenance", active = true }
-    "concrete"                = { display_name = "Concrete", category = "home-maintenance", active = true }
+    "mold-remediation"         = { display_name = "Mold Remediation", category = "home-maintenance", active = true }
+    "flooring"                 = { display_name = "Flooring", category = "home-maintenance", active = true }
+    "painting"                 = { display_name = "Painting", category = "home-maintenance", active = true }
+    "windows-doors"            = { display_name = "Windows & Doors", category = "home-maintenance", active = true }
+    "fencing"                  = { display_name = "Fencing", category = "home-maintenance", active = true }
+    "concrete"                 = { display_name = "Concrete", category = "home-maintenance", active = true }
 
     # Moving & Junk Services
-    "moving"                  = { display_name = "Moving", category = "moving-services", active = true }
-    "junk-removal"            = { display_name = "Junk Removal", category = "moving-services", active = true }
-    "appliance-repair"        = { display_name = "Appliance Repair", category = "moving-services", active = true }
+    "moving"           = { display_name = "Moving", category = "moving-services", active = true }
+    "junk-removal"     = { display_name = "Junk Removal", category = "moving-services", active = true }
+    "appliance-repair" = { display_name = "Appliance Repair", category = "moving-services", active = true }
 
     # Medical & Healthcare
-    "dentist"                 = { display_name = "Dentist", category = "healthcare", active = true }
-    "plastic-surgeon"         = { display_name = "Plastic Surgeon", category = "healthcare", active = true }
-    "orthodontist"            = { display_name = "Orthodontist", category = "healthcare", active = true }
-    "dermatology"             = { display_name = "Dermatology", category = "healthcare", active = true }
-    "medspa"                  = { display_name = "MedSpa", category = "healthcare", active = true }
-    "chiropractic"            = { display_name = "Chiropractic", category = "healthcare", active = true }
-    "physical-therapy"        = { display_name = "Physical Therapy", category = "healthcare", active = true }
-    "hair-transplant"         = { display_name = "Hair Transplant", category = "healthcare", active = true }
-    "cosmetic-dentistry"      = { display_name = "Cosmetic Dentistry", category = "healthcare", active = true }
+    "dentist"            = { display_name = "Dentist", category = "healthcare", active = true }
+    "plastic-surgeon"    = { display_name = "Plastic Surgeon", category = "healthcare", active = true }
+    "orthodontist"       = { display_name = "Orthodontist", category = "healthcare", active = true }
+    "dermatology"        = { display_name = "Dermatology", category = "healthcare", active = true }
+    "medspa"             = { display_name = "MedSpa", category = "healthcare", active = true }
+    "chiropractic"       = { display_name = "Chiropractic", category = "healthcare", active = true }
+    "physical-therapy"   = { display_name = "Physical Therapy", category = "healthcare", active = true }
+    "hair-transplant"    = { display_name = "Hair Transplant", category = "healthcare", active = true }
+    "cosmetic-dentistry" = { display_name = "Cosmetic Dentistry", category = "healthcare", active = true }
 
     # Legal Services
-    "personal-injury-attorney"   = { display_name = "Personal Injury Attorney", category = "legal", active = true }
-    "immigration-attorney"       = { display_name = "Immigration Attorney", category = "legal", active = true }
-    "criminal-defense-attorney"  = { display_name = "Criminal Defense Attorney", category = "legal", active = true }
+    "personal-injury-attorney"  = { display_name = "Personal Injury Attorney", category = "legal", active = true }
+    "immigration-attorney"      = { display_name = "Immigration Attorney", category = "legal", active = true }
+    "criminal-defense-attorney" = { display_name = "Criminal Defense Attorney", category = "legal", active = true }
 
     # Financial & Business Services
-    "tax-accounting"          = { display_name = "Tax & Accounting", category = "financial", active = true }
-    "business-consulting"     = { display_name = "Business Consulting", category = "financial", active = true }
-    "life-insurance"          = { display_name = "Life Insurance", category = "financial", active = true }
+    "tax-accounting"      = { display_name = "Tax & Accounting", category = "financial", active = true }
+    "business-consulting" = { display_name = "Business Consulting", category = "financial", active = true }
+    "life-insurance"      = { display_name = "Life Insurance", category = "financial", active = true }
 
     # Commercial Services
-    "commercial-cleaning"     = { display_name = "Commercial Cleaning", category = "commercial", active = true }
-    "security-systems"        = { display_name = "Security Systems", category = "commercial", active = true }
-    "it-services"             = { display_name = "IT Services", category = "commercial", active = true }
+    "commercial-cleaning" = { display_name = "Commercial Cleaning", category = "commercial", active = true }
+    "security-systems"    = { display_name = "Security Systems", category = "commercial", active = true }
+    "it-services"         = { display_name = "IT Services", category = "commercial", active = true }
 
     # Marketing
-    "marketing-agency"        = { display_name = "Marketing Agency", category = "marketing", active = true }
+    "marketing-agency" = { display_name = "Marketing Agency", category = "marketing", active = true }
 
     # Automotive Services
-    "auto-repair"             = { display_name = "Auto Repair", category = "automotive", active = true }
-    "auto-detailing"          = { display_name = "Auto Detailing", category = "automotive", active = true }
-    "towing"                  = { display_name = "Towing", category = "automotive", active = true }
-    "auto-glass"              = { display_name = "Auto Glass", category = "automotive", active = true }
-    "construction"            = { display_name = "Construction", category = "construction", active = true }
+    "auto-repair"    = { display_name = "Auto Repair", category = "automotive", active = true }
+    "auto-detailing" = { display_name = "Auto Detailing", category = "automotive", active = true }
+    "towing"         = { display_name = "Towing", category = "automotive", active = true }
+    "auto-glass"     = { display_name = "Auto Glass", category = "automotive", active = true }
+    "construction"   = { display_name = "Construction", category = "construction", active = true }
   }
 }
 
