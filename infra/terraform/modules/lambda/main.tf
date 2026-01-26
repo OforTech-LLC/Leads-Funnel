@@ -355,52 +355,21 @@ resource "aws_iam_role_policy" "lead_handler" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
-      # DynamoDB - Write to all funnel tables
+      # DynamoDB - Access all funnel tables using wildcard pattern
       {
-        Sid    = "DynamoDBWriteFunnels"
+        Sid    = "DynamoDBFunnelTables"
         Effect = "Allow"
         Action = [
           "dynamodb:PutItem",
           "dynamodb:UpdateItem",
           "dynamodb:BatchWriteItem",
-        ]
-        Resource = var.all_funnel_table_arns
-      },
-      # DynamoDB - Query funnel tables and GSIs
-      {
-        Sid    = "DynamoDBQueryFunnels"
-        Effect = "Allow"
-        Action = [
           "dynamodb:Query",
           "dynamodb:GetItem",
         ]
-        Resource = concat(
-          var.all_funnel_table_arns,
-          var.all_funnel_gsi_arns
-        )
-      },
-      # DynamoDB - Rate limits table
-      {
-        Sid    = "DynamoDBRateLimits"
-        Effect = "Allow"
-        Action = [
-          "dynamodb:PutItem",
-          "dynamodb:UpdateItem",
-          "dynamodb:GetItem",
-          "dynamodb:Query",
+        Resource = [
+          "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${var.project_name}-${var.environment}-*",
+          "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${var.project_name}-${var.environment}-*/index/*",
         ]
-        Resource = var.rate_limits_table_arn
-      },
-      # DynamoDB - Idempotency table
-      {
-        Sid    = "DynamoDBIdempotency"
-        Effect = "Allow"
-        Action = [
-          "dynamodb:PutItem",
-          "dynamodb:GetItem",
-          "dynamodb:DeleteItem",
-        ]
-        Resource = var.idempotency_table_arn
       },
       # EventBridge - Put events
       {
@@ -418,7 +387,7 @@ resource "aws_iam_role_policy" "lead_handler" {
         ]
         Resource = var.ip_hash_salt_secret_arn
       },
-      # SSM Parameter Store - Read parameters
+      # SSM Parameter Store - Read parameters using wildcard
       {
         Sid    = "SSMParameterRead"
         Effect = "Allow"
@@ -427,7 +396,7 @@ resource "aws_iam_role_policy" "lead_handler" {
           "ssm:GetParameters",
           "ssm:GetParametersByPath",
         ]
-        Resource = var.ssm_parameter_arns
+        Resource = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/${var.project_name}/*"
       },
     ]
   })
@@ -514,7 +483,7 @@ resource "aws_iam_role_policy" "voice_handler" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
-      # DynamoDB - Read/Write to funnel tables (for lead updates)
+      # DynamoDB - Access all funnel tables using wildcard pattern
       {
         Sid    = "DynamoDBFunnels"
         Effect = "Allow"
@@ -524,21 +493,10 @@ resource "aws_iam_role_policy" "voice_handler" {
           "dynamodb:UpdateItem",
           "dynamodb:Query",
         ]
-        Resource = concat(
-          var.all_funnel_table_arns,
-          var.all_funnel_gsi_arns
-        )
-      },
-      # DynamoDB - Rate limits
-      {
-        Sid    = "DynamoDBRateLimits"
-        Effect = "Allow"
-        Action = [
-          "dynamodb:GetItem",
-          "dynamodb:PutItem",
-          "dynamodb:UpdateItem",
+        Resource = [
+          "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${var.project_name}-${var.environment}-*",
+          "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${var.project_name}-${var.environment}-*/index/*",
         ]
-        Resource = var.rate_limits_table_arn
       },
       # Secrets Manager - Read Twilio and ElevenLabs secrets
       {
@@ -551,7 +509,7 @@ resource "aws_iam_role_policy" "voice_handler" {
           var.webhook_secret_arn,
         ]
       },
-      # SSM Parameter Store - Read feature flags
+      # SSM Parameter Store - Read feature flags using wildcard
       {
         Sid    = "SSMParameterRead"
         Effect = "Allow"
@@ -559,7 +517,7 @@ resource "aws_iam_role_policy" "voice_handler" {
           "ssm:GetParameter",
           "ssm:GetParameters",
         ]
-        Resource = var.ssm_parameter_arns
+        Resource = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/${var.project_name}/*"
       },
       # EventBridge - Put voice events
       {
