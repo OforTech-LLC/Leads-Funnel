@@ -13,6 +13,10 @@ resource "aws_cloudfront_function" "basic_auth" {
   comment = "Basic authentication for ${var.project_name} ${var.environment}"
   publish = true
 
+  lifecycle {
+    create_before_destroy = true
+  }
+
   code = <<-EOF
     function handler(event) {
       var request = event.request;
