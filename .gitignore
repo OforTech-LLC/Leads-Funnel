@@ -160,6 +160,9 @@ service-account*.json
 *secret*
 *credential*
 !*.example
+# Allow Terraform secrets module
+!infra/terraform/modules/secrets/
+!infra/terraform/modules/secrets/**
 
 # AWS Credentials
 .aws/credentials
@@ -232,6 +235,9 @@ local.yml
 # Lambda deployment packages
 lambda/
 lambda-*.zip
+# Allow Terraform lambda module
+!infra/terraform/modules/lambda/
+!infra/terraform/modules/lambda/**
 
 # LocalStack
 .localstack/
