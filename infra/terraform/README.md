@@ -1,165 +1,167 @@
-# Terraform Infrastructure - Kanjona Funnel
+# Kanjona Infrastructure
 
-Production-grade Terraform infrastructure for the Kanjona lead generation funnel.
+Terraform infrastructure for the multi-funnel lead generation platform.
 
 ## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                         Route 53                                 │
-│         kanjona.com → CloudFront                                │
-│         api.kanjona.com → API Gateway                           │
+│                         CloudFront                               │
+│                    (CDN + SSL + Caching)                        │
 └─────────────────────────────────────────────────────────────────┘
                               │
-           ┌──────────────────┼──────────────────┐
-           ▼                                     ▼
-┌─────────────────────┐              ┌─────────────────────┐
-│     CloudFront      │              │   API Gateway       │
-│   + WAF (prod)      │              │   HTTP API          │
-│   + Security Headers│              │   POST /lead        │
-└─────────────────────┘              └─────────────────────┘
-           │                                     │
-           ▼                                     ▼
-┌─────────────────────┐              ┌─────────────────────┐
-│    S3 Bucket        │              │   Lambda Function   │
-│    (Private + OAC)  │              │   lead-capture      │
-│    Landing Page     │              └─────────────────────┘
-└─────────────────────┘                    │         │
-                                           ▼         ▼
-                              ┌────────────────┐  ┌────────────────┐
-                              │   DynamoDB     │  │  EventBridge   │
-                              │   Single Table │  │  lead.created  │
-                              └────────────────┘  └────────────────┘
-                                                          │
-                                                          ▼
-                                                 ┌────────────────┐
-                                                 │   SQS Queue    │
-                                                 │   + DLQ        │
-                                                 └────────────────┘
+              ┌───────────────┴───────────────┐
+              ▼                               ▼
+┌─────────────────────────┐     ┌─────────────────────────┐
+│          S3             │     │      API Gateway        │
+│   (Static Frontend)     │     │      (HTTP API)         │
+└─────────────────────────┘     └─────────────────────────┘
+                                              │
+                              ┌───────────────┼───────────────┐
+                              ▼               ▼               ▼
+                    ┌──────────────┐ ┌──────────────┐ ┌──────────────┐
+                    │   Lambda     │ │   Lambda     │ │   Lambda     │
+                    │ lead-handler │ │health-handler│ │ voice-start  │
+                    └──────────────┘ └──────────────┘ └──────────────┘
+                              │
+              ┌───────────────┼───────────────┐
+              ▼               ▼               ▼
+┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
+│    DynamoDB     │ │   EventBridge   │ │  Secrets Mgr    │
+│   (47 Tables)   │ │  (Async Events) │ │   (API Keys)    │
+└─────────────────┘ └─────────────────┘ └─────────────────┘
 ```
 
-## Prerequisites
-
-- AWS CLI configured with appropriate credentials
-- Terraform >= 1.5.0
-- Domain registered (update registrar nameservers after first deploy)
-
-## Quick Start
-
-### 1. Bootstrap State Backend
-
-```bash
-# Create S3 bucket and DynamoDB table for state
-./scripts/bootstrap-state.sh
-```
-
-### 2. Deploy Dev Environment
-
-```bash
-cd infra/terraform/envs/dev
-
-# Initialize Terraform
-terraform init
-
-# Review changes
-terraform plan
-
-# Apply changes
-terraform apply
-```
-
-### 3. Configure Domain
-
-After the first deployment, update your domain registrar's nameservers:
-
-```bash
-# Get nameservers from Terraform output
-terraform output route53_nameservers
-```
-
-Point your domain to these nameservers. DNS propagation takes 10-30 minutes.
-
-### 4. Upload Site Content
-
-```bash
-# Build your site first
-cd apps/web && npm run build
-
-# Upload to S3 and invalidate CloudFront
-./scripts/upload-site.sh dev ./apps/web/dist
-```
-
-### 5. Deploy Production (when ready)
-
-```bash
-cd infra/terraform/envs/prod
-
-# Update terraform.tfvars with production values
-terraform init
-terraform plan
-terraform apply
-```
-
-## Repository Structure
+## Directory Structure
 
 ```
-infra/terraform/
-├── modules/
-│   ├── dns/           # Route 53 hosted zone and records
-│   ├── acm/           # SSL/TLS certificates
-│   ├── static_site/   # S3 + CloudFront with OAC
-│   ├── waf/           # Web Application Firewall
-│   ├── api/           # API Gateway + Lambda
-│   ├── dynamodb/      # DynamoDB single-table
-│   ├── eventing/      # EventBridge + SQS
-│   ├── ses/           # Email notifications
-│   └── monitoring/    # CloudWatch alarms + dashboard
-│
+terraform/
 ├── envs/
-│   ├── dev/           # Development environment
-│   └── prod/          # Production environment
+│   ├── dev/                    # Development environment
+│   │   ├── main.tf             # Module composition
+│   │   ├── variables.tf        # Variable definitions
+│   │   ├── outputs.tf          # Output values
+│   │   ├── terraform.tfvars    # Environment values
+│   │   ├── backend.tf          # S3 state backend
+│   │   └── providers.tf        # Provider configuration
+│   │
+│   └── prod/                   # Production environment
+│       └── (same structure)
 │
-├── .terraform-version
-├── .pre-commit-config.yaml
-└── README.md
+├── modules/
+│   ├── acm/                    # SSL certificates
+│   ├── api/                    # Legacy API module
+│   ├── api-gateway/            # HTTP API Gateway
+│   ├── dns/                    # Route 53 DNS
+│   ├── dynamodb/               # DynamoDB tables
+│   ├── eventbridge/            # EventBridge bus and rules
+│   ├── eventing/               # SNS/SQS eventing
+│   ├── lambda/                 # Lambda functions
+│   ├── monitoring/             # CloudWatch alarms/dashboards
+│   ├── secrets/                # Secrets Manager
+│   ├── ses/                    # Email (SES)
+│   ├── ssm/                    # SSM Parameter Store
+│   ├── static_site/            # S3 + CloudFront
+│   └── waf/                    # Web Application Firewall
+│
+├── shared/
+│   └── funnels.tf              # 47 funnel ID definitions
+│
+└── tests/
+    ├── validate_all.sh         # Validation script
+    ├── validate_plan.sh        # Plan validation
+    ├── test_configs.sh         # Config tests
+    ├── unit_tests.sh           # Unit tests
+    └── security_checks.sh      # Security validation
 ```
+
+## Modules
+
+### DynamoDB (`modules/dynamodb`)
+- Creates 47 funnel-specific tables
+- Rate limits table
+- Idempotency table
+- Single-table design with GSI
+
+### Lambda (`modules/lambda`)
+- `lead-handler`: Main lead processing
+- `health-handler`: Health checks
+- `voice-start`: Voice call initiation
+- `voice-webhook`: Twilio webhooks
+
+### SSM (`modules/ssm`)
+- Feature flags
+- Runtime configuration
+- Funnel configurations
+
+### Secrets (`modules/secrets`)
+- Twilio credentials
+- ElevenLabs API key
+- Webhook signing secret
+- IP hash salt
+
+## Usage
+
+### Initialize
+
+```bash
+cd envs/dev
+terraform init
+```
+
+### Plan
+
+```bash
+terraform plan -out=tfplan
+```
+
+### Apply
+
+```bash
+terraform apply tfplan
+```
+
+### Destroy
+
+```bash
+terraform destroy
+```
+
+## Environment Differences
+
+| Feature | Dev | Prod |
+|---------|-----|------|
+| WAF | Disabled | Enabled |
+| PITR | Disabled | Enabled |
+| Deletion Protection | Disabled | Enabled |
+| CloudFront Logging | Disabled | Enabled |
+| X-Ray Tracing | Disabled | Enabled |
+| Lambda Memory | 128 MB | 512 MB |
+| CORS | + localhost | Strict |
 
 ## Feature Flags
 
-| Flag | Dev Default | Prod Default | Description |
-|------|-------------|--------------|-------------|
-| `enable_waf` | false | true | WAF protection for CloudFront |
-| `enable_cloudfront_logging` | false | true | Access logs to S3 |
-| `enable_api_logging` | false | true | API Gateway access logs |
-| `enable_sqs` | false | true | SQS queue for async processing |
-| `enable_ses` | false | false | SES email notifications |
-| `enable_xray` | false | true | X-Ray tracing for Lambda |
-| `enable_alarms` | false | true | CloudWatch alarms |
-| `enable_pitr` | false | true | DynamoDB point-in-time recovery |
+Toggle features via `terraform.tfvars`:
 
-## Cost Estimates
+```hcl
+# Voice Agent (disabled by default)
+enable_voice_agent = false
+enable_twilio      = false
+enable_elevenlabs  = false
 
-### Dev Environment (minimal)
-- Route 53 hosted zone: $0.50/month
-- Lambda: Free tier (1M requests)
-- DynamoDB: Free tier (25GB, 25 WCU/RCU)
-- CloudFront: ~$0-5/month depending on traffic
-- **Total: ~$1-5/month**
+# Security (prod defaults)
+enable_waf  = true
+enable_pitr = true
 
-### Prod Environment (full features)
-- Route 53: $0.50/month
-- Lambda: ~$1-5/month
-- DynamoDB: ~$1-5/month (on-demand)
-- CloudFront: ~$5-10/month
-- WAF: ~$5-10/month
-- CloudWatch: ~$1-5/month
-- **Total: ~$20-50/month**
+# Notifications
+enable_email_notifications = true
+enable_sms_notifications   = false
+```
 
-## Security Features
+## Outputs
 
-- All S3 buckets are private (no public access)
-- CloudFront uses OAC (Origin Access Control)
-- WAF protects against common attacks (prod)
-- HTTPS enforced everywhere (TLS 1.2+)
-- Lambda has least-privilege IAM
-- Security headers on all responses
+After apply, key outputs include:
+- `site_url`: Frontend URL
+- `api_url`: API Gateway URL
+- `cloudfront_distribution_id`: For cache invalidation
+- `dynamodb_funnel_table_names`: Map of funnel → table

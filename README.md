@@ -1,188 +1,240 @@
-# Kanjona Funnel
+# Kanjona - Multi-Funnel Lead Generation Platform
 
-A production-grade lead generation funnel monorepo for kanjona.com.
+A high-performance, serverless lead generation platform with 47 unique service funnels, AI voice agent capabilities, and comprehensive infrastructure automation.
 
-## Architecture
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                         Route 53                                 │
-│         kanjona.com → CloudFront                                │
-│         api.kanjona.com → API Gateway                           │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-           ┌──────────────────┼──────────────────┐
-           ▼                                     ▼
-┌─────────────────────┐              ┌─────────────────────┐
-│     CloudFront      │              │   API Gateway       │
-│   + WAF (prod)      │              │   HTTP API          │
-│   + Security Headers│              │   POST /lead        │
-└─────────────────────┘              └─────────────────────┘
-           │                                     │
-           ▼                                     ▼
-┌─────────────────────┐              ┌─────────────────────┐
-│    S3 Bucket        │              │   Lambda Function   │
-│    (Private + OAC)  │              │   lead-capture      │
-│    Landing Page     │              └─────────────────────┘
-└─────────────────────┘                    │         │
-                                           ▼         ▼
-                              ┌────────────────┐  ┌────────────────┐
-                              │   DynamoDB     │  │  EventBridge   │
-                              │   Single Table │  │  lead.created  │
-                              └────────────────┘  └────────────────┘
-                                                          │
-                                                          ▼
-                                                 ┌────────────────┐
-                                                 │   SQS Queue    │
-                                                 │   + DLQ        │
-                                                 └────────────────┘
-```
-
-## Repository Structure
+## Architecture Overview
 
 ```
-kanjona-funnel/
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              FRONTEND                                        │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │  Next.js 15 (Static Export) → CloudFront → S3                       │   │
+│  │  • 47 Service Funnel Pages (EN/ES)                                  │   │
+│  │  • Framer Motion Animations                                         │   │
+│  │  • Redux State Management                                           │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              BACKEND                                         │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │  Swift/Vapor API → API Gateway → Lambda                             │   │
+│  │  • Lead Capture with Validation                                     │   │
+│  │  • Rate Limiting (5 req/min/IP/funnel)                             │   │
+│  │  • Spam Detection + Honeypot                                        │   │
+│  │  • Idempotency Support                                              │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           INFRASTRUCTURE                                     │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │
+│  │  DynamoDB    │  │  EventBridge │  │  SSM Params  │  │  Secrets Mgr │   │
+│  │  47 Tables   │  │  Async Events│  │  Feature Flags│  │  API Keys    │   │
+│  └──────────────┘  └──────────────┘  └──────────────┘  └──────────────┘   │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+## Project Structure
+
+```
+Leads-Funnel/
 ├── apps/
-│   ├── web/           # Frontend landing page (Next.js, static export)
-│   │   ├── src/
-│   │   └── public/
-│   └── api/           # Backend API (Lambda code)
-│       └── src/
+│   └── web/                    # Next.js 15 Frontend
+│       ├── src/
+│       │   ├── app/            # App Router pages
+│       │   ├── components/     # React components
+│       │   │   ├── animations/ # Framer Motion components
+│       │   │   └── funnel/     # Funnel page components
+│       │   ├── config/         # Service configurations
+│       │   ├── i18n/           # Translations (EN/ES)
+│       │   ├── lib/            # Utilities and API client
+│       │   └── store/          # Redux state management
+│       └── public/             # Static assets
 │
-├── backend/           # Swift/Vapor API (standalone)
+├── backend/                    # Swift/Vapor Backend
 │   ├── Sources/
-│   └── Tests/
+│   │   ├── LeadCaptureAPI/
+│   │   │   ├── Controllers/    # API endpoints
+│   │   │   ├── Services/       # Business logic
+│   │   │   ├── Middleware/     # Request processing
+│   │   │   └── Models/         # Data models
+│   │   └── Shared/             # Shared types and constants
+│   └── Tests/                  # Swift Testing suite
 │
 ├── infra/
-│   └── terraform/     # Infrastructure as Code
-│       ├── modules/   # Reusable Terraform modules
-│       └── envs/      # Environment configurations
-│           ├── dev/
-│           └── prod/
+│   └── terraform/              # Infrastructure as Code
+│       ├── envs/
+│       │   ├── dev/            # Development environment
+│       │   └── prod/           # Production environment
+│       ├── modules/            # Reusable Terraform modules
+│       └── shared/             # Shared configurations
 │
 ├── packages/
-│   └── shared/        # Shared TypeScript types (@kanjona/shared)
-│       └── src/
+│   └── shared/                 # Shared TypeScript types
 │
-├── scripts/           # Deployment and utility scripts
-├── docs/              # Project documentation
 └── .github/
-    └── workflows/     # CI/CD pipelines
+    └── workflows/              # CI/CD pipelines
 ```
 
-This is an **npm workspaces monorepo**. The frontend apps and shared packages are managed together.
+## The 47 Service Funnels
+
+| Category | Services |
+|----------|----------|
+| **Real Estate** | Real Estate |
+| **Insurance** | Life Insurance |
+| **Home Services** | Construction, Moving, Roofing, Cleaning, HVAC, Plumbing, Electrician, Pest Control, Landscaping, Pool Service, Home Remodeling, Solar, Locksmith, Pressure Washing, Water Damage Restoration, Mold Remediation, Flooring, Painting, Windows & Doors, Fencing, Concrete, Junk Removal, Appliance Repair |
+| **Healthcare** | Dentist, Plastic Surgeon, Orthodontist, Dermatology, MedSpa, Chiropractic, Physical Therapy, Hair Transplant, Cosmetic Dentistry |
+| **Legal** | Personal Injury Attorney, Immigration Attorney, Criminal Defense Attorney |
+| **Business** | Tax & Accounting, Business Consulting, Commercial Cleaning, Security Systems, IT Services, Marketing Agency |
+| **Automotive** | Auto Repair, Auto Detailing, Towing, Auto Glass |
 
 ## Quick Start
 
 ### Prerequisites
 
-- AWS CLI configured with appropriate credentials
-- Terraform >= 1.5.0
-- Node.js >= 18.0.0 (for frontend)
-- npm >= 9.0.0
-- Swift >= 5.9 (for backend, optional)
-- Domain registered and ready to configure
+- Node.js 20+
+- Swift 5.10+
+- Terraform 1.7+
+- AWS CLI configured
+- GitHub CLI authenticated
 
-### Install Dependencies
+### Local Development
 
 ```bash
-# Install all npm workspace dependencies
+# Install dependencies
 npm install
+
+# Start frontend (http://localhost:3000)
+cd apps/web && npm run dev
+
+# Start backend (http://localhost:8080)
+cd backend && swift run
 ```
 
-### Development
+### Environment Setup
 
 ```bash
-# Run web app in development mode
-npm run dev
+# Copy environment templates
+cp .env.example .env
+cp apps/web/.env.example apps/web/.env.local
+cp backend/.env.example backend/.env
 
-# Build shared types package
-npm run build --workspace=@kanjona/shared
+# Update with your credentials
 ```
 
-### Build for Production
+## Deployment
+
+### Automatic (GitHub Actions)
+
+Push to `main` triggers automatic deployment to dev environment.
+
+### Manual Deployment
 
 ```bash
-# Build static export for S3 + CloudFront
-npm run build
+# Deploy everything to dev
+gh workflow run deploy-all.yml -f environment=dev
+
+# Deploy everything to prod
+gh workflow run deploy-all.yml -f environment=prod
+
+# Deploy specific components
+gh workflow run frontend-deploy.yml -f environment=dev
+gh workflow run backend-deploy.yml -f environment=dev
+gh workflow run terraform-deploy.yml -f environment=dev -f action=apply
 ```
 
-The static files will be generated in `apps/web/out/`.
+### Feature Flag Configuration
 
-### 1. Bootstrap Infrastructure
+Use the `Configure Features & Secrets` workflow to toggle features:
 
-```bash
-# Create Terraform state backend
-./scripts/bootstrap-state.sh
+1. Go to Actions → Configure Features & Secrets
+2. Select environment (dev/prod)
+3. Toggle feature flags via dropdown menus
+4. Optionally update API keys
+5. Choose to commit changes and deploy
 
-# Deploy dev environment
-cd infra/terraform/envs/dev
-terraform init
-terraform plan
-terraform apply
-```
+## Feature Flags
 
-### 2. Configure Domain
+| Flag | Description | Default |
+|------|-------------|---------|
+| `enable_voice_agent` | AI voice agent functionality | `false` |
+| `enable_twilio` | Twilio SMS/Voice integration | `false` |
+| `enable_elevenlabs` | ElevenLabs AI voice synthesis | `false` |
+| `enable_waf` | WAF protection | `false` (dev) / `true` (prod) |
+| `enable_email_notifications` | Email notifications | `true` |
+| `enable_sms_notifications` | SMS notifications | `false` |
+| `enable_rate_limiting` | Rate limiting | `true` |
+| `enable_deduplication` | Lead deduplication | `true` |
+| `enable_debug` | Debug logging | `true` (dev) / `false` (prod) |
 
-After deployment, update your domain registrar with the Route 53 nameservers:
+## API Endpoints
 
-```bash
-terraform output route53_nameservers
-```
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/lead` | Submit a lead |
+| `POST` | `/funnel/:funnelId/lead` | Submit a lead for specific funnel |
+| `GET` | `/health` | Health check |
+| `GET` | `/health/live` | Kubernetes liveness probe |
+| `GET` | `/health/ready` | Kubernetes readiness probe |
 
-### 3. Upload Site Content
-
-```bash
-# Build your site
-cd apps/web && npm run build
-
-# Upload to S3
-./scripts/upload-site.sh dev ./apps/web/dist
-```
-
-### 4. Test the API
+### Lead Submission Example
 
 ```bash
 curl -X POST https://api.kanjona.com/lead \
   -H "Content-Type: application/json" \
-  -d '{"name": "Test User", "email": "test@example.com"}'
+  -H "Idempotency-Key: unique-key-123" \
+  -d '{
+    "name": "John Doe",
+    "email": "john@example.com",
+    "phone": "+1234567890",
+    "source": "real-estate",
+    "notes": "Interested in buying a home"
+  }'
 ```
 
-## Environments
+## Security Features
 
-| Environment | Domain | Features |
-|-------------|--------|----------|
-| Dev | kanjona.com | Minimal (cost-optimized) |
-| Prod | kanjona.com | Full (WAF, logging, alarms) |
+- **Rate Limiting**: 5 requests per minute per IP per funnel
+- **Honeypot Fields**: Silent spam detection
+- **Spam Detection**: Pattern matching, disposable email detection
+- **Idempotency**: Prevents duplicate submissions
+- **WAF**: Web Application Firewall (production)
+- **CORS**: Strict origin validation
+- **PII Protection**: No sensitive data in logs
 
-## Key Features
+## Testing
 
-- **Static Site Hosting**: CloudFront + S3 with OAC (no public bucket access)
-- **Lead Capture API**: API Gateway + Lambda with DynamoDB storage
-- **Async Processing**: EventBridge + SQS for background jobs
-- **Security**: WAF, HTTPS, security headers, least-privilege IAM
-- **Observability**: CloudWatch alarms, dashboards, X-Ray tracing
-- **Cost-Aware**: Feature flags to disable expensive components in dev
+```bash
+# Frontend tests
+cd apps/web && npm test
 
-## Documentation
+# Backend tests
+cd backend && swift test
 
-- [Infrastructure Guide](./infra/terraform/README.md)
-- [Web App Guide](./apps/web/README.md)
-- [API Guide](./apps/api/README.md)
+# Terraform validation
+cd infra/terraform && terraform fmt -check -recursive
+cd infra/terraform/envs/dev && terraform validate
+```
+
+## Monitoring
+
+- CloudWatch Logs for Lambda functions
+- CloudWatch Alarms for error rates
+- X-Ray tracing (production)
+- CloudFront access logs (production)
 
 ## Cost Estimates
 
-- **Dev**: ~$1-5/month (minimal features)
-- **Prod**: ~$20-50/month (full features, depends on traffic)
+| Environment | Monthly Cost |
+|-------------|--------------|
+| Development | ~$5-10 |
+| Production | ~$20-50 |
 
-## Scripts
-
-| Script | Description |
-|--------|-------------|
-| `scripts/bootstrap-state.sh` | Create Terraform state backend |
-| `scripts/deploy.sh <env>` | Deploy infrastructure |
-| `scripts/upload-site.sh <env> <dir>` | Upload site to S3 |
+*Costs vary based on traffic and enabled features.*
 
 ## License
 
-Private - All rights reserved
+Proprietary - All rights reserved.
