@@ -18,13 +18,13 @@ output "nameservers" {
 }
 
 output "root_domain_fqdn" {
-  description = "Fully qualified domain name for root"
-  value       = aws_route53_record.root.fqdn
+  description = "Fully qualified domain name for root (null if not created)"
+  value       = var.create_root_records ? aws_route53_record.root[0].fqdn : null
 }
 
 output "www_domain_fqdn" {
-  description = "Fully qualified domain name for www"
-  value       = aws_route53_record.www.fqdn
+  description = "Fully qualified domain name for www (null if not created)"
+  value       = var.create_root_records ? aws_route53_record.www[0].fqdn : null
 }
 
 output "api_domain_fqdn" {
