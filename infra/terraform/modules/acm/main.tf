@@ -15,20 +15,24 @@
 locals {
   # Use environment-specific API subdomain
   api_subdomain = var.environment == "prod" ? "api.${var.root_domain}" : "api-${var.environment}.${var.root_domain}"
+
+  # Primary domain: prod uses root domain, dev uses subdomain
+  primary_domain = var.environment == "prod" ? var.root_domain : "${var.environment}.${var.root_domain}"
+
+  # SANs: prod includes www, dev doesn't need additional subdomains
+  base_sans = var.environment == "prod" ? [
+    "www.${var.root_domain}",
+    local.api_subdomain,
+    ] : [
+    local.api_subdomain,
+  ]
 }
 
 resource "aws_acm_certificate" "main" {
-  domain_name       = var.root_domain
+  domain_name       = local.primary_domain
   validation_method = "DNS"
 
-  subject_alternative_names = concat(
-    [
-      "www.${var.root_domain}",
-      local.api_subdomain,
-      "${var.environment}.${var.root_domain}", # Environment subdomain (e.g., dev.kanjona.com)
-    ],
-    var.additional_sans
-  )
+  subject_alternative_names = concat(local.base_sans, var.additional_sans)
 
   tags = merge(var.tags, {
     Name = "${var.project_name}-${var.environment}-cert"

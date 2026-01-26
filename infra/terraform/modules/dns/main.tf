@@ -20,9 +20,10 @@ resource "aws_route53_zone" "main" {
 }
 
 # -----------------------------------------------------------------------------
-# Root Domain Record (CloudFront Alias)
+# Root Domain Record (CloudFront Alias) - Only for prod
 # -----------------------------------------------------------------------------
 resource "aws_route53_record" "root" {
+  count   = var.create_root_records ? 1 : 0
   zone_id = aws_route53_zone.main.zone_id
   name    = var.root_domain
   type    = "A"
@@ -34,8 +35,9 @@ resource "aws_route53_record" "root" {
   }
 }
 
-# IPv6 record for root domain
+# IPv6 record for root domain - Only for prod
 resource "aws_route53_record" "root_aaaa" {
+  count   = var.create_root_records ? 1 : 0
   zone_id = aws_route53_zone.main.zone_id
   name    = var.root_domain
   type    = "AAAA"
@@ -48,9 +50,10 @@ resource "aws_route53_record" "root_aaaa" {
 }
 
 # -----------------------------------------------------------------------------
-# WWW Subdomain Record (CloudFront Alias)
+# WWW Subdomain Record (CloudFront Alias) - Only for prod
 # -----------------------------------------------------------------------------
 resource "aws_route53_record" "www" {
+  count   = var.create_root_records ? 1 : 0
   zone_id = aws_route53_zone.main.zone_id
   name    = "www.${var.root_domain}"
   type    = "A"
@@ -62,8 +65,9 @@ resource "aws_route53_record" "www" {
   }
 }
 
-# IPv6 record for www
+# IPv6 record for www - Only for prod
 resource "aws_route53_record" "www_aaaa" {
+  count   = var.create_root_records ? 1 : 0
   zone_id = aws_route53_zone.main.zone_id
   name    = "www.${var.root_domain}"
   type    = "AAAA"

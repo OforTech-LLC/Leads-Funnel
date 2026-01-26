@@ -23,11 +23,9 @@ locals {
   funnel_ids      = var.funnel_ids
   funnel_metadata = var.funnel_metadata
 
-  # CORS origins including the domain and any additional origins
+  # CORS origins - dev only uses subdomain
   cors_origins = concat(
     [
-      "https://${var.root_domain}",
-      "https://www.${var.root_domain}",
       "https://dev.${var.root_domain}",
     ],
     var.additional_cors_origins
@@ -48,8 +46,7 @@ module "acm" {
   environment  = var.environment
   root_domain  = var.root_domain
 
-  additional_sans = ["dev.${var.root_domain}"]
-
+  # Dev now uses dev.kanjona.com as primary domain (no additional SANs needed)
   tags = local.common_tags
 }
 
@@ -105,8 +102,8 @@ module "ssm" {
   enable_rate_limiting       = true
   enable_debug               = true # Enable debug in dev
 
-  # Runtime config
-  api_base_url = "https://api.${var.root_domain}"
+  # Runtime config - dev uses api-dev subdomain
+  api_base_url = "https://api-dev.${var.root_domain}"
 
   tags = local.common_tags
 }
@@ -241,9 +238,8 @@ module "static_site" {
   project_name = var.project_name
   environment  = var.environment
 
+  # Dev uses only subdomain - prod owns root domain and www
   domain_aliases = [
-    var.root_domain,
-    "www.${var.root_domain}",
     "dev.${var.root_domain}",
   ]
 
@@ -282,6 +278,8 @@ module "dns" {
 
   acm_validation_records = module.acm.validation_records
 
+  # Dev only uses subdomain - prod owns root and www
+  create_root_records   = false
   additional_subdomains = ["dev"]
 
   tags = local.common_tags

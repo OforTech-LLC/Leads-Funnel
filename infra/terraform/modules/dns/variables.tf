@@ -64,6 +64,12 @@ variable "additional_subdomains" {
   default     = []
 }
 
+variable "create_root_records" {
+  type        = bool
+  description = "Whether to create root domain and www DNS records (should only be true for prod)"
+  default     = true
+}
+
 variable "tags" {
   type        = map(string)
   description = "Tags to apply to all resources"
