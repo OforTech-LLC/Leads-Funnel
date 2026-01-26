@@ -78,14 +78,13 @@ export default async function LocaleLayout({
 }
 
 /**
- * Minimal body styles
+ * Minimal body styles - neutral to allow page-level theming
  */
 const bodyStyles: React.CSSProperties = {
   margin: 0,
   padding: 0,
   fontFamily:
     '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-  backgroundColor: '#f5f5f5',
-  color: '#111',
   lineHeight: 1.6,
+  minHeight: '100vh',
 };
