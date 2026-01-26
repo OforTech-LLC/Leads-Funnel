@@ -9,7 +9,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { tokens } from '@/design-system';
+import { usePathname, useRouter } from 'next/navigation';
+import { tokens, GlassButton } from '@/design-system';
 import {
   HeroSection,
   BenefitsSection,
@@ -132,6 +133,12 @@ interface ServiceLandingLayoutProps {
 // Component
 // =============================================================================
 
+// Language options
+const languages = [
+  { code: 'en', label: 'EN', flag: '🇺🇸' },
+  { code: 'es', label: 'ES', flag: '🇪🇸' },
+];
+
 export const ServiceLandingLayout: React.FC<ServiceLandingLayoutProps> = ({
   service,
   sections,
@@ -140,6 +147,21 @@ export const ServiceLandingLayout: React.FC<ServiceLandingLayoutProps> = ({
   const [showContent, setShowContent] = useState(true); // Skip video for now
   const [videoComplete, setVideoComplete] = useState(true); // Skip video for now
   const [skipVideo] = useState(true); // Set to false to enable hero video
+  const [langMenuOpen, setLangMenuOpen] = useState(false);
+
+  const pathname = usePathname();
+  const router = useRouter();
+
+  // Get current locale from pathname
+  const currentLocale = pathname.split('/')[1] || 'en';
+
+  // Switch language
+  const switchLanguage = (newLocale: string) => {
+    const segments = pathname.split('/');
+    segments[1] = newLocale;
+    router.push(segments.join('/'));
+    setLangMenuOpen(false);
+  };
 
   // For future: Initialize animations when GSAP is properly configured
   useEffect(() => {
@@ -393,6 +415,150 @@ export const ServiceLandingLayout: React.FC<ServiceLandingLayoutProps> = ({
         }}
       />
 
+      {/* Header with Language Switcher */}
+      <header
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 50,
+          padding: `${tokens.spacing[4]} ${tokens.spacing[6]}`,
+          background: tokens.colors.surface.glass,
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          borderBottom: `1px solid ${tokens.colors.border.subtle}`,
+        }}
+      >
+        <div
+          style={{
+            maxWidth: '1280px',
+            margin: '0 auto',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          {/* Logo/Brand */}
+          <div
+            style={{
+              fontSize: tokens.typography.fontSize.xl,
+              fontWeight: tokens.typography.fontWeight.bold,
+              color: tokens.colors.text.primary,
+            }}
+          >
+            <span style={{ color: service.accentColor }}>Kanjona</span>
+          </div>
+
+          {/* Language Switcher */}
+          <div style={{ position: 'relative' }}>
+            <motion.button
+              onClick={() => setLangMenuOpen(!langMenuOpen)}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: tokens.spacing[2],
+                padding: `${tokens.spacing[2]} ${tokens.spacing[4]}`,
+                background: tokens.colors.surface.glass,
+                border: `1px solid ${tokens.colors.border.subtle}`,
+                borderRadius: tokens.radii.full,
+                color: tokens.colors.text.primary,
+                fontSize: tokens.typography.fontSize.sm,
+                fontWeight: tokens.typography.fontWeight.medium,
+                cursor: 'pointer',
+              }}
+            >
+              <span>{languages.find((l) => l.code === currentLocale)?.flag}</span>
+              <span>{currentLocale.toUpperCase()}</span>
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                style={{
+                  transform: langMenuOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                  transition: 'transform 0.2s',
+                }}
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </motion.button>
+
+            {/* Dropdown */}
+            {langMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                style={{
+                  position: 'absolute',
+                  top: '100%',
+                  right: 0,
+                  marginTop: tokens.spacing[2],
+                  background: tokens.colors.surface.glassHeavy,
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  border: `1px solid ${tokens.colors.border.subtle}`,
+                  borderRadius: tokens.radii.lg,
+                  overflow: 'hidden',
+                  minWidth: '120px',
+                }}
+              >
+                {languages.map((lang) => (
+                  <button
+                    key={lang.code}
+                    onClick={() => switchLanguage(lang.code)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: tokens.spacing[3],
+                      width: '100%',
+                      padding: `${tokens.spacing[3]} ${tokens.spacing[4]}`,
+                      background: currentLocale === lang.code ? `${service.accentColor}20` : 'transparent',
+                      border: 'none',
+                      color: tokens.colors.text.primary,
+                      fontSize: tokens.typography.fontSize.sm,
+                      cursor: 'pointer',
+                      transition: 'background 0.2s',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (currentLocale !== lang.code) {
+                        e.currentTarget.style.background = tokens.colors.surface.glass;
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (currentLocale !== lang.code) {
+                        e.currentTarget.style.background = 'transparent';
+                      }
+                    }}
+                  >
+                    <span style={{ fontSize: '1.2em' }}>{lang.flag}</span>
+                    <span>{lang.label}</span>
+                    {currentLocale === lang.code && (
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke={service.accentColor}
+                        strokeWidth="2"
+                        style={{ marginLeft: 'auto' }}
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    )}
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </div>
+        </div>
+      </header>
+
       {/* Hero Video Intro - Disabled for now until videos are rendered */}
       {!skipVideo && !videoComplete && (
         <React.Suspense fallback={null}>
@@ -410,7 +576,7 @@ export const ServiceLandingLayout: React.FC<ServiceLandingLayoutProps> = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6 }}
-          style={{ position: 'relative', zIndex: 1 }}
+          style={{ position: 'relative', zIndex: 1, paddingTop: '80px' }}
         >
           {/* Render all sections */}
           {sections.map((section) => renderSection(section))}
