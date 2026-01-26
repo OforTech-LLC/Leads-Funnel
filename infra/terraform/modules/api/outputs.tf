@@ -35,7 +35,7 @@ output "custom_domain_zone_id" {
 
 output "api_url" {
   description = "Full API URL"
-  value       = "https://api.${var.root_domain}"
+  value       = var.environment == "prod" ? "https://api.${var.root_domain}" : "https://api-${var.environment}.${var.root_domain}"
 }
 
 # -----------------------------------------------------------------------------

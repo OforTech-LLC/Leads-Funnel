@@ -78,9 +78,14 @@ resource "aws_route53_record" "www_aaaa" {
 # -----------------------------------------------------------------------------
 # API Subdomain Record (API Gateway Custom Domain)
 # -----------------------------------------------------------------------------
+# Use environment-specific subdomain: api.kanjona.com for prod, api-dev.kanjona.com for dev
+locals {
+  api_subdomain = var.environment == "prod" ? "api.${var.root_domain}" : "api-${var.environment}.${var.root_domain}"
+}
+
 resource "aws_route53_record" "api" {
   zone_id = aws_route53_zone.main.zone_id
-  name    = "api.${var.root_domain}"
+  name    = local.api_subdomain
   type    = "A"
 
   alias {
@@ -93,7 +98,7 @@ resource "aws_route53_record" "api" {
 # IPv6 record for API
 resource "aws_route53_record" "api_aaaa" {
   zone_id = aws_route53_zone.main.zone_id
-  name    = "api.${var.root_domain}"
+  name    = local.api_subdomain
   type    = "AAAA"
 
   alias {

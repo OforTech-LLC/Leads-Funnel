@@ -43,9 +43,14 @@ output "custom_domain_zone_id" {
   value       = aws_apigatewayv2_domain_name.api.domain_name_configuration[0].hosted_zone_id
 }
 
+locals {
+  # Environment-specific API base URL
+  api_base_url = var.environment == "prod" ? "https://api.${var.root_domain}" : "https://api-${var.environment}.${var.root_domain}"
+}
+
 output "api_url" {
   description = "Full API URL"
-  value       = "https://api.${var.root_domain}"
+  value       = local.api_base_url
 }
 
 # -----------------------------------------------------------------------------
@@ -53,22 +58,22 @@ output "api_url" {
 # -----------------------------------------------------------------------------
 output "lead_endpoint" {
   description = "Lead capture endpoint URL"
-  value       = "https://api.${var.root_domain}/lead"
+  value       = "${local.api_base_url}/lead"
 }
 
 output "health_endpoint" {
   description = "Health check endpoint URL"
-  value       = "https://api.${var.root_domain}/health"
+  value       = "${local.api_base_url}/health"
 }
 
 output "voice_start_endpoint" {
   description = "Voice start endpoint URL"
-  value       = var.enable_voice_agent ? "https://api.${var.root_domain}/voice/start" : null
+  value       = var.enable_voice_agent ? "${local.api_base_url}/voice/start" : null
 }
 
 output "voice_webhook_endpoint" {
   description = "Voice webhook endpoint URL"
-  value       = var.enable_voice_agent ? "https://api.${var.root_domain}/voice/webhook" : null
+  value       = var.enable_voice_agent ? "${local.api_base_url}/voice/webhook" : null
 }
 
 # -----------------------------------------------------------------------------

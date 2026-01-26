@@ -111,7 +111,8 @@ resource "aws_apigatewayv2_route" "post_lead" {
 # Custom Domain
 # -----------------------------------------------------------------------------
 resource "aws_apigatewayv2_domain_name" "api" {
-  domain_name = "api.${var.root_domain}"
+  # Use environment-specific subdomain: api.kanjona.com for prod, api-dev.kanjona.com for dev
+  domain_name = var.environment == "prod" ? "api.${var.root_domain}" : "api-${var.environment}.${var.root_domain}"
 
   domain_name_configuration {
     certificate_arn = var.acm_certificate_arn
