@@ -9,7 +9,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter, usePathname } from '@/i18n/navigation';
 import { tokens, GlassButton } from '@/design-system';
 import {
   HeroSection,
@@ -152,14 +152,23 @@ export const ServiceLandingLayout: React.FC<ServiceLandingLayoutProps> = ({
   const pathname = usePathname();
   const router = useRouter();
 
-  // Get current locale from pathname
-  const currentLocale = pathname.split('/')[1] || 'en';
+  // Get current locale from URL (usePathname from next-intl doesn't include locale)
+  const [currentLocale, setCurrentLocale] = useState('en');
 
-  // Switch language
+  useEffect(() => {
+    // Get locale from window.location since next-intl's usePathname strips it
+    if (typeof window !== 'undefined') {
+      const locale = window.location.pathname.split('/')[1];
+      if (locale === 'en' || locale === 'es') {
+        setCurrentLocale(locale);
+      }
+    }
+  }, [pathname]);
+
+  // Switch language using next-intl router
   const switchLanguage = (newLocale: string) => {
-    const segments = pathname.split('/');
-    segments[1] = newLocale;
-    router.push(segments.join('/'));
+    router.replace(pathname, { locale: newLocale as 'en' | 'es' });
+    setCurrentLocale(newLocale);
     setLangMenuOpen(false);
   };
 
@@ -499,7 +508,7 @@ export const ServiceLandingLayout: React.FC<ServiceLandingLayoutProps> = ({
                   top: '100%',
                   right: 0,
                   marginTop: tokens.spacing[2],
-                  background: tokens.colors.surface.glassHeavy,
+                  background: 'rgba(10, 10, 15, 0.9)',
                   backdropFilter: 'blur(20px)',
                   WebkitBackdropFilter: 'blur(20px)',
                   border: `1px solid ${tokens.colors.border.subtle}`,
