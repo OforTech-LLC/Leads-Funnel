@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+.swc/
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+
+# Swift
+.build/
+DerivedData/
+.swiftpm/
+Package.resolved
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Caches
+.cache/
+.turbo/
+.vercel/
+
+# Generated files
+*.min.js
+*.min.css
+*.lock
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Environment
+.env*
+!.env.example
+
+# Lambda packages
+lambda/
+*.zip
+
+# Logs
+*.log

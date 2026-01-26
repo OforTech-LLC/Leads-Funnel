@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+# =============================================================================
+# Git Pre-commit Hook
+# =============================================================================
+# This hook runs lint-staged to fix and format files before committing.
+# It handles:
+# - TypeScript/JavaScript: ESLint + Prettier
+# - JSON/Markdown/CSS: Prettier
+# - Terraform: terraform fmt
+# - Swift: swift-format (if available)
+# =============================================================================
+
+npx lint-staged
