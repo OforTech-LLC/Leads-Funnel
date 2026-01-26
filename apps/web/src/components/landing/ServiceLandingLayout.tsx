@@ -316,23 +316,44 @@ export const ServiceLandingLayout: React.FC<ServiceLandingLayoutProps> = ({
         overflowX: 'hidden',
       }}
     >
-      {/* Ambient background glows */}
-      <div
+      {/* Animated ambient background glows */}
+      <motion.div
         className="ambient-glow"
+        animate={{
+          x: [0, 30, -20, 0],
+          y: [0, -40, 20, 0],
+          scale: [1, 1.1, 0.95, 1],
+        }}
+        transition={{
+          duration: 20,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
         style={{
           position: 'fixed',
           top: '10%',
           left: '5%',
           width: '40vw',
           height: '40vw',
-          background: `radial-gradient(circle, ${service.accentColor}20 0%, transparent 70%)`,
+          background: `radial-gradient(circle, ${service.accentColor}25 0%, transparent 70%)`,
           filter: 'blur(100px)',
           pointerEvents: 'none',
           zIndex: 0,
         }}
       />
-      <div
+      <motion.div
         className="ambient-glow"
+        animate={{
+          x: [0, -40, 30, 0],
+          y: [0, 30, -20, 0],
+          scale: [1, 0.9, 1.15, 1],
+        }}
+        transition={{
+          duration: 25,
+          repeat: Infinity,
+          ease: 'easeInOut',
+          delay: 2,
+        }}
         style={{
           position: 'fixed',
           bottom: '20%',
@@ -345,13 +366,24 @@ export const ServiceLandingLayout: React.FC<ServiceLandingLayoutProps> = ({
           zIndex: 0,
         }}
       />
-      <div
+      <motion.div
         className="ambient-glow"
+        animate={{
+          x: ['-50%', '-45%', '-55%', '-50%'],
+          y: ['-50%', '-55%', '-45%', '-50%'],
+          scale: [1, 1.2, 0.9, 1],
+          opacity: [0.6, 0.8, 0.5, 0.6],
+        }}
+        transition={{
+          duration: 30,
+          repeat: Infinity,
+          ease: 'easeInOut',
+          delay: 1,
+        }}
         style={{
           position: 'fixed',
           top: '50%',
           left: '50%',
-          transform: 'translate(-50%, -50%)',
           width: '50vw',
           height: '50vw',
           background: `radial-gradient(circle, ${tokens.colors.glow.pink} 0%, transparent 70%)`,
