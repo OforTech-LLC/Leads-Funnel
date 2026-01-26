@@ -31,16 +31,16 @@ const securityHeaders = [
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Enable static export for S3 + CloudFront deployment
-  output: 'export',
+  // Note: 'output: export' removed - incompatible with next-intl middleware
+  // For static export, use `next build` without middleware or configure i18n differently
 
   // Enable strict mode for React
   reactStrictMode: true,
 
-  // Trailing slashes for S3 static hosting compatibility
+  // Trailing slashes for cleaner URLs
   trailingSlash: true,
 
-  // Disable image optimization for static export
+  // Image optimization settings
   images: {
     unoptimized: true,
   },
