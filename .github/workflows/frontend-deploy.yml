@@ -23,6 +23,12 @@ on:
         options:
           - dev
           - prod
+  workflow_call:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        type: string
 
 env:
   NODE_VERSION: '20'

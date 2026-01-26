@@ -22,6 +22,12 @@ on:
         options:
           - dev
           - prod
+  workflow_call:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        type: string
 
 env:
   AWS_REGION: us-east-1
