@@ -81,15 +81,82 @@ Leads-Funnel/
 
 ## The 47 Service Funnels
 
-| Category | Services |
-|----------|----------|
-| **Real Estate** | Real Estate |
-| **Insurance** | Life Insurance |
-| **Home Services** | Construction, Moving, Roofing, Cleaning, HVAC, Plumbing, Electrician, Pest Control, Landscaping, Pool Service, Home Remodeling, Solar, Locksmith, Pressure Washing, Water Damage Restoration, Mold Remediation, Flooring, Painting, Windows & Doors, Fencing, Concrete, Junk Removal, Appliance Repair |
-| **Healthcare** | Dentist, Plastic Surgeon, Orthodontist, Dermatology, MedSpa, Chiropractic, Physical Therapy, Hair Transplant, Cosmetic Dentistry |
-| **Legal** | Personal Injury Attorney, Immigration Attorney, Criminal Defense Attorney |
-| **Business** | Tax & Accounting, Business Consulting, Commercial Cleaning, Security Systems, IT Services, Marketing Agency |
-| **Automotive** | Auto Repair, Auto Detailing, Towing, Auto Glass |
+### Core Services (8)
+
+| Service | English | Spanish |
+|---------|---------|---------|
+| Real Estate | [kanjona.com/en/real-estate](https://kanjona.com/en/real-estate) | [kanjona.com/es/real-estate](https://kanjona.com/es/real-estate) |
+| Life Insurance | [kanjona.com/en/life-insurance](https://kanjona.com/en/life-insurance) | [kanjona.com/es/life-insurance](https://kanjona.com/es/life-insurance) |
+| Construction | [kanjona.com/en/construction](https://kanjona.com/en/construction) | [kanjona.com/es/construction](https://kanjona.com/es/construction) |
+| Moving | [kanjona.com/en/moving](https://kanjona.com/en/moving) | [kanjona.com/es/moving](https://kanjona.com/es/moving) |
+| Dentist | [kanjona.com/en/dentist](https://kanjona.com/en/dentist) | [kanjona.com/es/dentist](https://kanjona.com/es/dentist) |
+| Plastic Surgeon | [kanjona.com/en/plastic-surgeon](https://kanjona.com/en/plastic-surgeon) | [kanjona.com/es/plastic-surgeon](https://kanjona.com/es/plastic-surgeon) |
+| Roofing | [kanjona.com/en/roofing](https://kanjona.com/en/roofing) | [kanjona.com/es/roofing](https://kanjona.com/es/roofing) |
+| Cleaning | [kanjona.com/en/cleaning](https://kanjona.com/en/cleaning) | [kanjona.com/es/cleaning](https://kanjona.com/es/cleaning) |
+
+### Home Services (19)
+
+| Service | English | Spanish |
+|---------|---------|---------|
+| HVAC | [kanjona.com/en/hvac](https://kanjona.com/en/hvac) | [kanjona.com/es/hvac](https://kanjona.com/es/hvac) |
+| Plumbing | [kanjona.com/en/plumbing](https://kanjona.com/en/plumbing) | [kanjona.com/es/plumbing](https://kanjona.com/es/plumbing) |
+| Electrician | [kanjona.com/en/electrician](https://kanjona.com/en/electrician) | [kanjona.com/es/electrician](https://kanjona.com/es/electrician) |
+| Pest Control | [kanjona.com/en/pest-control](https://kanjona.com/en/pest-control) | [kanjona.com/es/pest-control](https://kanjona.com/es/pest-control) |
+| Landscaping | [kanjona.com/en/landscaping](https://kanjona.com/en/landscaping) | [kanjona.com/es/landscaping](https://kanjona.com/es/landscaping) |
+| Pool Service | [kanjona.com/en/pool-service](https://kanjona.com/en/pool-service) | [kanjona.com/es/pool-service](https://kanjona.com/es/pool-service) |
+| Home Remodeling | [kanjona.com/en/home-remodeling](https://kanjona.com/en/home-remodeling) | [kanjona.com/es/home-remodeling](https://kanjona.com/es/home-remodeling) |
+| Solar | [kanjona.com/en/solar](https://kanjona.com/en/solar) | [kanjona.com/es/solar](https://kanjona.com/es/solar) |
+| Locksmith | [kanjona.com/en/locksmith](https://kanjona.com/en/locksmith) | [kanjona.com/es/locksmith](https://kanjona.com/es/locksmith) |
+| Pressure Washing | [kanjona.com/en/pressure-washing](https://kanjona.com/en/pressure-washing) | [kanjona.com/es/pressure-washing](https://kanjona.com/es/pressure-washing) |
+| Water Damage Restoration | [kanjona.com/en/water-damage-restoration](https://kanjona.com/en/water-damage-restoration) | [kanjona.com/es/water-damage-restoration](https://kanjona.com/es/water-damage-restoration) |
+| Mold Remediation | [kanjona.com/en/mold-remediation](https://kanjona.com/en/mold-remediation) | [kanjona.com/es/mold-remediation](https://kanjona.com/es/mold-remediation) |
+| Flooring | [kanjona.com/en/flooring](https://kanjona.com/en/flooring) | [kanjona.com/es/flooring](https://kanjona.com/es/flooring) |
+| Painting | [kanjona.com/en/painting](https://kanjona.com/en/painting) | [kanjona.com/es/painting](https://kanjona.com/es/painting) |
+| Windows & Doors | [kanjona.com/en/windows-doors](https://kanjona.com/en/windows-doors) | [kanjona.com/es/windows-doors](https://kanjona.com/es/windows-doors) |
+| Fencing | [kanjona.com/en/fencing](https://kanjona.com/en/fencing) | [kanjona.com/es/fencing](https://kanjona.com/es/fencing) |
+| Concrete | [kanjona.com/en/concrete](https://kanjona.com/en/concrete) | [kanjona.com/es/concrete](https://kanjona.com/es/concrete) |
+| Junk Removal | [kanjona.com/en/junk-removal](https://kanjona.com/en/junk-removal) | [kanjona.com/es/junk-removal](https://kanjona.com/es/junk-removal) |
+| Appliance Repair | [kanjona.com/en/appliance-repair](https://kanjona.com/en/appliance-repair) | [kanjona.com/es/appliance-repair](https://kanjona.com/es/appliance-repair) |
+
+### Health & Beauty (7)
+
+| Service | English | Spanish |
+|---------|---------|---------|
+| Orthodontist | [kanjona.com/en/orthodontist](https://kanjona.com/en/orthodontist) | [kanjona.com/es/orthodontist](https://kanjona.com/es/orthodontist) |
+| Dermatology | [kanjona.com/en/dermatology](https://kanjona.com/en/dermatology) | [kanjona.com/es/dermatology](https://kanjona.com/es/dermatology) |
+| MedSpa | [kanjona.com/en/medspa](https://kanjona.com/en/medspa) | [kanjona.com/es/medspa](https://kanjona.com/es/medspa) |
+| Chiropractic | [kanjona.com/en/chiropractic](https://kanjona.com/en/chiropractic) | [kanjona.com/es/chiropractic](https://kanjona.com/es/chiropractic) |
+| Physical Therapy | [kanjona.com/en/physical-therapy](https://kanjona.com/en/physical-therapy) | [kanjona.com/es/physical-therapy](https://kanjona.com/es/physical-therapy) |
+| Hair Transplant | [kanjona.com/en/hair-transplant](https://kanjona.com/en/hair-transplant) | [kanjona.com/es/hair-transplant](https://kanjona.com/es/hair-transplant) |
+| Cosmetic Dentistry | [kanjona.com/en/cosmetic-dentistry](https://kanjona.com/en/cosmetic-dentistry) | [kanjona.com/es/cosmetic-dentistry](https://kanjona.com/es/cosmetic-dentistry) |
+
+### Professional & Legal (5)
+
+| Service | English | Spanish |
+|---------|---------|---------|
+| Personal Injury Attorney | [kanjona.com/en/personal-injury-attorney](https://kanjona.com/en/personal-injury-attorney) | [kanjona.com/es/personal-injury-attorney](https://kanjona.com/es/personal-injury-attorney) |
+| Immigration Attorney | [kanjona.com/en/immigration-attorney](https://kanjona.com/en/immigration-attorney) | [kanjona.com/es/immigration-attorney](https://kanjona.com/es/immigration-attorney) |
+| Criminal Defense Attorney | [kanjona.com/en/criminal-defense-attorney](https://kanjona.com/en/criminal-defense-attorney) | [kanjona.com/es/criminal-defense-attorney](https://kanjona.com/es/criminal-defense-attorney) |
+| Tax & Accounting | [kanjona.com/en/tax-accounting](https://kanjona.com/en/tax-accounting) | [kanjona.com/es/tax-accounting](https://kanjona.com/es/tax-accounting) |
+| Business Consulting | [kanjona.com/en/business-consulting](https://kanjona.com/en/business-consulting) | [kanjona.com/es/business-consulting](https://kanjona.com/es/business-consulting) |
+
+### Business Services (4)
+
+| Service | English | Spanish |
+|---------|---------|---------|
+| Commercial Cleaning | [kanjona.com/en/commercial-cleaning](https://kanjona.com/en/commercial-cleaning) | [kanjona.com/es/commercial-cleaning](https://kanjona.com/es/commercial-cleaning) |
+| Security Systems | [kanjona.com/en/security-systems](https://kanjona.com/en/security-systems) | [kanjona.com/es/security-systems](https://kanjona.com/es/security-systems) |
+| IT Services | [kanjona.com/en/it-services](https://kanjona.com/en/it-services) | [kanjona.com/es/it-services](https://kanjona.com/es/it-services) |
+| Marketing Agency | [kanjona.com/en/marketing-agency](https://kanjona.com/en/marketing-agency) | [kanjona.com/es/marketing-agency](https://kanjona.com/es/marketing-agency) |
+
+### Auto Services (4)
+
+| Service | English | Spanish |
+|---------|---------|---------|
+| Auto Repair | [kanjona.com/en/auto-repair](https://kanjona.com/en/auto-repair) | [kanjona.com/es/auto-repair](https://kanjona.com/es/auto-repair) |
+| Auto Detailing | [kanjona.com/en/auto-detailing](https://kanjona.com/en/auto-detailing) | [kanjona.com/es/auto-detailing](https://kanjona.com/es/auto-detailing) |
+| Towing | [kanjona.com/en/towing](https://kanjona.com/en/towing) | [kanjona.com/es/towing](https://kanjona.com/es/towing) |
+| Auto Glass | [kanjona.com/en/auto-glass](https://kanjona.com/en/auto-glass) | [kanjona.com/es/auto-glass](https://kanjona.com/es/auto-glass) |
 
 ## Quick Start
 
