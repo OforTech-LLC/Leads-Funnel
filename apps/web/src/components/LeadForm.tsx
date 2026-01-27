@@ -2,10 +2,17 @@
 
 /**
  * Lead Capture Form Component
- * Handles lead submission with validation, sanitization, and Redux state management
+ * Handles lead submission with validation, sanitization, and Redux state management.
+ *
+ * Form Abandonment Recovery (Task 4):
+ * - Saves partial form data to sessionStorage on each field change
+ * - Restores from sessionStorage on page load if data exists
+ * - Shows a "We saved your progress" message when restoring
+ * - Clears sessionStorage on successful submission
+ * - Tracks field abandonment and field completion data
  */
 
-import { useState, useCallback, useEffect, type FormEvent, type ChangeEvent } from 'react';
+import { useState, useCallback, useEffect, useRef, type FormEvent, type ChangeEvent } from 'react';
 import { useTranslations } from 'next-intl';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
@@ -19,6 +26,48 @@ import {
 } from '@/store/leadSlice';
 import { validateLeadForm, type LeadFormData, type FormErrors } from '@/lib/validators';
 import { getBestUTMParams, getCurrentPageUrl, getReferrer } from '@/lib/utm';
+import { getAssignedExperiments } from '@/lib/experiments';
+import { trackFormSubmission } from '@/components/GoogleAnalytics';
+
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+
+const FORM_STORAGE_KEY = 'lead_form_progress';
+const FIELD_ORDER = ['name', 'email', 'phone', 'message'] as const;
+
+// ---------------------------------------------------------------------------
+// GA4 Tracking Helpers
+// ---------------------------------------------------------------------------
+
+function trackFieldCompletion(fieldName: string, action: 'focus' | 'complete' | 'abandon'): void {
+  if (typeof window === 'undefined') return;
+  const gtag = (window as unknown as { gtag?: (...args: unknown[]) => void }).gtag;
+  if (typeof gtag !== 'function') return;
+
+  gtag('event', 'form_field_interaction', {
+    event_category: 'Lead Form',
+    event_label: fieldName,
+    field_action: action,
+    non_interaction: action === 'focus',
+  });
+}
+
+function trackFormAbandonment(lastField: string): void {
+  if (typeof window === 'undefined') return;
+  const gtag = (window as unknown as { gtag?: (...args: unknown[]) => void }).gtag;
+  if (typeof gtag !== 'function') return;
+
+  gtag('event', 'form_abandonment', {
+    event_category: 'Lead Form',
+    event_label: lastField,
+    non_interaction: true,
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
 
 interface LeadFormProps {
   /** Optional funnel ID for service-specific submissions */
@@ -33,6 +82,7 @@ interface LeadFormProps {
 export function LeadForm({ funnelId, primaryColor = '#0070f3' }: LeadFormProps) {
   const t = useTranslations('form');
   const messagesT = useTranslations('messages');
+  const recoveryT = useTranslations('formRecovery');
   const dispatch = useAppDispatch();
 
   // Redux state
@@ -51,10 +101,80 @@ export function LeadForm({ funnelId, primaryColor = '#0070f3' }: LeadFormProps) 
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [showRestored, setShowRestored] = useState(false);
 
-  /**
-   * Handle input change
-   */
+  // Track which field the user was last interacting with (for abandonment tracking)
+  const lastActiveField = useRef<string>('');
+
+  // -----------------------------------------------------------------------
+  // Form abandonment recovery: restore from sessionStorage
+  // -----------------------------------------------------------------------
+
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem(FORM_STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved) as LeadFormData;
+        const hasData = Object.values(parsed).some((v) => v.trim() !== '');
+        if (hasData) {
+          setFormData(parsed);
+          setShowRestored(true);
+          // Auto-hide restored message after 4 seconds
+          const timer = setTimeout(() => setShowRestored(false), 4000);
+          return () => clearTimeout(timer);
+        }
+      }
+    } catch {
+      // Ignore parse errors
+    }
+  }, []);
+
+  // Save form data to sessionStorage on every change
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(FORM_STORAGE_KEY, JSON.stringify(formData));
+    } catch {
+      // sessionStorage unavailable
+    }
+  }, [formData]);
+
+  // Clear on success + track form submission in GA4
+  useEffect(() => {
+    if (isSuccess) {
+      try {
+        sessionStorage.removeItem(FORM_STORAGE_KEY);
+      } catch {
+        // ignore
+      }
+      // Track successful form submission in Google Analytics
+      trackFormSubmission(funnelId || 'general');
+      setFormData({ name: '', email: '', phone: '', message: '' });
+      setErrors({});
+      setTouched({});
+    }
+  }, [isSuccess, funnelId]);
+
+  // Track abandonment on unmount / page leave
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (lastActiveField.current && !isSuccess) {
+        trackFormAbandonment(lastActiveField.current);
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      // Also track if component unmounts without submission
+      if (lastActiveField.current && !isSuccess) {
+        trackFormAbandonment(lastActiveField.current);
+      }
+    };
+  }, [isSuccess]);
+
+  // -----------------------------------------------------------------------
+  // Field handlers
+  // -----------------------------------------------------------------------
+
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const { name, value } = e.target;
@@ -68,12 +188,20 @@ export function LeadForm({ funnelId, primaryColor = '#0070f3' }: LeadFormProps) 
     [errors]
   );
 
-  /**
-   * Handle input blur for validation feedback
-   */
-  const handleBlur = useCallback((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleFocus = useCallback((e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name } = e.target;
+    lastActiveField.current = name;
+    trackFieldCompletion(name, 'focus');
+  }, []);
+
+  const handleBlur = useCallback((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
     setTouched((prev) => ({ ...prev, [name]: true }));
+
+    // Track field completion (if field has value) or abandonment (if empty and required)
+    if (value.trim()) {
+      trackFieldCompletion(name, 'complete');
+    }
   }, []);
 
   /**
@@ -100,6 +228,7 @@ export function LeadForm({ funnelId, primaryColor = '#0070f3' }: LeadFormProps) 
       const utm = getBestUTMParams();
       const pageUrl = getCurrentPageUrl();
       const referrer = getReferrer();
+      const experiments = getAssignedExperiments();
 
       // Submit lead with sanitized data
       dispatch(
@@ -112,6 +241,10 @@ export function LeadForm({ funnelId, primaryColor = '#0070f3' }: LeadFormProps) 
           pageUrl,
           referrer,
           utm,
+          customFields:
+            Object.keys(experiments).length > 0
+              ? { experiments: JSON.stringify(experiments) }
+              : undefined,
         })
       );
     },
@@ -128,20 +261,17 @@ export function LeadForm({ funnelId, primaryColor = '#0070f3' }: LeadFormProps) 
     dispatch(resetLead());
   }, [dispatch]);
 
-  // Auto-reset form after success (optional - remove if you want manual reset)
-  useEffect(() => {
-    if (isSuccess) {
-      // Reset form data but keep success message visible
-      setFormData({ name: '', email: '', phone: '', message: '' });
-      setErrors({});
-      setTouched({});
-    }
-  }, [isSuccess]);
-
   return (
     <div style={styles.container}>
       <h2 style={styles.title}>{t('title')}</h2>
       <p style={styles.subtitle}>{t('subtitle')}</p>
+
+      {/* Progress restored notification */}
+      {showRestored && (
+        <div style={styles.restoredMessage} role="status">
+          {recoveryT('progressRestored')}
+        </div>
+      )}
 
       {/* Success Message */}
       {isSuccess && (
@@ -174,6 +304,7 @@ export function LeadForm({ funnelId, primaryColor = '#0070f3' }: LeadFormProps) 
               name="name"
               value={formData.name}
               onChange={handleChange}
+              onFocus={handleFocus}
               onBlur={handleBlur}
               placeholder={t('name.placeholder')}
               required
@@ -205,6 +336,7 @@ export function LeadForm({ funnelId, primaryColor = '#0070f3' }: LeadFormProps) 
               name="email"
               value={formData.email}
               onChange={handleChange}
+              onFocus={handleFocus}
               onBlur={handleBlur}
               placeholder={t('email.placeholder')}
               required
@@ -236,6 +368,7 @@ export function LeadForm({ funnelId, primaryColor = '#0070f3' }: LeadFormProps) 
               name="phone"
               value={formData.phone}
               onChange={handleChange}
+              onFocus={handleFocus}
               onBlur={handleBlur}
               placeholder={t('phone.placeholder')}
               disabled={isSubmitting}
@@ -265,6 +398,7 @@ export function LeadForm({ funnelId, primaryColor = '#0070f3' }: LeadFormProps) 
               name="message"
               value={formData.message}
               onChange={handleChange}
+              onFocus={handleFocus}
               onBlur={handleBlur}
               placeholder={t('message.placeholder')}
               disabled={isSubmitting}
@@ -304,7 +438,7 @@ export function LeadForm({ funnelId, primaryColor = '#0070f3' }: LeadFormProps) 
 }
 
 /**
- * Minimal inline styles
+ * Styles
  */
 const styles: Record<string, React.CSSProperties> = {
   container: {
@@ -403,6 +537,15 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: '4px',
     cursor: 'pointer',
     alignSelf: 'flex-start',
+  },
+  restoredMessage: {
+    padding: '12px 16px',
+    backgroundColor: '#e0f2fe',
+    color: '#0369a1',
+    borderRadius: '4px',
+    marginBottom: '16px',
+    fontSize: '14px',
+    fontWeight: 500,
   },
 };
 

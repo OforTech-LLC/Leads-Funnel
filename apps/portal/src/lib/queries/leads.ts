@@ -181,3 +181,100 @@ export function useAddNote() {
     },
   });
 }
+
+// ── Assign lead to team member ───────────────
+
+export function useAssignLead() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      funnelId,
+      leadId,
+      assignedTo,
+    }: {
+      funnelId: string;
+      leadId: string;
+      assignedTo: string | null;
+    }) => {
+      return api.patch<Lead>(`/api/v1/portal/funnels/${funnelId}/leads/${leadId}/assign`, {
+        assignedTo,
+      });
+    },
+
+    onMutate: async ({ funnelId, leadId, assignedTo }) => {
+      await queryClient.cancelQueries({
+        queryKey: leadKeys.detail(funnelId, leadId),
+      });
+
+      const previousDetail = queryClient.getQueryData<Lead>(leadKeys.detail(funnelId, leadId));
+
+      if (previousDetail) {
+        queryClient.setQueryData<Lead>(leadKeys.detail(funnelId, leadId), {
+          ...previousDetail,
+          assignedTo,
+        });
+      }
+
+      return { previousDetail };
+    },
+
+    onError: (_err, { funnelId, leadId }, context) => {
+      if (context?.previousDetail) {
+        queryClient.setQueryData(leadKeys.detail(funnelId, leadId), context.previousDetail);
+      }
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: leadKeys.all });
+    },
+  });
+}
+
+// ── Bulk status update ───────────────────────
+
+export function useBulkUpdateStatus() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      leads,
+      status,
+    }: {
+      leads: { leadId: string; funnelId: string }[];
+      status: LeadStatus;
+    }) => {
+      return api.post<void>('/api/v1/portal/leads/bulk/status', {
+        leads,
+        status,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: leadKeys.all });
+    },
+  });
+}
+
+// ── Bulk assign ──────────────────────────────
+
+export function useBulkAssignLeads() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      leads,
+      assignedTo,
+    }: {
+      leads: { leadId: string; funnelId: string }[];
+      assignedTo: string;
+    }) => {
+      return api.post<void>('/api/v1/portal/leads/bulk/assign', {
+        leads,
+        assignedTo,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: leadKeys.all });
+    },
+  });
+}

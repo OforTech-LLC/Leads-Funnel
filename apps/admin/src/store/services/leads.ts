@@ -127,6 +127,18 @@ export interface DashboardStats {
   funnelStats: FunnelStats[];
 }
 
+// Bulk import
+export interface ImportLeadsRequest {
+  leads: Record<string, string>[];
+}
+
+export interface ImportLeadsResponse {
+  imported: number;
+  failed: number;
+  skipped: number;
+  errors: { row: number; field: string; message: string }[];
+}
+
 export const leadsApi = api.injectEndpoints({
   endpoints: (builder) => ({
     queryLeads: builder.query<QueryLeadsResponse, QueryLeadsParams>({
@@ -170,6 +182,15 @@ export const leadsApi = api.injectEndpoints({
       invalidatesTags: (_result, _error, { leadId }) => ['LeadList', { type: 'Lead', id: leadId }],
     }),
 
+    importLeads: builder.mutation<ImportLeadsResponse, ImportLeadsRequest>({
+      query: (body) => ({
+        url: '/admin/leads/bulk-import',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['LeadList', 'Stats'],
+    }),
+
     getDashboardStats: builder.query<DashboardStats, void>({
       query: () => '/admin/dashboard',
       providesTags: ['Stats'],
@@ -193,6 +214,7 @@ export const {
   useUpdateLeadMutation,
   useBulkUpdateLeadsMutation,
   useReassignLeadMutation,
+  useImportLeadsMutation,
   useGetDashboardStatsQuery,
   useGetFunnelStatsQuery,
   useListFunnelsQuery,

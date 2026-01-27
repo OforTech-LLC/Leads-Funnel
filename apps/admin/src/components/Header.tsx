@@ -3,15 +3,19 @@
 /**
  * Top Header Bar
  *
- * Displays current page context, user info, theme toggle, and logout.
+ * Displays hamburger menu (mobile), current page context,
+ * notification bell, user info, theme toggle, and logout.
  */
 
 import { useTheme } from './Providers';
 import { logout } from '@/lib/auth';
 import { useEffect, useState } from 'react';
+import { useSidebar } from './Sidebar';
+import NotificationCenter from './NotificationCenter';
 
 export default function Header() {
   const { theme, toggleTheme } = useTheme();
+  const { toggle } = useSidebar();
   const [userEmail, setUserEmail] = useState<string>('');
 
   useEffect(() => {
@@ -30,12 +34,34 @@ export default function Header() {
   }, []);
 
   return (
-    <header className="h-16 bg-[var(--card-bg)] border-b border-[var(--border-color)] flex items-center justify-between px-6 sticky top-0 z-20">
+    <header className="h-16 bg-[var(--card-bg)] border-b border-[var(--border-color)] flex items-center justify-between px-4 lg:px-6 sticky top-0 z-20">
       <div className="flex items-center gap-4">
-        {/* Breadcrumb placeholder - pages can fill this via context */}
+        {/* Hamburger button - mobile only */}
+        <button
+          onClick={toggle}
+          className="lg:hidden p-2 rounded-md hover:bg-[var(--bg-tertiary)] transition-colors"
+          aria-label="Toggle navigation menu"
+        >
+          <svg
+            className="w-5 h-5 text-[var(--text-primary)]"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M4 6h16M4 12h16M4 18h16"
+            />
+          </svg>
+        </button>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 lg:gap-4">
+        {/* Notification Center */}
+        <NotificationCenter />
+
         {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
@@ -74,7 +100,9 @@ export default function Header() {
         </button>
 
         {/* User Info */}
-        {userEmail && <span className="text-sm text-[var(--text-secondary)]">{userEmail}</span>}
+        {userEmail && (
+          <span className="hidden sm:inline text-sm text-[var(--text-secondary)]">{userEmail}</span>
+        )}
 
         {/* Logout */}
         <button

@@ -56,6 +56,13 @@ export interface FeatureFlags {
   enable_email: boolean;
   enable_sms: boolean;
   enable_twilio: boolean;
+  // New feature flags
+  webhooks_enabled: boolean;
+  billing_enabled: boolean;
+  calendar_enabled: boolean;
+  slack_enabled: boolean;
+  teams_enabled: boolean;
+  lead_scoring_enabled: boolean;
 }
 
 const DEFAULT_FLAGS: FeatureFlags = {
@@ -66,6 +73,13 @@ const DEFAULT_FLAGS: FeatureFlags = {
   enable_email: true,
   enable_sms: false,
   enable_twilio: false,
+  // New flags - all OFF by default
+  webhooks_enabled: false,
+  billing_enabled: false,
+  calendar_enabled: false,
+  slack_enabled: false,
+  teams_enabled: false,
+  lead_scoring_enabled: false,
 };
 
 let _flagsCache: { flags: FeatureFlags; expiresAt: number } | null = null;

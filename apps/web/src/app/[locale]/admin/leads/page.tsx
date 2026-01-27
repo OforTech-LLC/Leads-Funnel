@@ -22,9 +22,13 @@ import { getCurrentUser, type AdminUser } from '@/lib/admin/auth';
 
 const STATUS_OPTIONS: LeadStatus[] = [
   'new',
+  'assigned',
+  'unassigned',
   'contacted',
   'qualified',
+  'booked',
   'converted',
+  'won',
   'lost',
   'dnc',
   'quarantined',
@@ -847,9 +851,13 @@ function formatFunnelName(funnelId: string): string {
 function formatStatus(status: LeadStatus): string {
   const labels: Record<LeadStatus, string> = {
     new: 'New',
+    assigned: 'Assigned',
+    unassigned: 'Unassigned',
     contacted: 'Contacted',
     qualified: 'Qualified',
+    booked: 'Booked',
     converted: 'Converted',
+    won: 'Won',
     lost: 'Lost',
     dnc: 'Do Not Contact',
     quarantined: 'Quarantined',

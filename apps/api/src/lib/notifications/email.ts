@@ -9,23 +9,14 @@
  * - No raw PII is logged (only hashed identifiers)
  * - Email content is sanitized to prevent injection
  * - SES handles bounce/complaint management
+ *
+ * Performance: Uses the centralized SES client from clients.ts with
+ * HTTP keep-alive for connection reuse across Lambda invocations.
  */
 
-import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
+import { SendEmailCommand } from '@aws-sdk/client-ses';
 import type { LeadRecord } from '../types/events.js';
-
-// =============================================================================
-// SES Client (reused across invocations)
-// =============================================================================
-
-let sesClient: SESClient | null = null;
-
-function getSesClient(region: string): SESClient {
-  if (!sesClient) {
-    sesClient = new SESClient({ region });
-  }
-  return sesClient;
-}
+import { getSesClient } from '../clients.js';
 
 // =============================================================================
 // Email Sending

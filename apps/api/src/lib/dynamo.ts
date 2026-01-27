@@ -149,12 +149,19 @@ export async function checkIdempotency(
 
 /**
  * Store a new lead record
+ *
+ * @param config - Environment configuration
+ * @param lead - Normalized lead data
+ * @param security - Security analysis results
+ * @param userAgent - Client user agent string
+ * @param score - Optional lead score (0-100) from the scoring engine
  */
 export async function storeLead(
   config: EnvConfig,
   lead: NormalizedLead,
   security: SecurityAnalysis,
-  userAgent: string | undefined
+  userAgent: string | undefined,
+  score?: number
 ): Promise<LeadRecord> {
   const client = getDocClient(config.awsRegion);
   const leadId = uuidv4();
@@ -180,10 +187,16 @@ export async function storeLead(
     gsi1sk: `CREATED#${createdAt}`,
   };
 
+  // Build the DynamoDB item, optionally including score from scoring engine
+  const item: Record<string, unknown> = { ...record };
+  if (score !== undefined) {
+    item.score = score;
+  }
+
   await client.send(
     new PutCommand({
       TableName: config.ddbTableName,
-      Item: record,
+      Item: item,
     })
   );
 

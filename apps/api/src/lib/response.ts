@@ -4,6 +4,16 @@
  * Consistent response shape:
  *   { ok: true,  data: ..., pagination?: ... }
  *   { ok: false, error: { code, message, details? } }
+ *
+ * Performance headers:
+ *   - X-Request-Id:          Correlation ID for distributed tracing
+ *   - Cache-Control:         Prevents caching of API responses (security)
+ *   - X-Content-Type-Options: nosniff (security)
+ *   - X-Frame-Options:       DENY (security)
+ *
+ * All response helpers accept an optional `requestId` parameter.
+ * When provided, it is included as an X-Request-Id header for end-to-end
+ * tracing through CloudFront -> API Gateway -> Lambda -> DynamoDB.
  */
 
 import type { APIGatewayProxyResultV2 } from 'aws-lambda';
@@ -56,29 +66,48 @@ function buildCorsHeaders(requestOrigin?: string): Record<string, string> {
 const DEFAULT_CORS_HEADERS = buildCorsHeaders();
 
 // ---------------------------------------------------------------------------
+// Request ID injection
+// ---------------------------------------------------------------------------
+
+/**
+ * Build the final headers map, injecting X-Request-Id when provided.
+ */
+function withRequestId(base: Record<string, string>, requestId?: string): Record<string, string> {
+  if (!requestId) return base;
+  return { ...base, 'X-Request-Id': requestId };
+}
+
+// ---------------------------------------------------------------------------
 // Success responses
 // ---------------------------------------------------------------------------
 
 export function success<T>(
   data: T,
   statusCode = 200,
-  requestOrigin?: string
+  requestOrigin?: string,
+  requestId?: string
 ): APIGatewayProxyResultV2 {
+  const headers = requestOrigin ? buildCorsHeaders(requestOrigin) : DEFAULT_CORS_HEADERS;
   return {
     statusCode,
-    headers: requestOrigin ? buildCorsHeaders(requestOrigin) : DEFAULT_CORS_HEADERS,
+    headers: withRequestId(headers, requestId),
     body: JSON.stringify({ ok: true, data }),
   };
 }
 
-export function created<T>(data: T, requestOrigin?: string): APIGatewayProxyResultV2 {
-  return success(data, 201, requestOrigin);
+export function created<T>(
+  data: T,
+  requestOrigin?: string,
+  requestId?: string
+): APIGatewayProxyResultV2 {
+  return success(data, 201, requestOrigin, requestId);
 }
 
-export function noContent(requestOrigin?: string): APIGatewayProxyResultV2 {
+export function noContent(requestOrigin?: string, requestId?: string): APIGatewayProxyResultV2 {
+  const headers = requestOrigin ? buildCorsHeaders(requestOrigin) : DEFAULT_CORS_HEADERS;
   return {
     statusCode: 204,
-    headers: requestOrigin ? buildCorsHeaders(requestOrigin) : DEFAULT_CORS_HEADERS,
+    headers: withRequestId(headers, requestId),
     body: '',
   };
 }
@@ -95,11 +124,13 @@ export interface PaginationMeta {
 export function paginated<T>(
   items: T[],
   pagination: PaginationMeta,
-  requestOrigin?: string
+  requestOrigin?: string,
+  requestId?: string
 ): APIGatewayProxyResultV2 {
+  const headers = requestOrigin ? buildCorsHeaders(requestOrigin) : DEFAULT_CORS_HEADERS;
   return {
     statusCode: 200,
-    headers: requestOrigin ? buildCorsHeaders(requestOrigin) : DEFAULT_CORS_HEADERS,
+    headers: withRequestId(headers, requestId),
     body: JSON.stringify({
       ok: true,
       data: items,
@@ -117,11 +148,13 @@ export function error(
   message: string,
   statusCode: number,
   details?: Record<string, unknown>,
-  requestOrigin?: string
+  requestOrigin?: string,
+  requestId?: string
 ): APIGatewayProxyResultV2 {
+  const headers = requestOrigin ? buildCorsHeaders(requestOrigin) : DEFAULT_CORS_HEADERS;
   return {
     statusCode,
-    headers: requestOrigin ? buildCorsHeaders(requestOrigin) : DEFAULT_CORS_HEADERS,
+    headers: withRequestId(headers, requestId),
     body: JSON.stringify({
       ok: false,
       error: { code, message, ...(details ? { details } : {}) },
@@ -131,34 +164,47 @@ export function error(
 
 export function badRequest(
   message: string,
-  details?: Record<string, unknown>
+  details?: Record<string, unknown>,
+  requestId?: string
 ): APIGatewayProxyResultV2 {
-  return error('BAD_REQUEST', message, 400, details);
+  return error('BAD_REQUEST', message, 400, details, undefined, requestId);
 }
 
-export function unauthorized(message = 'Authentication required'): APIGatewayProxyResultV2 {
-  return error('UNAUTHORIZED', message, 401);
+export function unauthorized(
+  message = 'Authentication required',
+  requestId?: string
+): APIGatewayProxyResultV2 {
+  return error('UNAUTHORIZED', message, 401, undefined, undefined, requestId);
 }
 
-export function forbidden(message = 'Insufficient permissions'): APIGatewayProxyResultV2 {
-  return error('FORBIDDEN', message, 403);
+export function forbidden(
+  message = 'Insufficient permissions',
+  requestId?: string
+): APIGatewayProxyResultV2 {
+  return error('FORBIDDEN', message, 403, undefined, undefined, requestId);
 }
 
-export function notFound(message = 'Resource not found'): APIGatewayProxyResultV2 {
-  return error('NOT_FOUND', message, 404);
+export function notFound(
+  message = 'Resource not found',
+  requestId?: string
+): APIGatewayProxyResultV2 {
+  return error('NOT_FOUND', message, 404, undefined, undefined, requestId);
 }
 
-export function conflict(message: string): APIGatewayProxyResultV2 {
-  return error('CONFLICT', message, 409);
+export function conflict(message: string, requestId?: string): APIGatewayProxyResultV2 {
+  return error('CONFLICT', message, 409, undefined, undefined, requestId);
 }
 
-export function rateLimited(retryAfter = 60): APIGatewayProxyResultV2 {
+export function rateLimited(retryAfter = 60, requestId?: string): APIGatewayProxyResultV2 {
   return {
     statusCode: 429,
-    headers: {
-      ...DEFAULT_CORS_HEADERS,
-      'Retry-After': String(retryAfter),
-    },
+    headers: withRequestId(
+      {
+        ...DEFAULT_CORS_HEADERS,
+        'Retry-After': String(retryAfter),
+      },
+      requestId
+    ),
     body: JSON.stringify({
       ok: false,
       error: { code: 'RATE_LIMITED', message: 'Too many requests. Try again later.' },
@@ -166,8 +212,15 @@ export function rateLimited(retryAfter = 60): APIGatewayProxyResultV2 {
   };
 }
 
-export function internalError(): APIGatewayProxyResultV2 {
-  return error('INTERNAL_ERROR', 'An unexpected error occurred', 500);
+export function internalError(requestId?: string): APIGatewayProxyResultV2 {
+  return error(
+    'INTERNAL_ERROR',
+    'An unexpected error occurred',
+    500,
+    undefined,
+    undefined,
+    requestId
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -179,11 +232,12 @@ export function internalError(): APIGatewayProxyResultV2 {
  * or null if the feature is enabled (caller proceeds).
  */
 export async function checkFeatureEnabled(
-  flag: keyof FeatureFlags
+  flag: keyof FeatureFlags,
+  requestId?: string
 ): Promise<APIGatewayProxyResultV2 | null> {
   const enabled = await isFeatureEnabled(flag);
   if (!enabled) {
-    return notFound('Endpoint not found');
+    return notFound('Endpoint not found', requestId);
   }
   return null;
 }

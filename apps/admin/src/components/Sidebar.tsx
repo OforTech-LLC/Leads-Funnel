@@ -3,13 +3,55 @@
 /**
  * Navigation Sidebar
  *
- * Dark background sidebar with navigation links to all admin pages.
+ * Responsive sidebar with:
+ * - Desktop: Fixed left sidebar (w-64)
+ * - Mobile: Slide-in overlay with backdrop
+ * - Close on nav click, backdrop click, Escape key
+ * - Touch swipe-to-close support
+ * - Hamburger button in mobile header
  */
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { NAV_ITEMS } from '@/lib/constants';
+import { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
+
+// ---------------------------------------------------------------------------
+// Sidebar Context (for mobile toggle from Header)
+// ---------------------------------------------------------------------------
+
+interface SidebarContextValue {
+  isOpen: boolean;
+  open: () => void;
+  close: () => void;
+  toggle: () => void;
+}
+
+const SidebarContext = createContext<SidebarContextValue>({
+  isOpen: false,
+  open: () => {},
+  close: () => {},
+  toggle: () => {},
+});
+
+export function useSidebar() {
+  return useContext(SidebarContext);
+}
+
+export function SidebarProvider({ children }: { children: React.ReactNode }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const open = useCallback(() => setIsOpen(true), []);
+  const close = useCallback(() => setIsOpen(false), []);
+  const toggle = useCallback(() => setIsOpen((prev) => !prev), []);
+
+  return (
+    <SidebarContext.Provider value={{ isOpen, open, close, toggle }}>
+      {children}
+    </SidebarContext.Provider>
+  );
+}
 
 // ---------------------------------------------------------------------------
 // Icon Components (simple SVG icons)
@@ -23,6 +65,19 @@ function IconDashboard() {
         strokeLinejoin="round"
         strokeWidth={1.5}
         d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+      />
+    </svg>
+  );
+}
+
+function IconAnalytics() {
+  return (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={1.5}
+        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
       />
     </svg>
   );
@@ -80,6 +135,32 @@ function IconLeads() {
   );
 }
 
+function IconImport() {
+  return (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={1.5}
+        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+      />
+    </svg>
+  );
+}
+
+function IconWebhooks() {
+  return (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={1.5}
+        d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+      />
+    </svg>
+  );
+}
+
 function IconNotifications() {
   return (
     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -127,20 +208,23 @@ function IconSettings() {
 
 const ICON_MAP: Record<string, React.ComponentType> = {
   dashboard: IconDashboard,
+  analytics: IconAnalytics,
   orgs: IconOrgs,
   users: IconUsers,
   rules: IconRules,
   leads: IconLeads,
+  import: IconImport,
+  webhooks: IconWebhooks,
   notifications: IconNotifications,
   exports: IconExports,
   settings: IconSettings,
 };
 
 // ---------------------------------------------------------------------------
-// Sidebar Component
+// Navigation Content (shared between desktop and mobile)
 // ---------------------------------------------------------------------------
 
-export default function Sidebar() {
+function NavContent({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
 
   function isActive(href: string): boolean {
@@ -149,9 +233,9 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 w-64 bg-sidebar text-white flex flex-col z-30">
+    <>
       {/* Logo / Brand */}
-      <div className="h-16 flex items-center px-6 border-b border-gray-700">
+      <div className="h-16 flex items-center px-6 border-b border-gray-700 shrink-0">
         <span className="text-lg font-semibold tracking-tight">Admin Console</span>
       </div>
 
@@ -165,6 +249,7 @@ export default function Sidebar() {
               <li key={item.href}>
                 <Link
                   href={item.href}
+                  onClick={onNavigate}
                   className={cn(
                     'flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors',
                     active
@@ -182,9 +267,93 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="px-6 py-4 border-t border-gray-700 text-xs text-gray-400">
+      <div className="px-6 py-4 border-t border-gray-700 text-xs text-gray-400 shrink-0">
         Leads Funnel Admin v0.1.0
       </div>
-    </aside>
+    </>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Sidebar Component
+// ---------------------------------------------------------------------------
+
+export default function Sidebar() {
+  const { isOpen, close } = useSidebar();
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef<number | null>(null);
+
+  // Close on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) close();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, close]);
+
+  // Lock body scroll when mobile sidebar is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
+  // Touch swipe to close
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  }, []);
+
+  const handleTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      if (touchStartX.current === null) return;
+      const deltaX = e.changedTouches[0].clientX - touchStartX.current;
+      if (deltaX < -80) {
+        close();
+      }
+      touchStartX.current = null;
+    },
+    [close]
+  );
+
+  return (
+    <>
+      {/* Desktop Sidebar - hidden on mobile */}
+      <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-64 bg-sidebar text-white flex-col z-30">
+        <NavContent />
+      </aside>
+
+      {/* Mobile Overlay + Sidebar */}
+      {isOpen && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="lg:hidden fixed inset-0 bg-black/50 z-40"
+            onClick={close}
+            style={{ animation: 'backdrop-fade-in 0.2s ease-out' }}
+            aria-hidden="true"
+          />
+
+          {/* Mobile Sidebar */}
+          <aside
+            ref={sidebarRef}
+            className="lg:hidden fixed left-0 top-0 bottom-0 w-64 bg-sidebar text-white flex flex-col z-50"
+            style={{ animation: 'sidebar-slide-in 0.3s ease-out' }}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Navigation menu"
+          >
+            <NavContent onNavigate={close} />
+          </aside>
+        </>
+      )}
+    </>
   );
 }

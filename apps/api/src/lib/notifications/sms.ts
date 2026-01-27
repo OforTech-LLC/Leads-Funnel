@@ -11,32 +11,15 @@
  * - Twilio credentials are loaded from AWS Secrets Manager
  * - No raw PII is logged
  * - Phone numbers are validated before sending
+ *
+ * Performance: Uses centralized SNS and Secrets Manager clients from
+ * clients.ts with HTTP keep-alive for connection reuse.
  */
 
-import { SNSClient, PublishCommand } from '@aws-sdk/client-sns';
-import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
+import { PublishCommand } from '@aws-sdk/client-sns';
+import { GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
 import type { LeadRecord, FeatureFlags } from '../types/events.js';
-
-// =============================================================================
-// Client Initialization (reused across invocations)
-// =============================================================================
-
-let snsClient: SNSClient | null = null;
-let secretsClient: SecretsManagerClient | null = null;
-
-function getSnsClient(region: string): SNSClient {
-  if (!snsClient) {
-    snsClient = new SNSClient({ region });
-  }
-  return snsClient;
-}
-
-function getSecretsClient(region: string): SecretsManagerClient {
-  if (!secretsClient) {
-    secretsClient = new SecretsManagerClient({ region });
-  }
-  return secretsClient;
-}
+import { getSnsClient, getSecretsManagerClient } from '../clients.js';
 
 // =============================================================================
 // Twilio Credentials Cache
@@ -69,7 +52,7 @@ async function loadTwilioCredentials(
     return cachedTwilioCredentials;
   }
 
-  const client = getSecretsClient(region);
+  const client = getSecretsManagerClient(region);
 
   const result = await client.send(
     new GetSecretValueCommand({

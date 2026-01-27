@@ -4,6 +4,7 @@
  * Assignment Rules List Page
  *
  * Lists all assignment rules with create, search, and filter.
+ * RBAC: Create rule is ADMIN only.
  */
 
 import { useState, useCallback } from 'react';
@@ -17,10 +18,13 @@ import StatusBadge from '@/components/StatusBadge';
 import Modal from '@/components/Modal';
 import FormField from '@/components/FormField';
 import ErrorAlert from '@/components/ErrorAlert';
+import RequireRole from '@/components/RequireRole';
+import { useToast } from '@/components/Toast';
 import Link from 'next/link';
 
 export default function RulesPage() {
   const router = useRouter();
+  const toast = useToast();
   const [search, setSearch] = useState('');
   const [activeFilter, setActiveFilter] = useState('');
   const [page, setPage] = useState(1);
@@ -119,6 +123,7 @@ export default function RulesPage() {
           .filter(Boolean),
       };
       await createRule(req).unwrap();
+      toast.success('Assignment rule created successfully');
       setShowCreate(false);
       setForm({
         name: '',
@@ -131,33 +136,35 @@ export default function RulesPage() {
       setFunnelsInput('');
       setZipsInput('');
     } catch {
-      // Error handled by RTK Query
+      toast.error('Failed to create assignment rule');
     }
-  }, [createRule, form, funnelsInput, zipsInput]);
+  }, [createRule, form, funnelsInput, zipsInput, toast]);
 
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold text-[var(--text-primary)]">Assignment Rules</h1>
           <p className="text-sm text-[var(--text-secondary)] mt-1">
             Configure lead assignment rules and routing
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 self-start">
           <Link
             href="/rules/test"
             className="px-4 py-2 text-sm font-medium border border-[var(--border-color)] rounded-md hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-primary)]"
           >
             Test Rules
           </Link>
-          <button
-            onClick={() => setShowCreate(true)}
-            className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-          >
-            Create Rule
-          </button>
+          <RequireRole roles={['ADMIN']}>
+            <button
+              onClick={() => setShowCreate(true)}
+              className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
+              Create Rule
+            </button>
+          </RequireRole>
         </div>
       </div>
 

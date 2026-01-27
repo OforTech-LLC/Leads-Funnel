@@ -55,6 +55,7 @@ interface LogParams {
   emailHash?: string;
   ipHash?: string;
   errorCode?: string;
+  score?: number;
 }
 
 function log(entry: LogParams): void {
@@ -113,6 +114,53 @@ function addRequestIdHeader(
       'X-Request-Id': requestId,
     },
   };
+}
+
+// =============================================================================
+// Lead Scoring Integration
+// =============================================================================
+
+/**
+ * Conditionally score a lead if the lead_scoring_enabled flag is on.
+ * Non-blocking: scoring errors do not fail the request.
+ */
+async function maybeScoreLead(
+  normalizedLead: NormalizedLead,
+  security: SecurityAnalysis,
+  userAgent: string | undefined,
+  requestId: string
+): Promise<{ score?: number; matchedRules?: string[] }> {
+  try {
+    const { isFeatureEnabled } = await import('./lib/config.js');
+    const enabled = await isFeatureEnabled('lead_scoring_enabled');
+    if (!enabled) return {};
+
+    const { scoreLead } = await import('./lib/scoring/engine.js');
+    const result = scoreLead({
+      name: normalizedLead.name,
+      email: normalizedLead.email,
+      phone: normalizedLead.phone,
+      message: normalizedLead.message,
+      pageUrl: normalizedLead.pageUrl,
+      referrer: normalizedLead.referrer,
+      utm: normalizedLead.utm as Record<string, string> | undefined,
+      ipHash: security.ipHash,
+      userAgent,
+    });
+
+    return {
+      score: result.score.total,
+      matchedRules: result.matchedRules,
+    };
+  } catch (err) {
+    log({
+      requestId,
+      level: 'warn',
+      message: 'Lead scoring failed (non-blocking)',
+      errorCode: 'SCORING_ERROR',
+    });
+    return {};
+  }
 }
 
 // =============================================================================
@@ -261,8 +309,11 @@ export async function handler(
       );
     }
 
-    // Store lead
-    const lead = await storeLead(config, normalizedLead, security, userAgent);
+    // Lead scoring (non-blocking, feature-flagged)
+    const scoring = await maybeScoreLead(normalizedLead, security, userAgent, requestId);
+
+    // Store lead (with score if available)
+    const lead = await storeLead(config, normalizedLead, security, userAgent, scoring.score);
 
     // Publish event (fire-and-forget with error logging)
     try {
@@ -290,6 +341,7 @@ export async function handler(
       emailHash: security.emailHash,
       ipHash: security.ipHash,
       latencyMs: getElapsedMs(startTime),
+      score: scoring.score,
     });
 
     return addRequestIdHeader(http.created(lead.leadId, lead.status), requestId);

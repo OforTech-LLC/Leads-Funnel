@@ -4,6 +4,7 @@
  * Leads Search Page
  *
  * Cross-funnel lead search with filters, pagination, and bulk actions.
+ * RBAC: Bulk update is ADMIN or OPERATOR only.
  */
 
 import { useState, useCallback } from 'react';
@@ -21,12 +22,14 @@ import StatusBadge from '@/components/StatusBadge';
 import Modal from '@/components/Modal';
 import FormField from '@/components/FormField';
 import ErrorAlert from '@/components/ErrorAlert';
+import { useToast } from '@/components/Toast';
 import { LEAD_STATUSES } from '@/lib/constants';
 import type { LeadStatus } from '@/lib/constants';
 import { formatRelativeTime, truncate } from '@/lib/utils';
 
 export default function LeadsPage() {
   const router = useRouter();
+  const toast = useToast();
 
   // Filters
   const [funnelId, setFunnelId] = useState('');
@@ -146,13 +149,16 @@ export default function LeadsPage() {
       for (const [funnel, leadIds] of leadsByFunnel) {
         await bulkUpdate({ funnelId: funnel, leadIds, status: bulkStatus as LeadStatus }).unwrap();
       }
+      toast.success(
+        `Successfully updated ${selectedRows.size} lead${selectedRows.size !== 1 ? 's' : ''}`
+      );
       setShowBulkAction(false);
       setSelectedRows(new Set());
       setBulkStatus('');
     } catch {
-      // Error handled by RTK Query
+      toast.error('Failed to update leads');
     }
-  }, [bulkUpdate, bulkStatus, selectedRows, data]);
+  }, [bulkUpdate, bulkStatus, selectedRows, data, toast]);
 
   const handleNextPage = useCallback(() => {
     if (data?.nextToken) {
@@ -281,7 +287,7 @@ export default function LeadsPage() {
 
       {/* Bulk Actions */}
       {selectedRows.size > 0 && (
-        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 flex items-center justify-between">
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <span className="text-sm text-blue-800 dark:text-blue-200">
             {selectedRows.size} lead{selectedRows.size !== 1 ? 's' : ''} selected
           </span>

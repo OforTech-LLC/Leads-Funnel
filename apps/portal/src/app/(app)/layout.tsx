@@ -3,6 +3,28 @@
 import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
 import DesktopSidebar from '@/components/DesktopSidebar';
+import NotificationBell from '@/components/NotificationBell';
+import { useProfile } from '@/lib/queries/profile';
+
+function DesktopTopBar() {
+  const { data: profile } = useProfile();
+
+  const initials = profile
+    ? `${profile.firstName.charAt(0)}${profile.lastName.charAt(0)}`.toUpperCase()
+    : '';
+
+  return (
+    <div className="hidden lg:flex h-14 items-center justify-end gap-3 border-b border-gray-200 bg-white px-6">
+      <NotificationBell />
+      <div
+        className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-100 text-sm font-semibold text-brand-700"
+        title={profile ? `${profile.firstName} ${profile.lastName}` : 'User'}
+      >
+        {initials || 'U'}
+      </div>
+    </div>
+  );
+}
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -16,6 +38,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="lg:hidden">
           <Header />
         </div>
+
+        {/* Desktop top bar with notifications (hidden on mobile) */}
+        <DesktopTopBar />
 
         {/* Page content */}
         <main className="pb-20 lg:pb-0">{children}</main>

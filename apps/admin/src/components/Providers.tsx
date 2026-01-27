@@ -3,12 +3,13 @@
 /**
  * Application Providers
  *
- * Wraps the app with Redux store provider and theme management.
+ * Wraps the app with Redux store provider, theme management, and toast notifications.
  */
 
 import { Provider } from 'react-redux';
 import { store } from '@/store/store';
 import { useEffect, useState, createContext, useContext, useCallback } from 'react';
+import { ToastProvider } from './Toast';
 
 // ---------------------------------------------------------------------------
 // Theme Context
@@ -63,7 +64,9 @@ function ThemeProvider({ children }: { children: React.ReactNode }) {
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <Provider store={store}>
-      <ThemeProvider>{children}</ThemeProvider>
+      <ThemeProvider>
+        <ToastProvider>{children}</ToastProvider>
+      </ThemeProvider>
     </Provider>
   );
 }

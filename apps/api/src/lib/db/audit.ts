@@ -28,15 +28,26 @@ export type AuditAction =
   | 'rule.create'
   | 'rule.update'
   | 'rule.delete'
+  | 'rule.bulkCreate'
   | 'lead.update'
   | 'lead.reassign'
   | 'lead.assign'
   | 'lead.unassign'
+  | 'lead.bulkUpdate'
+  | 'lead.bulkImport'
   | 'export.create'
   | 'export.download'
   | 'notification.sent'
   | 'settings.update'
-  | 'login';
+  | 'login'
+  | 'gdpr.erasure'
+  | 'gdpr.export'
+  | 'billing.upgrade'
+  | 'calendar.connect'
+  | 'calendar.book'
+  | 'calendar.disconnect'
+  | 'integration.configure'
+  | 'integration.remove';
 
 export interface AuditEntry {
   pk: string;

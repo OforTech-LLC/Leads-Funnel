@@ -4,6 +4,10 @@
  * Handles all /portal/* endpoints for organization agents/owners.
  * Requires portal JWT authentication and checks the enable_agent_portal flag.
  *
+ * Performance:
+ *   - X-Request-Id header injected on every response for distributed tracing
+ *   - All DynamoDB/S3/SSM calls use centralized clients with HTTP keep-alive
+ *
  * Endpoints:
  *   GET  /portal/me                              - Current user profile
  *   GET  /portal/org                             - User's primary org details
@@ -12,6 +16,19 @@
  *   PUT  /portal/leads/:funnelId/:leadId/status  - Update lead status
  *   POST /portal/leads/:funnelId/:leadId/notes   - Add note to lead
  *   PUT  /portal/settings                        - Update user preferences
+ *
+ * Feature-flagged endpoints:
+ *   GET  /portal/billing                          - Current plan and usage
+ *   GET  /portal/billing/invoices                 - Invoice history
+ *   POST /portal/billing/upgrade                  - Change plan (stub)
+ *   POST /portal/calendar/connect                 - Connect calendar provider
+ *   GET  /portal/calendar/availability            - Get available slots
+ *   POST /portal/calendar/book                    - Book appointment for lead
+ *   DELETE /portal/calendar/disconnect            - Disconnect calendar
+ *   POST /portal/integrations/slack               - Configure Slack webhook
+ *   POST /portal/integrations/teams               - Configure Teams webhook
+ *   DELETE /portal/integrations/:provider         - Remove integration
+ *   POST /portal/integrations/:provider/test      - Test notification
  */
 
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
@@ -26,6 +43,8 @@ import * as leadsDb from '../lib/db/leads.js';
 import * as resp from '../lib/response.js';
 import { parseBody, pathParam, queryParam, getIpHash } from '../lib/handler-utils.js';
 import { createLogger } from '../lib/logging.js';
+import { isFeatureEnabled, loadFeatureFlags } from '../lib/config.js';
+import { emitLeadStatusChanged, emitLeadNoteAdded } from '../lib/events.js';
 
 const log = createLogger('portal-handler');
 
@@ -50,10 +69,45 @@ async function getMemberRole(userId: string, orgId: string): Promise<MembershipR
 }
 
 // ---------------------------------------------------------------------------
-// Main Handler
+// X-Request-Id injection wrapper
+// ---------------------------------------------------------------------------
+
+/**
+ * Inject the X-Request-Id header into any API Gateway response.
+ * Uses the API Gateway request ID for end-to-end distributed tracing.
+ */
+function injectRequestId(
+  response: APIGatewayProxyResultV2,
+  requestId: string
+): APIGatewayProxyResultV2 {
+  if (typeof response === 'string') return response;
+  const headers = (response.headers || {}) as Record<string, string>;
+  return {
+    ...response,
+    headers: {
+      ...headers,
+      'X-Request-Id': requestId,
+    },
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Main Handler (exported)
 // ---------------------------------------------------------------------------
 
 export async function handler(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
+  const requestId = event.requestContext.requestId || '';
+  const result = await handlePortalRequest(event);
+  return injectRequestId(result, requestId);
+}
+
+// ---------------------------------------------------------------------------
+// Portal request routing
+// ---------------------------------------------------------------------------
+
+async function handlePortalRequest(
+  event: APIGatewayProxyEventV2
+): Promise<APIGatewayProxyResultV2> {
   const method = event.requestContext.http.method;
   const path = event.requestContext.http.path;
 
@@ -222,11 +276,24 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
         return resp.forbidden('Insufficient permissions to update lead');
       }
 
+      const oldStatus = lead.status;
+
       const updated = await leadsDb.updateLead({
         funnelId,
         leadId,
         status: newStatus as leadsDb.LeadStatus,
       });
+
+      // Fire webhook for status change
+      if (newStatus !== oldStatus) {
+        void emitLeadStatusChanged({
+          leadId,
+          funnelId,
+          oldStatus,
+          newStatus,
+          changedBy: identity.userId,
+        });
+      }
 
       await recordAudit({
         actorId: identity.userId,
@@ -288,6 +355,13 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
         notes: updatedNotes,
       });
 
+      // Fire webhook for note added
+      void emitLeadNoteAdded({
+        leadId,
+        funnelId,
+        addedBy: identity.userId,
+      });
+
       await recordAudit({
         actorId: identity.userId,
         actorType: 'portal_user',
@@ -342,6 +416,25 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       return resp.success({ updated: true });
     }
 
+    // ---- BILLING (feature-flagged) ----
+    if (subpath.startsWith('/billing')) {
+      const billingEnabled = await isFeatureEnabled('billing_enabled');
+      if (!billingEnabled) return resp.notFound('Endpoint not found');
+      return await handleBillingRoutes(event, subpath, method, identity);
+    }
+
+    // ---- CALENDAR (feature-flagged) ----
+    if (subpath.startsWith('/calendar')) {
+      const calendarEnabled = await isFeatureEnabled('calendar_enabled');
+      if (!calendarEnabled) return resp.notFound('Endpoint not found');
+      return await handleCalendarRoutes(event, subpath, method, identity);
+    }
+
+    // ---- INTEGRATIONS: Slack/Teams (feature-flagged) ----
+    if (subpath.startsWith('/integrations')) {
+      return await handleIntegrationRoutes(event, subpath, method, identity);
+    }
+
     return resp.notFound('Portal endpoint not found');
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Unknown error';
@@ -363,4 +456,361 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
 
     return resp.internalError();
   }
+}
+
+// ---------------------------------------------------------------------------
+// Billing Routes (Task 2)
+// ---------------------------------------------------------------------------
+
+async function handleBillingRoutes(
+  event: APIGatewayProxyEventV2,
+  subpath: string,
+  method: string,
+  identity: { userId: string; email: string; primaryOrgId: string; orgIds: string[] }
+): Promise<APIGatewayProxyResultV2> {
+  // Dynamic imports to avoid loading when disabled
+  const { getBillingAccount, changePlan, getPlanDetails } =
+    await import('../lib/billing/accounts.js');
+  const { getCurrentUsage } = await import('../lib/billing/metering.js');
+  const { getStripeService } = await import('../lib/billing/stripe-stub.js');
+
+  const orgId = queryParam(event, 'orgId') || identity.primaryOrgId;
+  if (!orgId) return resp.badRequest('No org context');
+  if (!identity.orgIds.includes(orgId)) return resp.forbidden('Not a member of this org');
+
+  // GET /portal/billing - Current plan and usage
+  if (subpath === '/billing' && method === 'GET') {
+    const account = await getBillingAccount(orgId);
+    const usage = await getCurrentUsage(orgId);
+    const plan = getPlanDetails(account.tier);
+
+    return resp.success({
+      plan,
+      usage: {
+        leadsReceived: usage?.leadsReceived || 0,
+        leadsAccepted: usage?.leadsAccepted || 0,
+        leadsRejected: usage?.leadsRejected || 0,
+      },
+      currentPeriodStart: account.currentPeriodStart,
+      currentPeriodEnd: account.currentPeriodEnd,
+      status: account.status,
+    });
+  }
+
+  // GET /portal/billing/invoices - Invoice history
+  if (subpath === '/billing/invoices' && method === 'GET') {
+    const account = await getBillingAccount(orgId);
+    const stripe = getStripeService();
+    const invoices = await stripe.getInvoices(
+      account.stripeCustomerId || '',
+      Number(queryParam(event, 'limit')) || 10
+    );
+    return resp.success({ invoices });
+  }
+
+  // POST /portal/billing/upgrade - Change plan (stub)
+  if (subpath === '/billing/upgrade' && method === 'POST') {
+    const body = parseBody(event);
+    if (body === null) return resp.badRequest('Invalid JSON in request body');
+    const newTier = body.tier as string | undefined;
+    if (!newTier || !['free', 'starter', 'pro', 'enterprise'].includes(newTier)) {
+      return resp.badRequest('tier must be one of: free, starter, pro, enterprise');
+    }
+
+    const account = await changePlan(orgId, newTier as 'free' | 'starter' | 'pro' | 'enterprise');
+
+    await recordAudit({
+      actorId: identity.userId,
+      actorType: 'portal_user',
+      action: 'billing.upgrade',
+      resourceType: 'billing',
+      resourceId: orgId,
+      details: { newTier },
+      ipHash: getIpHash(event),
+    });
+
+    return resp.success(account);
+  }
+
+  return resp.notFound('Billing endpoint not found');
+}
+
+// ---------------------------------------------------------------------------
+// Calendar Routes (Task 3)
+// ---------------------------------------------------------------------------
+
+async function handleCalendarRoutes(
+  event: APIGatewayProxyEventV2,
+  subpath: string,
+  method: string,
+  identity: { userId: string; email: string; primaryOrgId: string; orgIds: string[] }
+): Promise<APIGatewayProxyResultV2> {
+  const { PutCommand, GetCommand, DeleteCommand } = await import('@aws-sdk/lib-dynamodb');
+  const { getDocClient, tableName } = await import('../lib/db/client.js');
+  const { createCalendarProvider, getSupportedProviders } =
+    await import('../lib/calendar/factory.js');
+  const doc = getDocClient();
+
+  // POST /portal/calendar/connect
+  if (subpath === '/calendar/connect' && method === 'POST') {
+    const body = parseBody(event);
+    if (body === null) return resp.badRequest('Invalid JSON in request body');
+    const provider = body.provider as string | undefined;
+    const supported = getSupportedProviders();
+    if (!provider || !supported.includes(provider as 'google' | 'outlook' | 'apple' | 'caldav')) {
+      return resp.badRequest(`provider must be one of: ${supported.join(', ')}`);
+    }
+
+    const now = new Date().toISOString();
+    const config = {
+      pk: `CALENDAR#${identity.userId}`,
+      sk: 'CONFIG',
+      userId: identity.userId,
+      orgId: identity.primaryOrgId,
+      provider,
+      accessToken: body.accessToken as string | undefined,
+      refreshToken: body.refreshToken as string | undefined,
+      calendarId: body.calendarId as string | undefined,
+      caldavUrl: body.caldavUrl as string | undefined,
+      connected: true,
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    await doc.send(
+      new PutCommand({
+        TableName: tableName(),
+        Item: config,
+      })
+    );
+
+    await recordAudit({
+      actorId: identity.userId,
+      actorType: 'portal_user',
+      action: 'calendar.connect',
+      resourceType: 'calendar',
+      resourceId: identity.userId,
+      details: { provider },
+      ipHash: getIpHash(event),
+    });
+
+    return resp.success({ connected: true, provider });
+  }
+
+  // GET /portal/calendar/availability
+  if (subpath === '/calendar/availability' && method === 'GET') {
+    const start = queryParam(event, 'start');
+    const end = queryParam(event, 'end');
+    if (!start || !end) return resp.badRequest('start and end query parameters are required');
+
+    // Load user's calendar config
+    const result = await doc.send(
+      new GetCommand({
+        TableName: tableName(),
+        Key: { pk: `CALENDAR#${identity.userId}`, sk: 'CONFIG' },
+      })
+    );
+
+    if (!result.Item || !result.Item.connected) {
+      return resp.badRequest('No calendar connected. Please connect a calendar first.');
+    }
+
+    const calConfig = result.Item as {
+      provider: 'google' | 'outlook' | 'apple' | 'caldav';
+      accessToken?: string;
+      calendarId?: string;
+      caldavUrl?: string;
+      [key: string]: unknown;
+    };
+    const providerInstance = createCalendarProvider(calConfig as any);
+    const slots = await providerInstance.getAvailability(new Date(start), new Date(end));
+
+    return resp.success({
+      slots: slots.map((s) => ({
+        start: s.start.toISOString(),
+        end: s.end.toISOString(),
+        available: s.available,
+      })),
+    });
+  }
+
+  // POST /portal/calendar/book
+  if (subpath === '/calendar/book' && method === 'POST') {
+    const body = parseBody(event);
+    if (body === null) return resp.badRequest('Invalid JSON in request body');
+    if (!body.startTime || !body.endTime || !body.title) {
+      return resp.badRequest('startTime, endTime, and title are required');
+    }
+
+    // Load user's calendar config
+    const result = await doc.send(
+      new GetCommand({
+        TableName: tableName(),
+        Key: { pk: `CALENDAR#${identity.userId}`, sk: 'CONFIG' },
+      })
+    );
+
+    if (!result.Item || !result.Item.connected) {
+      return resp.badRequest('No calendar connected');
+    }
+
+    const calConfig = result.Item as any;
+    const providerInstance = createCalendarProvider(calConfig);
+
+    const eventId = await providerInstance.createEvent({
+      title: body.title as string,
+      description: body.description as string | undefined,
+      startTime: new Date(body.startTime as string),
+      endTime: new Date(body.endTime as string),
+      attendees: body.attendeeEmail
+        ? [{ email: body.attendeeEmail as string, name: body.attendeeName as string | undefined }]
+        : undefined,
+    });
+
+    await recordAudit({
+      actorId: identity.userId,
+      actorType: 'portal_user',
+      action: 'calendar.book',
+      resourceType: 'calendar',
+      resourceId: eventId,
+      details: { leadId: body.leadId, funnelId: body.funnelId },
+      ipHash: getIpHash(event),
+    });
+
+    return resp.success({
+      eventId,
+      provider: calConfig.provider,
+      startTime: body.startTime,
+      endTime: body.endTime,
+      title: body.title,
+    });
+  }
+
+  // DELETE /portal/calendar/disconnect
+  if (subpath === '/calendar/disconnect' && method === 'DELETE') {
+    await doc.send(
+      new DeleteCommand({
+        TableName: tableName(),
+        Key: { pk: `CALENDAR#${identity.userId}`, sk: 'CONFIG' },
+      })
+    );
+
+    await recordAudit({
+      actorId: identity.userId,
+      actorType: 'portal_user',
+      action: 'calendar.disconnect',
+      resourceType: 'calendar',
+      resourceId: identity.userId,
+      ipHash: getIpHash(event),
+    });
+
+    return resp.success({ disconnected: true });
+  }
+
+  return resp.notFound('Calendar endpoint not found');
+}
+
+// ---------------------------------------------------------------------------
+// Integration Routes: Slack/Teams (Task 4)
+// ---------------------------------------------------------------------------
+
+async function handleIntegrationRoutes(
+  event: APIGatewayProxyEventV2,
+  subpath: string,
+  method: string,
+  identity: { userId: string; email: string; primaryOrgId: string; orgIds: string[] }
+): Promise<APIGatewayProxyResultV2> {
+  const flags = await loadFeatureFlags();
+  const { saveChannelConfig, deleteChannelConfig, sendTestNotification } =
+    await import('../lib/messaging/dispatcher.js');
+
+  const orgId = queryParam(event, 'orgId') || identity.primaryOrgId;
+  if (!orgId) return resp.badRequest('No org context');
+  if (!identity.orgIds.includes(orgId)) return resp.forbidden('Not a member of this org');
+
+  // POST /portal/integrations/slack
+  if (subpath === '/integrations/slack' && method === 'POST') {
+    if (!flags.slack_enabled) return resp.notFound('Endpoint not found');
+    const body = parseBody(event);
+    if (body === null) return resp.badRequest('Invalid JSON in request body');
+    if (!body.webhookUrl) return resp.badRequest('webhookUrl is required');
+
+    const config = await saveChannelConfig(
+      orgId,
+      'slack',
+      body.webhookUrl as string,
+      body.channelName as string | undefined
+    );
+
+    await recordAudit({
+      actorId: identity.userId,
+      actorType: 'portal_user',
+      action: 'integration.configure',
+      resourceType: 'integration',
+      resourceId: `${orgId}:slack`,
+      ipHash: getIpHash(event),
+    });
+
+    return resp.success(config);
+  }
+
+  // POST /portal/integrations/teams
+  if (subpath === '/integrations/teams' && method === 'POST') {
+    if (!flags.teams_enabled) return resp.notFound('Endpoint not found');
+    const body = parseBody(event);
+    if (body === null) return resp.badRequest('Invalid JSON in request body');
+    if (!body.webhookUrl) return resp.badRequest('webhookUrl is required');
+
+    const config = await saveChannelConfig(
+      orgId,
+      'teams',
+      body.webhookUrl as string,
+      body.channelName as string | undefined
+    );
+
+    await recordAudit({
+      actorId: identity.userId,
+      actorType: 'portal_user',
+      action: 'integration.configure',
+      resourceType: 'integration',
+      resourceId: `${orgId}:teams`,
+      ipHash: getIpHash(event),
+    });
+
+    return resp.success(config);
+  }
+
+  // DELETE /portal/integrations/:provider
+  if (/^\/integrations\/(slack|teams)$/.test(subpath) && method === 'DELETE') {
+    const provider = pathParam(event, 2) as 'slack' | 'teams';
+
+    if (provider === 'slack' && !flags.slack_enabled) return resp.notFound('Endpoint not found');
+    if (provider === 'teams' && !flags.teams_enabled) return resp.notFound('Endpoint not found');
+
+    await deleteChannelConfig(orgId, provider);
+
+    await recordAudit({
+      actorId: identity.userId,
+      actorType: 'portal_user',
+      action: 'integration.remove',
+      resourceType: 'integration',
+      resourceId: `${orgId}:${provider}`,
+      ipHash: getIpHash(event),
+    });
+
+    return resp.success({ removed: true, provider });
+  }
+
+  // POST /portal/integrations/:provider/test
+  if (/^\/integrations\/(slack|teams)\/test$/.test(subpath) && method === 'POST') {
+    const provider = pathParam(event, 2) as 'slack' | 'teams';
+
+    if (provider === 'slack' && !flags.slack_enabled) return resp.notFound('Endpoint not found');
+    if (provider === 'teams' && !flags.teams_enabled) return resp.notFound('Endpoint not found');
+
+    const result = await sendTestNotification(orgId, provider);
+    return resp.success(result);
+  }
+
+  return resp.notFound('Integration endpoint not found');
 }

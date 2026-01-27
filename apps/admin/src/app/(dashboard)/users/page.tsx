@@ -4,6 +4,7 @@
  * Users List Page
  *
  * Lists all users with search, filter, and create functionality.
+ * RBAC: Create user is ADMIN only.
  */
 
 import { useState, useCallback } from 'react';
@@ -17,10 +18,13 @@ import StatusBadge from '@/components/StatusBadge';
 import Modal from '@/components/Modal';
 import FormField from '@/components/FormField';
 import ErrorAlert from '@/components/ErrorAlert';
+import RequireRole from '@/components/RequireRole';
+import { useToast } from '@/components/Toast';
 import { formatDate } from '@/lib/utils';
 
 export default function UsersPage() {
   const router = useRouter();
+  const toast = useToast();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [page, setPage] = useState(1);
@@ -82,29 +86,32 @@ export default function UsersPage() {
   const handleCreate = useCallback(async () => {
     try {
       await createUser(form).unwrap();
+      toast.success('User created successfully');
       setShowCreate(false);
       setForm({ name: '', email: '', phone: '', role: 'user' });
     } catch {
-      // Error handled by RTK Query
+      toast.error('Failed to create user');
     }
-  }, [createUser, form]);
+  }, [createUser, form, toast]);
 
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold text-[var(--text-primary)]">Users</h1>
           <p className="text-sm text-[var(--text-secondary)] mt-1">
             Manage platform users and their access
           </p>
         </div>
-        <button
-          onClick={() => setShowCreate(true)}
-          className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-        >
-          Create User
-        </button>
+        <RequireRole roles={['ADMIN']}>
+          <button
+            onClick={() => setShowCreate(true)}
+            className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors self-start"
+          >
+            Create User
+          </button>
+        </RequireRole>
       </div>
 
       {/* Filters */}

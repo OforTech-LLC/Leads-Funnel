@@ -3,6 +3,7 @@ import { setRequestLocale } from 'next-intl/server';
 import { routing, type Locale } from '@/i18n/routing';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import LeadForm from '@/components/LeadForm';
+import { Footer } from '@/components/Footer';
 
 /**
  * Generate static params for all locales
@@ -15,11 +16,7 @@ export function generateStaticParams() {
  * Home Page Component
  * Landing page with lead capture form
  */
-export default async function HomePage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
+export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
 
   // Enable static rendering
@@ -63,25 +60,9 @@ function HomePageContent() {
         <LeadForm />
       </section>
 
-      {/* Footer */}
-      <Footer />
+      {/* Footer with legal links */}
+      <Footer showLanguageSwitcher={false} />
     </main>
-  );
-}
-
-/**
- * Footer Component
- */
-function Footer() {
-  const t = useTranslations('footer');
-  const currentYear = new Date().getFullYear();
-
-  return (
-    <footer style={styles.footer}>
-      <p>
-        &copy; {currentYear} Kanjona. {t('copyright')}
-      </p>
-    </footer>
   );
 }
 
@@ -155,12 +136,5 @@ const styles: Record<string, React.CSSProperties> = {
   formSection: {
     padding: '48px 24px',
     flex: 1,
-  },
-  footer: {
-    padding: '24px',
-    textAlign: 'center',
-    backgroundColor: '#111',
-    color: '#888',
-    fontSize: '14px',
   },
 };

@@ -1,9 +1,10 @@
 'use client';
 
 import { use } from 'react';
-import { useLead, useUpdateLeadStatus, useAddNote } from '@/lib/queries/leads';
+import { useLead, useUpdateLeadStatus, useAddNote, useAssignLead } from '@/lib/queries/leads';
 import LeadDetailModal from '@/components/LeadDetailModal';
 import { PageLoader } from '@/components/LoadingSpinner';
+import { toast } from '@/lib/toast';
 
 interface LeadDetailPageProps {
   params: Promise<{
@@ -17,6 +18,7 @@ export default function LeadDetailPage({ params }: LeadDetailPageProps) {
   const { data: lead, isLoading, error } = useLead(funnelId, leadId);
   const updateStatus = useUpdateLeadStatus();
   const addNote = useAddNote();
+  const assignLead = useAssignLead();
 
   if (isLoading) {
     return <PageLoader />;
@@ -55,8 +57,18 @@ export default function LeadDetailPage({ params }: LeadDetailPageProps) {
       lead={lead}
       onStatusChange={(status) => updateStatus.mutate({ funnelId, leadId, status })}
       onAddNote={(content) => addNote.mutate({ funnelId, leadId, content })}
+      onAssign={(assignedTo) =>
+        assignLead.mutate(
+          { funnelId, leadId, assignedTo },
+          {
+            onSuccess: () => toast.success(assignedTo ? 'Lead assigned' : 'Lead unassigned'),
+            onError: () => toast.error('Failed to update assignment'),
+          }
+        )
+      }
       isUpdatingStatus={updateStatus.isPending}
       isAddingNote={addNote.isPending}
+      isAssigning={assignLead.isPending}
     />
   );
 }

@@ -14,7 +14,7 @@
  * Security Features:
  * - JWT authentication with Cognito JWKS verification
  * - RBAC permission checks for write operations
- * - Rate limiting (per-user for queries, global for exports)
+ * - DynamoDB-backed distributed rate limiting (works across Lambda instances)
  * - Payload size limits to prevent DoS
  * - Request ID tracking for debugging and audit trails
  */
@@ -47,6 +47,7 @@ import {
   logViewStats,
 } from './lib/audit.js';
 import * as http from './lib/http.js';
+import { checkQueryRateLimit, checkExportRateLimit } from '../lib/rate-limit.js';
 import { v4 as uuidv4 } from 'uuid';
 
 // =============================================================================
@@ -83,119 +84,6 @@ function loadConfig(): AdminConfig {
     exportJobsTable: process.env.EXPORT_JOBS_TABLE || '',
     logLevel: (process.env.LOG_LEVEL as AdminConfig['logLevel']) || 'info',
   };
-}
-
-// =============================================================================
-// Rate Limiting
-// =============================================================================
-
-/**
- * In-memory rate limit store (for single Lambda instance)
- *
- * Limitation: This only works within a single Lambda instance. Multiple
- * concurrent instances will have separate rate limit counters.
- *
- * Production Enhancement: Use DynamoDB or ElastiCache for distributed
- * rate limiting across all Lambda instances.
- */
-interface RateLimitEntry {
-  count: number;
-  windowStart: number;
-}
-
-const rateLimitStore = new Map<string, RateLimitEntry>();
-
-// Rate limit configuration
-// Security: Different limits for different operations based on expected usage patterns
-const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute window for queries
-const RATE_LIMIT_QUERY_MAX = 100; // 100 queries/min - generous for normal admin work
-const RATE_LIMIT_EXPORT_WINDOW_MS = 60 * 60 * 1000; // 1 hour window for exports
-const RATE_LIMIT_EXPORT_MAX = 10; // 10 exports/hour - prevents data scraping
-
-interface RateLimitResult {
-  allowed: boolean;
-  remaining: number;
-  resetIn: number; // seconds until reset
-}
-
-/**
- * Check rate limit for a user/action combination
- *
- * Algorithm: Sliding window counter implementation
- * - Each key tracks request count and window start time
- * - When window expires, counter resets
- * - Requests within window increment counter
- *
- * Memory Management: Periodically cleans up old entries when map grows
- * too large to prevent memory leaks in long-running Lambda instances.
- */
-function checkRateLimit(key: string, windowMs: number, maxRequests: number): RateLimitResult {
-  const now = Date.now();
-  const entry = rateLimitStore.get(key);
-
-  // Memory cleanup: Prevent unbounded growth in long-running instances
-  // Triggers when map exceeds 10,000 entries (unlikely but defensive)
-  if (rateLimitStore.size > 10000) {
-    const cutoff = now - Math.max(RATE_LIMIT_WINDOW_MS, RATE_LIMIT_EXPORT_WINDOW_MS);
-    for (const [k, v] of rateLimitStore) {
-      if (v.windowStart < cutoff) {
-        rateLimitStore.delete(k);
-      }
-    }
-  }
-
-  // New window or expired window - reset counter
-  if (!entry || now - entry.windowStart > windowMs) {
-    rateLimitStore.set(key, { count: 1, windowStart: now });
-    return {
-      allowed: true,
-      remaining: maxRequests - 1,
-      resetIn: Math.ceil(windowMs / 1000),
-    };
-  }
-
-  // Within existing window - increment and check
-  entry.count++;
-  const resetIn = Math.ceil((entry.windowStart + windowMs - now) / 1000);
-
-  if (entry.count > maxRequests) {
-    return {
-      allowed: false,
-      remaining: 0,
-      resetIn,
-    };
-  }
-
-  return {
-    allowed: true,
-    remaining: maxRequests - entry.count,
-    resetIn,
-  };
-}
-
-/**
- * Check query rate limit (100/min per user+IP)
- *
- * Security: Key combines user ID and IP to prevent:
- * - Single user overwhelming the system
- * - Shared accounts being used from multiple IPs for amplification
- */
-function checkQueryRateLimit(userId: string, clientIp: string): RateLimitResult {
-  const key = `query:${userId}:${clientIp}`;
-  return checkRateLimit(key, RATE_LIMIT_WINDOW_MS, RATE_LIMIT_QUERY_MAX);
-}
-
-/**
- * Check export rate limit (10/hour per user)
- *
- * Security: Stricter limit for exports because:
- * - Exports can contain large amounts of data
- * - Exports consume significant compute resources
- * - Excessive exports may indicate data exfiltration attempt
- */
-function checkExportRateLimit(userId: string): RateLimitResult {
-  const key = `export:${userId}`;
-  return checkRateLimit(key, RATE_LIMIT_EXPORT_WINDOW_MS, RATE_LIMIT_EXPORT_MAX);
 }
 
 // =============================================================================
@@ -314,13 +202,13 @@ function addRequestIdHeader(
  * HTTP Standard: 429 status code with Retry-After header tells clients
  * when they can retry, enabling proper backoff behavior.
  */
-function rateLimitedResponse(requestId: string, resetIn: number): APIGatewayProxyResultV2 {
+function rateLimitedResponse(requestId: string, retryAfter: number): APIGatewayProxyResultV2 {
   return addRequestIdHeader(
     {
       statusCode: 429,
       headers: {
         'Content-Type': 'application/json',
-        'Retry-After': String(resetIn),
+        'Retry-After': String(retryAfter),
       },
       body: JSON.stringify({
         success: false,
@@ -480,8 +368,8 @@ async function handleCreateExport(
     return http.forbidden('Insufficient permissions', 'PERMISSION_DENIED');
   }
 
-  // Stricter rate limit for exports to prevent data scraping
-  const rateLimit = checkExportRateLimit(user.sub);
+  // Distributed rate limit for exports (DynamoDB-backed)
+  const rateLimit = await checkExportRateLimit(user.sub);
   if (!rateLimit.allowed) {
     log({
       requestId,
@@ -490,7 +378,7 @@ async function handleCreateExport(
       userId: user.sub,
       errorCode: 'RATE_LIMITED',
     });
-    return rateLimitedResponse(requestId, rateLimit.resetIn);
+    return rateLimitedResponse(requestId, rateLimit.retryAfter ?? 60);
   }
 
   if (!body.funnelId || !body.format) {
@@ -604,7 +492,7 @@ async function handleGetStats(
  * 3. Validate payload size (DoS protection)
  * 4. Extract client info (IP, User-Agent)
  * 5. Authenticate user (JWT verification)
- * 6. Check rate limits
+ * 6. Check distributed rate limits (DynamoDB-backed)
  * 7. Route to appropriate handler
  * 8. Add request ID to response
  *
@@ -685,10 +573,11 @@ export async function handler(
       userId: user.sub,
     });
 
-    // Rate limiting: Check query rate limit for all routes except exports
-    // Exports have their own stricter limit checked in the handler
+    // Distributed rate limiting (DynamoDB-backed):
+    // Check query rate limit for all routes except exports.
+    // Exports have their own stricter limit checked in the handler.
     if (!routeKey.includes('/exports/create')) {
-      const rateLimit = checkQueryRateLimit(user.sub, clientIp);
+      const rateLimit = await checkQueryRateLimit(user.sub);
       if (!rateLimit.allowed) {
         log({
           requestId,
@@ -698,7 +587,7 @@ export async function handler(
           errorCode: 'RATE_LIMITED',
           latencyMs: Date.now() - startTime,
         });
-        return rateLimitedResponse(requestId, rateLimit.resetIn);
+        return rateLimitedResponse(requestId, rateLimit.retryAfter ?? 60);
       }
     }
 

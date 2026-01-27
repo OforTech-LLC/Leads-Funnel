@@ -50,7 +50,9 @@
     "es": "Spanish"
   },
   "footer": {
-    "copyright": "All rights reserved."
+    "copyright": "All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service"
   },
   "funnels": {
     "real-estate": {
@@ -102,9 +104,40 @@
           {
             "name": "Michael Johnson",
             "text": "Found our dream home in just two weeks! The team made everything so easy and stress-free.",
-            "location": "Austin, TX"
+            "location": "Austin, TX",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Sarah Mitchell",
+            "text": "Sold my house above asking price in less than a month. Their market analysis was spot-on and the marketing strategy was brilliant.",
+            "location": "Dallas, TX",
+            "company": "Mitchell Investments",
+            "rating": "5"
+          },
+          {
+            "name": "James Rodriguez",
+            "text": "As first-time home buyers, we were nervous about the process. The team walked us through every step and found us the perfect starter home.",
+            "location": "Orlando, FL",
+            "company": "Tech Solutions Inc.",
+            "rating": "5"
+          },
+          {
+            "name": "Emily Chen",
+            "text": "I was relocating from out of state and they made it seamless. Virtual tours, quick responses, and closed in record time.",
+            "location": "Portland, OR",
+            "company": "Chen Design Studio",
+            "rating": "4"
+          },
+          {
+            "name": "David Thompson",
+            "text": "Third time using their services and they never disappoint. They really understand the investment property market.",
+            "location": "Nashville, TN",
+            "company": "Thompson Capital",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 from 200+ reviews"
       },
       "cta": {
         "title": "Ready to Find Your Dream Home?",
@@ -118,7 +151,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Consultation"
+        "free": "Free Consultation",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "life-insurance": {
@@ -170,9 +211,40 @@
           {
             "name": "Sarah Williams",
             "text": "They helped me find a policy that fit my budget and gave my family peace of mind. Highly recommend!",
-            "location": "Denver, CO"
+            "location": "Denver, CO",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Robert Martinez",
+            "text": "They found me a policy with twice the coverage at a lower premium than I was paying. The comparison process was so easy.",
+            "location": "San Antonio, TX",
+            "company": "Martinez & Sons",
+            "rating": "5"
+          },
+          {
+            "name": "Linda Park",
+            "text": "After losing my husband, the claims process was handled with such care and efficiency. I'm forever grateful for their compassion.",
+            "location": "Minneapolis, MN",
+            "company": "Park Consulting",
+            "rating": "5"
+          },
+          {
+            "name": "Kevin O'Brien",
+            "text": "Got whole life coverage for my entire family in one sitting. They explained everything clearly and there were no surprises.",
+            "location": "Boston, MA",
+            "company": "O'Brien Financial",
+            "rating": "5"
+          },
+          {
+            "name": "Maria Santos",
+            "text": "As a small business owner, they helped me understand the right coverage for both personal and business needs. Exceptional service.",
+            "location": "Miami, FL",
+            "company": "Santos Bakery",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.9/5 from 180+ reviews"
       },
       "cta": {
         "title": "Ready to Protect Your Family?",
@@ -186,7 +258,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Quote"
+        "free": "Free Quote",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "construction": {
@@ -238,9 +318,40 @@
           {
             "name": "David Chen",
             "text": "They built our custom home exactly as we envisioned. Professional team from start to finish.",
-            "location": "Phoenix, AZ"
+            "location": "Phoenix, AZ",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Richard Taylor",
+            "text": "Our commercial renovation was completed on time and under budget. The project management was outstanding.",
+            "location": "Atlanta, GA",
+            "company": "Taylor Properties",
+            "rating": "5"
+          },
+          {
+            "name": "Katherine Hall",
+            "text": "They turned our outdated office into a modern workspace. The team was professional and kept the noise disruption to a minimum.",
+            "location": "Charlotte, NC",
+            "company": "Hall Media Group",
+            "rating": "5"
+          },
+          {
+            "name": "Marcus Green",
+            "text": "Built our warehouse from the ground up. Excellent communication throughout the 8-month project.",
+            "location": "Houston, TX",
+            "company": "Green Logistics",
+            "rating": "4"
+          },
+          {
+            "name": "Sandra Powell",
+            "text": "The attention to detail on our home addition was remarkable. Every finish was exactly as we specified.",
+            "location": "Denver, CO",
+            "company": "Powell Design",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 from 150+ reviews"
       },
       "cta": {
         "title": "Ready to Start Your Project?",
@@ -254,7 +365,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Estimate"
+        "free": "Free Estimate",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "moving": {
@@ -306,9 +425,40 @@
           {
             "name": "Jennifer Martinez",
             "text": "Smoothest move ever! They were on time, careful, and even helped rearrange furniture at the new place.",
-            "location": "Seattle, WA"
+            "location": "Seattle, WA",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Brian Kim",
+            "text": "Moved our 4-bedroom house across state lines without a single item damaged. These guys are true professionals.",
+            "location": "Chicago, IL",
+            "company": "Kim Electronics",
+            "rating": "5"
+          },
+          {
+            "name": "Ashley Morgan",
+            "text": "The packing service saved us so much time. Everything was labeled perfectly and unpacking was a breeze.",
+            "location": "San Francisco, CA",
+            "company": "Morgan Creative",
+            "rating": "5"
+          },
+          {
+            "name": "Christopher Davis",
+            "text": "Affordable, reliable, and on time. That's all you can ask for in a moving company and they delivered on all three.",
+            "location": "Philadelphia, PA",
+            "company": "Davis Law Firm",
+            "rating": "4"
+          },
+          {
+            "name": "Nicole Foster",
+            "text": "They handled our office relocation over a weekend so we had zero downtime. Incredible logistics coordination.",
+            "location": "Austin, TX",
+            "company": "Foster Tech",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.7/5 from 300+ reviews"
       },
       "cta": {
         "title": "Ready to Make Your Move?",
@@ -322,7 +472,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Quote"
+        "free": "Free Quote",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "dentist": {
@@ -374,9 +532,40 @@
           {
             "name": "Robert Thompson",
             "text": "Best dental experience I've ever had. The staff is friendly and the office is so modern and clean.",
-            "location": "Chicago, IL"
+            "location": "Chicago, IL",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Amanda White",
+            "text": "Finally found a dentist my kids actually enjoy visiting. The pediatric team is wonderful and so patient.",
+            "location": "San Diego, CA",
+            "company": "White Marketing",
+            "rating": "5"
+          },
+          {
+            "name": "Daniel Lee",
+            "text": "Had severe dental anxiety but the sedation options and gentle approach made my root canal completely painless.",
+            "location": "Portland, OR",
+            "company": "Lee Engineering",
+            "rating": "5"
+          },
+          {
+            "name": "Jessica Brown",
+            "text": "Invisalign treatment transformed my smile in just 10 months. The results are better than I ever imagined.",
+            "location": "Denver, CO",
+            "company": "Brown & Associates",
+            "rating": "5"
+          },
+          {
+            "name": "William Garcia",
+            "text": "Emergency appointment on a Saturday when I chipped a tooth. They fit me in within an hour. Truly exceptional care.",
+            "location": "Phoenix, AZ",
+            "company": "Garcia Construction",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.9/5 from 400+ reviews"
       },
       "cta": {
         "title": "Ready for a Healthier Smile?",
@@ -390,7 +579,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Consultation"
+        "free": "Free Consultation",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "plastic-surgeon": {
@@ -442,9 +639,40 @@
           {
             "name": "Amanda Foster",
             "text": "The results exceeded my expectations. Dr. Smith was so attentive and made me feel completely at ease.",
-            "location": "Miami, FL"
+            "location": "Miami, FL",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Rachel Stevens",
+            "text": "My rhinoplasty results are beyond what I dreamed. Natural-looking and exactly what I discussed in consultation.",
+            "location": "Beverly Hills, CA",
+            "company": "Stevens PR Agency",
+            "rating": "5"
+          },
+          {
+            "name": "Thomas Wright",
+            "text": "The body contouring after my weight loss journey gave me the confidence boost I needed. Professional from start to finish.",
+            "location": "Scottsdale, AZ",
+            "company": "Wright Fitness",
+            "rating": "5"
+          },
+          {
+            "name": "Christine Park",
+            "text": "Had my facelift here and the recovery was smoother than expected. The post-op care team was incredibly attentive.",
+            "location": "New York, NY",
+            "company": "Park Interiors",
+            "rating": "5"
+          },
+          {
+            "name": "Michael Bennett",
+            "text": "Great experience with gynecomastia surgery. Discreet, professional, and the results are life-changing.",
+            "location": "Dallas, TX",
+            "company": "Bennett Financial",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.9/5 from 120+ reviews"
       },
       "cta": {
         "title": "Ready to Feel Your Best?",
@@ -458,7 +686,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Consultation"
+        "free": "Free Consultation",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "roofing": {
@@ -510,9 +746,40 @@
           {
             "name": "Tom Bradley",
             "text": "After a bad hailstorm, they handled everything with my insurance. New roof looks amazing!",
-            "location": "Dallas, TX"
+            "location": "Dallas, TX",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Kevin Murphy",
+            "text": "Complete roof replacement done in two days. Clean-up was thorough and the new architectural shingles look amazing.",
+            "location": "Kansas City, MO",
+            "company": "Murphy Properties",
+            "rating": "5"
+          },
+          {
+            "name": "Lisa Rodriguez",
+            "text": "They spotted storm damage I didn't even know about during the free inspection. Handled all the insurance paperwork too.",
+            "location": "Oklahoma City, OK",
+            "company": "Rodriguez Realty",
+            "rating": "5"
+          },
+          {
+            "name": "James Turner",
+            "text": "Had three bids and they offered the best value with the longest warranty. Couldn't be happier with the metal roof.",
+            "location": "Nashville, TN",
+            "company": "Turner Construction",
+            "rating": "4"
+          },
+          {
+            "name": "Patricia Adams",
+            "text": "Fixed a persistent leak that two other companies couldn't solve. Their diagnostic process was thorough and effective.",
+            "location": "Indianapolis, IN",
+            "company": "Adams Legal",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 from 250+ reviews"
       },
       "cta": {
         "title": "Ready to Protect Your Home?",
@@ -526,7 +793,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Inspection"
+        "free": "Free Inspection",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "cleaning": {
@@ -578,9 +853,40 @@
           {
             "name": "Lisa Anderson",
             "text": "They've been cleaning my home weekly for a year. Consistent, thorough, and always friendly!",
-            "location": "San Diego, CA"
+            "location": "San Diego, CA",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Jennifer Collins",
+            "text": "Deep cleaning before our holiday party was exceptional. Every surface sparkled. Our guests were so impressed.",
+            "location": "Scottsdale, AZ",
+            "company": "Collins Events",
+            "rating": "5"
+          },
+          {
+            "name": "Mark Thompson",
+            "text": "Move-out cleaning got us our full security deposit back. They even cleaned inside the oven and behind the fridge.",
+            "location": "Seattle, WA",
+            "company": "Thompson Tech",
+            "rating": "5"
+          },
+          {
+            "name": "Diana Nguyen",
+            "text": "Bi-weekly service for our 3,000 sq ft home. They bring their own eco-friendly supplies and the results are consistent.",
+            "location": "Austin, TX",
+            "company": "Nguyen Design",
+            "rating": "4"
+          },
+          {
+            "name": "Steven Clark",
+            "text": "Office cleaning crew is reliable and discrete. They work after hours and our workplace is spotless every morning.",
+            "location": "Denver, CO",
+            "company": "Clark Consulting",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 from 350+ reviews"
       },
       "cta": {
         "title": "Ready for a Spotless Space?",
@@ -594,7 +900,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Quote"
+        "free": "Free Quote",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "hvac": {
@@ -646,9 +960,40 @@
           {
             "name": "Mark Wilson",
             "text": "AC went out on the hottest day of summer. They had a tech here within hours and fixed it same day!",
-            "location": "Las Vegas, NV"
+            "location": "Las Vegas, NV",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Robert Chen",
+            "text": "New HVAC system installation was quick and clean. Our energy bills dropped by 30% the first month. Great recommendation on the right system.",
+            "location": "Phoenix, AZ",
+            "company": "Chen Enterprises",
+            "rating": "5"
+          },
+          {
+            "name": "Amanda Foster",
+            "text": "Annual maintenance plan keeps our system running perfectly. They always call ahead and arrive on time.",
+            "location": "Houston, TX",
+            "company": "Foster Media",
+            "rating": "5"
+          },
+          {
+            "name": "Daniel White",
+            "text": "Heat pump installation in December. They worked through the cold to get it done in one day. True professionals.",
+            "location": "Columbus, OH",
+            "company": "White Industries",
+            "rating": "4"
+          },
+          {
+            "name": "Laura Martinez",
+            "text": "Diagnosed and fixed a strange noise in our ductwork that three other companies missed. Fair pricing and honest assessment.",
+            "location": "San Antonio, TX",
+            "company": "Martinez Law",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 from 280+ reviews"
       },
       "cta": {
         "title": "Ready for Reliable Comfort?",
@@ -662,7 +1007,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Quote"
+        "free": "Free Quote",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "plumbing": {
@@ -714,9 +1067,40 @@
           {
             "name": "Patricia Garcia",
             "text": "Called at 11 PM with a burst pipe. They were here in an hour and stopped the flood. Lifesavers!",
-            "location": "Houston, TX"
+            "location": "Houston, TX",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Michael Adams",
+            "text": "Whole-house repiping completed in three days. No mess, no damage to walls, and water pressure is incredible now.",
+            "location": "Tampa, FL",
+            "company": "Adams Group",
+            "rating": "5"
+          },
+          {
+            "name": "Jessica Lee",
+            "text": "Installed a tankless water heater and the difference is night and day. Endless hot water and lower gas bills.",
+            "location": "Sacramento, CA",
+            "company": "Lee Accounting",
+            "rating": "5"
+          },
+          {
+            "name": "Carlos Rivera",
+            "text": "Fixed a slab leak without tearing up our foundation. The camera inspection technology they use is impressive.",
+            "location": "San Diego, CA",
+            "company": "Rivera Construction",
+            "rating": "5"
+          },
+          {
+            "name": "Nancy Wilson",
+            "text": "Bathroom renovation plumbing was flawless. They coordinated perfectly with our contractor and stayed on schedule.",
+            "location": "Minneapolis, MN",
+            "company": "Wilson Design",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 from 320+ reviews"
       },
       "cta": {
         "title": "Ready to Fix Your Plumbing?",
@@ -730,7 +1114,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Quote"
+        "free": "Free Quote",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "electrician": {
@@ -782,9 +1174,40 @@
           {
             "name": "James Miller",
             "text": "They upgraded our whole panel and added circuits for our home office. Professional and tidy work.",
-            "location": "Portland, OR"
+            "location": "Portland, OR",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Steven Brown",
+            "text": "Complete panel upgrade from 100A to 200A. Clean work, passed inspection first time, and now we can run the AC and EV charger simultaneously.",
+            "location": "Austin, TX",
+            "company": "Brown Tech",
+            "rating": "5"
+          },
+          {
+            "name": "Kelly Garcia",
+            "text": "Installed recessed lighting throughout our home. The placement was perfect and they patched all the drywall beautifully.",
+            "location": "Portland, OR",
+            "company": "Garcia Interiors",
+            "rating": "5"
+          },
+          {
+            "name": "David Park",
+            "text": "Wired our entire new home theater. Surround sound, dedicated circuits, and smart controls all work flawlessly.",
+            "location": "Charlotte, NC",
+            "company": "Park Media",
+            "rating": "5"
+          },
+          {
+            "name": "Michelle Taylor",
+            "text": "EV charger installation was done in half a day. They even helped me understand the electrical rebate programs available.",
+            "location": "Denver, CO",
+            "company": "Taylor Motors",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 from 200+ reviews"
       },
       "cta": {
         "title": "Ready for Safe Electrical Work?",
@@ -798,7 +1221,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Estimate"
+        "free": "Free Estimate",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "pest-control": {
@@ -850,9 +1281,40 @@
           {
             "name": "Nancy Brown",
             "text": "Had a terrible ant problem that no store products could fix. One treatment and they were gone!",
-            "location": "Atlanta, GA"
+            "location": "Atlanta, GA",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Robert Jackson",
+            "text": "Termite treatment saved our home. The baiting system they installed gives us peace of mind. Annual inspections are thorough.",
+            "location": "Atlanta, GA",
+            "company": "Jackson Properties",
+            "rating": "5"
+          },
+          {
+            "name": "Samantha Reed",
+            "text": "Bed bug heat treatment worked on the first try. Other companies wanted to use chemicals but this was safer for our pets.",
+            "location": "New York, NY",
+            "company": "Reed Publishing",
+            "rating": "5"
+          },
+          {
+            "name": "Thomas Green",
+            "text": "Quarterly pest service keeps our restaurant pest-free. They understand commercial kitchen requirements perfectly.",
+            "location": "Miami, FL",
+            "company": "Green Kitchen",
+            "rating": "4"
+          },
+          {
+            "name": "Diana Collins",
+            "text": "Sealed all entry points and eliminated our mouse problem for good. No more traps, no more worries.",
+            "location": "Chicago, IL",
+            "company": "Collins Real Estate",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.7/5 from 220+ reviews"
       },
       "cta": {
         "title": "Ready to Be Pest-Free?",
@@ -866,7 +1328,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Inspection"
+        "free": "Free Inspection",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "landscaping": {
@@ -918,9 +1388,40 @@
           {
             "name": "Steven Clark",
             "text": "They completely transformed our backyard into an oasis. The patio and plantings are stunning!",
-            "location": "Nashville, TN"
+            "location": "Nashville, TN",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Michelle Adams",
+            "text": "Complete backyard transformation with a beautiful patio, fire pit, and native plants. It's like having a resort at home.",
+            "location": "Phoenix, AZ",
+            "company": "Adams Architecture",
+            "rating": "5"
+          },
+          {
+            "name": "Brian Foster",
+            "text": "Weekly lawn maintenance is always on schedule. Our yard looks better than ever and the price is very reasonable.",
+            "location": "Dallas, TX",
+            "company": "Foster Law",
+            "rating": "5"
+          },
+          {
+            "name": "Angela Park",
+            "text": "Installed a drip irrigation system that cut our water bill in half. Smart, sustainable landscaping expertise.",
+            "location": "Las Vegas, NV",
+            "company": "Park Wellness",
+            "rating": "4"
+          },
+          {
+            "name": "William Turner",
+            "text": "Tree removal was done safely and efficiently. They even ground the stumps and spread fresh mulch. Outstanding crew.",
+            "location": "Nashville, TN",
+            "company": "Turner Development",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 from 180+ reviews"
       },
       "cta": {
         "title": "Ready for a Beautiful Yard?",
@@ -934,7 +1435,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Quote"
+        "free": "Free Quote",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "pool-service": {
@@ -986,9 +1495,40 @@
           {
             "name": "Karen White",
             "text": "Finally found a reliable pool service! They show up every week and our pool has never looked better.",
-            "location": "Scottsdale, AZ"
+            "location": "Scottsdale, AZ",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "David Martinez",
+            "text": "Weekly pool maintenance keeps our water crystal clear. They adjust chemicals perfectly and the pool is always swim-ready.",
+            "location": "Miami, FL",
+            "company": "Martinez Holdings",
+            "rating": "5"
+          },
+          {
+            "name": "Jennifer Lee",
+            "text": "Complete pool renovation with new tile, plaster, and equipment. It looks brand new and the energy-efficient pump saves us money monthly.",
+            "location": "Phoenix, AZ",
+            "company": "Lee Design Group",
+            "rating": "5"
+          },
+          {
+            "name": "Richard Brown",
+            "text": "Installed a saltwater conversion system. No more harsh chlorine smell and the water feels incredibly soft.",
+            "location": "Tampa, FL",
+            "company": "Brown Financial",
+            "rating": "4"
+          },
+          {
+            "name": "Sara Kim",
+            "text": "Leak detection and repair done without draining the pool. Their technology is impressive and the repair was permanent.",
+            "location": "San Diego, CA",
+            "company": "Kim Consulting",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 from 150+ reviews"
       },
       "cta": {
         "title": "Ready for a Pristine Pool?",
@@ -1002,7 +1542,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Quote"
+        "free": "Free Quote",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "home-remodeling": {
@@ -1054,9 +1602,40 @@
           {
             "name": "Michelle Davis",
             "text": "Our kitchen remodel exceeded expectations. They were professional, clean, and the result is gorgeous!",
-            "location": "San Francisco, CA"
+            "location": "San Francisco, CA",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Christopher White",
+            "text": "Kitchen remodel exceeded our expectations. Custom cabinets, quartz countertops, and the tile work is a masterpiece.",
+            "location": "Seattle, WA",
+            "company": "White Construction",
+            "rating": "5"
+          },
+          {
+            "name": "Laura Chen",
+            "text": "Basement finishing created the perfect entertainment space. Built-in bar, theater area, and a guest bedroom. Amazing transformation.",
+            "location": "Minneapolis, MN",
+            "company": "Chen Media",
+            "rating": "5"
+          },
+          {
+            "name": "Robert Garcia",
+            "text": "Bathroom remodel was completed on time despite supply chain issues. They planned ahead and communicated every step.",
+            "location": "Austin, TX",
+            "company": "Garcia Development",
+            "rating": "4"
+          },
+          {
+            "name": "Sarah Thompson",
+            "text": "Whole-home renovation while we lived in it. They contained the work areas perfectly and minimized disruption to our daily life.",
+            "location": "Portland, OR",
+            "company": "Thompson Interiors",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 from 170+ reviews"
       },
       "cta": {
         "title": "Ready to Transform Your Home?",
@@ -1070,7 +1649,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Quote"
+        "free": "Free Quote",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "solar": {
@@ -1122,9 +1709,40 @@
           {
             "name": "Richard Kim",
             "text": "Our electric bill went from $250 to $12! The installation was quick and the team was knowledgeable.",
-            "location": "Sacramento, CA"
+            "location": "Sacramento, CA",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "James Mitchell",
+            "text": "Our electric bill went from $300 to $15 per month. The ROI analysis they provided was accurate and the installation was clean.",
+            "location": "San Diego, CA",
+            "company": "Mitchell Engineering",
+            "rating": "5"
+          },
+          {
+            "name": "Lisa Park",
+            "text": "Battery storage system lets us keep the lights on during outages. The whole-home solar solution has been life-changing.",
+            "location": "Austin, TX",
+            "company": "Park Ventures",
+            "rating": "5"
+          },
+          {
+            "name": "Andrew Foster",
+            "text": "They handled all the permits, HOA approvals, and utility interconnection paperwork. All I had to do was sign and save money.",
+            "location": "Phoenix, AZ",
+            "company": "Foster Group",
+            "rating": "5"
+          },
+          {
+            "name": "Carmen Rodriguez",
+            "text": "Best investment we've made in our home. The panels are sleek, the app monitoring is great, and customer service is responsive.",
+            "location": "Las Vegas, NV",
+            "company": "Rodriguez Retail",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.9/5 from 200+ reviews"
       },
       "cta": {
         "title": "Ready to Go Solar?",
@@ -1138,7 +1756,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Quote"
+        "free": "Free Quote",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "locksmith": {
@@ -1190,9 +1816,40 @@
           {
             "name": "Daniel Lopez",
             "text": "Locked my keys in the car late at night. They were there in 20 minutes and got me in without damage.",
-            "location": "Philadelphia, PA"
+            "location": "Philadelphia, PA",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Mark Stevens",
+            "text": "Locked out at midnight and they arrived in 20 minutes. Professional, no damage to the door, and very reasonable price.",
+            "location": "Chicago, IL",
+            "company": "Stevens Security",
+            "rating": "5"
+          },
+          {
+            "name": "Jennifer Adams",
+            "text": "Rekeyed our entire house after a break-in. They also installed deadbolts and a smart lock system. Feel much safer now.",
+            "location": "Dallas, TX",
+            "company": "Adams Properties",
+            "rating": "5"
+          },
+          {
+            "name": "Carlos Chen",
+            "text": "Commercial lock installation for our new office. Master key system works perfectly and the electronic access is seamless.",
+            "location": "Houston, TX",
+            "company": "Chen Industries",
+            "rating": "4"
+          },
+          {
+            "name": "Linda Martinez",
+            "text": "Car lockout service was fast and didn't scratch the paint. They also made spare keys on the spot. Excellent mobile service.",
+            "location": "Phoenix, AZ",
+            "company": "Martinez Auto",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.7/5 from 190+ reviews"
       },
       "cta": {
         "title": "Need a Locksmith Now?",
@@ -1206,7 +1863,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Quote"
+        "free": "Free Quote",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "pressure-washing": {
@@ -1258,9 +1923,40 @@
           {
             "name": "Carol Martin",
             "text": "My driveway and patio look brand new! Couldn't believe the difference pressure washing made.",
-            "location": "Charlotte, NC"
+            "location": "Charlotte, NC",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "David Wilson",
+            "text": "Our driveway looks brand new after years of oil stains and grime. They also did the sidewalks and the whole property looks refreshed.",
+            "location": "Atlanta, GA",
+            "company": "Wilson Properties",
+            "rating": "5"
+          },
+          {
+            "name": "Jessica Foster",
+            "text": "Deck cleaning and sealing made the wood look like it was just installed. Great preparation for our summer entertaining season.",
+            "location": "Nashville, TN",
+            "company": "Foster Events",
+            "rating": "5"
+          },
+          {
+            "name": "Brian Adams",
+            "text": "Commercial building wash before our grand opening. The storefront went from dingy to inviting. Great first impression for customers.",
+            "location": "Charlotte, NC",
+            "company": "Adams Retail",
+            "rating": "4"
+          },
+          {
+            "name": "Angela Taylor",
+            "text": "Roof soft wash removed all the black streaks without damaging the shingles. Huge curb appeal improvement for our home sale.",
+            "location": "Tampa, FL",
+            "company": "Taylor Realty",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 from 160+ reviews"
       },
       "cta": {
         "title": "Ready to Restore Your Property?",
@@ -1274,7 +1970,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Quote"
+        "free": "Free Quote",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "water-damage-restoration": {
@@ -1326,9 +2030,40 @@
           {
             "name": "Anthony Reed",
             "text": "Pipe burst at midnight. They were here by 2 AM and saved our hardwood floors. Amazing response!",
-            "location": "Minneapolis, MN"
+            "location": "Minneapolis, MN",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Michael Foster",
+            "text": "Responded within 45 minutes at 2 AM when our basement flooded. Extraction, drying, and mold prevention were all handled expertly.",
+            "location": "Columbus, OH",
+            "company": "Foster Construction",
+            "rating": "5"
+          },
+          {
+            "name": "Lisa Turner",
+            "text": "Fire sprinkler malfunction caused major damage. They coordinated with our insurance and restored everything to better than original.",
+            "location": "Denver, CO",
+            "company": "Turner Media",
+            "rating": "5"
+          },
+          {
+            "name": "Robert Kim",
+            "text": "Sewage backup cleanup was thorough and they sanitized everything. Their biohazard training was evident in their careful approach.",
+            "location": "Houston, TX",
+            "company": "Kim Real Estate",
+            "rating": "5"
+          },
+          {
+            "name": "Angela White",
+            "text": "Hidden pipe leak caused damage inside our walls. They found it, repaired it, and rebuilt the wall perfectly. No signs it ever happened.",
+            "location": "Portland, OR",
+            "company": "White Interiors",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.9/5 from 130+ reviews"
       },
       "cta": {
         "title": "Have Water Damage?",
@@ -1342,7 +2077,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Assessment"
+        "free": "Free Assessment",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "mold-remediation": {
@@ -1394,9 +2137,40 @@
           {
             "name": "Elizabeth Taylor",
             "text": "Found mold in our basement after flooding. They removed it completely and fixed the moisture problem.",
-            "location": "Baltimore, MD"
+            "location": "Baltimore, MD",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Christopher Adams",
+            "text": "Found black mold in our attic during home inspection. They remediated everything and the clearance testing came back clean.",
+            "location": "Seattle, WA",
+            "company": "Adams Health",
+            "rating": "5"
+          },
+          {
+            "name": "Jennifer Park",
+            "text": "Our child's allergies improved dramatically after their thorough mold removal. They found sources we never would have discovered.",
+            "location": "Miami, FL",
+            "company": "Park Medical",
+            "rating": "5"
+          },
+          {
+            "name": "Steven Martinez",
+            "text": "Crawl space encapsulation and mold treatment. The humidity is now controlled and no more musty smell. Professional and knowledgeable.",
+            "location": "Nashville, TN",
+            "company": "Martinez Properties",
+            "rating": "5"
+          },
+          {
+            "name": "Karen Wilson",
+            "text": "HVAC mold contamination was making us sick. They cleaned the entire system and installed UV lights for prevention. Problem solved.",
+            "location": "Chicago, IL",
+            "company": "Wilson Consulting",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 from 110+ reviews"
       },
       "cta": {
         "title": "Concerned About Mold?",
@@ -1410,7 +2184,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Inspection"
+        "free": "Free Inspection",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "flooring": {
@@ -1462,9 +2244,40 @@
           {
             "name": "Christopher Hall",
             "text": "The hardwood floors they installed are absolutely stunning. Great craftsmanship and fair pricing.",
-            "location": "Denver, CO"
+            "location": "Denver, CO",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Brian Mitchell",
+            "text": "Hardwood floors throughout our first floor are stunning. The craftsmanship is impeccable and the stain color is exactly what we wanted.",
+            "location": "Austin, TX",
+            "company": "Mitchell Design",
+            "rating": "5"
+          },
+          {
+            "name": "Laura Adams",
+            "text": "LVP flooring in our rental properties is durable and looks high-end. Tenants love it and it's easy to maintain.",
+            "location": "Dallas, TX",
+            "company": "Adams Rentals",
+            "rating": "5"
+          },
+          {
+            "name": "Kevin Brown",
+            "text": "Refinished our 80-year-old oak floors. They look better than new while preserving the character. Dustless process was a huge plus.",
+            "location": "Philadelphia, PA",
+            "company": "Brown Heritage",
+            "rating": "5"
+          },
+          {
+            "name": "Rachel Garcia",
+            "text": "Tile installation in our master bath is beautiful. The pattern work and grouting are flawless. Very happy with the result.",
+            "location": "San Diego, CA",
+            "company": "Garcia Interiors",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 from 190+ reviews"
       },
       "cta": {
         "title": "Ready for New Floors?",
@@ -1478,7 +2291,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Estimate"
+        "free": "Free Estimate",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "painting": {
@@ -1530,9 +2351,40 @@
           {
             "name": "Linda Wright",
             "text": "They painted our entire exterior beautifully. Neat, professional, and the color is perfect!",
-            "location": "Raleigh, NC"
+            "location": "Raleigh, NC",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Michael Scott",
+            "text": "Exterior paint job transformed our home. They power washed, scraped, primed, and applied two coats. Five-year warranty included.",
+            "location": "Portland, OR",
+            "company": "Scott Properties",
+            "rating": "5"
+          },
+          {
+            "name": "Jessica Chen",
+            "text": "Interior painting of 8 rooms completed in three days. Clean edges, no drips, and they moved all the furniture themselves.",
+            "location": "Denver, CO",
+            "company": "Chen Architecture",
+            "rating": "5"
+          },
+          {
+            "name": "David Foster",
+            "text": "Cabinet painting saved us thousands versus replacing them. The factory-like finish is incredible. You'd never know they weren't new.",
+            "location": "Nashville, TN",
+            "company": "Foster Kitchen",
+            "rating": "4"
+          },
+          {
+            "name": "Amanda Lee",
+            "text": "Commercial office painting done over the weekend. Zero downtime for our business and the color consultation was very helpful.",
+            "location": "Chicago, IL",
+            "company": "Lee Consulting",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 from 230+ reviews"
       },
       "cta": {
         "title": "Ready to Refresh Your Home?",
@@ -1546,7 +2398,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Estimate"
+        "free": "Free Estimate",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "windows-doors": {
@@ -1598,9 +2458,40 @@
           {
             "name": "Robert Adams",
             "text": "Replaced all our windows and the difference in comfort and energy bills is remarkable!",
-            "location": "Columbus, OH"
+            "location": "Columbus, OH",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Daniel Clark",
+            "text": "Replaced 15 windows with energy-efficient models. Our heating bill dropped 25% and the noise reduction is remarkable.",
+            "location": "Minneapolis, MN",
+            "company": "Clark Engineering",
+            "rating": "5"
+          },
+          {
+            "name": "Laura White",
+            "text": "New front door completely changed our home's curb appeal. The installation was precise and the insulation is noticeably better.",
+            "location": "Charlotte, NC",
+            "company": "White Design",
+            "rating": "5"
+          },
+          {
+            "name": "Brian Martinez",
+            "text": "Sliding glass door replacement with impact-resistant glass. Perfect for our hurricane-prone area and the warranty is excellent.",
+            "location": "Tampa, FL",
+            "company": "Martinez Homes",
+            "rating": "4"
+          },
+          {
+            "name": "Karen Foster",
+            "text": "French doors installed between our kitchen and patio. Beautiful workmanship and they sealed everything perfectly against drafts.",
+            "location": "San Diego, CA",
+            "company": "Foster Living",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 from 170+ reviews"
       },
       "cta": {
         "title": "Ready for New Windows or Doors?",
@@ -1614,7 +2505,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Quote"
+        "free": "Free Quote",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "fencing": {
@@ -1666,9 +2565,40 @@
           {
             "name": "George Nelson",
             "text": "Beautiful cedar fence installed in just two days. Looks great and gives us the privacy we wanted.",
-            "location": "St. Louis, MO"
+            "location": "St. Louis, MO",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Michael Turner",
+            "text": "Cedar privacy fence installed around our entire backyard. Beautiful craftsmanship and it was done in just two days.",
+            "location": "Austin, TX",
+            "company": "Turner Homes",
+            "rating": "5"
+          },
+          {
+            "name": "Jessica Adams",
+            "text": "Aluminum fence around our pool area looks elegant and meets all code requirements. Great attention to safety details.",
+            "location": "Orlando, FL",
+            "company": "Adams Construction",
+            "rating": "5"
+          },
+          {
+            "name": "Robert Clark",
+            "text": "Chain link fence for our commercial property was installed quickly and at a very competitive price. Good quality materials.",
+            "location": "Dallas, TX",
+            "company": "Clark Industrial",
+            "rating": "4"
+          },
+          {
+            "name": "Laura Mitchell",
+            "text": "Custom wrought iron gate is the highlight of our front yard. Every guest comments on it. True artisan quality.",
+            "location": "San Antonio, TX",
+            "company": "Mitchell Estates",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.7/5 from 140+ reviews"
       },
       "cta": {
         "title": "Ready for a New Fence?",
@@ -1682,7 +2612,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Estimate"
+        "free": "Free Estimate",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "concrete": {
@@ -1734,9 +2672,40 @@
           {
             "name": "Frank Peterson",
             "text": "Our stamped concrete patio is gorgeous! Looks like expensive stone but much more affordable.",
-            "location": "Indianapolis, IN"
+            "location": "Indianapolis, IN",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "David Lee",
+            "text": "Stamped concrete patio looks like real stone at a fraction of the cost. The color and pattern choices were extensive.",
+            "location": "Phoenix, AZ",
+            "company": "Lee Development",
+            "rating": "5"
+          },
+          {
+            "name": "Jennifer White",
+            "text": "Driveway replacement with exposed aggregate finish. Beautiful, durable, and great drainage. Way better than plain concrete.",
+            "location": "Dallas, TX",
+            "company": "White Properties",
+            "rating": "5"
+          },
+          {
+            "name": "Brian Garcia",
+            "text": "Foundation repair saved our home. They used pier and beam methods and the house is level again. No more sticking doors.",
+            "location": "Houston, TX",
+            "company": "Garcia Engineering",
+            "rating": "5"
+          },
+          {
+            "name": "Sara Turner",
+            "text": "Polished concrete floors in our warehouse look professional and are so easy to maintain. Great industrial aesthetic.",
+            "location": "Portland, OR",
+            "company": "Turner Logistics",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 from 130+ reviews"
       },
       "cta": {
         "title": "Ready for Quality Concrete?",
@@ -1750,7 +2719,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Estimate"
+        "free": "Free Estimate",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "junk-removal": {
@@ -1802,9 +2779,40 @@
           {
             "name": "Dorothy Hill",
             "text": "Cleared out my entire garage in under an hour. Great price and very professional team!",
-            "location": "Tampa, FL"
+            "location": "Tampa, FL",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Kevin Foster",
+            "text": "Estate cleanout of my parents' 4-bedroom house done in one day. They donated what they could and recycled properly.",
+            "location": "Chicago, IL",
+            "company": "Foster Estates",
+            "rating": "5"
+          },
+          {
+            "name": "Lisa Adams",
+            "text": "Construction debris removal after our renovation was fast and affordable. They even swept the driveway when done.",
+            "location": "Atlanta, GA",
+            "company": "Adams Renovations",
+            "rating": "5"
+          },
+          {
+            "name": "Michael Chen",
+            "text": "Hot tub removal from our backyard. I thought it would take forever but they had it gone in under two hours. Impressive.",
+            "location": "Portland, OR",
+            "company": "Chen Real Estate",
+            "rating": "4"
+          },
+          {
+            "name": "Amanda Brown",
+            "text": "Regular commercial dumpster service is always on schedule. Reliable, clean, and their customer service team is responsive.",
+            "location": "Denver, CO",
+            "company": "Brown Business",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.7/5 from 200+ reviews"
       },
       "cta": {
         "title": "Ready to Get Rid of Junk?",
@@ -1818,7 +2826,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Quote"
+        "free": "Free Quote",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "appliance-repair": {
@@ -1870,9 +2886,40 @@
           {
             "name": "Melissa Turner",
             "text": "Fixed my refrigerator same day for a fraction of what a new one would cost. Highly recommend!",
-            "location": "Kansas City, MO"
+            "location": "Kansas City, MO",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Steven Garcia",
+            "text": "Fixed my Samsung refrigerator that two other technicians said was unrepairable. Saved me $3,000 on a replacement.",
+            "location": "Dallas, TX",
+            "company": "Garcia Foods",
+            "rating": "5"
+          },
+          {
+            "name": "Jennifer White",
+            "text": "Washing machine repair was done same day. The technician had the part on his truck and explained what went wrong.",
+            "location": "Portland, OR",
+            "company": "White Rentals",
+            "rating": "5"
+          },
+          {
+            "name": "Carlos Martinez",
+            "text": "Dishwasher and oven repaired in one visit. They offer package deals for multiple appliances. Very cost-effective.",
+            "location": "Miami, FL",
+            "company": "Martinez Hospitality",
+            "rating": "4"
+          },
+          {
+            "name": "Rachel Foster",
+            "text": "Commercial kitchen equipment maintenance contract has prevented breakdowns. They service all brands and are always prompt.",
+            "location": "Houston, TX",
+            "company": "Foster Catering",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.7/5 from 180+ reviews"
       },
       "cta": {
         "title": "Appliance Acting Up?",
@@ -1886,7 +2933,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Diagnosis"
+        "free": "Free Diagnosis",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "orthodontist": {
@@ -1938,9 +2993,40 @@
           {
             "name": "Jessica Roberts",
             "text": "Got Invisalign as an adult and love my new smile! The process was easier than I expected.",
-            "location": "San Jose, CA"
+            "location": "San Jose, CA",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Amanda Lee",
+            "text": "My teenager's braces treatment was ahead of schedule. The office makes every visit fun and the results are beautiful.",
+            "location": "Austin, TX",
+            "company": "Lee Family",
+            "rating": "5"
+          },
+          {
+            "name": "David Chen",
+            "text": "Adult Invisalign treatment was the best decision I made. No one at work even knew I was straightening my teeth.",
+            "location": "San Francisco, CA",
+            "company": "Chen Tech",
+            "rating": "5"
+          },
+          {
+            "name": "Maria Garcia",
+            "text": "Both my kids had treatment here. Flexible payment plans made it affordable and the staff treats them like family.",
+            "location": "Orlando, FL",
+            "company": "Garcia Family",
+            "rating": "5"
+          },
+          {
+            "name": "Brian White",
+            "text": "Complex bite correction with braces and expander. The treatment plan was thorough and the outcome is incredible.",
+            "location": "Denver, CO",
+            "company": "White Engineering",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.9/5 from 250+ reviews"
       },
       "cta": {
         "title": "Ready for a Straighter Smile?",
@@ -1954,7 +3040,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Consultation"
+        "free": "Free Consultation",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "dermatology": {
@@ -2006,9 +3100,40 @@
           {
             "name": "Samantha Lee",
             "text": "Finally found a treatment that cleared my adult acne. The doctors here really listen.",
-            "location": "New York, NY"
+            "location": "New York, NY",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Laura Mitchell",
+            "text": "Finally cleared my adult acne after years of trying everything. The personalized treatment plan was a game-changer.",
+            "location": "Los Angeles, CA",
+            "company": "Mitchell PR",
+            "rating": "5"
+          },
+          {
+            "name": "Kevin Turner",
+            "text": "Annual skin cancer screening found a spot I'd been ignoring. Early detection may have saved my life. So grateful.",
+            "location": "Phoenix, AZ",
+            "company": "Turner Consulting",
+            "rating": "5"
+          },
+          {
+            "name": "Rachel Adams",
+            "text": "Eczema treatment for my daughter has been transformative. The dermatologist was so patient and understanding with a child.",
+            "location": "Portland, OR",
+            "company": "Adams Family",
+            "rating": "5"
+          },
+          {
+            "name": "James Foster",
+            "text": "Laser treatment for sun damage made me look ten years younger. The recovery was quick and the results are natural-looking.",
+            "location": "Miami, FL",
+            "company": "Foster Capital",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.9/5 from 180+ reviews"
       },
       "cta": {
         "title": "Ready for Healthier Skin?",
@@ -2022,7 +3147,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Consultation"
+        "free": "Free Consultation",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "medspa": {
@@ -2074,9 +3207,40 @@
           {
             "name": "Victoria James",
             "text": "The results are so natural - I look refreshed, not overdone. Love this place!",
-            "location": "Los Angeles, CA"
+            "location": "Los Angeles, CA",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Christine Lee",
+            "text": "Botox and filler results look so natural. The injector has an artistic eye and took time to understand my goals.",
+            "location": "Scottsdale, AZ",
+            "company": "Lee Beauty",
+            "rating": "5"
+          },
+          {
+            "name": "Daniel Park",
+            "text": "Laser hair removal package has been life-changing. After 6 sessions, I'm virtually hair-free. Worth every penny.",
+            "location": "Miami, FL",
+            "company": "Park Fitness",
+            "rating": "5"
+          },
+          {
+            "name": "Sarah Martinez",
+            "text": "HydraFacial monthly membership keeps my skin glowing. The estheticians are knowledgeable and the facility is luxurious.",
+            "location": "Dallas, TX",
+            "company": "Martinez Fashion",
+            "rating": "4"
+          },
+          {
+            "name": "Robert Chen",
+            "text": "CoolSculpting results exceeded my expectations. Lost the stubborn belly fat that wouldn't budge with diet and exercise.",
+            "location": "San Diego, CA",
+            "company": "Chen Wellness",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.9/5 from 160+ reviews"
       },
       "cta": {
         "title": "Ready to Look Your Best?",
@@ -2090,7 +3254,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Consultation"
+        "free": "Free Consultation",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "chiropractic": {
@@ -2142,9 +3314,40 @@
           {
             "name": "Brian Collins",
             "text": "Years of back pain resolved after just a few visits. Wish I'd come sooner!",
-            "location": "Cleveland, OH"
+            "location": "Cleveland, OH",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Kevin Adams",
+            "text": "Years of lower back pain resolved in just 8 weeks of treatment. Should have come here sooner instead of relying on painkillers.",
+            "location": "Nashville, TN",
+            "company": "Adams Fitness",
+            "rating": "5"
+          },
+          {
+            "name": "Jennifer Turner",
+            "text": "Prenatal chiropractic care made my pregnancy so much more comfortable. The Webster technique was gentle and effective.",
+            "location": "Portland, OR",
+            "company": "Turner Wellness",
+            "rating": "5"
+          },
+          {
+            "name": "Michael Park",
+            "text": "Sports injury rehabilitation got me back on the tennis court in record time. The combination of adjustments and exercises works.",
+            "location": "Denver, CO",
+            "company": "Park Athletics",
+            "rating": "4"
+          },
+          {
+            "name": "Lisa Foster",
+            "text": "Family plan lets all four of us get monthly adjustments. The kids' posture has improved noticeably and they sleep better.",
+            "location": "Austin, TX",
+            "company": "Foster Health",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 from 220+ reviews"
       },
       "cta": {
         "title": "Ready to Feel Better?",
@@ -2158,7 +3361,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Consultation"
+        "free": "Free Consultation",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "physical-therapy": {
@@ -2210,9 +3421,40 @@
           {
             "name": "Angela Morgan",
             "text": "After my knee surgery, they got me back to running in just 3 months. Excellent care!",
-            "location": "Boston, MA"
+            "location": "Boston, MA",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "David Adams",
+            "text": "Post-knee replacement PT was excellent. The therapist pushed me just enough and I'm back to hiking trails at 6 months.",
+            "location": "Portland, OR",
+            "company": "Adams Active",
+            "rating": "5"
+          },
+          {
+            "name": "Rachel Turner",
+            "text": "Shoulder rehabilitation after surgery was thorough and progressive. Full range of motion restored and no more pain.",
+            "location": "Denver, CO",
+            "company": "Turner Family",
+            "rating": "5"
+          },
+          {
+            "name": "Brian Mitchell",
+            "text": "Dry needling for chronic neck tension has been incredibly effective. Combined with exercises, I'm finally pain-free.",
+            "location": "Austin, TX",
+            "company": "Mitchell Sports",
+            "rating": "5"
+          },
+          {
+            "name": "Laura Garcia",
+            "text": "Pelvic floor therapy postpartum was life-changing. The care was compassionate, private, and remarkably effective.",
+            "location": "San Diego, CA",
+            "company": "Garcia Family",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.9/5 from 200+ reviews"
       },
       "cta": {
         "title": "Ready to Start Healing?",
@@ -2226,7 +3468,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Consultation"
+        "free": "Free Consultation",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "hair-transplant": {
@@ -2278,9 +3528,40 @@
           {
             "name": "Kevin Murphy",
             "text": "Best decision I ever made. My hairline looks completely natural. Nobody can tell!",
-            "location": "Chicago, IL"
+            "location": "Chicago, IL",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "James Chen",
+            "text": "FUE procedure results are incredible. Natural hairline and no one can tell it's a transplant. Confidence completely restored.",
+            "location": "Los Angeles, CA",
+            "company": "Chen Media",
+            "rating": "5"
+          },
+          {
+            "name": "Robert Adams",
+            "text": "Had the procedure done on Friday, back to work on Monday. The minimally invasive technique was virtually painless.",
+            "location": "Miami, FL",
+            "company": "Adams Law",
+            "rating": "5"
+          },
+          {
+            "name": "Daniel Foster",
+            "text": "Crown restoration looks completely natural. The density achieved exceeded what I thought was possible. Five-star experience.",
+            "location": "Dallas, TX",
+            "company": "Foster Group",
+            "rating": "5"
+          },
+          {
+            "name": "Steven Park",
+            "text": "Combined PRP therapy with transplant for optimal results. The follow-up care has been exceptional with regular check-ins.",
+            "location": "San Francisco, CA",
+            "company": "Park Consulting",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 from 90+ reviews"
       },
       "cta": {
         "title": "Ready to Restore Your Hair?",
@@ -2294,7 +3575,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Consultation"
+        "free": "Free Consultation",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "cosmetic-dentistry": {
@@ -2346,9 +3635,40 @@
           {
             "name": "Diana Ross",
             "text": "My veneers are absolutely beautiful. I can't stop smiling! Life-changing experience.",
-            "location": "Beverly Hills, CA"
+            "location": "Beverly Hills, CA",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Laura Stevens",
+            "text": "Porcelain veneers completely transformed my smile. They look natural, feel perfect, and the color matching was spot-on.",
+            "location": "Beverly Hills, CA",
+            "company": "Stevens Media",
+            "rating": "5"
+          },
+          {
+            "name": "Kevin Chen",
+            "text": "Professional whitening with custom trays gave me Hollywood-level results. 8 shades whiter in just two weeks.",
+            "location": "New York, NY",
+            "company": "Chen Finance",
+            "rating": "5"
+          },
+          {
+            "name": "Amanda Turner",
+            "text": "Full smile makeover including crowns, veneers, and whitening. It's like getting a whole new face. Best investment ever.",
+            "location": "Scottsdale, AZ",
+            "company": "Turner Beauty",
+            "rating": "4"
+          },
+          {
+            "name": "Robert Mitchell",
+            "text": "Dental implants replaced my missing front teeth. They look and feel completely natural. I can eat and smile with confidence.",
+            "location": "Chicago, IL",
+            "company": "Mitchell Holdings",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.9/5 from 170+ reviews"
       },
       "cta": {
         "title": "Ready for Your Dream Smile?",
@@ -2362,7 +3682,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Consultation"
+        "free": "Free Consultation",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "personal-injury-attorney": {
@@ -2414,9 +3742,40 @@
           {
             "name": "Maria Rodriguez",
             "text": "They got me 3x what the insurance company initially offered. Couldn't have done it without them.",
-            "location": "Orlando, FL"
+            "location": "Orlando, FL",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "David Turner",
+            "text": "Settled my car accident case for 3x the initial insurance offer. They fought for every penny I deserved.",
+            "location": "Houston, TX",
+            "company": "Turner Industries",
+            "rating": "5"
+          },
+          {
+            "name": "Jennifer Kim",
+            "text": "Slip and fall at a grocery store. They handled everything while I focused on recovery. Excellent settlement.",
+            "location": "Orlando, FL",
+            "company": "Kim Family",
+            "rating": "5"
+          },
+          {
+            "name": "Carlos Foster",
+            "text": "Workplace injury case was complex but they navigated workers' comp and personal injury simultaneously. Very knowledgeable.",
+            "location": "Chicago, IL",
+            "company": "Foster Manufacturing",
+            "rating": "5"
+          },
+          {
+            "name": "Amanda Lee",
+            "text": "Medical malpractice case settled fairly. They brought in expert witnesses and built a compelling case. No upfront costs.",
+            "location": "Dallas, TX",
+            "company": "Lee Family",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 from 150+ reviews"
       },
       "cta": {
         "title": "Injured and Need Help?",
@@ -2430,7 +3789,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Consultation"
+        "free": "Free Consultation",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "immigration-attorney": {
@@ -2482,9 +3849,40 @@
           {
             "name": "Carlos Mendez",
             "text": "They helped my whole family get green cards. Professional, caring, and always kept us informed.",
-            "location": "Houston, TX"
+            "location": "Houston, TX",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Ana Garcia",
+            "text": "Family-based green card approved in 8 months. They prepared everything perfectly and we didn't have a single RFE.",
+            "location": "Los Angeles, CA",
+            "company": "Garcia Family",
+            "rating": "5"
+          },
+          {
+            "name": "Wei Chen",
+            "text": "H-1B visa approved on the first attempt. Their understanding of USCIS requirements is exceptional. Highly recommend.",
+            "location": "San Francisco, CA",
+            "company": "Chen Technology",
+            "rating": "5"
+          },
+          {
+            "name": "Mohammed Ali",
+            "text": "Asylum case was approved after a difficult process. Their compassion and legal expertise gave my family a new life.",
+            "location": "New York, NY",
+            "company": "Ali Trading",
+            "rating": "5"
+          },
+          {
+            "name": "Sandra Kim",
+            "text": "Naturalization process was smooth with their guidance. They prepared me for the interview and I passed easily.",
+            "location": "Chicago, IL",
+            "company": "Kim Associates",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.9/5 from 180+ reviews"
       },
       "cta": {
         "title": "Ready to Start Your Immigration Journey?",
@@ -2498,7 +3896,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Consultation"
+        "free": "Free Consultation",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "criminal-defense-attorney": {
@@ -2550,9 +3956,40 @@
           {
             "name": "James Walker",
             "text": "They got my DUI charges reduced. My license was saved and I avoided jail time.",
-            "location": "Phoenix, AZ"
+            "location": "Phoenix, AZ",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Robert Foster",
+            "text": "DUI charges were reduced significantly. Their negotiation skills are incredible and they kept me informed throughout.",
+            "location": "Atlanta, GA",
+            "company": "Foster Group",
+            "rating": "5"
+          },
+          {
+            "name": "Michael Chen",
+            "text": "Felony charges dismissed due to their thorough investigation and evidence challenges. Truly outstanding legal work.",
+            "location": "Dallas, TX",
+            "company": "Chen Industries",
+            "rating": "5"
+          },
+          {
+            "name": "Jennifer Adams",
+            "text": "White-collar defense case handled with discretion and expertise. They protected my reputation and achieved the best outcome.",
+            "location": "New York, NY",
+            "company": "Adams Financial",
+            "rating": "4"
+          },
+          {
+            "name": "David Martinez",
+            "text": "Domestic violence allegations were unfounded and they proved it. Compassionate representation during a difficult time.",
+            "location": "Miami, FL",
+            "company": "Martinez Group",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 from 120+ reviews"
       },
       "cta": {
         "title": "Facing Criminal Charges?",
@@ -2566,7 +4003,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Consultation"
+        "free": "Free Consultation",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "tax-accounting": {
@@ -2618,9 +4063,40 @@
           {
             "name": "Susan Chang",
             "text": "They found deductions my previous preparer missed and got me a larger refund. Very thorough!",
-            "location": "Seattle, WA"
+            "location": "Seattle, WA",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "David Mitchell",
+            "text": "Found $12,000 in deductions I'd been missing for years. Their tax planning strategy has saved our business thousands.",
+            "location": "Austin, TX",
+            "company": "Mitchell Ventures",
+            "rating": "5"
+          },
+          {
+            "name": "Lisa Turner",
+            "text": "Handled our complex multi-state tax situation perfectly. No more worrying about compliance issues across jurisdictions.",
+            "location": "Portland, OR",
+            "company": "Turner Consulting",
+            "rating": "5"
+          },
+          {
+            "name": "Brian Foster",
+            "text": "IRS audit representation was invaluable. They handled all the communication and the outcome was the best possible.",
+            "location": "Denver, CO",
+            "company": "Foster Industries",
+            "rating": "5"
+          },
+          {
+            "name": "Amanda Adams",
+            "text": "Bookkeeping and tax prep for my small business is seamless. Quarterly reviews keep everything on track year-round.",
+            "location": "Nashville, TN",
+            "company": "Adams Boutique",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 from 200+ reviews"
       },
       "cta": {
         "title": "Ready for Expert Tax Help?",
@@ -2634,7 +4110,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Consultation"
+        "free": "Free Consultation",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "business-consulting": {
@@ -2686,9 +4170,40 @@
           {
             "name": "Michael Torres",
             "text": "They helped us restructure operations and revenue grew 40% in one year. Invaluable partnership.",
-            "location": "Dallas, TX"
+            "location": "Dallas, TX",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Jennifer Mitchell",
+            "text": "Revenue increased 40% after implementing their strategies. The market analysis and competitive positioning were brilliant.",
+            "location": "Seattle, WA",
+            "company": "Mitchell Tech",
+            "rating": "5"
+          },
+          {
+            "name": "David Kim",
+            "text": "Exit strategy consulting helped me sell my business at optimal valuation. Their M&A expertise was invaluable.",
+            "location": "San Francisco, CA",
+            "company": "Kim Innovations",
+            "rating": "5"
+          },
+          {
+            "name": "Robert Turner",
+            "text": "Operational efficiency audit identified $200K in annual savings. Their process improvement recommendations were practical and effective.",
+            "location": "Chicago, IL",
+            "company": "Turner Manufacturing",
+            "rating": "4"
+          },
+          {
+            "name": "Laura Foster",
+            "text": "Startup business plan they developed helped us secure Series A funding. Investor-ready financials and growth projections.",
+            "location": "Austin, TX",
+            "company": "Foster Labs",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 from 130+ reviews"
       },
       "cta": {
         "title": "Ready to Grow Your Business?",
@@ -2702,7 +4217,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Consultation"
+        "free": "Free Consultation",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "commercial-cleaning": {
@@ -2754,9 +4277,40 @@
           {
             "name": "Jennifer Blake",
             "text": "Our office has never been cleaner. They're reliable and do excellent work every night.",
-            "location": "Washington, DC"
+            "location": "Washington, DC",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "David Turner",
+            "text": "Daily office cleaning for our 50,000 sq ft building is impeccable. Staff is trained, uniformed, and always professional.",
+            "location": "Dallas, TX",
+            "company": "Turner Corp",
+            "rating": "5"
+          },
+          {
+            "name": "Lisa Mitchell",
+            "text": "Medical facility cleaning meets all healthcare standards. Their OSHA-compliant protocols give us confidence in infection control.",
+            "location": "Portland, OR",
+            "company": "Mitchell Medical",
+            "rating": "5"
+          },
+          {
+            "name": "Robert Garcia",
+            "text": "Post-construction cleanup of our new retail space was thorough. Every surface was spotless for our grand opening.",
+            "location": "Miami, FL",
+            "company": "Garcia Retail",
+            "rating": "5"
+          },
+          {
+            "name": "Amanda Chen",
+            "text": "Green cleaning products and sustainable practices align with our company values. And the results are just as good as traditional methods.",
+            "location": "San Francisco, CA",
+            "company": "Chen Green",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 from 180+ reviews"
       },
       "cta": {
         "title": "Ready for a Cleaner Facility?",
@@ -2770,7 +4324,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Quote"
+        "free": "Free Quote",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "security-systems": {
@@ -2822,9 +4384,40 @@
           {
             "name": "Paul Richards",
             "text": "Peace of mind knowing my family and home are protected. Great system and excellent service.",
-            "location": "Atlanta, GA"
+            "location": "Atlanta, GA",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Kevin Turner",
+            "text": "Complete smart home security with cameras, sensors, and 24/7 monitoring. The app control is intuitive and the response time is fast.",
+            "location": "Austin, TX",
+            "company": "Turner Tech",
+            "rating": "5"
+          },
+          {
+            "name": "Jennifer Mitchell",
+            "text": "Commercial access control system for our office building. Keycard entry, visitor management, and audit trails all work perfectly.",
+            "location": "Seattle, WA",
+            "company": "Mitchell Corp",
+            "rating": "5"
+          },
+          {
+            "name": "David Adams",
+            "text": "Video surveillance system with AI detection has already caught two package thieves. The footage quality is crystal clear.",
+            "location": "Denver, CO",
+            "company": "Adams Security",
+            "rating": "4"
+          },
+          {
+            "name": "Laura Foster",
+            "text": "Fire and smoke detection system installation was professional. They also set up carbon monoxide monitoring. Complete peace of mind.",
+            "location": "Chicago, IL",
+            "company": "Foster Properties",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 from 160+ reviews"
       },
       "cta": {
         "title": "Ready to Secure Your Property?",
@@ -2838,7 +4431,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Assessment"
+        "free": "Free Assessment",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "it-services": {
@@ -2890,9 +4491,40 @@
           {
             "name": "David Sterling",
             "text": "Since switching to their managed services, we've had zero downtime. Worth every penny.",
-            "location": "Boston, MA"
+            "location": "Boston, MA",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Brian Adams",
+            "text": "Managed IT services transformed our company. 99.9% uptime, instant help desk support, and proactive monitoring. Worth every penny.",
+            "location": "Austin, TX",
+            "company": "Adams Software",
+            "rating": "5"
+          },
+          {
+            "name": "Jennifer Turner",
+            "text": "Cloud migration was seamless. Zero downtime, all data transferred perfectly, and the cost savings are significant.",
+            "location": "Seattle, WA",
+            "company": "Turner Digital",
+            "rating": "5"
+          },
+          {
+            "name": "Robert Chen",
+            "text": "Cybersecurity audit found vulnerabilities we didn't know existed. Their remediation was thorough and now we sleep better at night.",
+            "location": "San Francisco, CA",
+            "company": "Chen Dynamics",
+            "rating": "5"
+          },
+          {
+            "name": "Amanda Foster",
+            "text": "Network infrastructure upgrade doubled our speed and eliminated the random disconnects. Their cabling work is clean and organized.",
+            "location": "Denver, CO",
+            "company": "Foster Group",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 from 150+ reviews"
       },
       "cta": {
         "title": "Ready to Upgrade Your IT?",
@@ -2906,7 +4538,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Assessment"
+        "free": "Free Assessment",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "marketing-agency": {
@@ -2958,9 +4598,40 @@
           {
             "name": "Rachel Adams",
             "text": "Our organic traffic tripled in 6 months. They truly understand digital marketing.",
-            "location": "San Francisco, CA"
+            "location": "San Francisco, CA",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "David Mitchell",
+            "text": "SEO strategy tripled our organic traffic in 6 months. Their content marketing approach is data-driven and produces results.",
+            "location": "Portland, OR",
+            "company": "Mitchell Retail",
+            "rating": "5"
+          },
+          {
+            "name": "Lisa Turner",
+            "text": "Social media management transformed our brand presence. Engagement up 200% and we're consistently generating leads from Instagram.",
+            "location": "Austin, TX",
+            "company": "Turner Fashion",
+            "rating": "5"
+          },
+          {
+            "name": "Kevin Garcia",
+            "text": "PPC campaign management is incredibly efficient. They reduced our cost per lead by 45% while increasing volume.",
+            "location": "Miami, FL",
+            "company": "Garcia Ventures",
+            "rating": "5"
+          },
+          {
+            "name": "Jennifer Foster",
+            "text": "Complete rebrand including logo, website, and marketing materials. Our brand finally reflects the quality of our work.",
+            "location": "Nashville, TN",
+            "company": "Foster Design",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 from 140+ reviews"
       },
       "cta": {
         "title": "Ready to Grow Your Business?",
@@ -2974,7 +4645,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Audit"
+        "free": "Free Audit",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "auto-repair": {
@@ -3026,9 +4705,40 @@
           {
             "name": "Thomas Green",
             "text": "Finally found an honest mechanic! Fair prices and they only fix what actually needs fixing.",
-            "location": "Detroit, MI"
+            "location": "Detroit, MI",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "David Foster",
+            "text": "Transmission rebuild was half the cost of the dealer quote and the work was impeccable. 2-year warranty gives peace of mind.",
+            "location": "Dallas, TX",
+            "company": "Foster Transport",
+            "rating": "5"
+          },
+          {
+            "name": "Jennifer Brown",
+            "text": "Regular maintenance keeps my older car running like new. They're honest about what needs fixing and what can wait.",
+            "location": "Portland, OR",
+            "company": "Brown Agency",
+            "rating": "5"
+          },
+          {
+            "name": "Kevin Mitchell",
+            "text": "AC repair done in same day. They found the leak, replaced the compressor, and recharged the system. Cold air at last!",
+            "location": "Phoenix, AZ",
+            "company": "Mitchell Motors",
+            "rating": "4"
+          },
+          {
+            "name": "Lisa Chen",
+            "text": "Check engine light diagnosis was accurate and the repair was priced fairly. They showed me the old parts to prove the work.",
+            "location": "Denver, CO",
+            "company": "Chen Auto",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.7/5 from 280+ reviews"
       },
       "cta": {
         "title": "Need Auto Repair?",
@@ -3042,7 +4752,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Estimate"
+        "free": "Free Estimate",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "auto-detailing": {
@@ -3094,9 +4812,40 @@
           {
             "name": "Nicole Parker",
             "text": "My 5-year-old car looks better than when I bought it! Incredible attention to detail.",
-            "location": "Miami, FL"
+            "location": "Miami, FL",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "David Turner",
+            "text": "Full ceramic coating and paint correction on my Tesla. The finish is like glass and water just beads right off. Museum quality.",
+            "location": "Los Angeles, CA",
+            "company": "Turner Motors",
+            "rating": "5"
+          },
+          {
+            "name": "Jennifer Lee",
+            "text": "Interior detail removed years of pet hair, stains, and odors. It smells and looks like a brand-new car. Absolutely amazing.",
+            "location": "Portland, OR",
+            "company": "Lee Veterinary",
+            "rating": "5"
+          },
+          {
+            "name": "Brian Adams",
+            "text": "Pre-sale detail increased my car's selling price by $2,000. Best $300 investment I've made. The buyer thought it was new.",
+            "location": "Austin, TX",
+            "company": "Adams Auto",
+            "rating": "4"
+          },
+          {
+            "name": "Laura Foster",
+            "text": "Monthly maintenance wash subscription keeps both our cars looking showroom-fresh. Convenient, affordable, and consistent quality.",
+            "location": "Miami, FL",
+            "company": "Foster Family",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.9/5 from 200+ reviews"
       },
       "cta": {
         "title": "Ready for a Showroom Shine?",
@@ -3110,7 +4859,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Quote"
+        "free": "Free Quote",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "towing": {
@@ -3162,9 +4919,40 @@
           {
             "name": "Eric Johnson",
             "text": "Broke down at midnight on the highway. They were there in 25 minutes. Lifesaver!",
-            "location": "Las Vegas, NV"
+            "location": "Las Vegas, NV",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "David Mitchell",
+            "text": "Flat tire on the highway at night. They arrived in under 30 minutes with lights flashing for safety. Quick change and I was on my way.",
+            "location": "Houston, TX",
+            "company": "Mitchell Logistics",
+            "rating": "5"
+          },
+          {
+            "name": "Jennifer Adams",
+            "text": "Long-distance tow from the mountains to my mechanic. The flatbed protected my car perfectly over 200 miles. Fair pricing.",
+            "location": "Denver, CO",
+            "company": "Adams Family",
+            "rating": "5"
+          },
+          {
+            "name": "Carlos Turner",
+            "text": "Battery jump start saved my morning. The technician also tested the battery and told me it was time for replacement.",
+            "location": "Dallas, TX",
+            "company": "Turner Auto",
+            "rating": "4"
+          },
+          {
+            "name": "Lisa Foster",
+            "text": "Accident recovery was handled professionally. They worked with police and insurance seamlessly. Very helpful during a stressful time.",
+            "location": "Atlanta, GA",
+            "company": "Foster Insurance",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.7/5 from 230+ reviews"
       },
       "cta": {
         "title": "Need a Tow Right Now?",
@@ -3178,7 +4966,15 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Quote"
+        "free": "Free Quote",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
     },
     "auto-glass": {
@@ -3230,9 +5026,40 @@
           {
             "name": "Amy Wilson",
             "text": "They came to my office, replaced my windshield during lunch, and handled my insurance. So easy!",
-            "location": "Denver, CO"
+            "location": "Denver, CO",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "David Chen",
+            "text": "Windshield replacement at my office parking lot. They came to me, installed OEM glass, and recalibrated ADAS. Couldn't be easier.",
+            "location": "Austin, TX",
+            "company": "Chen Motors",
+            "rating": "5"
+          },
+          {
+            "name": "Jennifer Mitchell",
+            "text": "Rock chip repair saved my windshield from cracking further. They filled it perfectly and you can barely see where it was.",
+            "location": "Portland, OR",
+            "company": "Mitchell Family",
+            "rating": "5"
+          },
+          {
+            "name": "Robert Adams",
+            "text": "Side window replacement after a break-in was done same day. They even cleaned up all the broken glass from inside the car.",
+            "location": "Dallas, TX",
+            "company": "Adams Security",
+            "rating": "5"
+          },
+          {
+            "name": "Laura Turner",
+            "text": "Insurance claim handled directly with my provider. Zero out of pocket and the quality is perfect. Smooth process from start to finish.",
+            "location": "Denver, CO",
+            "company": "Turner Properties",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 from 190+ reviews"
       },
       "cta": {
         "title": "Need Auto Glass Service?",
@@ -3246,8 +5073,219 @@
       "trust": {
         "secure": "Secure & Private",
         "fast": "Fast Response",
-        "free": "Free Quote"
+        "free": "Free Quote",
+        "ssl": "256-bit SSL Encrypted",
+        "noSpam": "No Spam Guarantee",
+        "privacyProtected": "Privacy Protected",
+        "verifiedProviders": "Verified Providers",
+        "ratedBy": "Rated 4.8/5 by 1,200+ customers",
+        "peopleHelped": "10,000+ homeowners served",
+        "featuredIn": "As Featured In",
+        "bbbRating": "BBB Accredited Business"
       }
+    }
+  },
+  "exitIntent": {
+    "headline": "Wait! Don't miss out on free quotes",
+    "subtext": "Get matched with top-rated local pros in minutes",
+    "ctaButton": "Get My Free Quotes",
+    "dismiss": "No thanks",
+    "close": "Close",
+    "ariaLabel": "Exit intent popup - get free quotes"
+  },
+  "multiStepForm": {
+    "stepOf": "Step {current} of {total}",
+    "next": "Continue",
+    "back": "Back",
+    "submit": "Submit Request",
+    "submitting": "Submitting...",
+    "submitAnother": "Submit Another Request",
+    "step1": {
+      "title": "What do you need help with?",
+      "subCategory": "Service type",
+      "selectOption": "Select an option",
+      "urgency": "How urgent is this?",
+      "urgencyOptions": {
+        "asap": "ASAP - I need help right away",
+        "within_week": "Within a week",
+        "exploring": "Just exploring options"
+      },
+      "zipCode": "Your ZIP code",
+      "zipCodePlaceholder": "Enter your ZIP code"
+    },
+    "step2": {
+      "title": "Your Contact Information",
+      "name": "Full Name",
+      "namePlaceholder": "Enter your full name",
+      "email": "Email Address",
+      "emailPlaceholder": "Enter your email address",
+      "phone": "Phone Number (Optional)",
+      "phonePlaceholder": "Enter your phone number",
+      "bestTime": "Best time to call",
+      "bestTimeDefault": "No preference",
+      "bestTimeOptions": {
+        "morning": "Morning (8AM - 12PM)",
+        "afternoon": "Afternoon (12PM - 5PM)",
+        "evening": "Evening (5PM - 8PM)"
+      }
+    },
+    "step3": {
+      "title": "Additional Details",
+      "message": "Message (Optional)",
+      "messagePlaceholder": "Tell us more about what you need...",
+      "referralSource": "How did you hear about us?",
+      "referralDefault": "Select one",
+      "referralOptions": {
+        "search": "Google / Search Engine",
+        "social": "Social Media",
+        "friend": "Friend / Family",
+        "ad": "Online Ad",
+        "other": "Other"
+      },
+      "consentText": "I agree to receive communications about my request. I understand I can opt out at any time."
+    },
+    "errors": {
+      "subCategoryRequired": "Please select a service type",
+      "urgencyRequired": "Please select urgency",
+      "zipCodeRequired": "ZIP code is required",
+      "zipCodeInvalid": "Please enter a valid ZIP code",
+      "consentRequired": "Please agree to the communications consent"
+    }
+  },
+  "stickyCTA": {
+    "buttonText": "Get Free Quotes",
+    "buttonLabel": "Scroll to form to get free quotes",
+    "ariaLabel": "Get free quotes call to action"
+  },
+  "socialProof": {
+    "totalMessage": "Join {count}+ homeowners who found trusted pros",
+    "todayMessage": "{count} people requested quotes in your area today",
+    "dismiss": "Dismiss social proof banner"
+  },
+  "hero": {
+    "ctaDefault": "Get Free Quotes Now",
+    "ctaVariant": "Compare Top Pros Near You",
+    "urgencyText": "Free - No obligation - Takes 30 seconds",
+    "trustText": "Your information is secure and never shared without consent"
+  },
+  "formRecovery": {
+    "progressRestored": "We saved your progress - pick up where you left off"
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "lastUpdated": "Last updated: January 27, 2026",
+    "backHome": "Back to Home",
+    "intro": {
+      "title": "Introduction",
+      "body": "Kanjona (\"we\", \"us\", or \"our\") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website and use our services."
+    },
+    "collect": {
+      "title": "Information We Collect",
+      "body": "We collect information that you provide directly to us, as well as information collected automatically when you use our services.",
+      "personal": {
+        "title": "Personal Information You Provide",
+        "name": "Full name",
+        "email": "Email address",
+        "phone": "Phone number"
+      },
+      "automatic": {
+        "title": "Information Collected Automatically",
+        "ip": "IP address and approximate geolocation",
+        "cookies": "Cookies and similar tracking technologies",
+        "browser": "Browser type, device information, and operating system",
+        "usage": "Pages visited, time spent, and referring URLs"
+      }
+    },
+    "use": {
+      "title": "How We Use Your Information",
+      "matching": "Matching you with qualified service providers in your area",
+      "delivery": "Delivering the services you have requested",
+      "communication": "Communicating with you about your requests and our services",
+      "improvement": "Improving our website, services, and user experience",
+      "legal": "Complying with legal obligations and protecting our rights"
+    },
+    "sharing": {
+      "title": "Information Sharing",
+      "body": "We do not sell your personal information. We may share your information in the following circumstances:",
+      "providers": "With vetted service providers to fulfill your service request",
+      "legal": "When required by law, regulation, or legal process",
+      "noSale": "We never sell your personal data to third-party advertisers or data brokers"
+    },
+    "retention": {
+      "title": "Data Retention",
+      "body": "We retain your personal information for up to 90 days in our active systems for lead matching purposes. After this period, data is archived and retained only as required by law or for legitimate business purposes. You may request deletion of your data at any time."
+    },
+    "rights": {
+      "title": "Your Rights",
+      "body": "Depending on your location, you may have the following rights regarding your personal information:",
+      "access": "Right to access and receive a copy of your personal data",
+      "correction": "Right to correct inaccurate or incomplete information",
+      "deletion": "Right to request deletion of your personal data",
+      "optOut": "Right to opt out of marketing communications at any time"
+    },
+    "cookies": {
+      "title": "Cookie Policy",
+      "body": "We use cookies and similar technologies to enhance your browsing experience, analyze site traffic, and understand where our visitors come from. You can control cookie preferences through your browser settings. Essential cookies are required for the site to function properly, while analytics cookies help us improve our services."
+    },
+    "contact": {
+      "title": "Contact Information",
+      "body": "If you have any questions about this Privacy Policy or our data practices, please contact us:",
+      "email": "Email: privacy@kanjona.com"
+    },
+    "changes": {
+      "title": "Changes to This Policy",
+      "body": "We may update this Privacy Policy from time to time. We will notify you of any material changes by posting the new policy on this page and updating the \"Last updated\" date. We encourage you to review this policy periodically."
+    }
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "lastUpdated": "Last updated: January 27, 2026",
+    "backHome": "Back to Home",
+    "acceptance": {
+      "title": "Acceptance of Terms",
+      "body": "By accessing or using Kanjona's website and services, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our services. These terms apply to all visitors, users, and others who access the service."
+    },
+    "description": {
+      "title": "Service Description",
+      "body": "Kanjona provides a lead generation platform that connects consumers seeking home services, professional services, and other service categories with qualified service providers. We facilitate introductions between consumers and providers but do not perform the services ourselves."
+    },
+    "obligations": {
+      "title": "User Obligations",
+      "body": "When using our services, you agree to:",
+      "accurate": "Provide accurate, current, and complete information in all forms",
+      "lawful": "Use our services only for lawful purposes",
+      "noAbuse": "Not misuse, spam, or abuse our platform or services",
+      "noAutomate": "Not use automated systems to access the service without our express permission"
+    },
+    "privacySection": {
+      "title": "Privacy",
+      "body": "Your privacy is important to us. Our collection and use of personal information is governed by our Privacy Policy.",
+      "link": "Read our Privacy Policy"
+    },
+    "liability": {
+      "title": "Limitation of Liability",
+      "body": "To the maximum extent permitted by law, Kanjona shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly, or any loss of data, use, goodwill, or other intangible losses resulting from your use of the service."
+    },
+    "indemnification": {
+      "title": "Indemnification",
+      "body": "You agree to indemnify, defend, and hold harmless Kanjona and its officers, directors, employees, and agents from any claims, liabilities, damages, losses, and expenses arising from your use of the services or violation of these terms."
+    },
+    "termination": {
+      "title": "Termination",
+      "body": "We reserve the right to suspend or terminate your access to our services at any time, without notice, for conduct that we believe violates these Terms of Service or is harmful to other users, us, or third parties, or for any other reason at our sole discretion."
+    },
+    "governing": {
+      "title": "Governing Law",
+      "body": "These Terms shall be governed by and construed in accordance with the laws of the United States, without regard to its conflict of law provisions. Any disputes arising from these terms shall be resolved in the courts of competent jurisdiction."
+    },
+    "changes": {
+      "title": "Changes to These Terms",
+      "body": "We reserve the right to modify these Terms of Service at any time. Changes will be effective immediately upon posting on this page. Your continued use of the services after any changes constitutes acceptance of the new terms."
+    },
+    "contact": {
+      "title": "Contact Us",
+      "body": "If you have any questions about these Terms of Service, please contact us:",
+      "email": "Email: legal@kanjona.com"
     }
   }
 }

@@ -4,6 +4,7 @@
  * Lead Detail Page
  *
  * Full lead view with edit capabilities, reassign, notifications, and audit trail.
+ * RBAC: Reassign is ADMIN only. Edit is ADMIN or OPERATOR.
  */
 
 import { useState, useCallback } from 'react';
@@ -20,11 +21,14 @@ import ErrorAlert from '@/components/ErrorAlert';
 import FormField from '@/components/FormField';
 import StatusBadge from '@/components/StatusBadge';
 import Modal from '@/components/Modal';
+import RequireRole from '@/components/RequireRole';
+import { useToast } from '@/components/Toast';
 import { formatDateTime, formatRelativeTime } from '@/lib/utils';
 import Link from 'next/link';
 
 export default function LeadDetailPage() {
   const params = useParams();
+  const toast = useToast();
   const funnelId = params.funnelId as string;
   const leadId = params.leadId as string;
 
@@ -73,11 +77,12 @@ export default function LeadDetailPage() {
         notes: form.notes,
         doNotContact: form.doNotContact,
       }).unwrap();
+      toast.success('Lead updated successfully');
       setEditMode(false);
     } catch {
-      // Error handled by RTK Query
+      toast.error('Failed to update lead');
     }
-  }, [updateLead, funnelId, leadId, form]);
+  }, [updateLead, funnelId, leadId, form, toast]);
 
   const handleReassign = useCallback(async () => {
     try {
@@ -87,12 +92,13 @@ export default function LeadDetailPage() {
         targetOrgId: reassignForm.targetOrgId,
         targetUserId: reassignForm.targetUserId || undefined,
       }).unwrap();
+      toast.success('Lead reassigned successfully');
       setShowReassign(false);
       setReassignForm({ targetOrgId: '', targetUserId: '' });
     } catch {
-      // Error handled by RTK Query
+      toast.error('Failed to reassign lead');
     }
-  }, [reassignLead, funnelId, leadId, reassignForm]);
+  }, [reassignLead, funnelId, leadId, reassignForm, toast]);
 
   if (isLoading) {
     return (
@@ -119,7 +125,7 @@ export default function LeadDetailPage() {
           <span>/</span>
           <span className="text-[var(--text-primary)]">{lead.name}</span>
         </div>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-semibold text-[var(--text-primary)]">{lead.name}</h1>
             <StatusBadge status={lead.status} />
@@ -129,20 +135,24 @@ export default function LeadDetailPage() {
               </span>
             )}
           </div>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setShowReassign(true)}
-              className="px-4 py-2 text-sm font-medium border border-[var(--border-color)] rounded-md hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-primary)]"
-            >
-              Reassign
-            </button>
-            {!editMode && (
+          <div className="flex items-center gap-3 self-start">
+            <RequireRole roles={['ADMIN']}>
               <button
-                onClick={startEdit}
-                className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                onClick={() => setShowReassign(true)}
+                className="px-4 py-2 text-sm font-medium border border-[var(--border-color)] rounded-md hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-primary)]"
               >
-                Edit
+                Reassign
               </button>
+            </RequireRole>
+            {!editMode && (
+              <RequireRole roles={['ADMIN', 'OPERATOR']}>
+                <button
+                  onClick={startEdit}
+                  className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                >
+                  Edit
+                </button>
+              </RequireRole>
             )}
           </div>
         </div>
@@ -376,44 +386,46 @@ export default function LeadDetailPage() {
             No notifications sent for this lead.
           </div>
         ) : (
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-[var(--border-color)]">
-                <th className="px-6 py-3 text-left font-medium text-[var(--text-secondary)]">
-                  Channel
-                </th>
-                <th className="px-6 py-3 text-left font-medium text-[var(--text-secondary)]">
-                  Recipient
-                </th>
-                <th className="px-6 py-3 text-left font-medium text-[var(--text-secondary)]">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left font-medium text-[var(--text-secondary)]">
-                  Sent
-                </th>
-                <th className="px-6 py-3 text-left font-medium text-[var(--text-secondary)]">
-                  Error
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {lead.notificationHistory.map((n) => (
-                <tr key={n.id} className="border-b border-[var(--border-color)]">
-                  <td className="px-6 py-3 capitalize">{n.channel}</td>
-                  <td className="px-6 py-3 text-[var(--text-secondary)]">{n.recipient}</td>
-                  <td className="px-6 py-3">
-                    <StatusBadge status={n.status} />
-                  </td>
-                  <td className="px-6 py-3 text-[var(--text-tertiary)]">
-                    {formatRelativeTime(n.sentAt)}
-                  </td>
-                  <td className="px-6 py-3 text-red-600 dark:text-red-400 text-xs">
-                    {n.error || '--'}
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-[var(--border-color)]">
+                  <th className="px-6 py-3 text-left font-medium text-[var(--text-secondary)]">
+                    Channel
+                  </th>
+                  <th className="px-6 py-3 text-left font-medium text-[var(--text-secondary)]">
+                    Recipient
+                  </th>
+                  <th className="px-6 py-3 text-left font-medium text-[var(--text-secondary)]">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left font-medium text-[var(--text-secondary)]">
+                    Sent
+                  </th>
+                  <th className="px-6 py-3 text-left font-medium text-[var(--text-secondary)]">
+                    Error
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {lead.notificationHistory.map((n) => (
+                  <tr key={n.id} className="border-b border-[var(--border-color)]">
+                    <td className="px-6 py-3 capitalize">{n.channel}</td>
+                    <td className="px-6 py-3 text-[var(--text-secondary)]">{n.recipient}</td>
+                    <td className="px-6 py-3">
+                      <StatusBadge status={n.status} />
+                    </td>
+                    <td className="px-6 py-3 text-[var(--text-tertiary)]">
+                      {formatRelativeTime(n.sentAt)}
+                    </td>
+                    <td className="px-6 py-3 text-red-600 dark:text-red-400 text-xs">
+                      {n.error || '--'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 

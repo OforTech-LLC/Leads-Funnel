@@ -62,6 +62,87 @@ export type { ErrorCode, ApiErrorResponse, ApiSuccessResponse } from './types/ap
 export type { LeadCreatedEvent, LeadAssignedEvent, LeadUnassignedEvent } from './types/events';
 
 // =============================================================================
+// Feature Flags
+// =============================================================================
+
+export { FEATURE_FLAGS, FEATURE_FLAG_DEFAULTS } from './feature-flags';
+export type { FeatureFlag } from './feature-flags';
+
+// =============================================================================
+// Lead Scoring
+// =============================================================================
+
+export { qualityFromScore } from './scoring';
+export type { LeadScore, ScoreBreakdown, LeadQuality } from './scoring';
+
+// =============================================================================
+// Analytics
+// =============================================================================
+
+export type {
+  OverviewMetrics,
+  TrendPoint,
+  FunnelMetric,
+  OrgMetric,
+  ConversionFunnel,
+  ConversionStage,
+  SourceMetric,
+  DateRangePreset,
+  DateRange,
+} from './analytics';
+
+// =============================================================================
+// Webhooks
+// =============================================================================
+
+export { WEBHOOK_EVENTS } from './webhooks';
+export type { WebhookEventType, WebhookConfig, WebhookDelivery } from './webhooks';
+
+// =============================================================================
+// Billing
+// =============================================================================
+
+export { BILLING_PLANS, PLAN_LIMITS } from './billing';
+export type { BillingPlan, BillingAccount, UsageRecord } from './billing';
+
+// =============================================================================
+// Calendar
+// =============================================================================
+
+export { CALENDAR_PROVIDERS } from './calendar';
+export type { CalendarProvider, CalendarConfig, TimeSlot, CalendarEvent } from './calendar';
+
+// =============================================================================
+// Messaging
+// =============================================================================
+
+export { MESSAGING_PROVIDERS } from './messaging';
+export type { MessagingProvider, MessagingConfig, MessagingPayload } from './messaging';
+
+// =============================================================================
+// App Notifications & Preferences
+// =============================================================================
+
+export { NOTIFICATION_TYPES } from './notifications';
+export type { NotificationType, AppNotification, NotificationPreferences } from './notifications';
+
+// =============================================================================
+// Lead Status State Machine
+// =============================================================================
+
+export {
+  VALID_STATUS_TRANSITIONS,
+  isValidTransition,
+  getAvailableTransitions,
+} from './state-machine';
+
+// =============================================================================
+// Constants
+// =============================================================================
+
+export { PAGINATION, RATE_LIMITS, CACHE_TTL, DATA_RETENTION } from './constants';
+
+// =============================================================================
 // Unified Lead Status
 // =============================================================================
 
@@ -72,25 +153,29 @@ export type { LeadCreatedEvent, LeadAssignedEvent, LeadUnassignedEvent } from '.
  * a subset of these statuses depending on their context.
  *
  * - new:         Lead just submitted
+ * - assigned:    Lead assigned to an org/agent
+ * - unassigned:  No matching rule found
  * - contacted:   Outreach made
  * - qualified:   Lead vetted and viable
+ * - booked:      Appointment or meeting booked
  * - converted:   Lead became a customer
+ * - won:         Deal closed successfully
  * - lost:        Lead did not convert
  * - dnc:         Do not contact
  * - quarantined: Flagged for review (spam, duplicate, etc.)
- * - booked:      Appointment or meeting booked
- * - won:         Deal closed successfully
  */
 export const LEAD_STATUSES = [
   'new',
+  'assigned',
+  'unassigned',
   'contacted',
   'qualified',
+  'booked',
   'converted',
+  'won',
   'lost',
   'dnc',
   'quarantined',
-  'booked',
-  'won',
 ] as const;
 
 export type LeadStatus = (typeof LEAD_STATUSES)[number];

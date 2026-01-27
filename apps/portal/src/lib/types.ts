@@ -67,6 +67,33 @@ export interface NotificationPreferences {
   smsNotifications: boolean;
 }
 
+export interface GranularNotificationPreferences {
+  newLeadEmail: boolean;
+  newLeadSms: boolean;
+  newLeadPush: boolean;
+  statusChangeEmail: boolean;
+  statusChangeSms: boolean;
+  statusChangePush: boolean;
+  teamActivityEmail: boolean;
+  teamActivitySms: boolean;
+  teamActivityPush: boolean;
+  weeklyDigestEmail: boolean;
+}
+
+export interface BusinessHoursDay {
+  enabled: boolean;
+  start: string; // "09:00"
+  end: string; // "17:00"
+}
+
+export type BusinessHours = Record<string, BusinessHoursDay>;
+
+export interface ServicePreferences {
+  categories: string[];
+  zipCodes: string[];
+  businessHours: BusinessHours;
+}
+
 export interface Organization {
   id: string;
   name: string;
@@ -74,6 +101,32 @@ export interface Organization {
   logoUrl: string | null;
   plan: string;
   memberCount: number;
+  leadsUsed?: number;
+  leadsLimit?: number;
+  createdAt?: string;
+}
+
+export interface TeamMember {
+  userId: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: 'admin' | 'agent';
+  status: 'active' | 'inactive';
+  avatarUrl: string | null;
+  lastActiveAt: string | null;
+  joinedAt: string;
+}
+
+export interface TeamInvite {
+  id: string;
+  email: string;
+  role: 'admin' | 'agent';
+  status: 'pending' | 'accepted' | 'expired';
+  invitedBy: string;
+  invitedByName: string;
+  createdAt: string;
+  expiresAt: string;
 }
 
 export interface PaginatedResponse<T> {

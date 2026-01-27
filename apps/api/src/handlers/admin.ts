@@ -4,18 +4,35 @@
  * Handles all /admin/* endpoints. Requires admin JWT authentication
  * and checks the enable_admin_console feature flag.
  *
+ * Performance:
+ *   - X-Request-Id header injected on every response for distributed tracing
+ *   - All DynamoDB/S3/SSM calls use centralized clients with HTTP keep-alive
+ *
  * Endpoints:
  *   POST/GET/PUT/DELETE /admin/orgs
  *   POST/GET/PUT/DELETE /admin/users
  *   POST/PUT/DELETE/GET /admin/orgs/:orgId/members
  *   POST/GET/PUT/DELETE /admin/rules
  *   POST /admin/rules/test
+ *   POST /admin/rules/bulk-create
  *   POST /admin/leads/query
  *   GET/PUT /admin/leads/:funnelId/:leadId
  *   POST /admin/leads/:funnelId/:leadId/reassign
+ *   POST /admin/leads/bulk-update
+ *   POST /admin/leads/bulk-import
  *   GET /admin/notifications
  *   POST/GET /admin/exports
  *   GET /admin/exports/:exportId/download
+ *   POST/GET/PUT/DELETE /admin/webhooks
+ *   GET /admin/webhooks/:id/deliveries
+ *   POST /admin/webhooks/:id/test
+ *   GET /admin/analytics/overview
+ *   GET /admin/analytics/funnels
+ *   GET /admin/analytics/orgs
+ *   GET /admin/analytics/trends
+ *   GET /admin/analytics/lead-sources
+ *   POST /admin/gdpr/erasure
+ *   GET /admin/gdpr/export/:emailHash
  */
 
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
@@ -34,7 +51,12 @@ import { matchLeadToRule } from '../lib/assignment/matcher.js';
 import { getPresignedDownloadUrl } from '../lib/storage/s3.js';
 import { parseBody, pathParam, queryParam, getIpHash } from '../lib/handler-utils.js';
 import { createLogger } from '../lib/logging.js';
-import { PutCommand } from '@aws-sdk/lib-dynamodb';
+import { ValidationError } from '../lib/errors.js';
+import { isFeatureEnabled } from '../lib/config.js';
+import { handleWebhookRoutes } from '../lib/webhooks/handler.js';
+import { emitLeadStatusChanged } from '../lib/events.js';
+import * as analytics from '../lib/analytics/aggregator.js';
+import { PutCommand, ScanCommand, UpdateCommand, BatchWriteCommand } from '@aws-sdk/lib-dynamodb';
 import { getDocClient, tableName } from '../lib/db/client.js';
 
 const log = createLogger('admin-handler');
@@ -45,7 +67,7 @@ const log = createLogger('admin-handler');
 
 const VALID_MEMBERSHIP_ROLES = ['ORG_OWNER', 'MANAGER', 'AGENT', 'VIEWER'];
 
-// Fix 7: Align with LeadStatus type from leads.ts
+// Fix 7: Align with LeadStatus type from leads.ts (includes 'booked')
 const VALID_LEAD_STATUSES: leadsDb.LeadStatus[] = [
   'new',
   'assigned',
@@ -56,13 +78,49 @@ const VALID_LEAD_STATUSES: leadsDb.LeadStatus[] = [
   'dnc',
   'quarantined',
   'unassigned',
+  'booked',
 ];
 
+const BULK_UPDATE_MAX = 100;
+
 // ---------------------------------------------------------------------------
-// Main Handler
+// X-Request-Id injection wrapper
+// ---------------------------------------------------------------------------
+
+/**
+ * Inject the X-Request-Id header into any API Gateway response.
+ * Uses the API Gateway request ID for end-to-end distributed tracing.
+ */
+function injectRequestId(
+  response: APIGatewayProxyResultV2,
+  requestId: string
+): APIGatewayProxyResultV2 {
+  if (typeof response === 'string') return response;
+  const headers = (response.headers || {}) as Record<string, string>;
+  return {
+    ...response,
+    headers: {
+      ...headers,
+      'X-Request-Id': requestId,
+    },
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Main Handler (exported)
 // ---------------------------------------------------------------------------
 
 export async function handler(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
+  const requestId = event.requestContext.requestId || '';
+  const result = await handleAdminRequest(event);
+  return injectRequestId(result, requestId);
+}
+
+// ---------------------------------------------------------------------------
+// Admin request routing
+// ---------------------------------------------------------------------------
+
+async function handleAdminRequest(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
   const method = event.requestContext.http.method;
   const path = event.requestContext.http.path;
 
@@ -83,11 +141,30 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
 
   // Strip /admin prefix for routing
   const subpath = path.replace(/^\/admin/, '');
+  const canWrite = canAdminWrite(admin.role);
 
   try {
+    // ---- WEBHOOKS (feature-flagged) ----
+    if (subpath.startsWith('/webhooks')) {
+      const webhooksEnabled = await isFeatureEnabled('webhooks_enabled');
+      if (!webhooksEnabled) return resp.notFound('Endpoint not found');
+      const result = await handleWebhookRoutes(event, subpath, method, canWrite);
+      if (result) return result;
+    }
+
+    // ---- ANALYTICS ----
+    if (subpath.startsWith('/analytics/')) {
+      return await handleAnalyticsRoutes(event, subpath, method);
+    }
+
+    // ---- GDPR ----
+    if (subpath.startsWith('/gdpr/')) {
+      return await handleGdprRoutes(event, subpath, method, canWrite, admin.emailHash);
+    }
+
     // ---- ORGS ----
     if (subpath === '/orgs' && method === 'POST') {
-      if (!canAdminWrite(admin.role)) return resp.forbidden();
+      if (!canWrite) return resp.forbidden();
       const body = parseBody(event);
       if (body === null) return resp.badRequest('Invalid JSON in request body');
       if (!body.name || !body.slug || !body.contactEmail) {
@@ -133,7 +210,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     }
 
     if (/^\/orgs\/[^/]+$/.test(subpath) && method === 'PUT') {
-      if (!canAdminWrite(admin.role)) return resp.forbidden();
+      if (!canWrite) return resp.forbidden();
       const orgId = pathParam(event, 2);
       const body = parseBody(event);
       if (body === null) return resp.badRequest('Invalid JSON in request body');
@@ -162,7 +239,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     }
 
     if (/^\/orgs\/[^/]+$/.test(subpath) && method === 'DELETE') {
-      if (!canAdminWrite(admin.role)) return resp.forbidden();
+      if (!canWrite) return resp.forbidden();
       const orgId = pathParam(event, 2);
       await orgsDb.softDeleteOrg(orgId);
       await recordAudit({
@@ -178,7 +255,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
 
     // ---- USERS ----
     if (subpath === '/users' && method === 'POST') {
-      if (!canAdminWrite(admin.role)) return resp.forbidden();
+      if (!canWrite) return resp.forbidden();
       const body = parseBody(event);
       if (body === null) return resp.badRequest('Invalid JSON in request body');
       if (!body.email || !body.name) {
@@ -222,7 +299,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     }
 
     if (/^\/users\/[^/]+$/.test(subpath) && method === 'PUT') {
-      if (!canAdminWrite(admin.role)) return resp.forbidden();
+      if (!canWrite) return resp.forbidden();
       const userId = pathParam(event, 2);
       const body = parseBody(event);
       if (body === null) return resp.badRequest('Invalid JSON in request body');
@@ -249,7 +326,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     }
 
     if (/^\/users\/[^/]+$/.test(subpath) && method === 'DELETE') {
-      if (!canAdminWrite(admin.role)) return resp.forbidden();
+      if (!canWrite) return resp.forbidden();
       const userId = pathParam(event, 2);
       await usersDb.softDeleteUser(userId);
       await recordAudit({
@@ -265,7 +342,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
 
     // ---- MEMBERS ----
     if (/^\/orgs\/[^/]+\/members$/.test(subpath) && method === 'POST') {
-      if (!canAdminWrite(admin.role)) return resp.forbidden();
+      if (!canWrite) return resp.forbidden();
       const orgId = pathParam(event, 2);
       const body = parseBody(event);
       if (body === null) return resp.badRequest('Invalid JSON in request body');
@@ -310,7 +387,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     }
 
     if (/^\/orgs\/[^/]+\/members\/[^/]+$/.test(subpath) && method === 'PUT') {
-      if (!canAdminWrite(admin.role)) return resp.forbidden();
+      if (!canWrite) return resp.forbidden();
       const orgId = pathParam(event, 2);
       const userId = pathParam(event, 4); // admin/orgs/<orgId>/members/<userId>
       const body = parseBody(event);
@@ -342,7 +419,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     }
 
     if (/^\/orgs\/[^/]+\/members\/[^/]+$/.test(subpath) && method === 'DELETE') {
-      if (!canAdminWrite(admin.role)) return resp.forbidden();
+      if (!canWrite) return resp.forbidden();
       const orgId = pathParam(event, 2);
       const userId = pathParam(event, 4);
       await membershipsDb.removeMember(orgId, userId);
@@ -359,7 +436,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
 
     // ---- RULES ----
     if (subpath === '/rules' && method === 'POST') {
-      if (!canAdminWrite(admin.role)) return resp.forbidden();
+      if (!canWrite) return resp.forbidden();
       const body = parseBody(event);
       if (body === null) return resp.badRequest('Invalid JSON in request body');
       if (!body.funnelId || !body.orgId || !body.name || body.priority === undefined) {
@@ -427,6 +504,63 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       });
     }
 
+    // ---- BULK RULES CREATE (Task 6) ----
+    if (/^\/rules\/bulk-create$/.test(subpath) && method === 'POST') {
+      if (!canWrite) return resp.forbidden();
+      const body = parseBody(event);
+      if (body === null) return resp.badRequest('Invalid JSON in request body');
+      const ruleInputs = body.rules as Array<Record<string, unknown>> | undefined;
+      if (!Array.isArray(ruleInputs) || ruleInputs.length === 0) {
+        return resp.badRequest('rules array is required and must not be empty');
+      }
+      if (ruleInputs.length > BULK_UPDATE_MAX) {
+        return resp.badRequest(`Maximum ${BULK_UPDATE_MAX} rules per bulk create`);
+      }
+
+      const created: unknown[] = [];
+      const errors: Array<{ index: number; error: string }> = [];
+
+      for (let i = 0; i < ruleInputs.length; i++) {
+        const input = ruleInputs[i];
+        try {
+          if (!input.funnelId || !input.orgId || !input.name || input.priority === undefined) {
+            errors.push({ index: i, error: 'funnelId, orgId, name, and priority are required' });
+            continue;
+          }
+          const rule = await rulesDb.createRule({
+            funnelId: input.funnelId as string,
+            orgId: input.orgId as string,
+            name: input.name as string,
+            priority: input.priority as number,
+            zipPatterns: (input.zipPatterns as string[]) || [],
+            dailyCap: (input.dailyCap as number) || 0,
+            isActive: input.isActive as boolean | undefined,
+          });
+          created.push(rule);
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : 'Unknown error';
+          errors.push({ index: i, error: msg });
+        }
+      }
+
+      await recordAudit({
+        actorId: admin.emailHash,
+        actorType: 'admin',
+        action: 'rule.bulkCreate',
+        resourceType: 'rule',
+        resourceId: 'bulk',
+        details: { created: created.length, failed: errors.length },
+        ipHash: getIpHash(event),
+      });
+
+      return resp.success({
+        created: created.length,
+        failed: errors.length,
+        errors,
+        rules: created,
+      });
+    }
+
     if (/^\/rules\/[^/]+$/.test(subpath) && method === 'GET') {
       const ruleId = pathParam(event, 2);
       const rule = await rulesDb.getRule(ruleId);
@@ -435,7 +569,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     }
 
     if (/^\/rules\/[^/]+$/.test(subpath) && method === 'PUT') {
-      if (!canAdminWrite(admin.role)) return resp.forbidden();
+      if (!canWrite) return resp.forbidden();
       const ruleId = pathParam(event, 2);
       const body = parseBody(event);
       if (body === null) return resp.badRequest('Invalid JSON in request body');
@@ -461,7 +595,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     }
 
     if (/^\/rules\/[^/]+$/.test(subpath) && method === 'DELETE') {
-      if (!canAdminWrite(admin.role)) return resp.forbidden();
+      if (!canWrite) return resp.forbidden();
       const ruleId = pathParam(event, 2);
       await rulesDb.softDeleteRule(ruleId);
       await recordAudit({
@@ -494,6 +628,165 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       });
     }
 
+    // ---- BULK UPDATE LEADS (Task 6) ----
+    if (subpath === '/leads/bulk-update' && method === 'POST') {
+      if (!canWrite) return resp.forbidden();
+      const body = parseBody(event);
+      if (body === null) return resp.badRequest('Invalid JSON in request body');
+      const updates = body.updates as
+        | Array<{ funnelId: string; leadId: string; status: string }>
+        | undefined;
+
+      if (!Array.isArray(updates) || updates.length === 0) {
+        return resp.badRequest('updates array is required');
+      }
+      if (updates.length > BULK_UPDATE_MAX) {
+        return resp.badRequest(`Maximum ${BULK_UPDATE_MAX} items per bulk update`);
+      }
+
+      let succeeded = 0;
+      let failed = 0;
+      const errors: Array<{ funnelId: string; leadId: string; error: string }> = [];
+
+      for (const item of updates) {
+        if (!item.funnelId || !item.leadId || !item.status) {
+          errors.push({
+            funnelId: item.funnelId || '',
+            leadId: item.leadId || '',
+            error: 'funnelId, leadId, and status are required',
+          });
+          failed++;
+          continue;
+        }
+        if (!VALID_LEAD_STATUSES.includes(item.status as leadsDb.LeadStatus)) {
+          errors.push({
+            funnelId: item.funnelId,
+            leadId: item.leadId,
+            error: `Invalid status: ${item.status}`,
+          });
+          failed++;
+          continue;
+        }
+
+        try {
+          const existing = await leadsDb.getLead(item.funnelId, item.leadId);
+          const oldStatus = existing?.status || 'unknown';
+
+          await leadsDb.updateLead({
+            funnelId: item.funnelId,
+            leadId: item.leadId,
+            status: item.status as leadsDb.LeadStatus,
+            force: true,
+          });
+
+          // Fire webhook for status change
+          void emitLeadStatusChanged({
+            leadId: item.leadId,
+            funnelId: item.funnelId,
+            oldStatus,
+            newStatus: item.status,
+            changedBy: admin.emailHash,
+          });
+
+          succeeded++;
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : 'Unknown error';
+          errors.push({ funnelId: item.funnelId, leadId: item.leadId, error: msg });
+          failed++;
+        }
+      }
+
+      await recordAudit({
+        actorId: admin.emailHash,
+        actorType: 'admin',
+        action: 'lead.bulkUpdate',
+        resourceType: 'lead',
+        resourceId: 'bulk',
+        details: { succeeded, failed, total: updates.length },
+        ipHash: getIpHash(event),
+      });
+
+      return resp.success({ succeeded, failed, errors });
+    }
+
+    // ---- BULK IMPORT LEADS (Task 6) ----
+    if (subpath === '/leads/bulk-import' && method === 'POST') {
+      if (!canWrite) return resp.forbidden();
+      const body = parseBody(event);
+      if (body === null) return resp.badRequest('Invalid JSON in request body');
+
+      const csvData = body.csv as string | undefined;
+      const funnelId = body.funnelId as string | undefined;
+
+      if (!csvData || !funnelId) {
+        return resp.badRequest('csv (string) and funnelId are required');
+      }
+
+      const lines = csvData
+        .split('\n')
+        .map((l) => l.trim())
+        .filter(Boolean);
+      if (lines.length < 2) {
+        return resp.badRequest('CSV must contain a header row and at least one data row');
+      }
+
+      const headers = lines[0].split(',').map((h) => h.trim().toLowerCase());
+      const emailIdx = headers.indexOf('email');
+      const nameIdx = headers.indexOf('name');
+      const phoneIdx = headers.indexOf('phone');
+      const messageIdx = headers.indexOf('message');
+
+      if (emailIdx === -1) {
+        return resp.badRequest('CSV must contain an email column');
+      }
+
+      let imported = 0;
+      let failedCount = 0;
+      const importErrors: Array<{ row: number; error: string }> = [];
+
+      for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(',').map((c) => c.trim());
+        const email = cols[emailIdx] || '';
+        const name = nameIdx >= 0 ? cols[nameIdx] || '' : '';
+        const phone = phoneIdx >= 0 ? cols[phoneIdx] || '' : '';
+        const message = messageIdx >= 0 ? cols[messageIdx] || '' : '';
+
+        if (!email || !email.includes('@')) {
+          importErrors.push({ row: i + 1, error: 'Invalid or missing email' });
+          failedCount++;
+          continue;
+        }
+
+        try {
+          await leadsDb.createLead({
+            funnelId,
+            email,
+            name: name || undefined,
+            phone: phone || undefined,
+            message: message || undefined,
+            source: 'bulk-import',
+          });
+          imported++;
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : 'Unknown error';
+          importErrors.push({ row: i + 1, error: msg });
+          failedCount++;
+        }
+      }
+
+      await recordAudit({
+        actorId: admin.emailHash,
+        actorType: 'admin',
+        action: 'lead.bulkImport',
+        resourceType: 'lead',
+        resourceId: funnelId,
+        details: { imported, failed: failedCount },
+        ipHash: getIpHash(event),
+      });
+
+      return resp.success({ imported, failed: failedCount, errors: importErrors });
+    }
+
     if (/^\/leads\/[^/]+\/[^/]+$/.test(subpath) && method === 'GET') {
       const funnelId = pathParam(event, 2);
       const leadId = pathParam(event, 3);
@@ -503,7 +796,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     }
 
     if (/^\/leads\/[^/]+\/[^/]+$/.test(subpath) && method === 'PUT') {
-      if (!canAdminWrite(admin.role)) return resp.forbidden();
+      if (!canWrite) return resp.forbidden();
       const funnelId = pathParam(event, 2);
       const leadId = pathParam(event, 3);
       const body = parseBody(event);
@@ -512,6 +805,12 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       if (body.status && !VALID_LEAD_STATUSES.includes(body.status as leadsDb.LeadStatus)) {
         return resp.badRequest(`Invalid status. Must be one of: ${VALID_LEAD_STATUSES.join(', ')}`);
       }
+
+      // Capture old status for webhook
+      const existingLead = await leadsDb.getLead(funnelId, leadId);
+      const oldStatus = existingLead?.status || 'unknown';
+
+      // Pass force flag from body -- admin can override state machine
       const updated = await leadsDb.updateLead({
         funnelId,
         leadId,
@@ -521,7 +820,20 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
         ruleId: body.ruleId as string | undefined,
         notes: body.notes as string[] | undefined,
         tags: body.tags as string[] | undefined,
+        force: body.force as boolean | undefined,
       });
+
+      // Emit webhook for status change
+      if (body.status && body.status !== oldStatus) {
+        void emitLeadStatusChanged({
+          leadId,
+          funnelId,
+          oldStatus,
+          newStatus: body.status as string,
+          changedBy: admin.emailHash,
+        });
+      }
+
       // Fix 9: Sanitize audit log - only log field names, not raw body values
       await recordAudit({
         actorId: admin.emailHash,
@@ -536,7 +848,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     }
 
     if (/^\/leads\/[^/]+\/[^/]+\/reassign$/.test(subpath) && method === 'POST') {
-      if (!canAdminWrite(admin.role)) return resp.forbidden();
+      if (!canWrite) return resp.forbidden();
       const funnelId = pathParam(event, 2);
       const leadId = pathParam(event, 3);
       const body = parseBody(event);
@@ -576,7 +888,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
 
     // ---- EXPORTS ----
     if (subpath === '/exports' && method === 'POST') {
-      if (!canAdminWrite(admin.role)) return resp.forbidden();
+      if (!canWrite) return resp.forbidden();
       const body = parseBody(event);
       if (body === null) return resp.badRequest('Invalid JSON in request body');
       if (!body.format) return resp.badRequest('format is required (csv, xlsx, json)');
@@ -659,7 +971,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
         return resp.badRequest('Export not ready for download');
       }
       // Fix 5: Verify the requesting admin owns this export or has write permissions
-      if (job.requestedBy !== admin.emailHash && !canAdminWrite(admin.role)) {
+      if (job.requestedBy !== admin.emailHash && !canWrite) {
         return resp.forbidden('You can only download your own exports');
       }
       // Generate presigned URL via centralized S3 storage module
@@ -678,6 +990,11 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
 
     return resp.notFound('Admin endpoint not found');
   } catch (err) {
+    // Handle ValidationError from the lead status state machine
+    if (err instanceof ValidationError) {
+      return resp.badRequest(err.message);
+    }
+
     const msg = err instanceof Error ? err.message : 'Unknown error';
     log.error('admin.handler.error', { error: msg, path, method });
 
@@ -693,4 +1010,188 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
 
     return resp.internalError();
   }
+}
+
+// ---------------------------------------------------------------------------
+// Analytics Routes (Task 5)
+// ---------------------------------------------------------------------------
+
+async function handleAnalyticsRoutes(
+  event: APIGatewayProxyEventV2,
+  subpath: string,
+  method: string
+): Promise<APIGatewayProxyResultV2> {
+  if (method !== 'GET') return resp.notFound('Analytics endpoint not found');
+
+  const startDate =
+    queryParam(event, 'startDate') || new Date(Date.now() - 30 * 86400000).toISOString();
+  const endDate = queryParam(event, 'endDate') || new Date().toISOString();
+  const dateRange: analytics.DateRange = { startDate, endDate };
+
+  // GET /admin/analytics/overview
+  if (subpath === '/analytics/overview') {
+    const metrics = await analytics.getOverviewMetrics(dateRange);
+    return resp.success(metrics);
+  }
+
+  // GET /admin/analytics/funnels
+  if (subpath === '/analytics/funnels') {
+    const metrics = await analytics.getFunnelMetrics(dateRange);
+    return resp.success(metrics);
+  }
+
+  // GET /admin/analytics/orgs
+  if (subpath === '/analytics/orgs') {
+    const metrics = await analytics.getOrgMetrics(dateRange);
+    return resp.success(metrics);
+  }
+
+  // GET /admin/analytics/trends
+  if (subpath === '/analytics/trends') {
+    const granularity = (queryParam(event, 'granularity') || 'daily') as analytics.Granularity;
+    if (!['daily', 'weekly', 'monthly'].includes(granularity)) {
+      return resp.badRequest('granularity must be daily, weekly, or monthly');
+    }
+    const trends = await analytics.getTrends(dateRange, granularity);
+    return resp.success(trends);
+  }
+
+  // GET /admin/analytics/lead-sources
+  if (subpath === '/analytics/lead-sources') {
+    const metrics = await analytics.getLeadSourceAttribution(dateRange);
+    return resp.success(metrics);
+  }
+
+  return resp.notFound('Analytics endpoint not found');
+}
+
+// ---------------------------------------------------------------------------
+// GDPR Routes (Task 7)
+// ---------------------------------------------------------------------------
+
+async function handleGdprRoutes(
+  event: APIGatewayProxyEventV2,
+  subpath: string,
+  method: string,
+  canWrite: boolean,
+  adminEmailHash: string
+): Promise<APIGatewayProxyResultV2> {
+  const doc = getDocClient();
+
+  // POST /admin/gdpr/erasure
+  if (subpath === '/gdpr/erasure' && method === 'POST') {
+    if (!canWrite) return resp.forbidden();
+    const body = parseBody(event);
+    if (body === null) return resp.badRequest('Invalid JSON in request body');
+    const emailHash = body.emailHash as string | undefined;
+    if (!emailHash) return resp.badRequest('emailHash is required');
+
+    // Find all leads matching the email hash
+    const results = await doc.send(
+      new ScanCommand({
+        TableName: tableName(),
+        FilterExpression: 'begins_with(pk, :prefix) AND sk = :meta AND emailHash = :eh',
+        ExpressionAttributeValues: {
+          ':prefix': 'LEAD#',
+          ':meta': 'META',
+          ':eh': emailHash,
+        },
+      })
+    );
+
+    const leads = results.Items || [];
+    let redacted = 0;
+
+    for (const lead of leads) {
+      try {
+        await doc.send(
+          new UpdateCommand({
+            TableName: tableName(),
+            Key: { pk: lead.pk, sk: lead.sk },
+            UpdateExpression: `SET #name = :redacted, email = :redacted, phone = :redacted,
+              #msg = :redacted, #ip = :redacted, userAgent = :redacted`,
+            ExpressionAttributeNames: {
+              '#name': 'name',
+              '#msg': 'message',
+              '#ip': 'ipHash',
+            },
+            ExpressionAttributeValues: {
+              ':redacted': '[REDACTED]',
+            },
+          })
+        );
+        redacted++;
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Unknown error';
+        log.error('gdpr.erasure.leadFailed', { pk: lead.pk as string, error: msg });
+      }
+    }
+
+    // Log erasure request in audit table
+    await recordAudit({
+      actorId: adminEmailHash,
+      actorType: 'admin',
+      action: 'gdpr.erasure',
+      resourceType: 'lead',
+      resourceId: emailHash,
+      details: { leadsFound: leads.length, leadsRedacted: redacted },
+      ipHash: getIpHash(event),
+    });
+
+    return resp.success({
+      emailHash,
+      leadsFound: leads.length,
+      leadsRedacted: redacted,
+    });
+  }
+
+  // GET /admin/gdpr/export/:emailHash
+  if (/^\/gdpr\/export\/[^/]+$/.test(subpath) && method === 'GET') {
+    const emailHash = pathParam(event, 3); // admin/gdpr/export/<emailHash>
+
+    // Find all leads matching the email hash
+    const results = await doc.send(
+      new ScanCommand({
+        TableName: tableName(),
+        FilterExpression: 'begins_with(pk, :prefix) AND sk = :meta AND emailHash = :eh',
+        ExpressionAttributeValues: {
+          ':prefix': 'LEAD#',
+          ':meta': 'META',
+          ':eh': emailHash,
+        },
+      })
+    );
+
+    const leads = (results.Items || []).map((item) => ({
+      leadId: item.leadId,
+      funnelId: item.funnelId,
+      name: item.name,
+      email: item.email,
+      phone: item.phone,
+      status: item.status,
+      notes: item.notes,
+      tags: item.tags,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+      orgId: item.orgId,
+    }));
+
+    await recordAudit({
+      actorId: adminEmailHash,
+      actorType: 'admin',
+      action: 'gdpr.export',
+      resourceType: 'lead',
+      resourceId: emailHash,
+      details: { leadsFound: leads.length },
+      ipHash: getIpHash(event),
+    });
+
+    return resp.success({
+      emailHash,
+      exportedAt: new Date().toISOString(),
+      leads,
+    });
+  }
+
+  return resp.notFound('GDPR endpoint not found');
 }

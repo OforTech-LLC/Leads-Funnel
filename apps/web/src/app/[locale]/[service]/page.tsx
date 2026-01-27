@@ -2,9 +2,24 @@ import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
 import { routing, type Locale } from '@/i18n/routing';
 import { services, getServiceBySlug, getAllServiceSlugs } from '@/config/services';
-import { FunnelHero, FunnelBenefits, FunnelForm, FunnelTestimonials, FunnelFAQ } from '@/components/funnel';
+import {
+  FunnelHero,
+  FunnelBenefits,
+  FunnelForm,
+  FunnelTestimonials,
+  FunnelFAQ,
+} from '@/components/funnel';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
-import { generateFunnelMetadata } from '@/seo/funnelMetadata';
+import { Footer } from '@/components/Footer';
+import {
+  generateFunnelMetadata,
+  generateFunnelJsonLd,
+  generateFunnelFAQJsonLd,
+  generateFunnelAggregateRatingJsonLd,
+} from '@/seo/funnelMetadata';
+import { ExitIntent } from '@/components/ExitIntent';
+import { StickyCTA } from '@/components/StickyCTA';
+import { SocialProofBar } from '@/components/SocialProofBar';
 
 /**
  * Generate static params for all locales and services
@@ -61,8 +76,30 @@ export default async function ServiceFunnelPage({
     notFound();
   }
 
+  // Generate structured data (FAQ + AggregateRating + Review schemas)
+  const faqJsonLd = generateFunnelFAQJsonLd(serviceConfig, locale as Locale);
+  const ratingJsonLd = generateFunnelAggregateRatingJsonLd(serviceConfig, locale as Locale);
+
   return (
     <main style={{ minHeight: '100vh' }}>
+      {/* FAQ Schema JSON-LD */}
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      )}
+      {/* AggregateRating + Review Schema JSON-LD */}
+      {ratingJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(ratingJsonLd) }}
+        />
+      )}
+
+      {/* Social Proof Bar */}
+      <SocialProofBar variant="total" />
+
       {/* Header with Language Switcher */}
       <header
         style={{
@@ -97,41 +134,12 @@ export default async function ServiceFunnelPage({
       {/* FAQ Section */}
       <FunnelFAQ service={serviceConfig} />
 
-      {/* Footer */}
-      <Footer color={serviceConfig.color} />
+      {/* Footer with legal links */}
+      <Footer accentColor={serviceConfig.color} />
+
+      {/* Conversion optimization overlays */}
+      <ExitIntent />
+      <StickyCTA />
     </main>
-  );
-}
-
-/**
- * Footer Component
- */
-function Footer({ color }: { color: string }) {
-  const currentYear = new Date().getFullYear();
-
-  return (
-    <footer
-      style={{
-        padding: '40px 24px',
-        textAlign: 'center',
-        backgroundColor: '#111',
-        color: '#888',
-      }}
-    >
-      <div style={{ marginBottom: '16px' }}>
-        <a
-          href="/"
-          style={{
-            color,
-            fontWeight: 600,
-            fontSize: '18px',
-            textDecoration: 'none',
-          }}
-        >
-          Kanjona
-        </a>
-      </div>
-      <p style={{ fontSize: '14px' }}>&copy; {currentYear} Kanjona. All rights reserved.</p>
-    </footer>
   );
 }

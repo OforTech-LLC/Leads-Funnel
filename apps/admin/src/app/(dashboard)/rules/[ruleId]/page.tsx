@@ -4,6 +4,7 @@
  * Rule Detail Page
  *
  * View and edit an assignment rule with matched leads count.
+ * RBAC: Edit and delete are ADMIN only.
  */
 
 import { useState, useCallback } from 'react';
@@ -18,12 +19,15 @@ import ErrorAlert from '@/components/ErrorAlert';
 import FormField from '@/components/FormField';
 import StatusBadge from '@/components/StatusBadge';
 import ConfirmDialog from '@/components/ConfirmDialog';
+import RequireRole from '@/components/RequireRole';
+import { useToast } from '@/components/Toast';
 import { formatDate } from '@/lib/utils';
 import Link from 'next/link';
 
 export default function RuleDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const toast = useToast();
   const ruleId = params.ruleId as string;
 
   const { data: rule, isLoading, error, refetch } = useGetRuleQuery(ruleId);
@@ -84,20 +88,22 @@ export default function RuleDetailPage() {
         monthlyCap: form.monthlyCap ? Number(form.monthlyCap) : undefined,
         description: form.description || undefined,
       }).unwrap();
+      toast.success('Rule updated successfully');
       setEditMode(false);
     } catch {
-      // Error handled by RTK Query
+      toast.error('Failed to update rule');
     }
-  }, [updateRule, ruleId, form]);
+  }, [updateRule, ruleId, form, toast]);
 
   const handleDelete = useCallback(async () => {
     try {
       await deleteRule(ruleId).unwrap();
+      toast.success('Rule deleted successfully');
       router.push('/rules');
     } catch {
-      // Error handled by RTK Query
+      toast.error('Failed to delete rule');
     }
-  }, [deleteRule, ruleId, router]);
+  }, [deleteRule, ruleId, router, toast]);
 
   if (isLoading) {
     return (
@@ -122,26 +128,28 @@ export default function RuleDetailPage() {
           <span>/</span>
           <span className="text-[var(--text-primary)]">{rule.name}</span>
         </div>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-semibold text-[var(--text-primary)]">{rule.name}</h1>
             <StatusBadge status={rule.active ? 'active' : 'inactive'} />
           </div>
           {!editMode && (
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setShowDelete(true)}
-                className="px-4 py-2 text-sm font-medium text-red-600 border border-red-300 dark:border-red-800 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-              >
-                Delete
-              </button>
-              <button
-                onClick={startEdit}
-                className="px-4 py-2 text-sm font-medium border border-[var(--border-color)] rounded-md hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-primary)]"
-              >
-                Edit
-              </button>
-            </div>
+            <RequireRole roles={['ADMIN']}>
+              <div className="flex items-center gap-3 self-start">
+                <button
+                  onClick={() => setShowDelete(true)}
+                  className="px-4 py-2 text-sm font-medium text-red-600 border border-red-300 dark:border-red-800 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                >
+                  Delete
+                </button>
+                <button
+                  onClick={startEdit}
+                  className="px-4 py-2 text-sm font-medium border border-[var(--border-color)] rounded-md hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-primary)]"
+                >
+                  Edit
+                </button>
+              </div>
+            </RequireRole>
           )}
         </div>
       </div>

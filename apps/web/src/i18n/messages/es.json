@@ -50,7 +50,9 @@
     "es": "Espanol"
   },
   "footer": {
-    "copyright": "Todos los derechos reservados."
+    "copyright": "Todos los derechos reservados.",
+    "privacy": "Politica de Privacidad",
+    "terms": "Terminos de Servicio"
   },
   "funnels": {
     "real-estate": {
@@ -102,9 +104,40 @@
           {
             "name": "Miguel Rodríguez",
             "text": "Encontramos nuestra casa soñada en solo dos semanas. El equipo hizo todo muy fácil.",
-            "location": "Austin, TX"
+            "location": "Austin, TX",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Maria Fernandez",
+            "text": "Vendimos nuestra casa por encima del precio pedido en menos de un mes. El analisis de mercado fue impecable.",
+            "location": "Dallas, TX",
+            "company": "Fernandez Inversiones",
+            "rating": "5"
+          },
+          {
+            "name": "Juan Rodriguez",
+            "text": "Como compradores primerizos, estabamos nerviosos. El equipo nos guio en cada paso y encontramos la casa perfecta.",
+            "location": "Orlando, FL",
+            "company": "Rodriguez Soluciones",
+            "rating": "5"
+          },
+          {
+            "name": "Carmen Lopez",
+            "text": "Me estaba mudando desde otro estado y lo hicieron todo sin problemas. Recorridos virtuales y respuestas rapidas.",
+            "location": "Portland, OR",
+            "company": "Lopez Diseno",
+            "rating": "4"
+          },
+          {
+            "name": "Roberto Morales",
+            "text": "Tercera vez usando sus servicios y nunca decepcionan. Entienden perfectamente el mercado de propiedades de inversion.",
+            "location": "Nashville, TN",
+            "company": "Morales Capital",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 de mas de 200 resenas"
       },
       "cta": {
         "title": "¿Listo Para Encontrar Tu Casa Ideal?",
@@ -118,7 +151,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Consulta Gratis"
+        "free": "Consulta Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "life-insurance": {
@@ -170,9 +211,40 @@
           {
             "name": "Ana García",
             "text": "Me ayudaron a encontrar una póliza que se ajustó a mi presupuesto. Muy recomendado!",
-            "location": "Denver, CO"
+            "location": "Denver, CO",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Pedro Garcia",
+            "text": "Encontraron una poliza con el doble de cobertura a un menor costo. El proceso de comparacion fue muy facil.",
+            "location": "San Antonio, TX",
+            "company": "Garcia e Hijos",
+            "rating": "5"
+          },
+          {
+            "name": "Isabel Martinez",
+            "text": "Despues de perder a mi esposo, el proceso de reclamacion fue manejado con cuidado y eficiencia. Eternamente agradecida.",
+            "location": "Minneapolis, MN",
+            "company": "Martinez Consultores",
+            "rating": "5"
+          },
+          {
+            "name": "Fernando Lopez",
+            "text": "Obtuve cobertura de vida completa para toda mi familia en una sola sesion. Todo fue explicado claramente.",
+            "location": "Boston, MA",
+            "company": "Lopez Financiero",
+            "rating": "5"
+          },
+          {
+            "name": "Ana Torres",
+            "text": "Como propietaria de pequeno negocio, me ayudaron a entender la cobertura correcta. Servicio excepcional.",
+            "location": "Miami, FL",
+            "company": "Torres Panaderia",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.9/5 de mas de 180 resenas"
       },
       "cta": {
         "title": "¿Listo Para Proteger a Tu Familia?",
@@ -186,7 +258,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Cotización Gratis"
+        "free": "Cotización Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "construction": {
@@ -238,9 +318,40 @@
           {
             "name": "Carlos Mendoza",
             "text": "Construyeron nuestra casa exactamente como la imaginamos. Equipo profesional de principio a fin.",
-            "location": "Phoenix, AZ"
+            "location": "Phoenix, AZ",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Ricardo Morales",
+            "text": "Nuestra renovacion comercial se completo a tiempo y bajo presupuesto. La gestion del proyecto fue excepcional.",
+            "location": "Atlanta, GA",
+            "company": "Morales Propiedades",
+            "rating": "5"
+          },
+          {
+            "name": "Catalina Lopez",
+            "text": "Transformaron nuestra oficina anticuada en un espacio moderno. El equipo fue profesional y minimizo las molestias.",
+            "location": "Charlotte, NC",
+            "company": "Lopez Media",
+            "rating": "5"
+          },
+          {
+            "name": "Marcos Rivera",
+            "text": "Construyeron nuestro almacen desde cero. Excelente comunicacion durante los 8 meses del proyecto.",
+            "location": "Houston, TX",
+            "company": "Rivera Logistica",
+            "rating": "4"
+          },
+          {
+            "name": "Sandra Hernandez",
+            "text": "La atencion al detalle en nuestra ampliacion fue notable. Cada acabado fue exactamente como lo especificamos.",
+            "location": "Denver, CO",
+            "company": "Hernandez Diseno",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 de mas de 150 resenas"
       },
       "cta": {
         "title": "¿Listo Para Comenzar Tu Proyecto?",
@@ -254,7 +365,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Presupuesto Gratis"
+        "free": "Presupuesto Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "moving": {
@@ -306,9 +425,40 @@
           {
             "name": "Laura Fernández",
             "text": "La mudanza más fácil que hemos tenido. El equipo fue puntual, cuidadoso y eficiente.",
-            "location": "Miami, FL"
+            "location": "Miami, FL",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Luis Kim",
+            "text": "Mudaron nuestra casa de 4 habitaciones entre estados sin un solo articulo danado. Son verdaderos profesionales.",
+            "location": "Chicago, IL",
+            "company": "Kim Electronica",
+            "rating": "5"
+          },
+          {
+            "name": "Patricia Morales",
+            "text": "El servicio de empaque nos ahorro mucho tiempo. Todo estaba perfectamente etiquetado.",
+            "location": "San Francisco, CA",
+            "company": "Morales Creativo",
+            "rating": "5"
+          },
+          {
+            "name": "Andres Lopez",
+            "text": "Asequible, confiable y puntual. Es todo lo que puedes pedir de una empresa de mudanzas.",
+            "location": "Philadelphia, PA",
+            "company": "Lopez Derecho",
+            "rating": "4"
+          },
+          {
+            "name": "Monica Torres",
+            "text": "Manejaron nuestra reubicacion de oficina durante el fin de semana sin tiempo de inactividad.",
+            "location": "Austin, TX",
+            "company": "Torres Tecnologia",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.7/5 de mas de 300 resenas"
       },
       "cta": {
         "title": "¿Listo Para Mudarte?",
@@ -322,7 +472,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Cotización Gratis"
+        "free": "Cotización Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "dentist": {
@@ -374,9 +532,40 @@
           {
             "name": "Roberto Sánchez",
             "text": "Encontré un dentista increíble que me hizo sentir cómodo. Muy recomendado!",
-            "location": "Los Angeles, CA"
+            "location": "Los Angeles, CA",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Patricia Rivera",
+            "text": "Finalmente encontre un dentista al que mis hijos les gusta ir. El equipo pediatrico es maravilloso.",
+            "location": "San Diego, CA",
+            "company": "Rivera Marketing",
+            "rating": "5"
+          },
+          {
+            "name": "Diego Lopez",
+            "text": "Tenia ansiedad dental severa pero las opciones de sedacion hicieron mi endodoncia completamente indolora.",
+            "location": "Portland, OR",
+            "company": "Lopez Ingenieria",
+            "rating": "5"
+          },
+          {
+            "name": "Carmen Morales",
+            "text": "El tratamiento Invisalign transformo mi sonrisa en solo 10 meses. Los resultados son mejores de lo que imagine.",
+            "location": "Denver, CO",
+            "company": "Morales y Asociados",
+            "rating": "5"
+          },
+          {
+            "name": "Guillermo Torres",
+            "text": "Cita de emergencia un sabado cuando me rompi un diente. Me atendieron en una hora.",
+            "location": "Phoenix, AZ",
+            "company": "Torres Construccion",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.9/5 de mas de 400 resenas"
       },
       "cta": {
         "title": "¿Listo Para Una Sonrisa Más Saludable?",
@@ -390,7 +579,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Consulta Gratis"
+        "free": "Consulta Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "plastic-surgeon": {
@@ -442,9 +639,40 @@
           {
             "name": "Patricia López",
             "text": "Resultados increíbles y atención excepcional. Me siento más segura que nunca.",
-            "location": "Houston, TX"
+            "location": "Houston, TX",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Raquel Morales",
+            "text": "Los resultados de mi rinoplastia superan mis suenos. Se ven naturales y exactamente como lo discutimos.",
+            "location": "Beverly Hills, CA",
+            "company": "Morales RP",
+            "rating": "5"
+          },
+          {
+            "name": "Tomas Lopez",
+            "text": "El contorno corporal despues de mi perdida de peso me dio la confianza que necesitaba.",
+            "location": "Scottsdale, AZ",
+            "company": "Lopez Fitness",
+            "rating": "5"
+          },
+          {
+            "name": "Cristina Torres",
+            "text": "Mi lifting facial tuvo una recuperacion mas suave de lo esperado. El equipo de post-operatorio fue increible.",
+            "location": "New York, NY",
+            "company": "Torres Interiores",
+            "rating": "5"
+          },
+          {
+            "name": "Miguel Hernandez",
+            "text": "Gran experiencia. Profesional, discreto y los resultados cambiaron mi vida.",
+            "location": "Dallas, TX",
+            "company": "Hernandez Finanzas",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.9/5 de mas de 120 resenas"
       },
       "cta": {
         "title": "¿Lista Para Tu Transformación?",
@@ -458,7 +686,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Consulta Gratis"
+        "free": "Consulta Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "roofing": {
@@ -510,9 +746,40 @@
           {
             "name": "Fernando Torres",
             "text": "Excelente trabajo reemplazando nuestro techo después de la tormenta. Rápidos y profesionales.",
-            "location": "Dallas, TX"
+            "location": "Dallas, TX",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Fernando Rivera",
+            "text": "Reemplazo completo del techo en dos dias. La limpieza fue impecable y las nuevas tejas lucen increibles.",
+            "location": "Kansas City, MO",
+            "company": "Rivera Propiedades",
+            "rating": "5"
+          },
+          {
+            "name": "Isabel Garcia",
+            "text": "Detectaron danos por tormenta que ni sabia que existian. Manejaron todo el papeleo del seguro tambien.",
+            "location": "Oklahoma City, OK",
+            "company": "Garcia Bienes Raices",
+            "rating": "5"
+          },
+          {
+            "name": "Jorge Morales",
+            "text": "Obtuve tres presupuestos y ofrecieron el mejor valor con la garantia mas larga.",
+            "location": "Nashville, TN",
+            "company": "Morales Construccion",
+            "rating": "4"
+          },
+          {
+            "name": "Patricia Lopez",
+            "text": "Repararon una filtracion persistente que otras dos empresas no pudieron resolver.",
+            "location": "Indianapolis, IN",
+            "company": "Lopez Legal",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 de mas de 250 resenas"
       },
       "cta": {
         "title": "¿Necesitas un Nuevo Techo?",
@@ -526,7 +793,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Inspección Gratis"
+        "free": "Inspección Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "cleaning": {
@@ -578,9 +853,40 @@
           {
             "name": "Carmen Ruiz",
             "text": "Mi casa nunca ha estado tan limpia. El equipo es increíble y muy profesional.",
-            "location": "San Diego, CA"
+            "location": "San Diego, CA",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Carmen Torres",
+            "text": "La limpieza profunda antes de nuestra fiesta fue excepcional. Cada superficie brillaba.",
+            "location": "Scottsdale, AZ",
+            "company": "Torres Eventos",
+            "rating": "5"
+          },
+          {
+            "name": "Marcos Lopez",
+            "text": "La limpieza de mudanza nos devolvio nuestro deposito completo. Limpiaron hasta dentro del horno.",
+            "location": "Seattle, WA",
+            "company": "Lopez Tecnologia",
+            "rating": "5"
+          },
+          {
+            "name": "Diana Rivera",
+            "text": "Servicio quincenal para nuestra casa. Traen sus propios productos ecologicos y los resultados son consistentes.",
+            "location": "Austin, TX",
+            "company": "Rivera Diseno",
+            "rating": "4"
+          },
+          {
+            "name": "Esteban Morales",
+            "text": "El equipo de limpieza de oficinas es confiable y discreto. Trabajan despues de horas.",
+            "location": "Denver, CO",
+            "company": "Morales Consultores",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 de mas de 350 resenas"
       },
       "cta": {
         "title": "¿Listo Para un Espacio Más Limpio?",
@@ -594,7 +900,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Cotización Gratis"
+        "free": "Cotización Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "hvac": {
@@ -646,9 +960,40 @@
           {
             "name": "José Martínez",
             "text": "Servicio excelente y rápido. Repararon nuestro AC el mismo día.",
-            "location": "Las Vegas, NV"
+            "location": "Las Vegas, NV",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Roberto Lopez",
+            "text": "La instalacion del nuevo sistema fue rapida y limpia. Nuestras facturas de energia bajaron un 30%.",
+            "location": "Phoenix, AZ",
+            "company": "Lopez Empresas",
+            "rating": "5"
+          },
+          {
+            "name": "Patricia Torres",
+            "text": "El plan de mantenimiento anual mantiene nuestro sistema funcionando perfectamente. Siempre llegan a tiempo.",
+            "location": "Houston, TX",
+            "company": "Torres Media",
+            "rating": "5"
+          },
+          {
+            "name": "Diego Rivera",
+            "text": "Instalacion de bomba de calor en diciembre. Trabajaron en el frio para terminarlo en un dia.",
+            "location": "Columbus, OH",
+            "company": "Rivera Industrias",
+            "rating": "4"
+          },
+          {
+            "name": "Laura Morales",
+            "text": "Diagnosticaron y repararon un ruido extrano que tres otras empresas no pudieron encontrar.",
+            "location": "San Antonio, TX",
+            "company": "Morales Derecho",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 de mas de 280 resenas"
       },
       "cta": {
         "title": "¿Necesitas Servicio de HVAC?",
@@ -662,7 +1007,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Diagnóstico Gratis"
+        "free": "Diagnóstico Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "plumbing": {
@@ -714,9 +1067,40 @@
           {
             "name": "Ricardo Gómez",
             "text": "Llegaron rápido y arreglaron la fuga inmediatamente. Muy profesionales.",
-            "location": "Chicago, IL"
+            "location": "Chicago, IL",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Miguel Lopez",
+            "text": "Cambio completo de tuberias en tres dias. Sin desorden, sin danos en las paredes, y la presion es increible.",
+            "location": "Tampa, FL",
+            "company": "Lopez Grupo",
+            "rating": "5"
+          },
+          {
+            "name": "Carmen Rivera",
+            "text": "Instalaron un calentador sin tanque y la diferencia es total. Agua caliente infinita y facturas mas bajas.",
+            "location": "Sacramento, CA",
+            "company": "Rivera Contabilidad",
+            "rating": "5"
+          },
+          {
+            "name": "Carlos Torres",
+            "text": "Repararon una fuga en la losa sin romper nuestros cimientos. La tecnologia de camara que usan es impresionante.",
+            "location": "San Diego, CA",
+            "company": "Torres Construccion",
+            "rating": "5"
+          },
+          {
+            "name": "Nancy Morales",
+            "text": "La plomeria para la renovacion del bano fue impecable. Se coordinaron perfectamente con nuestro contratista.",
+            "location": "Minneapolis, MN",
+            "company": "Morales Diseno",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 de mas de 320 resenas"
       },
       "cta": {
         "title": "¿Problema de Plomería?",
@@ -730,7 +1114,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Diagnóstico Gratis"
+        "free": "Diagnóstico Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "electrician": {
@@ -753,7 +1145,10 @@
             "title": "La Seguridad Primero",
             "description": "Cumplimos con todos los códigos eléctricos locales."
           },
-          { "title": "Precios Honestos", "description": "Estimaciones claras sin cargos ocultos." }
+          {
+            "title": "Precios Honestos",
+            "description": "Estimaciones claras sin cargos ocultos."
+          }
         ]
       },
       "faq": {
@@ -779,9 +1174,40 @@
           {
             "name": "Eduardo Reyes",
             "text": "Actualizaron todo el sistema eléctrico de nuestra casa. Trabajo impecable.",
-            "location": "Seattle, WA"
+            "location": "Seattle, WA",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Esteban Lopez",
+            "text": "Actualizacion completa del panel. Trabajo limpio, paso la inspeccion a la primera.",
+            "location": "Austin, TX",
+            "company": "Lopez Tecnologia",
+            "rating": "5"
+          },
+          {
+            "name": "Kelly Torres",
+            "text": "Instalaron iluminacion empotrada en toda nuestra casa. La colocacion fue perfecta.",
+            "location": "Portland, OR",
+            "company": "Torres Interiores",
+            "rating": "5"
+          },
+          {
+            "name": "David Rivera",
+            "text": "Cablearon nuestro nuevo cine en casa. Sonido envolvente y controles inteligentes funcionan perfectamente.",
+            "location": "Charlotte, NC",
+            "company": "Rivera Media",
+            "rating": "5"
+          },
+          {
+            "name": "Michelle Morales",
+            "text": "Instalacion del cargador EV se hizo en medio dia. Nos ayudaron a entender los programas de descuentos.",
+            "location": "Denver, CO",
+            "company": "Morales Motors",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 de mas de 200 resenas"
       },
       "cta": {
         "title": "¿Necesitas un Electricista?",
@@ -795,7 +1221,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Estimación Gratis"
+        "free": "Estimación Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "pest-control": {
@@ -847,9 +1281,40 @@
           {
             "name": "Sofía Hernández",
             "text": "Finalmente libres de cucarachas. El servicio fue rápido y efectivo.",
-            "location": "Tampa, FL"
+            "location": "Tampa, FL",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Roberto Torres",
+            "text": "El tratamiento contra termitas salvo nuestro hogar. El sistema nos da tranquilidad.",
+            "location": "Atlanta, GA",
+            "company": "Torres Propiedades",
+            "rating": "5"
+          },
+          {
+            "name": "Samanta Rivera",
+            "text": "El tratamiento termico para chinches funciono al primer intento. Mas seguro para nuestras mascotas.",
+            "location": "New York, NY",
+            "company": "Rivera Editorial",
+            "rating": "5"
+          },
+          {
+            "name": "Tomas Lopez",
+            "text": "El servicio trimestral mantiene nuestro restaurante libre de plagas.",
+            "location": "Miami, FL",
+            "company": "Lopez Cocina",
+            "rating": "4"
+          },
+          {
+            "name": "Diana Morales",
+            "text": "Sellaron todos los puntos de entrada y eliminaron nuestro problema de ratones definitivamente.",
+            "location": "Chicago, IL",
+            "company": "Morales Bienes Raices",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.7/5 de mas de 220 resenas"
       },
       "cta": {
         "title": "¿Problemas con Plagas?",
@@ -863,7 +1328,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Inspección Gratis"
+        "free": "Inspección Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "landscaping": {
@@ -915,9 +1388,40 @@
           {
             "name": "María Torres",
             "text": "Nuestro jardín se ve increíble. El mejor trabajo de paisajismo que hemos visto.",
-            "location": "Phoenix, AZ"
+            "location": "Phoenix, AZ",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Michelle Lopez",
+            "text": "Transformacion completa del patio trasero con un hermoso patio y fogata. Es como tener un resort en casa.",
+            "location": "Phoenix, AZ",
+            "company": "Lopez Arquitectura",
+            "rating": "5"
+          },
+          {
+            "name": "Brian Torres",
+            "text": "El mantenimiento semanal del cesped siempre esta a tiempo. Nuestro jardin luce mejor que nunca.",
+            "location": "Dallas, TX",
+            "company": "Torres Derecho",
+            "rating": "5"
+          },
+          {
+            "name": "Angela Rivera",
+            "text": "Instalaron un sistema de riego por goteo que redujo nuestra factura de agua a la mitad.",
+            "location": "Las Vegas, NV",
+            "company": "Rivera Bienestar",
+            "rating": "4"
+          },
+          {
+            "name": "Guillermo Morales",
+            "text": "Remocion de arboles hecha de manera segura y eficiente. Incluso molieron los tocones.",
+            "location": "Nashville, TN",
+            "company": "Morales Desarrollo",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 de mas de 180 resenas"
       },
       "cta": {
         "title": "¿Listo Para un Jardín Hermoso?",
@@ -931,7 +1435,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Consulta Gratis"
+        "free": "Consulta Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "pool-service": {
@@ -954,7 +1466,10 @@
             "title": "Servicio Regular",
             "description": "Planes de mantenimiento semanal o quincenal."
           },
-          { "title": "Reparaciones Expertas", "description": "Arreglamos bombas, filtros y más." }
+          {
+            "title": "Reparaciones Expertas",
+            "description": "Arreglamos bombas, filtros y más."
+          }
         ]
       },
       "faq": {
@@ -980,9 +1495,40 @@
           {
             "name": "Luis Jiménez",
             "text": "Mi piscina nunca ha estado tan limpia. Servicio confiable cada semana.",
-            "location": "Orlando, FL"
+            "location": "Orlando, FL",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "David Morales",
+            "text": "El mantenimiento semanal mantiene nuestra piscina cristalina. Siempre lista para nadar.",
+            "location": "Miami, FL",
+            "company": "Morales Holdings",
+            "rating": "5"
+          },
+          {
+            "name": "Jennifer Lopez",
+            "text": "Renovacion completa de la piscina. Se ve como nueva y la bomba eficiente nos ahorra dinero.",
+            "location": "Phoenix, AZ",
+            "company": "Lopez Diseno",
+            "rating": "5"
+          },
+          {
+            "name": "Ricardo Torres",
+            "text": "Instalaron sistema de agua salada. No mas olor a cloro fuerte y el agua se siente increible.",
+            "location": "Tampa, FL",
+            "company": "Torres Finanzas",
+            "rating": "4"
+          },
+          {
+            "name": "Sara Rivera",
+            "text": "Deteccion y reparacion de fugas sin vaciar la piscina. Su tecnologia es impresionante.",
+            "location": "San Diego, CA",
+            "company": "Rivera Consultores",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 de mas de 150 resenas"
       },
       "cta": {
         "title": "¿Listo Para una Piscina Perfecta?",
@@ -996,7 +1542,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Evaluación Gratis"
+        "free": "Evaluación Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "home-remodeling": {
@@ -1048,9 +1602,40 @@
           {
             "name": "Andrea Morales",
             "text": "Nuestra nueva cocina es hermosa. El equipo fue profesional y limpio.",
-            "location": "San Francisco, CA"
+            "location": "San Francisco, CA",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Cristobal Lopez",
+            "text": "La remodelacion de la cocina supero nuestras expectativas. Gabinetes personalizados y encimeras de cuarzo.",
+            "location": "Seattle, WA",
+            "company": "Lopez Construccion",
+            "rating": "5"
+          },
+          {
+            "name": "Laura Torres",
+            "text": "El acabado del sotano creo el espacio de entretenimiento perfecto. Bar, area de cine y dormitorio.",
+            "location": "Minneapolis, MN",
+            "company": "Torres Media",
+            "rating": "5"
+          },
+          {
+            "name": "Roberto Morales",
+            "text": "Remodelacion del bano completada a tiempo a pesar de problemas de suministro.",
+            "location": "Austin, TX",
+            "company": "Morales Desarrollo",
+            "rating": "4"
+          },
+          {
+            "name": "Sara Rivera",
+            "text": "Renovacion completa mientras viviamos en la casa. Contuvieron las areas de trabajo perfectamente.",
+            "location": "Portland, OR",
+            "company": "Rivera Interiores",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 de mas de 170 resenas"
       },
       "cta": {
         "title": "¿Listo Para Remodelar?",
@@ -1064,7 +1649,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Consulta Gratis"
+        "free": "Consulta Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "solar": {
@@ -1116,9 +1709,40 @@
           {
             "name": "Pablo Vargas",
             "text": "Mi factura eléctrica bajó un 80%. La inversión se paga sola.",
-            "location": "San Jose, CA"
+            "location": "San Jose, CA",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Jorge Lopez",
+            "text": "Nuestra factura electrica bajo de $300 a $15 por mes. El analisis de retorno fue preciso.",
+            "location": "San Diego, CA",
+            "company": "Lopez Ingenieria",
+            "rating": "5"
+          },
+          {
+            "name": "Lisa Torres",
+            "text": "El sistema de baterias nos mantiene con electricidad durante apagones. Solucion solar increible.",
+            "location": "Austin, TX",
+            "company": "Torres Ventures",
+            "rating": "5"
+          },
+          {
+            "name": "Andres Rivera",
+            "text": "Manejaron todos los permisos y aprobaciones. Solo tuve que firmar y ahorrar dinero.",
+            "location": "Phoenix, AZ",
+            "company": "Rivera Grupo",
+            "rating": "5"
+          },
+          {
+            "name": "Carmen Morales",
+            "text": "La mejor inversion para nuestro hogar. Los paneles son elegantes y el monitoreo por app es genial.",
+            "location": "Las Vegas, NV",
+            "company": "Morales Comercio",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.9/5 de mas de 200 resenas"
       },
       "cta": {
         "title": "¿Listo Para Ir Solar?",
@@ -1132,7 +1756,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Análisis Gratis"
+        "free": "Análisis Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "locksmith": {
@@ -1151,8 +1783,14 @@
             "title": "Disponibilidad 24/7",
             "description": "Servicio de emergencia a cualquier hora, cualquier día."
           },
-          { "title": "Respuesta Rápida", "description": "Llegamos en 30 minutos o menos." },
-          { "title": "Precios Honestos", "description": "Sin cargos ocultos ni sorpresas." }
+          {
+            "title": "Respuesta Rápida",
+            "description": "Llegamos en 30 minutos o menos."
+          },
+          {
+            "title": "Precios Honestos",
+            "description": "Sin cargos ocultos ni sorpresas."
+          }
         ]
       },
       "faq": {
@@ -1178,9 +1816,40 @@
           {
             "name": "Diana Castillo",
             "text": "Me quedé fuera a medianoche y llegaron en 20 minutos. Salvadores!",
-            "location": "Atlanta, GA"
+            "location": "Atlanta, GA",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Marco Lopez",
+            "text": "Me quede fuera a medianoche y llegaron en 20 minutos. Profesional y precio razonable.",
+            "location": "Chicago, IL",
+            "company": "Lopez Seguridad",
+            "rating": "5"
+          },
+          {
+            "name": "Jennifer Torres",
+            "text": "Cambiaron todas las cerraduras despues de un robo. Tambien instalaron cerraduras inteligentes.",
+            "location": "Dallas, TX",
+            "company": "Torres Propiedades",
+            "rating": "5"
+          },
+          {
+            "name": "Carlos Rivera",
+            "text": "Instalacion de cerraduras comerciales para nuestra nueva oficina. Sistema maestro funciona perfectamente.",
+            "location": "Houston, TX",
+            "company": "Rivera Industrias",
+            "rating": "4"
+          },
+          {
+            "name": "Linda Morales",
+            "text": "Servicio de apertura de auto fue rapido y sin rayones. Hicieron copias de llaves en el momento.",
+            "location": "Phoenix, AZ",
+            "company": "Morales Auto",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.7/5 de mas de 190 resenas"
       },
       "cta": {
         "title": "¿Necesitas un Cerrajero?",
@@ -1194,7 +1863,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Estimación Gratis"
+        "free": "Estimación Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "pressure-washing": {
@@ -1246,9 +1923,40 @@
           {
             "name": "Jorge Mendez",
             "text": "Mi entrada parecía nueva después del lavado. Increíble diferencia!",
-            "location": "Charlotte, NC"
+            "location": "Charlotte, NC",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "David Lopez",
+            "text": "Nuestra entrada luce como nueva despues de anos de manchas. Tambien hicieron las aceras.",
+            "location": "Atlanta, GA",
+            "company": "Lopez Propiedades",
+            "rating": "5"
+          },
+          {
+            "name": "Jessica Torres",
+            "text": "La limpieza del deck hizo que la madera luciera como recien instalada.",
+            "location": "Nashville, TN",
+            "company": "Torres Eventos",
+            "rating": "5"
+          },
+          {
+            "name": "Brian Rivera",
+            "text": "Lavado de edificio comercial antes de nuestra inauguracion. La fachada quedo impecable.",
+            "location": "Charlotte, NC",
+            "company": "Rivera Comercio",
+            "rating": "4"
+          },
+          {
+            "name": "Angela Morales",
+            "text": "Lavado suave del techo elimino todas las rayas negras sin danar las tejas.",
+            "location": "Tampa, FL",
+            "company": "Morales Bienes Raices",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 de mas de 160 resenas"
       },
       "cta": {
         "title": "¿Listo Para una Limpieza Profunda?",
@@ -1262,7 +1970,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Cotización Gratis"
+        "free": "Cotización Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "water-damage-restoration": {
@@ -1314,9 +2030,40 @@
           {
             "name": "Claudia Vega",
             "text": "Llegaron a las 2am cuando se rompió nuestra tubería. Salvaron nuestros pisos.",
-            "location": "Houston, TX"
+            "location": "Houston, TX",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Miguel Torres",
+            "text": "Respondieron en 45 minutos a las 2 AM cuando nuestro sotano se inundo. Manejo experto.",
+            "location": "Columbus, OH",
+            "company": "Torres Construccion",
+            "rating": "5"
+          },
+          {
+            "name": "Lisa Rivera",
+            "text": "Un rociador danado causo danos mayores. Coordinaron con nuestro seguro y restauraron todo.",
+            "location": "Denver, CO",
+            "company": "Rivera Media",
+            "rating": "5"
+          },
+          {
+            "name": "Roberto Lopez",
+            "text": "Limpieza de respaldo de aguas negras fue completa y sanitizaron todo.",
+            "location": "Houston, TX",
+            "company": "Lopez Bienes Raices",
+            "rating": "5"
+          },
+          {
+            "name": "Angela Morales",
+            "text": "Fuga oculta de tuberia causo danos dentro de las paredes. Lo encontraron, repararon y reconstruyeron perfecto.",
+            "location": "Portland, OR",
+            "company": "Morales Interiores",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.9/5 de mas de 130 resenas"
       },
       "cta": {
         "title": "¿Daños por Agua?",
@@ -1330,7 +2077,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Inmediata",
-        "free": "Evaluación Gratis"
+        "free": "Evaluación Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "mold-remediation": {
@@ -1382,9 +2137,40 @@
           {
             "name": "Alberto Rojas",
             "text": "Profesionales y meticulosos. El moho se eliminó completamente.",
-            "location": "Miami, FL"
+            "location": "Miami, FL",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Cristobal Torres",
+            "text": "Encontraron moho negro en nuestro atico. Remediaron todo y las pruebas salieron limpias.",
+            "location": "Seattle, WA",
+            "company": "Torres Salud",
+            "rating": "5"
+          },
+          {
+            "name": "Jennifer Rivera",
+            "text": "Las alergias de mi hijo mejoraron dramaticamente despues de la remocion del moho.",
+            "location": "Miami, FL",
+            "company": "Rivera Medico",
+            "rating": "5"
+          },
+          {
+            "name": "Esteban Lopez",
+            "text": "Encapsulacion de espacio bajo la casa y tratamiento de moho. Ya no hay olor a humedad.",
+            "location": "Nashville, TN",
+            "company": "Lopez Propiedades",
+            "rating": "5"
+          },
+          {
+            "name": "Karen Morales",
+            "text": "Contaminacion de moho en el sistema de aire nos estaba enfermando. Limpiaron todo e instalaron luces UV.",
+            "location": "Chicago, IL",
+            "company": "Morales Consultores",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 de mas de 110 resenas"
       },
       "cta": {
         "title": "¿Preocupado por el Moho?",
@@ -1398,7 +2184,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Inspección Gratis"
+        "free": "Inspección Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "flooring": {
@@ -1450,9 +2244,40 @@
           {
             "name": "Mónica Delgado",
             "text": "Nuestros pisos de madera quedaron perfectos. Trabajo impecable.",
-            "location": "Denver, CO"
+            "location": "Denver, CO",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Brian Lopez",
+            "text": "Pisos de madera en toda la primera planta son impresionantes. La artesania es impecable.",
+            "location": "Austin, TX",
+            "company": "Lopez Diseno",
+            "rating": "5"
+          },
+          {
+            "name": "Laura Torres",
+            "text": "Piso vinilico en nuestras propiedades de alquiler es duradero y luce de alta gama.",
+            "location": "Dallas, TX",
+            "company": "Torres Alquileres",
+            "rating": "5"
+          },
+          {
+            "name": "Kevin Rivera",
+            "text": "Restauraron nuestros pisos de roble de 80 anos. Lucen mejor que nuevos. Proceso sin polvo.",
+            "location": "Philadelphia, PA",
+            "company": "Rivera Herencia",
+            "rating": "5"
+          },
+          {
+            "name": "Rachel Morales",
+            "text": "Instalacion de baldosas en el bano principal es hermosa. El trabajo de patron es impecable.",
+            "location": "San Diego, CA",
+            "company": "Morales Interiores",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 de mas de 190 resenas"
       },
       "cta": {
         "title": "¿Listo Para Pisos Nuevos?",
@@ -1466,7 +2291,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Estimación Gratis"
+        "free": "Estimación Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "painting": {
@@ -1518,9 +2351,40 @@
           {
             "name": "Carolina Paz",
             "text": "Transformaron nuestra casa completamente. Profesionales y limpios.",
-            "location": "Austin, TX"
+            "location": "Austin, TX",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Miguel Lopez",
+            "text": "La pintura exterior transformo nuestra casa. Lavaron, rasparon, imprimaron y aplicaron dos capas.",
+            "location": "Portland, OR",
+            "company": "Lopez Propiedades",
+            "rating": "5"
+          },
+          {
+            "name": "Jessica Torres",
+            "text": "Pintura interior de 8 habitaciones completada en tres dias. Bordes limpios y sin goteos.",
+            "location": "Denver, CO",
+            "company": "Torres Arquitectura",
+            "rating": "5"
+          },
+          {
+            "name": "David Rivera",
+            "text": "Pintura de gabinetes nos ahorro miles. El acabado tipo fabrica es increible.",
+            "location": "Nashville, TN",
+            "company": "Rivera Cocina",
+            "rating": "4"
+          },
+          {
+            "name": "Amanda Morales",
+            "text": "Pintura de oficina comercial hecha durante el fin de semana. Cero tiempo de inactividad.",
+            "location": "Chicago, IL",
+            "company": "Morales Consultores",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 de mas de 230 resenas"
       },
       "cta": {
         "title": "¿Listo Para un Nuevo Look?",
@@ -1534,7 +2398,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Cotización Gratis"
+        "free": "Cotización Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "windows-doors": {
@@ -1557,7 +2429,10 @@
             "title": "Mayor Seguridad",
             "description": "Cerraduras y vidrios de seguridad modernos."
           },
-          { "title": "Instalación Experta", "description": "Instalación perfecta garantizada." }
+          {
+            "title": "Instalación Experta",
+            "description": "Instalación perfecta garantizada."
+          }
         ]
       },
       "faq": {
@@ -1583,9 +2458,40 @@
           {
             "name": "Roberto Silva",
             "text": "Nuestras facturas de energía bajaron significativamente. Gran inversión.",
-            "location": "Portland, OR"
+            "location": "Portland, OR",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Daniel Lopez",
+            "text": "Reemplazamos 15 ventanas por modelos eficientes. Nuestra factura de calefaccion bajo un 25%.",
+            "location": "Minneapolis, MN",
+            "company": "Lopez Ingenieria",
+            "rating": "5"
+          },
+          {
+            "name": "Laura Torres",
+            "text": "La nueva puerta principal cambio completamente la apariencia de nuestra casa.",
+            "location": "Charlotte, NC",
+            "company": "Torres Diseno",
+            "rating": "5"
+          },
+          {
+            "name": "Brian Rivera",
+            "text": "Reemplazo de puerta corrediza con vidrio resistente a impacto. Perfecto para nuestra zona de huracanes.",
+            "location": "Tampa, FL",
+            "company": "Rivera Hogares",
+            "rating": "4"
+          },
+          {
+            "name": "Karen Morales",
+            "text": "Puertas francesas instaladas entre cocina y patio. Hermoso trabajo y todo perfectamente sellado.",
+            "location": "San Diego, CA",
+            "company": "Morales Vivienda",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 de mas de 170 resenas"
       },
       "cta": {
         "title": "¿Listo Para Nuevas Ventanas?",
@@ -1599,7 +2505,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Estimación Gratis"
+        "free": "Estimación Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "fencing": {
@@ -1651,9 +2565,40 @@
           {
             "name": "Alejandro Cruz",
             "text": "Nuestra cerca de privacidad quedó perfecta. Instalación rápida y limpia.",
-            "location": "San Antonio, TX"
+            "location": "San Antonio, TX",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Miguel Morales",
+            "text": "Cerca de cedro de privacidad instalada alrededor de todo nuestro patio. Hermosa artesania en solo dos dias.",
+            "location": "Austin, TX",
+            "company": "Morales Hogares",
+            "rating": "5"
+          },
+          {
+            "name": "Jessica Torres",
+            "text": "Cerca de aluminio alrededor de nuestra piscina luce elegante y cumple todos los codigos.",
+            "location": "Orlando, FL",
+            "company": "Torres Construccion",
+            "rating": "5"
+          },
+          {
+            "name": "Roberto Lopez",
+            "text": "Cerca de malla para nuestra propiedad comercial fue instalada rapidamente y a buen precio.",
+            "location": "Dallas, TX",
+            "company": "Lopez Industrial",
+            "rating": "4"
+          },
+          {
+            "name": "Laura Rivera",
+            "text": "Portón de hierro forjado personalizado es el punto destacado de nuestro jardin.",
+            "location": "San Antonio, TX",
+            "company": "Rivera Fincas",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.7/5 de mas de 140 resenas"
       },
       "cta": {
         "title": "¿Listo Para una Nueva Cerca?",
@@ -1667,7 +2612,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Estimación Gratis"
+        "free": "Estimación Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "concrete": {
@@ -1686,7 +2639,10 @@
             "title": "Experiencia Comprobada",
             "description": "Décadas de experiencia en todo tipo de proyectos."
           },
-          { "title": "Mezclas de Calidad", "description": "Usamos concreto de alta resistencia." },
+          {
+            "title": "Mezclas de Calidad",
+            "description": "Usamos concreto de alta resistencia."
+          },
           {
             "title": "Acabados Decorativos",
             "description": "Estampado, teñido y acabados expuestos."
@@ -1716,9 +2672,40 @@
           {
             "name": "Mario López",
             "text": "Nuestra nueva entrada de concreto estampado se ve increíble.",
-            "location": "Phoenix, AZ"
+            "location": "Phoenix, AZ",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "David Lopez",
+            "text": "Patio de concreto estampado parece piedra real a una fraccion del costo.",
+            "location": "Phoenix, AZ",
+            "company": "Lopez Desarrollo",
+            "rating": "5"
+          },
+          {
+            "name": "Jennifer Morales",
+            "text": "Reemplazo de entrada con acabado de agregado expuesto. Hermoso, duradero y con gran drenaje.",
+            "location": "Dallas, TX",
+            "company": "Morales Propiedades",
+            "rating": "5"
+          },
+          {
+            "name": "Brian Torres",
+            "text": "Reparacion de cimientos salvo nuestra casa. Usaron metodos de pilares y la casa esta nivelada.",
+            "location": "Houston, TX",
+            "company": "Torres Ingenieria",
+            "rating": "5"
+          },
+          {
+            "name": "Sara Rivera",
+            "text": "Pisos de concreto pulido en nuestro almacen lucen profesionales y son faciles de mantener.",
+            "location": "Portland, OR",
+            "company": "Rivera Logistica",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 de mas de 130 resenas"
       },
       "cta": {
         "title": "¿Listo Para Tu Proyecto de Concreto?",
@@ -1732,7 +2719,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Estimación Gratis"
+        "free": "Estimación Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "junk-removal": {
@@ -1747,7 +2742,10 @@
       "benefits": {
         "title": "¿Por Qué Elegir Nuestros Servicios de Remoción?",
         "items": [
-          { "title": "Servicio el Mismo Día", "description": "Agenda hoy, removemos hoy." },
+          {
+            "title": "Servicio el Mismo Día",
+            "description": "Agenda hoy, removemos hoy."
+          },
           {
             "title": "Precios Transparentes",
             "description": "Cotizaciones por volumen sin sorpresas."
@@ -1781,9 +2779,40 @@
           {
             "name": "Gabriela Ortiz",
             "text": "Limpiaron el garaje completo en 2 horas. Servicio increíble.",
-            "location": "Tampa, FL"
+            "location": "Tampa, FL",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Kevin Torres",
+            "text": "Limpieza de herencia de la casa de mis padres hecha en un dia. Donaron lo posible y reciclaron correctamente.",
+            "location": "Chicago, IL",
+            "company": "Torres Patrimonios",
+            "rating": "5"
+          },
+          {
+            "name": "Lisa Lopez",
+            "text": "Remocion de escombros de construccion fue rapida y asequible. Hasta barrieron la entrada.",
+            "location": "Atlanta, GA",
+            "company": "Lopez Renovaciones",
+            "rating": "5"
+          },
+          {
+            "name": "Miguel Rivera",
+            "text": "Remocion de jacuzzi de nuestro patio. Pense que tardaria mucho pero lo hicieron en dos horas.",
+            "location": "Portland, OR",
+            "company": "Rivera Bienes Raices",
+            "rating": "4"
+          },
+          {
+            "name": "Amanda Morales",
+            "text": "Servicio regular de contenedor comercial siempre a tiempo. Confiable y su servicio al cliente es excelente.",
+            "location": "Denver, CO",
+            "company": "Morales Negocios",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.7/5 de mas de 200 resenas"
       },
       "cta": {
         "title": "¿Listo Para Despejar?",
@@ -1797,7 +2826,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Servicio Rápido",
-        "free": "Cotización Gratis"
+        "free": "Cotización Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "appliance-repair": {
@@ -1816,8 +2853,14 @@
             "title": "Servicio el Mismo Día",
             "description": "Reparaciones rápidas cuando más las necesitas."
           },
-          { "title": "Todas las Marcas", "description": "Reparamos todas las marcas principales." },
-          { "title": "Piezas Garantizadas", "description": "Usamos piezas OEM con garantía." }
+          {
+            "title": "Todas las Marcas",
+            "description": "Reparamos todas las marcas principales."
+          },
+          {
+            "title": "Piezas Garantizadas",
+            "description": "Usamos piezas OEM con garantía."
+          }
         ]
       },
       "faq": {
@@ -1843,9 +2886,40 @@
           {
             "name": "Isabel Ramírez",
             "text": "Arreglaron mi refrigerador el mismo día. Excelente servicio.",
-            "location": "Dallas, TX"
+            "location": "Dallas, TX",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Esteban Lopez",
+            "text": "Repararon mi refrigerador Samsung que otros dos tecnicos dijeron que era irreparable. Me ahorraron $3,000.",
+            "location": "Dallas, TX",
+            "company": "Lopez Alimentos",
+            "rating": "5"
+          },
+          {
+            "name": "Jennifer Morales",
+            "text": "Reparacion de lavadora el mismo dia. El tecnico tenia la pieza en su camion.",
+            "location": "Portland, OR",
+            "company": "Morales Alquileres",
+            "rating": "5"
+          },
+          {
+            "name": "Carlos Torres",
+            "text": "Lavavajillas y horno reparados en una sola visita. Ofrecen paquetes para multiples electrodomesticos.",
+            "location": "Miami, FL",
+            "company": "Torres Hoteleria",
+            "rating": "4"
+          },
+          {
+            "name": "Rachel Rivera",
+            "text": "El contrato de mantenimiento de equipos de cocina comercial ha prevenido averias.",
+            "location": "Houston, TX",
+            "company": "Rivera Catering",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.7/5 de mas de 180 resenas"
       },
       "cta": {
         "title": "¿Electrodoméstico Descompuesto?",
@@ -1859,7 +2933,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Mismo Día",
-        "free": "Diagnóstico con Reparación"
+        "free": "Diagnóstico con Reparación",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "orthodontist": {
@@ -1882,7 +2964,10 @@
             "title": "Planes Personalizados",
             "description": "Tratamientos adaptados a tus necesidades específicas."
           },
-          { "title": "Opciones de Pago", "description": "Planes de pago flexibles disponibles." }
+          {
+            "title": "Opciones de Pago",
+            "description": "Planes de pago flexibles disponibles."
+          }
         ]
       },
       "faq": {
@@ -1908,9 +2993,40 @@
           {
             "name": "Valentina Mora",
             "text": "Mi experiencia con Invisalign fue increíble. Sonrisa perfecta en 14 meses.",
-            "location": "Miami, FL"
+            "location": "Miami, FL",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Amanda Lopez",
+            "text": "El tratamiento de ortodoncia de mi hijo esta adelantado. La oficina hace cada visita divertida.",
+            "location": "Austin, TX",
+            "company": "Familia Lopez",
+            "rating": "5"
+          },
+          {
+            "name": "David Torres",
+            "text": "Invisalign para adultos fue la mejor decision. Nadie en el trabajo sabia que estaba alineando mis dientes.",
+            "location": "San Francisco, CA",
+            "company": "Torres Tech",
+            "rating": "5"
+          },
+          {
+            "name": "Maria Rivera",
+            "text": "Ambos hijos tuvieron tratamiento aqui. Planes de pago flexibles y el personal los trata como familia.",
+            "location": "Orlando, FL",
+            "company": "Familia Rivera",
+            "rating": "5"
+          },
+          {
+            "name": "Brian Morales",
+            "text": "Correccion de mordida compleja con brackets y expansor. El plan fue completo y el resultado increible.",
+            "location": "Denver, CO",
+            "company": "Morales Ingenieria",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.9/5 de mas de 250 resenas"
       },
       "cta": {
         "title": "¿Listo Para una Sonrisa Perfecta?",
@@ -1924,7 +3040,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Consulta Gratis"
+        "free": "Consulta Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "dermatology": {
@@ -1943,7 +3067,10 @@
             "title": "Dermatólogos Certificados",
             "description": "Especialistas altamente capacitados y certificados."
           },
-          { "title": "Tratamientos Completos", "description": "Desde acné hasta cáncer de piel." },
+          {
+            "title": "Tratamientos Completos",
+            "description": "Desde acné hasta cáncer de piel."
+          },
           {
             "title": "Tecnología Avanzada",
             "description": "Los tratamientos más modernos disponibles."
@@ -1973,9 +3100,40 @@
           {
             "name": "Daniela Herrera",
             "text": "Finalmente mi piel está clara gracias a su tratamiento de acné.",
-            "location": "Los Angeles, CA"
+            "location": "Los Angeles, CA",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Laura Lopez",
+            "text": "Finalmente aclare mi acne adulto despues de anos. El plan personalizado fue un cambio total.",
+            "location": "Los Angeles, CA",
+            "company": "Lopez RP",
+            "rating": "5"
+          },
+          {
+            "name": "Kevin Torres",
+            "text": "El examen anual de cancer de piel encontro un lunar sospechoso. La deteccion temprana salvo mi vida.",
+            "location": "Phoenix, AZ",
+            "company": "Torres Consultores",
+            "rating": "5"
+          },
+          {
+            "name": "Rachel Rivera",
+            "text": "El tratamiento de eczema para mi hija ha sido transformador. El dermatologo fue tan paciente.",
+            "location": "Portland, OR",
+            "company": "Familia Rivera",
+            "rating": "5"
+          },
+          {
+            "name": "Jorge Morales",
+            "text": "Tratamiento laser para danos solares me hizo lucir diez anos mas joven. Resultados naturales.",
+            "location": "Miami, FL",
+            "company": "Morales Capital",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.9/5 de mas de 180 resenas"
       },
       "cta": {
         "title": "¿Listo Para Piel Hermosa?",
@@ -1989,7 +3147,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Consulta Inicial"
+        "free": "Consulta Inicial",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "medspa": {
@@ -2041,9 +3207,40 @@
           {
             "name": "Natalia Campos",
             "text": "Los resultados son naturales y me veo años más joven. Encantada!",
-            "location": "Beverly Hills, CA"
+            "location": "Beverly Hills, CA",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Cristina Lopez",
+            "text": "Los resultados de Botox y rellenos se ven tan naturales. La inyectora tiene un ojo artistico.",
+            "location": "Scottsdale, AZ",
+            "company": "Lopez Belleza",
+            "rating": "5"
+          },
+          {
+            "name": "Daniel Torres",
+            "text": "La depilacion laser ha cambiado mi vida. Despues de 6 sesiones, practicamente sin vello.",
+            "location": "Miami, FL",
+            "company": "Torres Fitness",
+            "rating": "5"
+          },
+          {
+            "name": "Sara Rivera",
+            "text": "La membresia mensual de HydraFacial mantiene mi piel radiante. Las instalaciones son lujosas.",
+            "location": "Dallas, TX",
+            "company": "Rivera Moda",
+            "rating": "4"
+          },
+          {
+            "name": "Roberto Morales",
+            "text": "Los resultados de CoolSculpting superaron mis expectativas. Perdi la grasa que no se iba con dieta.",
+            "location": "San Diego, CA",
+            "company": "Morales Bienestar",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.9/5 de mas de 160 resenas"
       },
       "cta": {
         "title": "¿Lista Para Brillar?",
@@ -2057,7 +3254,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Consulta Gratis"
+        "free": "Consulta Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "chiropractic": {
@@ -2080,7 +3285,10 @@
             "title": "Planes Personalizados",
             "description": "Tratamientos adaptados a tu condición específica."
           },
-          { "title": "Técnicas Modernas", "description": "Ajustes suaves y efectivos." }
+          {
+            "title": "Técnicas Modernas",
+            "description": "Ajustes suaves y efectivos."
+          }
         ]
       },
       "faq": {
@@ -2094,7 +3302,10 @@
             "question": "¿Cuántas sesiones necesitaré?",
             "answer": "Depende de tu condición, típicamente 6-12 sesiones iniciales."
           },
-          { "question": "¿Acepta seguro?", "answer": "Sí, trabajamos con la mayoría de seguros." }
+          {
+            "question": "¿Acepta seguro?",
+            "answer": "Sí, trabajamos con la mayoría de seguros."
+          }
         ]
       },
       "testimonials": {
@@ -2103,9 +3314,40 @@
           {
             "name": "Francisco Luna",
             "text": "Después de años de dolor de espalda, finalmente encontré alivio.",
-            "location": "Chicago, IL"
+            "location": "Chicago, IL",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Kevin Lopez",
+            "text": "Anos de dolor lumbar resueltos en solo 8 semanas. Deberia haber venido antes.",
+            "location": "Nashville, TN",
+            "company": "Lopez Fitness",
+            "rating": "5"
+          },
+          {
+            "name": "Jennifer Torres",
+            "text": "La atencion quiropractica prenatal hizo mi embarazo mucho mas comodo.",
+            "location": "Portland, OR",
+            "company": "Torres Bienestar",
+            "rating": "5"
+          },
+          {
+            "name": "Miguel Rivera",
+            "text": "Rehabilitacion de lesion deportiva me devolvio a la cancha en tiempo record.",
+            "location": "Denver, CO",
+            "company": "Rivera Atletismo",
+            "rating": "4"
+          },
+          {
+            "name": "Lisa Morales",
+            "text": "El plan familiar permite que los cuatro recibamos ajustes mensuales. La postura de los ninos ha mejorado.",
+            "location": "Austin, TX",
+            "company": "Morales Salud",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 de mas de 220 resenas"
       },
       "cta": {
         "title": "¿Listo Para Vivir Sin Dolor?",
@@ -2119,7 +3361,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Evaluación Inicial"
+        "free": "Evaluación Inicial",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "physical-therapy": {
@@ -2142,7 +3392,10 @@
             "title": "Tratamiento Individualizado",
             "description": "Planes personalizados para tu recuperación."
           },
-          { "title": "Equipamiento Moderno", "description": "Instalaciones de última generación." }
+          {
+            "title": "Equipamiento Moderno",
+            "description": "Instalaciones de última generación."
+          }
         ]
       },
       "faq": {
@@ -2156,7 +3409,10 @@
             "question": "¿Cuántas sesiones necesitaré?",
             "answer": "Varía según la condición, típicamente 8-12 sesiones."
           },
-          { "question": "¿Qué debo traer?", "answer": "Ropa cómoda y tu información de seguro." }
+          {
+            "question": "¿Qué debo traer?",
+            "answer": "Ropa cómoda y tu información de seguro."
+          }
         ]
       },
       "testimonials": {
@@ -2165,9 +3421,40 @@
           {
             "name": "Rosa Gutiérrez",
             "text": "Después de mi cirugía de rodilla, me ayudaron a caminar de nuevo.",
-            "location": "Boston, MA"
+            "location": "Boston, MA",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "David Lopez",
+            "text": "La terapia post-reemplazo de rodilla fue excelente. Estoy de vuelta en las montanas a los 6 meses.",
+            "location": "Portland, OR",
+            "company": "Lopez Activo",
+            "rating": "5"
+          },
+          {
+            "name": "Rachel Torres",
+            "text": "Rehabilitacion de hombro despues de cirugia fue completa. Rango completo de movimiento restaurado.",
+            "location": "Denver, CO",
+            "company": "Familia Torres",
+            "rating": "5"
+          },
+          {
+            "name": "Brian Rivera",
+            "text": "Puncion seca para tension cronica del cuello ha sido increiblemente efectiva.",
+            "location": "Austin, TX",
+            "company": "Rivera Deportes",
+            "rating": "5"
+          },
+          {
+            "name": "Laura Morales",
+            "text": "Terapia de suelo pelvico postparto cambio mi vida. La atencion fue compasiva y efectiva.",
+            "location": "San Diego, CA",
+            "company": "Familia Morales",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.9/5 de mas de 200 resenas"
       },
       "cta": {
         "title": "¿Listo Para Recuperarte?",
@@ -2181,7 +3468,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Evaluación Inicial"
+        "free": "Evaluación Inicial",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "hair-transplant": {
@@ -2233,9 +3528,40 @@
           {
             "name": "Andrés Molina",
             "text": "Recuperé mi confianza. El procedimiento cambió mi vida.",
-            "location": "Miami, FL"
+            "location": "Miami, FL",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Jorge Lopez",
+            "text": "Los resultados del FUE son increibles. Linea de cabello natural y nadie puede notar que es un trasplante.",
+            "location": "Los Angeles, CA",
+            "company": "Lopez Media",
+            "rating": "5"
+          },
+          {
+            "name": "Roberto Torres",
+            "text": "Hice el procedimiento el viernes, volvi al trabajo el lunes. La tecnica minima fue practicamente indolora.",
+            "location": "Miami, FL",
+            "company": "Torres Derecho",
+            "rating": "5"
+          },
+          {
+            "name": "Daniel Rivera",
+            "text": "La restauracion de la corona luce completamente natural. La densidad lograda supero lo que creia posible.",
+            "location": "Dallas, TX",
+            "company": "Rivera Grupo",
+            "rating": "5"
+          },
+          {
+            "name": "Esteban Morales",
+            "text": "Combinaron terapia PRP con trasplante para resultados optimos. El seguimiento ha sido excepcional.",
+            "location": "San Francisco, CA",
+            "company": "Morales Consultores",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 de mas de 90 resenas"
       },
       "cta": {
         "title": "¿Listo Para Recuperar Tu Cabello?",
@@ -2249,7 +3575,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Consulta Gratis"
+        "free": "Consulta Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "cosmetic-dentistry": {
@@ -2301,9 +3635,40 @@
           {
             "name": "Lucía Santos",
             "text": "Mis carillas se ven increíblemente naturales. No puedo dejar de sonreír!",
-            "location": "New York, NY"
+            "location": "New York, NY",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Laura Lopez",
+            "text": "Las carillas de porcelana transformaron completamente mi sonrisa. Lucen naturales y la combinacion de color es perfecta.",
+            "location": "Beverly Hills, CA",
+            "company": "Lopez Media",
+            "rating": "5"
+          },
+          {
+            "name": "Kevin Torres",
+            "text": "Blanqueamiento profesional con bandejas personalizadas me dio resultados de Hollywood.",
+            "location": "New York, NY",
+            "company": "Torres Finanzas",
+            "rating": "5"
+          },
+          {
+            "name": "Amanda Rivera",
+            "text": "Transformacion completa de sonrisa incluyendo coronas, carillas y blanqueamiento. La mejor inversion.",
+            "location": "Scottsdale, AZ",
+            "company": "Rivera Belleza",
+            "rating": "4"
+          },
+          {
+            "name": "Roberto Morales",
+            "text": "Los implantes dentales reemplazaron mis dientes frontales. Se ven y sienten completamente naturales.",
+            "location": "Chicago, IL",
+            "company": "Morales Holdings",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.9/5 de mas de 170 resenas"
       },
       "cta": {
         "title": "¿Lista Para Tu Sonrisa Soñada?",
@@ -2317,7 +3682,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Consulta Gratis"
+        "free": "Consulta Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "personal-injury-attorney": {
@@ -2369,9 +3742,40 @@
           {
             "name": "Miguel Ángel Ruiz",
             "text": "Obtuvieron una compensación mucho mayor de lo que esperaba.",
-            "location": "Los Angeles, CA"
+            "location": "Los Angeles, CA",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "David Torres",
+            "text": "Resolvieron mi caso de accidente por 3 veces la oferta inicial del seguro. Lucharon por cada centavo.",
+            "location": "Houston, TX",
+            "company": "Torres Industrias",
+            "rating": "5"
+          },
+          {
+            "name": "Jennifer Lopez",
+            "text": "Caida en un supermercado. Manejaron todo mientras me enfocaba en recuperarme. Excelente acuerdo.",
+            "location": "Orlando, FL",
+            "company": "Familia Lopez",
+            "rating": "5"
+          },
+          {
+            "name": "Carlos Rivera",
+            "text": "Caso de lesion laboral fue complejo pero navegaron compensacion laboral y lesion personal simultaneamente.",
+            "location": "Chicago, IL",
+            "company": "Rivera Manufactura",
+            "rating": "5"
+          },
+          {
+            "name": "Amanda Morales",
+            "text": "Caso de mala practica medica resuelto justamente. Trajeron testigos expertos y sin costos iniciales.",
+            "location": "Dallas, TX",
+            "company": "Familia Morales",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 de mas de 150 resenas"
       },
       "cta": {
         "title": "¿Lesionado? Obtén Ayuda Ahora",
@@ -2385,7 +3789,15 @@
       "trust": {
         "secure": "Confidencial",
         "fast": "Respuesta en 24h",
-        "free": "Sin Costo Hasta Ganar"
+        "free": "Sin Costo Hasta Ganar",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "immigration-attorney": {
@@ -2404,8 +3816,14 @@
             "title": "Experiencia Especializada",
             "description": "Enfocados exclusivamente en ley de inmigración."
           },
-          { "title": "Equipo Bilingüe", "description": "Atención en español e inglés." },
-          { "title": "Alto Éxito", "description": "Historial probado de casos aprobados." }
+          {
+            "title": "Equipo Bilingüe",
+            "description": "Atención en español e inglés."
+          },
+          {
+            "title": "Alto Éxito",
+            "description": "Historial probado de casos aprobados."
+          }
         ]
       },
       "faq": {
@@ -2431,9 +3849,40 @@
           {
             "name": "Carmen Elena Rivera",
             "text": "Gracias a ellos, finalmente tengo mi green card después de años de espera.",
-            "location": "Houston, TX"
+            "location": "Houston, TX",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Ana Lopez",
+            "text": "Green card familiar aprobada en 8 meses. Prepararon todo perfectamente y sin una sola solicitud de evidencia.",
+            "location": "Los Angeles, CA",
+            "company": "Familia Lopez",
+            "rating": "5"
+          },
+          {
+            "name": "Wei Torres",
+            "text": "Visa H-1B aprobada al primer intento. Su conocimiento de los requisitos de USCIS es excepcional.",
+            "location": "San Francisco, CA",
+            "company": "Torres Tecnologia",
+            "rating": "5"
+          },
+          {
+            "name": "Mohammed Rivera",
+            "text": "Caso de asilo aprobado despues de un proceso dificil. Su compasion y pericia legal nos dieron una nueva vida.",
+            "location": "New York, NY",
+            "company": "Rivera Comercio",
+            "rating": "5"
+          },
+          {
+            "name": "Sandra Morales",
+            "text": "El proceso de naturalizacion fue fluido con su guia. Me prepararon para la entrevista y pase facilmente.",
+            "location": "Chicago, IL",
+            "company": "Morales Asociados",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.9/5 de mas de 180 resenas"
       },
       "cta": {
         "title": "Comienza Tu Camino Hoy",
@@ -2447,7 +3896,15 @@
       "trust": {
         "secure": "Confidencial",
         "fast": "Respuesta Rápida",
-        "free": "Consulta Inicial Gratis"
+        "free": "Consulta Inicial Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "criminal-defense-attorney": {
@@ -2466,8 +3923,14 @@
             "title": "Disponibilidad 24/7",
             "description": "Emergencias legales atendidas día y noche."
           },
-          { "title": "Ex Fiscales", "description": "Conocemos las tácticas del otro lado." },
-          { "title": "Defensa Agresiva", "description": "Luchamos incansablemente por tu caso." }
+          {
+            "title": "Ex Fiscales",
+            "description": "Conocemos las tácticas del otro lado."
+          },
+          {
+            "title": "Defensa Agresiva",
+            "description": "Luchamos incansablemente por tu caso."
+          }
         ]
       },
       "faq": {
@@ -2493,9 +3956,40 @@
           {
             "name": "Anónimo",
             "text": "Me sacaron de una situación muy difícil. Eternamente agradecido.",
-            "location": "Phoenix, AZ"
+            "location": "Phoenix, AZ",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Roberto Torres",
+            "text": "Los cargos de DUI fueron reducidos significativamente. Sus habilidades de negociacion son increibles.",
+            "location": "Atlanta, GA",
+            "company": "Torres Grupo",
+            "rating": "5"
+          },
+          {
+            "name": "Miguel Lopez",
+            "text": "Cargos de delito grave desestimados gracias a su investigacion y cuestionamiento de evidencia.",
+            "location": "Dallas, TX",
+            "company": "Lopez Industrias",
+            "rating": "5"
+          },
+          {
+            "name": "Jennifer Rivera",
+            "text": "Defensa de cuello blanco manejada con discrecion y pericia. Protegieron mi reputacion.",
+            "location": "New York, NY",
+            "company": "Rivera Financiero",
+            "rating": "4"
+          },
+          {
+            "name": "David Morales",
+            "text": "Alegaciones infundadas y lo demostraron. Representacion compasiva durante un momento dificil.",
+            "location": "Miami, FL",
+            "company": "Morales Grupo",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 de mas de 120 resenas"
       },
       "cta": {
         "title": "¿Enfrentas Cargos Criminales?",
@@ -2509,7 +4003,15 @@
       "trust": {
         "secure": "100% Confidencial",
         "fast": "Respuesta Inmediata",
-        "free": "Consulta Gratis"
+        "free": "Consulta Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "tax-accounting": {
@@ -2561,9 +4063,40 @@
           {
             "name": "Ricardo Méndez",
             "text": "Mi reembolso fue el triple de lo que esperaba. Excelentes profesionales.",
-            "location": "Dallas, TX"
+            "location": "Dallas, TX",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "David Lopez",
+            "text": "Encontraron $12,000 en deducciones que me habia perdido durante anos. Su estrategia fiscal nos ha ahorrado miles.",
+            "location": "Austin, TX",
+            "company": "Lopez Ventures",
+            "rating": "5"
+          },
+          {
+            "name": "Lisa Torres",
+            "text": "Manejaron nuestra compleja situacion fiscal multi-estatal perfectamente.",
+            "location": "Portland, OR",
+            "company": "Torres Consultores",
+            "rating": "5"
+          },
+          {
+            "name": "Brian Rivera",
+            "text": "Representacion en auditoria del IRS fue invaluable. Manejaron toda la comunicacion.",
+            "location": "Denver, CO",
+            "company": "Rivera Industrias",
+            "rating": "5"
+          },
+          {
+            "name": "Amanda Morales",
+            "text": "Contabilidad y preparacion fiscal para mi pequeno negocio es fluida. Revisiones trimestrales mantienen todo en orden.",
+            "location": "Nashville, TN",
+            "company": "Morales Boutique",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 de mas de 200 resenas"
       },
       "cta": {
         "title": "¿Listo Para Ahorrar en Impuestos?",
@@ -2574,7 +4107,19 @@
         "title": "Agenda Tu Consulta Fiscal",
         "subtitle": "Cuéntanos sobre tus necesidades contables"
       },
-      "trust": { "secure": "Confidencial", "fast": "Respuesta Rápida", "free": "Consulta Gratis" }
+      "trust": {
+        "secure": "Confidencial",
+        "fast": "Respuesta Rápida",
+        "free": "Consulta Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
+      }
     },
     "business-consulting": {
       "meta": {
@@ -2625,9 +4170,40 @@
           {
             "name": "Empresa ABC",
             "text": "Duplicamos nuestros ingresos en 18 meses siguiendo su estrategia.",
-            "location": "New York, NY"
+            "location": "New York, NY",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Jennifer Lopez",
+            "text": "Los ingresos aumentaron 40% despues de implementar sus estrategias. El analisis de mercado fue brillante.",
+            "location": "Seattle, WA",
+            "company": "Lopez Tech",
+            "rating": "5"
+          },
+          {
+            "name": "David Torres",
+            "text": "Consultoria de estrategia de salida me ayudo a vender mi negocio a una valoracion optima.",
+            "location": "San Francisco, CA",
+            "company": "Torres Innovaciones",
+            "rating": "5"
+          },
+          {
+            "name": "Roberto Rivera",
+            "text": "Auditoria de eficiencia operacional identifico $200K en ahorros anuales.",
+            "location": "Chicago, IL",
+            "company": "Rivera Manufactura",
+            "rating": "4"
+          },
+          {
+            "name": "Laura Morales",
+            "text": "El plan de negocios que desarrollaron nos ayudo a conseguir financiamiento Serie A.",
+            "location": "Austin, TX",
+            "company": "Morales Labs",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 de mas de 130 resenas"
       },
       "cta": {
         "title": "¿Listo Para Crecer?",
@@ -2641,7 +4217,15 @@
       "trust": {
         "secure": "Confidencial",
         "fast": "Respuesta Rápida",
-        "free": "Sesión Inicial Gratis"
+        "free": "Sesión Inicial Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "commercial-cleaning": {
@@ -2660,7 +4244,10 @@
             "title": "Personal Verificado",
             "description": "Empleados con verificación de antecedentes."
           },
-          { "title": "Horarios Flexibles", "description": "Limpieza fuera de horario comercial." },
+          {
+            "title": "Horarios Flexibles",
+            "description": "Limpieza fuera de horario comercial."
+          },
           {
             "title": "Servicios Completos",
             "description": "Desde limpieza básica hasta desinfección profunda."
@@ -2690,9 +4277,40 @@
           {
             "name": "Oficinas XYZ",
             "text": "Nuestras oficinas nunca han lucido mejor. Servicio consistente y confiable.",
-            "location": "Seattle, WA"
+            "location": "Seattle, WA",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "David Torres",
+            "text": "Limpieza diaria de oficinas para nuestro edificio de 50,000 pies cuadrados es impecable.",
+            "location": "Dallas, TX",
+            "company": "Torres Corp",
+            "rating": "5"
+          },
+          {
+            "name": "Lisa Lopez",
+            "text": "La limpieza de instalaciones medicas cumple todos los estandares de salud.",
+            "location": "Portland, OR",
+            "company": "Lopez Medico",
+            "rating": "5"
+          },
+          {
+            "name": "Roberto Rivera",
+            "text": "Limpieza post-construccion de nuestro nuevo local fue completa. Todo impecable para la inauguracion.",
+            "location": "Miami, FL",
+            "company": "Rivera Comercio",
+            "rating": "5"
+          },
+          {
+            "name": "Amanda Morales",
+            "text": "Productos de limpieza ecologicos alineados con nuestros valores corporativos. Y los resultados son igual de buenos.",
+            "location": "San Francisco, CA",
+            "company": "Morales Verde",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 de mas de 180 resenas"
       },
       "cta": {
         "title": "¿Necesitas Limpieza Comercial?",
@@ -2706,7 +4324,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Cotización Gratis"
+        "free": "Cotización Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "security-systems": {
@@ -2758,9 +4384,40 @@
           {
             "name": "Familia González",
             "text": "Dormimos tranquilos sabiendo que nuestra casa está protegida 24/7.",
-            "location": "San Diego, CA"
+            "location": "San Diego, CA",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Kevin Torres",
+            "text": "Seguridad completa para hogar inteligente con camaras, sensores y monitoreo 24/7.",
+            "location": "Austin, TX",
+            "company": "Torres Tech",
+            "rating": "5"
+          },
+          {
+            "name": "Jennifer Lopez",
+            "text": "Sistema de control de acceso comercial para nuestro edificio. Entrada con tarjeta y gestion de visitantes.",
+            "location": "Seattle, WA",
+            "company": "Lopez Corp",
+            "rating": "5"
+          },
+          {
+            "name": "David Rivera",
+            "text": "Sistema de videovigilancia con deteccion IA ya atrapo dos ladrones de paquetes.",
+            "location": "Denver, CO",
+            "company": "Rivera Seguridad",
+            "rating": "4"
+          },
+          {
+            "name": "Laura Morales",
+            "text": "Sistema de deteccion de incendios y humo profesional. Tambien monitoreo de monoxido de carbono.",
+            "location": "Chicago, IL",
+            "company": "Morales Propiedades",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 de mas de 160 resenas"
       },
       "cta": {
         "title": "¿Listo Para Mayor Seguridad?",
@@ -2774,7 +4431,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Evaluación Gratis"
+        "free": "Evaluación Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "it-services": {
@@ -2826,9 +4491,40 @@
           {
             "name": "Tech Solutions Inc",
             "text": "Desde que los contratamos, no hemos tenido tiempo de inactividad.",
-            "location": "Austin, TX"
+            "location": "Austin, TX",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "Brian Lopez",
+            "text": "Servicios IT administrados transformaron nuestra empresa. 99.9% de disponibilidad y soporte instantaneo.",
+            "location": "Austin, TX",
+            "company": "Lopez Software",
+            "rating": "5"
+          },
+          {
+            "name": "Jennifer Torres",
+            "text": "Migracion a la nube fue perfecta. Cero tiempo de inactividad y ahorros significativos.",
+            "location": "Seattle, WA",
+            "company": "Torres Digital",
+            "rating": "5"
+          },
+          {
+            "name": "Roberto Rivera",
+            "text": "Auditoria de ciberseguridad encontro vulnerabilidades que no sabiamos que existian.",
+            "location": "San Francisco, CA",
+            "company": "Rivera Dinamics",
+            "rating": "5"
+          },
+          {
+            "name": "Amanda Morales",
+            "text": "Mejora de infraestructura de red duplico nuestra velocidad. Su trabajo de cableado es impecable.",
+            "location": "Denver, CO",
+            "company": "Morales Grupo",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 de mas de 150 resenas"
       },
       "cta": {
         "title": "¿Necesitas Soporte de TI?",
@@ -2842,7 +4538,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Evaluación Gratis"
+        "free": "Evaluación Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "marketing-agency": {
@@ -2861,8 +4565,14 @@
             "title": "Estrategia Integral",
             "description": "Marketing digital, redes sociales, SEO y más."
           },
-          { "title": "Resultados Medibles", "description": "Reportes claros con ROI demostrable." },
-          { "title": "Equipo Dedicado", "description": "Un equipo enfocado en tu éxito." }
+          {
+            "title": "Resultados Medibles",
+            "description": "Reportes claros con ROI demostrable."
+          },
+          {
+            "title": "Equipo Dedicado",
+            "description": "Un equipo enfocado en tu éxito."
+          }
         ]
       },
       "faq": {
@@ -2888,9 +4598,40 @@
           {
             "name": "Startup XYZ",
             "text": "Triplicamos nuestros leads en 6 meses. Inversión que vale la pena.",
-            "location": "San Francisco, CA"
+            "location": "San Francisco, CA",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "David Lopez",
+            "text": "La estrategia SEO triplico nuestro trafico organico en 6 meses. Su enfoque basado en datos produce resultados.",
+            "location": "Portland, OR",
+            "company": "Lopez Comercio",
+            "rating": "5"
+          },
+          {
+            "name": "Lisa Torres",
+            "text": "La gestion de redes sociales transformo nuestra presencia de marca. Engagement aumento 200%.",
+            "location": "Austin, TX",
+            "company": "Torres Moda",
+            "rating": "5"
+          },
+          {
+            "name": "Kevin Rivera",
+            "text": "La gestion de campanas PPC es increiblemente eficiente. Redujeron nuestro costo por lead un 45%.",
+            "location": "Miami, FL",
+            "company": "Rivera Ventures",
+            "rating": "5"
+          },
+          {
+            "name": "Jennifer Morales",
+            "text": "Rebranding completo incluyendo logo, sitio web y materiales de marketing. Nuestra marca finalmente refleja nuestra calidad.",
+            "location": "Nashville, TN",
+            "company": "Morales Diseno",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 de mas de 140 resenas"
       },
       "cta": {
         "title": "¿Listo Para Crecer?",
@@ -2901,7 +4642,19 @@
         "title": "Obtén Tu Estrategia de Marketing",
         "subtitle": "Cuéntanos sobre tu negocio y metas"
       },
-      "trust": { "secure": "Confidencial", "fast": "Respuesta Rápida", "free": "Estrategia Gratis" }
+      "trust": {
+        "secure": "Confidencial",
+        "fast": "Respuesta Rápida",
+        "free": "Estrategia Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
+      }
     },
     "auto-repair": {
       "meta": {
@@ -2923,7 +4676,10 @@
             "title": "Garantía de Trabajo",
             "description": "Respaldamos todas nuestras reparaciones."
           },
-          { "title": "Precios Honestos", "description": "Estimaciones claras antes de comenzar." }
+          {
+            "title": "Precios Honestos",
+            "description": "Estimaciones claras antes de comenzar."
+          }
         ]
       },
       "faq": {
@@ -2949,9 +4705,40 @@
           {
             "name": "Pedro Núñez",
             "text": "Honestos y confiables. No intentan vender reparaciones innecesarias.",
-            "location": "Phoenix, AZ"
+            "location": "Phoenix, AZ",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "David Torres",
+            "text": "Reconstruccion de transmision a mitad del costo del concesionario. El trabajo fue impecable con garantia de 2 anos.",
+            "location": "Dallas, TX",
+            "company": "Torres Transporte",
+            "rating": "5"
+          },
+          {
+            "name": "Jennifer Lopez",
+            "text": "El mantenimiento regular mantiene mi auto viejo como nuevo. Son honestos sobre lo que necesita reparacion.",
+            "location": "Portland, OR",
+            "company": "Lopez Agencia",
+            "rating": "5"
+          },
+          {
+            "name": "Kevin Rivera",
+            "text": "Reparacion de aire acondicionado el mismo dia. Encontraron la fuga y reemplazaron el compresor.",
+            "location": "Phoenix, AZ",
+            "company": "Rivera Motors",
+            "rating": "4"
+          },
+          {
+            "name": "Lisa Morales",
+            "text": "Diagnostico preciso de la luz del motor y reparacion a precio justo. Mostraron las piezas viejas.",
+            "location": "Denver, CO",
+            "company": "Morales Auto",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.7/5 de mas de 280 resenas"
       },
       "cta": {
         "title": "¿Problemas Con Tu Auto?",
@@ -2965,7 +4752,15 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Servicio Rápido",
-        "free": "Diagnóstico con Reparación"
+        "free": "Diagnóstico con Reparación",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "auto-detailing": {
@@ -2984,8 +4779,14 @@
             "title": "Productos Premium",
             "description": "Solo usamos productos de detallado de primera calidad."
           },
-          { "title": "Atención al Detalle", "description": "Limpieza meticulosa de cada rincón." },
-          { "title": "Protección Duradera", "description": "Tratamientos que protegen tu pintura." }
+          {
+            "title": "Atención al Detalle",
+            "description": "Limpieza meticulosa de cada rincón."
+          },
+          {
+            "title": "Protección Duradera",
+            "description": "Tratamientos que protegen tu pintura."
+          }
         ]
       },
       "faq": {
@@ -2995,7 +4796,10 @@
             "question": "¿Cuánto tiempo toma el detallado?",
             "answer": "Detallado completo toma 3-5 horas típicamente."
           },
-          { "question": "¿Ofrecen servicio móvil?", "answer": "Sí, podemos ir a tu ubicación." },
+          {
+            "question": "¿Ofrecen servicio móvil?",
+            "answer": "Sí, podemos ir a tu ubicación."
+          },
           {
             "question": "¿Qué incluye el detallado completo?",
             "answer": "Interior, exterior, motor, y protección de pintura."
@@ -3008,20 +4812,62 @@
           {
             "name": "Elena Vargas",
             "text": "Mi auto de 5 años parece recién salido de la agencia. Increíble trabajo.",
-            "location": "Miami, FL"
+            "location": "Miami, FL",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "David Torres",
+            "text": "Recubrimiento ceramico y correccion de pintura en mi Tesla. El acabado es como cristal. Calidad de museo.",
+            "location": "Los Angeles, CA",
+            "company": "Torres Motors",
+            "rating": "5"
+          },
+          {
+            "name": "Jennifer Lopez",
+            "text": "El detalle interior elimino anos de pelo de mascota y manchas. Huele y luce como auto nuevo.",
+            "location": "Portland, OR",
+            "company": "Lopez Veterinaria",
+            "rating": "5"
+          },
+          {
+            "name": "Brian Rivera",
+            "text": "El detalle pre-venta aumento el precio de venta de mi auto en $2,000. Mejor inversion de $300.",
+            "location": "Austin, TX",
+            "company": "Rivera Auto",
+            "rating": "4"
+          },
+          {
+            "name": "Laura Morales",
+            "text": "Suscripcion mensual de lavado mantiene nuestros dos autos impecables. Conveniente y calidad consistente.",
+            "location": "Miami, FL",
+            "company": "Familia Morales",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.9/5 de mas de 200 resenas"
       },
       "cta": {
         "title": "¿Listo Para un Auto Brillante?",
         "subtitle": "Agenda tu detallado hoy",
         "button": "Agendar Detallado"
       },
-      "form": { "title": "Agenda Tu Detallado", "subtitle": "Cuéntanos sobre tu vehículo" },
+      "form": {
+        "title": "Agenda Tu Detallado",
+        "subtitle": "Cuéntanos sobre tu vehículo"
+      },
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Rápida",
-        "free": "Cotización Gratis"
+        "free": "Cotización Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "towing": {
@@ -3040,8 +4886,14 @@
             "title": "Disponibilidad 24/7",
             "description": "Servicio a cualquier hora, cualquier día."
           },
-          { "title": "Respuesta Rápida", "description": "Llegamos en 30 minutos o menos." },
-          { "title": "Precios Justos", "description": "Tarifas claras sin sorpresas." }
+          {
+            "title": "Respuesta Rápida",
+            "description": "Llegamos en 30 minutos o menos."
+          },
+          {
+            "title": "Precios Justos",
+            "description": "Tarifas claras sin sorpresas."
+          }
         ]
       },
       "faq": {
@@ -3067,20 +4919,62 @@
           {
             "name": "Juan Carlos Pérez",
             "text": "Me quedé varado a las 2am y llegaron en 20 minutos. Excelente servicio.",
-            "location": "Houston, TX"
+            "location": "Houston, TX",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "David Lopez",
+            "text": "Llanta ponchada en la autopista de noche. Llegaron en menos de 30 minutos. Cambio rapido y en camino.",
+            "location": "Houston, TX",
+            "company": "Lopez Logistica",
+            "rating": "5"
+          },
+          {
+            "name": "Jennifer Torres",
+            "text": "Remolque de larga distancia desde las montanas. La plataforma protegió mi auto perfectamente.",
+            "location": "Denver, CO",
+            "company": "Familia Torres",
+            "rating": "5"
+          },
+          {
+            "name": "Carlos Rivera",
+            "text": "Arranque de bateria salvo mi manana. El tecnico tambien probo la bateria y me dijo que era hora de cambiarla.",
+            "location": "Dallas, TX",
+            "company": "Rivera Auto",
+            "rating": "4"
+          },
+          {
+            "name": "Lisa Morales",
+            "text": "Recuperacion de accidente fue manejada profesionalmente. Coordinaron con policia y seguro perfectamente.",
+            "location": "Atlanta, GA",
+            "company": "Morales Seguros",
+            "rating": "5"
           }
-        ]
+        ],
+        "aggregateRating": "4.7/5 de mas de 230 resenas"
       },
       "cta": {
         "title": "¿Necesitas una Grúa?",
         "subtitle": "Llama ahora para asistencia inmediata",
         "button": "Llamar Ahora"
       },
-      "form": { "title": "Solicita Asistencia", "subtitle": "Describe tu ubicación y situación" },
+      "form": {
+        "title": "Solicita Asistencia",
+        "subtitle": "Describe tu ubicación y situación"
+      },
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Respuesta Inmediata",
-        "free": "Cotización por Teléfono"
+        "free": "Cotización por Teléfono",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
     },
     "auto-glass": {
@@ -3095,9 +4989,18 @@
       "benefits": {
         "title": "¿Por Qué Elegir Nuestros Servicios de Vidrios?",
         "items": [
-          { "title": "Servicio Móvil", "description": "Vamos a tu ubicación sin costo extra." },
-          { "title": "Vidrios OEM", "description": "Usamos vidrios de calidad original." },
-          { "title": "Trabajo Garantizado", "description": "Garantía de por vida contra fugas." }
+          {
+            "title": "Servicio Móvil",
+            "description": "Vamos a tu ubicación sin costo extra."
+          },
+          {
+            "title": "Vidrios OEM",
+            "description": "Usamos vidrios de calidad original."
+          },
+          {
+            "title": "Trabajo Garantizado",
+            "description": "Garantía de por vida contra fugas."
+          }
         ]
       },
       "faq": {
@@ -3123,9 +5026,40 @@
           {
             "name": "Sandra Mejía",
             "text": "Vinieron a mi trabajo y reemplazaron el parabrisas en una hora.",
-            "location": "Denver, CO"
+            "location": "Denver, CO",
+            "rating": "5",
+            "company": ""
+          },
+          {
+            "name": "David Torres",
+            "text": "Reemplazo de parabrisas en el estacionamiento de mi oficina. Vinieron a mi, instalaron vidrio OEM y recalibraron ADAS.",
+            "location": "Austin, TX",
+            "company": "Torres Motors",
+            "rating": "5"
+          },
+          {
+            "name": "Jennifer Lopez",
+            "text": "Reparacion de chip en la piedra salvo mi parabrisas de agrietarse mas. Lo llenaron perfectamente.",
+            "location": "Portland, OR",
+            "company": "Familia Lopez",
+            "rating": "5"
+          },
+          {
+            "name": "Roberto Rivera",
+            "text": "Reemplazo de ventana lateral despues de un robo hecho el mismo dia. Hasta limpiaron el vidrio roto del interior.",
+            "location": "Dallas, TX",
+            "company": "Rivera Seguridad",
+            "rating": "5"
+          },
+          {
+            "name": "Laura Morales",
+            "text": "Reclamacion de seguro manejada directamente con mi proveedor. Cero de mi bolsillo y calidad perfecta.",
+            "location": "Denver, CO",
+            "company": "Morales Propiedades",
+            "rating": "4"
           }
-        ]
+        ],
+        "aggregateRating": "4.8/5 de mas de 190 resenas"
       },
       "cta": {
         "title": "¿Vidrio Dañado?",
@@ -3139,8 +5073,219 @@
       "trust": {
         "secure": "Seguro y Privado",
         "fast": "Servicio Móvil",
-        "free": "Cotización Gratis"
+        "free": "Cotización Gratis",
+        "ssl": "Cifrado SSL de 256 bits",
+        "noSpam": "Garantia Sin Spam",
+        "privacyProtected": "Privacidad Protegida",
+        "verifiedProviders": "Proveedores Verificados",
+        "ratedBy": "Calificado 4.8/5 por mas de 1,200 clientes",
+        "peopleHelped": "Mas de 10,000 propietarios atendidos",
+        "featuredIn": "Como se ha visto en",
+        "bbbRating": "Empresa Acreditada BBB"
       }
+    }
+  },
+  "exitIntent": {
+    "headline": "Espera! No te pierdas cotizaciones gratis",
+    "subtext": "Conecta con profesionales locales mejor calificados en minutos",
+    "ctaButton": "Obtener Mis Cotizaciones Gratis",
+    "dismiss": "No gracias",
+    "close": "Cerrar",
+    "ariaLabel": "Popup de intento de salida - obtener cotizaciones gratis"
+  },
+  "multiStepForm": {
+    "stepOf": "Paso {current} de {total}",
+    "next": "Continuar",
+    "back": "Atras",
+    "submit": "Enviar Solicitud",
+    "submitting": "Enviando...",
+    "submitAnother": "Enviar Otra Solicitud",
+    "step1": {
+      "title": "Con que necesitas ayuda?",
+      "subCategory": "Tipo de servicio",
+      "selectOption": "Selecciona una opcion",
+      "urgency": "Que tan urgente es?",
+      "urgencyOptions": {
+        "asap": "Lo antes posible - Necesito ayuda ya",
+        "within_week": "Dentro de una semana",
+        "exploring": "Solo estoy explorando opciones"
+      },
+      "zipCode": "Tu codigo postal",
+      "zipCodePlaceholder": "Ingresa tu codigo postal"
+    },
+    "step2": {
+      "title": "Tu Informacion de Contacto",
+      "name": "Nombre Completo",
+      "namePlaceholder": "Ingresa tu nombre completo",
+      "email": "Correo Electronico",
+      "emailPlaceholder": "Ingresa tu correo electronico",
+      "phone": "Numero de Telefono (Opcional)",
+      "phonePlaceholder": "Ingresa tu numero de telefono",
+      "bestTime": "Mejor hora para llamar",
+      "bestTimeDefault": "Sin preferencia",
+      "bestTimeOptions": {
+        "morning": "Manana (8AM - 12PM)",
+        "afternoon": "Tarde (12PM - 5PM)",
+        "evening": "Noche (5PM - 8PM)"
+      }
+    },
+    "step3": {
+      "title": "Detalles Adicionales",
+      "message": "Mensaje (Opcional)",
+      "messagePlaceholder": "Cuentanos mas sobre lo que necesitas...",
+      "referralSource": "Como supiste de nosotros?",
+      "referralDefault": "Selecciona uno",
+      "referralOptions": {
+        "search": "Google / Motor de busqueda",
+        "social": "Redes Sociales",
+        "friend": "Amigo / Familia",
+        "ad": "Anuncio en linea",
+        "other": "Otro"
+      },
+      "consentText": "Acepto recibir comunicaciones sobre mi solicitud. Entiendo que puedo cancelar en cualquier momento."
+    },
+    "errors": {
+      "subCategoryRequired": "Por favor selecciona un tipo de servicio",
+      "urgencyRequired": "Por favor selecciona la urgencia",
+      "zipCodeRequired": "El codigo postal es requerido",
+      "zipCodeInvalid": "Por favor ingresa un codigo postal valido",
+      "consentRequired": "Por favor acepta el consentimiento de comunicaciones"
+    }
+  },
+  "stickyCTA": {
+    "buttonText": "Obtener Cotizaciones Gratis",
+    "buttonLabel": "Desplazarse al formulario para obtener cotizaciones gratis",
+    "ariaLabel": "Llamada a la accion para cotizaciones gratis"
+  },
+  "socialProof": {
+    "totalMessage": "Unete a {count}+ propietarios que encontraron profesionales confiables",
+    "todayMessage": "{count} personas solicitaron cotizaciones en tu area hoy",
+    "dismiss": "Cerrar banner de prueba social"
+  },
+  "hero": {
+    "ctaDefault": "Obtener Cotizaciones Gratis Ahora",
+    "ctaVariant": "Compara Los Mejores Profesionales Cerca de Ti",
+    "urgencyText": "Gratis - Sin compromiso - Toma 30 segundos",
+    "trustText": "Tu informacion es segura y nunca se comparte sin consentimiento"
+  },
+  "formRecovery": {
+    "progressRestored": "Guardamos tu progreso - continua donde lo dejaste"
+  },
+  "privacy": {
+    "title": "Politica de Privacidad",
+    "lastUpdated": "Ultima actualizacion: 27 de enero de 2026",
+    "backHome": "Volver al Inicio",
+    "intro": {
+      "title": "Introduccion",
+      "body": "Kanjona (\"nosotros\" o \"nuestro\") esta comprometido con la proteccion de su privacidad. Esta Politica de Privacidad explica como recopilamos, usamos, divulgamos y protegemos su informacion cuando visita nuestro sitio web y utiliza nuestros servicios."
+    },
+    "collect": {
+      "title": "Informacion que Recopilamos",
+      "body": "Recopilamos informacion que usted nos proporciona directamente, asi como informacion recopilada automaticamente cuando utiliza nuestros servicios.",
+      "personal": {
+        "title": "Informacion Personal que Usted Proporciona",
+        "name": "Nombre completo",
+        "email": "Direccion de correo electronico",
+        "phone": "Numero de telefono"
+      },
+      "automatic": {
+        "title": "Informacion Recopilada Automaticamente",
+        "ip": "Direccion IP y geolocalizacion aproximada",
+        "cookies": "Cookies y tecnologias de seguimiento similares",
+        "browser": "Tipo de navegador, informacion del dispositivo y sistema operativo",
+        "usage": "Paginas visitadas, tiempo de permanencia y URLs de referencia"
+      }
+    },
+    "use": {
+      "title": "Como Usamos Su Informacion",
+      "matching": "Conectarlo con proveedores de servicios calificados en su area",
+      "delivery": "Entregar los servicios que ha solicitado",
+      "communication": "Comunicarnos con usted sobre sus solicitudes y nuestros servicios",
+      "improvement": "Mejorar nuestro sitio web, servicios y experiencia del usuario",
+      "legal": "Cumplir con obligaciones legales y proteger nuestros derechos"
+    },
+    "sharing": {
+      "title": "Compartir Informacion",
+      "body": "No vendemos su informacion personal. Podemos compartir su informacion en las siguientes circunstancias:",
+      "providers": "Con proveedores de servicios verificados para cumplir su solicitud de servicio",
+      "legal": "Cuando lo requiera la ley, regulacion o proceso legal",
+      "noSale": "Nunca vendemos sus datos personales a anunciantes de terceros o intermediarios de datos"
+    },
+    "retention": {
+      "title": "Retencion de Datos",
+      "body": "Retenemos su informacion personal hasta por 90 dias en nuestros sistemas activos para fines de conexion con proveedores. Despues de este periodo, los datos se archivan y se retienen solo segun lo requiera la ley o para propositos comerciales legitimos. Puede solicitar la eliminacion de sus datos en cualquier momento."
+    },
+    "rights": {
+      "title": "Sus Derechos",
+      "body": "Dependiendo de su ubicacion, puede tener los siguientes derechos con respecto a su informacion personal:",
+      "access": "Derecho a acceder y recibir una copia de sus datos personales",
+      "correction": "Derecho a corregir informacion inexacta o incompleta",
+      "deletion": "Derecho a solicitar la eliminacion de sus datos personales",
+      "optOut": "Derecho a optar por no recibir comunicaciones de marketing en cualquier momento"
+    },
+    "cookies": {
+      "title": "Politica de Cookies",
+      "body": "Usamos cookies y tecnologias similares para mejorar su experiencia de navegacion, analizar el trafico del sitio y comprender de donde provienen nuestros visitantes. Puede controlar las preferencias de cookies a traves de la configuracion de su navegador. Las cookies esenciales son necesarias para que el sitio funcione correctamente, mientras que las cookies de analisis nos ayudan a mejorar nuestros servicios."
+    },
+    "contact": {
+      "title": "Informacion de Contacto",
+      "body": "Si tiene alguna pregunta sobre esta Politica de Privacidad o nuestras practicas de datos, contactenos:",
+      "email": "Email: privacy@kanjona.com"
+    },
+    "changes": {
+      "title": "Cambios a Esta Politica",
+      "body": "Podemos actualizar esta Politica de Privacidad de vez en cuando. Le notificaremos de cualquier cambio material publicando la nueva politica en esta pagina y actualizando la fecha de \"Ultima actualizacion\". Le recomendamos revisar esta politica periodicamente."
+    }
+  },
+  "terms": {
+    "title": "Terminos de Servicio",
+    "lastUpdated": "Ultima actualizacion: 27 de enero de 2026",
+    "backHome": "Volver al Inicio",
+    "acceptance": {
+      "title": "Aceptacion de Terminos",
+      "body": "Al acceder o usar el sitio web y los servicios de Kanjona, usted acepta estar sujeto a estos Terminos de Servicio. Si no esta de acuerdo con estos terminos, por favor no use nuestros servicios. Estos terminos se aplican a todos los visitantes, usuarios y otras personas que acceden al servicio."
+    },
+    "description": {
+      "title": "Descripcion del Servicio",
+      "body": "Kanjona proporciona una plataforma de generacion de prospectos que conecta a consumidores que buscan servicios para el hogar, servicios profesionales y otras categorias de servicios con proveedores de servicios calificados. Facilitamos las presentaciones entre consumidores y proveedores, pero no realizamos los servicios nosotros mismos."
+    },
+    "obligations": {
+      "title": "Obligaciones del Usuario",
+      "body": "Al usar nuestros servicios, usted acepta:",
+      "accurate": "Proporcionar informacion precisa, actual y completa en todos los formularios",
+      "lawful": "Usar nuestros servicios solo para propositos legales",
+      "noAbuse": "No hacer mal uso, enviar spam o abusar de nuestra plataforma o servicios",
+      "noAutomate": "No usar sistemas automatizados para acceder al servicio sin nuestro permiso expreso"
+    },
+    "privacySection": {
+      "title": "Privacidad",
+      "body": "Su privacidad es importante para nosotros. La recopilacion y uso de informacion personal se rige por nuestra Politica de Privacidad.",
+      "link": "Lea nuestra Politica de Privacidad"
+    },
+    "liability": {
+      "title": "Limitacion de Responsabilidad",
+      "body": "En la medida maxima permitida por la ley, Kanjona no sera responsable de ningun dano indirecto, incidental, especial, consecuente o punitivo, ni de ninguna perdida de ganancias o ingresos, ya sea incurrida directa o indirectamente, ni de ninguna perdida de datos, uso, buena voluntad u otras perdidas intangibles resultantes de su uso del servicio."
+    },
+    "indemnification": {
+      "title": "Indemnizacion",
+      "body": "Usted acepta indemnizar, defender y mantener indemne a Kanjona y sus funcionarios, directores, empleados y agentes de cualquier reclamacion, responsabilidad, dano, perdida y gasto que surja de su uso de los servicios o violacion de estos terminos."
+    },
+    "termination": {
+      "title": "Terminacion",
+      "body": "Nos reservamos el derecho de suspender o terminar su acceso a nuestros servicios en cualquier momento, sin previo aviso, por conducta que creamos que viola estos Terminos de Servicio o es danina para otros usuarios, para nosotros o para terceros, o por cualquier otra razon a nuestra sola discrecion."
+    },
+    "governing": {
+      "title": "Ley Aplicable",
+      "body": "Estos Terminos se regiran e interpretaran de acuerdo con las leyes de los Estados Unidos, sin tener en cuenta sus disposiciones sobre conflictos de leyes. Cualquier disputa que surja de estos terminos se resolvera en los tribunales de jurisdiccion competente."
+    },
+    "changes": {
+      "title": "Cambios a Estos Terminos",
+      "body": "Nos reservamos el derecho de modificar estos Terminos de Servicio en cualquier momento. Los cambios seran efectivos inmediatamente despues de su publicacion en esta pagina. Su uso continuado de los servicios despues de cualquier cambio constituye la aceptacion de los nuevos terminos."
+    },
+    "contact": {
+      "title": "Contactenos",
+      "body": "Si tiene alguna pregunta sobre estos Terminos de Servicio, contactenos:",
+      "email": "Email: legal@kanjona.com"
     }
   }
 }

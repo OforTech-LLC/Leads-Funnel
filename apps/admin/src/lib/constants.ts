@@ -35,10 +35,13 @@ export const STATUS_COLORS: Record<string, string> = {
 
 export const NAV_ITEMS = [
   { label: 'Dashboard', href: '/', icon: 'dashboard' },
+  { label: 'Analytics', href: '/analytics', icon: 'analytics' },
   { label: 'Organizations', href: '/orgs', icon: 'orgs' },
   { label: 'Users', href: '/users', icon: 'users' },
   { label: 'Assignment Rules', href: '/rules', icon: 'rules' },
   { label: 'Leads', href: '/leads', icon: 'leads' },
+  { label: 'Import', href: '/import', icon: 'import' },
+  { label: 'Webhooks', href: '/webhooks', icon: 'webhooks' },
   { label: 'Notifications', href: '/notifications', icon: 'notifications' },
   { label: 'Exports', href: '/exports', icon: 'exports' },
   { label: 'Settings', href: '/settings', icon: 'settings' },

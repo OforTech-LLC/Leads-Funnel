@@ -7,6 +7,8 @@ import { generatePageMetadata } from '@/seo/metadata';
 import { generateAllJsonLd } from '@/seo/jsonld';
 import { StoreProvider } from './StoreProvider';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { WebVitalsReporter } from '@/components/WebVitalsReporter';
+import { GoogleAnalytics } from '@/components/GoogleAnalytics';
 
 /**
  * Generate static params for all supported locales
@@ -78,6 +80,8 @@ export default async function LocaleLayout({
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
       </head>
       <body style={bodyStyles}>
+        {/* Google Analytics 4 */}
+        <GoogleAnalytics />
         <NextIntlClientProvider messages={messages}>
           <StoreProvider>
             {/* ErrorBoundary is a Client Component - do not pass onError from Server Component */}
@@ -85,6 +89,8 @@ export default async function LocaleLayout({
             <ErrorBoundary>
               <Suspense fallback={<LoadingFallback />}>{children}</Suspense>
             </ErrorBoundary>
+            {/* Core Web Vitals tracking */}
+            <WebVitalsReporter />
           </StoreProvider>
         </NextIntlClientProvider>
       </body>
