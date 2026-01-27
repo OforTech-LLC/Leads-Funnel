@@ -46,6 +46,64 @@ locals {
 }
 
 # =============================================================================
+# KMS Key for CloudWatch Log Encryption
+# =============================================================================
+# Creates a KMS key for encrypting Lambda CloudWatch log groups
+# =============================================================================
+
+resource "aws_kms_key" "lambda_logs" {
+  description             = "KMS key for Lambda CloudWatch Logs - ${var.project_name}-${var.environment}"
+  deletion_window_in_days = 30
+  enable_key_rotation     = true
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      # Allow root account full access
+      {
+        Sid    = "EnableRootAccountPermissions"
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        }
+        Action   = "kms:*"
+        Resource = "*"
+      },
+      # Allow CloudWatch Logs to use the key
+      {
+        Sid    = "AllowCloudWatchLogs"
+        Effect = "Allow"
+        Principal = {
+          Service = "logs.${data.aws_region.current.name}.amazonaws.com"
+        }
+        Action = [
+          "kms:Encrypt*",
+          "kms:Decrypt*",
+          "kms:ReEncrypt*",
+          "kms:GenerateDataKey*",
+          "kms:Describe*"
+        ]
+        Resource = "*"
+        Condition = {
+          ArnLike = {
+            "kms:EncryptionContext:aws:logs:arn" = "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${local.function_prefix}*"
+          }
+        }
+      }
+    ]
+  })
+
+  tags = merge(var.tags, {
+    Name = "${local.function_prefix}-lambda-logs-kms"
+  })
+}
+
+resource "aws_kms_alias" "lambda_logs" {
+  name          = "alias/${var.project_name}-${var.environment}-lambda-logs"
+  target_key_id = aws_kms_key.lambda_logs.key_id
+}
+
+# =============================================================================
 # Lead Handler Lambda
 # =============================================================================
 # Main lead capture function - handles POST /lead requests
@@ -101,6 +159,7 @@ resource "aws_lambda_function" "lead_handler" {
 resource "aws_cloudwatch_log_group" "lead_handler" {
   name              = "/aws/lambda/${local.function_prefix}-lead-handler"
   retention_in_days = var.log_retention_days
+  kms_key_id        = aws_kms_key.lambda_logs.arn
 
   tags = merge(var.tags, {
     Name = "${local.function_prefix}-lead-handler-logs"
@@ -154,6 +213,7 @@ resource "aws_lambda_function" "health_handler" {
 resource "aws_cloudwatch_log_group" "health_handler" {
   name              = "/aws/lambda/${local.function_prefix}-health-handler"
   retention_in_days = var.log_retention_days
+  kms_key_id        = aws_kms_key.lambda_logs.arn
 
   tags = merge(var.tags, {
     Name = "${local.function_prefix}-health-handler-logs"
@@ -216,6 +276,7 @@ resource "aws_cloudwatch_log_group" "voice_start" {
 
   name              = "/aws/lambda/${local.function_prefix}-voice-start"
   retention_in_days = var.log_retention_days
+  kms_key_id        = aws_kms_key.lambda_logs.arn
 
   tags = merge(var.tags, {
     Name = "${local.function_prefix}-voice-start-logs"
@@ -281,6 +342,7 @@ resource "aws_cloudwatch_log_group" "voice_webhook" {
 
   name              = "/aws/lambda/${local.function_prefix}-voice-webhook"
   retention_in_days = var.log_retention_days
+  kms_key_id        = aws_kms_key.lambda_logs.arn
 
   tags = merge(var.tags, {
     Name = "${local.function_prefix}-voice-webhook-logs"
@@ -355,7 +417,7 @@ resource "aws_iam_role_policy" "lead_handler" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
-      # DynamoDB - Access all funnel tables using wildcard pattern
+      # DynamoDB - Access specific funnel tables (scoped to project/environment)
       {
         Sid    = "DynamoDBFunnelTables"
         Effect = "Allow"
@@ -366,19 +428,20 @@ resource "aws_iam_role_policy" "lead_handler" {
           "dynamodb:Query",
           "dynamodb:GetItem",
         ]
-        Resource = [
-          "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${var.project_name}-${var.environment}-*",
-          "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${var.project_name}-${var.environment}-*/index/*",
-        ]
+        Resource = concat(
+          var.all_funnel_table_arns,
+          var.all_funnel_gsi_arns,
+          [var.rate_limits_table_arn, var.idempotency_table_arn]
+        )
       },
-      # EventBridge - Put events
+      # EventBridge - Put events to specific bus
       {
         Sid      = "EventBridgePutEvents"
         Effect   = "Allow"
         Action   = ["events:PutEvents"]
         Resource = var.event_bus_arn
       },
-      # Secrets Manager - Read IP hash salt
+      # Secrets Manager - Read specific secret only
       {
         Sid    = "SecretsManagerRead"
         Effect = "Allow"
@@ -387,7 +450,7 @@ resource "aws_iam_role_policy" "lead_handler" {
         ]
         Resource = var.ip_hash_salt_secret_arn
       },
-      # SSM Parameter Store - Read parameters using wildcard
+      # SSM Parameter Store - Read specific parameters
       {
         Sid    = "SSMParameterRead"
         Effect = "Allow"
@@ -396,7 +459,17 @@ resource "aws_iam_role_policy" "lead_handler" {
           "ssm:GetParameters",
           "ssm:GetParametersByPath",
         ]
-        Resource = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/${var.project_name}/*"
+        Resource = var.ssm_parameter_arns
+      },
+      # KMS - Decrypt for CloudWatch Logs
+      {
+        Sid    = "KMSDecryptLogs"
+        Effect = "Allow"
+        Action = [
+          "kms:Decrypt",
+          "kms:GenerateDataKey"
+        ]
+        Resource = aws_kms_key.lambda_logs.arn
       },
     ]
   })
@@ -434,6 +507,27 @@ resource "aws_iam_role_policy_attachment" "health_handler_xray" {
 
   role       = aws_iam_role.health_handler.name
   policy_arn = "arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess"
+}
+
+# KMS permissions for health handler logs
+resource "aws_iam_role_policy" "health_handler_kms" {
+  name = "${local.function_prefix}-health-handler-kms-policy"
+  role = aws_iam_role.health_handler.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "KMSDecryptLogs"
+        Effect = "Allow"
+        Action = [
+          "kms:Decrypt",
+          "kms:GenerateDataKey"
+        ]
+        Resource = aws_kms_key.lambda_logs.arn
+      }
+    ]
+  })
 }
 
 # -----------------------------------------------------------------------------
@@ -483,7 +577,7 @@ resource "aws_iam_role_policy" "voice_handler" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
-      # DynamoDB - Access all funnel tables using wildcard pattern
+      # DynamoDB - Access specific funnel tables (scoped)
       {
         Sid    = "DynamoDBFunnels"
         Effect = "Allow"
@@ -493,23 +587,24 @@ resource "aws_iam_role_policy" "voice_handler" {
           "dynamodb:UpdateItem",
           "dynamodb:Query",
         ]
-        Resource = [
-          "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${var.project_name}-${var.environment}-*",
-          "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${var.project_name}-${var.environment}-*/index/*",
-        ]
+        Resource = concat(
+          var.all_funnel_table_arns,
+          var.all_funnel_gsi_arns,
+          [var.rate_limits_table_arn, var.idempotency_table_arn]
+        )
       },
-      # Secrets Manager - Read Twilio and ElevenLabs secrets
+      # Secrets Manager - Read specific secrets only
       {
         Sid    = "SecretsManagerRead"
         Effect = "Allow"
         Action = ["secretsmanager:GetSecretValue"]
-        Resource = [
+        Resource = compact([
           var.twilio_secret_arn,
           var.elevenlabs_secret_arn,
           var.webhook_secret_arn,
-        ]
+        ])
       },
-      # SSM Parameter Store - Read feature flags using wildcard
+      # SSM Parameter Store - Read specific parameters
       {
         Sid    = "SSMParameterRead"
         Effect = "Allow"
@@ -517,14 +612,24 @@ resource "aws_iam_role_policy" "voice_handler" {
           "ssm:GetParameter",
           "ssm:GetParameters",
         ]
-        Resource = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/${var.project_name}/*"
+        Resource = var.ssm_parameter_arns
       },
-      # EventBridge - Put voice events
+      # EventBridge - Put events to specific bus
       {
         Sid      = "EventBridgePutEvents"
         Effect   = "Allow"
         Action   = ["events:PutEvents"]
         Resource = var.event_bus_arn
+      },
+      # KMS - Decrypt for CloudWatch Logs
+      {
+        Sid    = "KMSDecryptLogs"
+        Effect = "Allow"
+        Action = [
+          "kms:Decrypt",
+          "kms:GenerateDataKey"
+        ]
+        Resource = aws_kms_key.lambda_logs.arn
       },
     ]
   })

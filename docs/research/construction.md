@@ -18,6 +18,7 @@
 ## Above-Fold Patterns
 
 ### Headline Formulas
+
 - **Capability-focused**: "Building [City's] Future Since [Year]"
 - **Trust-focused**: "Your Trusted General Contractor"
 - **Results-focused**: "On Time. On Budget. Guaranteed."
@@ -25,6 +26,7 @@
 - **Local-focused**: "[City]'s Premier Construction Company"
 
 ### Hero Section Elements
+
 1. **High-quality project imagery** (completed builds, active sites)
 2. **Clear service category** (commercial, residential, industrial)
 3. **Years in business** or project count
@@ -33,6 +35,7 @@
 6. **Service area** indicator
 
 ### Visual Patterns
+
 - Large hero images of flagship projects
 - Video backgrounds of construction activities
 - Before/after project sliders
@@ -44,6 +47,7 @@
 ## CTA Patterns
 
 ### Primary CTA Text
+
 - "Get a Free Estimate"
 - "Request a Consultation"
 - "Start Your Project"
@@ -52,6 +56,7 @@
 - "Contact Us Today"
 
 ### CTA Design Patterns
+
 - **Bold, contrasting button colors** (often orange, yellow, or green on dark backgrounds)
 - **Phone number as secondary CTA** (click-to-call enabled)
 - **Sticky header** with CTA always visible
@@ -59,6 +64,7 @@
 - **Urgency elements** ("Book Your Free Consultation This Week")
 
 ### Secondary CTAs
+
 - "View Our Portfolio"
 - "See Our Work"
 - "Learn About Our Process"
@@ -71,6 +77,7 @@
 ### Quote Request Form (5-7 fields)
 
 **Essential Fields**
+
 - Full name
 - Phone number
 - Email address
@@ -79,12 +86,14 @@
 - Brief project description (textarea)
 
 **Optional Fields**
+
 - Budget range (dropdown)
 - Timeline/start date
 - How did you hear about us?
 - Preferred contact method
 
 ### Form Best Practices
+
 - **Keep forms short** (5-7 fields maximum for initial contact)
 - **Project type dropdown** helps qualify leads
 - **Description field** allows context without overwhelming
@@ -92,6 +101,7 @@
 - **Clear submission confirmation** messaging
 
 ### Alternative Lead Capture
+
 - Phone number prominently displayed
 - Click-to-call buttons
 - Live chat integration
@@ -102,6 +112,7 @@
 ## Trust Signals
 
 ### Industry Certifications
+
 - Licensed, Bonded & Insured badges
 - OSHA safety certifications
 - LEED certification (for green building)
@@ -109,6 +120,7 @@
 - General liability insurance indicators
 
 ### Association Memberships
+
 - Associated General Contractors (AGC)
 - Associated Builders and Contractors (ABC)
 - Local Chamber of Commerce
@@ -116,6 +128,7 @@
 - Home Builders Association
 
 ### Social Proof Elements
+
 - Years in business ("Serving [City] Since 1985")
 - Project count ("500+ Projects Completed")
 - Square footage built
@@ -124,6 +137,7 @@
 - Google/Yelp review ratings
 
 ### Safety & Compliance
+
 - Safety record statistics
 - Worker's compensation coverage
 - Environmental compliance
@@ -186,17 +200,18 @@
 
 ### Common Objections & Responses
 
-| Objection | Landing Page Response |
-|-----------|----------------------|
-| "Construction projects always go over budget" | Highlight detailed estimates, fixed-price options, transparent pricing |
-| "I've heard horror stories about contractors" | Emphasize licensing, insurance, BBB rating, reviews |
-| "How do I know they'll finish on time?" | Showcase on-time completion rate, project management approach |
-| "The process seems overwhelming" | Clearly outline step-by-step process, offer hand-holding |
-| "I don't know if they can handle my project type" | Display diverse portfolio, relevant project examples |
-| "How do I know the quality will be good?" | Warranty information, quality guarantee, workmanship standards |
-| "What if something goes wrong?" | Insurance coverage, warranty, communication protocols |
+| Objection                                         | Landing Page Response                                                  |
+| ------------------------------------------------- | ---------------------------------------------------------------------- |
+| "Construction projects always go over budget"     | Highlight detailed estimates, fixed-price options, transparent pricing |
+| "I've heard horror stories about contractors"     | Emphasize licensing, insurance, BBB rating, reviews                    |
+| "How do I know they'll finish on time?"           | Showcase on-time completion rate, project management approach          |
+| "The process seems overwhelming"                  | Clearly outline step-by-step process, offer hand-holding               |
+| "I don't know if they can handle my project type" | Display diverse portfolio, relevant project examples                   |
+| "How do I know the quality will be good?"         | Warranty information, quality guarantee, workmanship standards         |
+| "What if something goes wrong?"                   | Insurance coverage, warranty, communication protocols                  |
 
 ### FAQ Questions to Include
+
 1. How long will my project take?
 2. What's included in your estimate?
 3. Do you handle permits?
@@ -269,12 +284,14 @@
 ```
 
 ### Key Metrics to Target
+
 - **Conversion rate**: 5-10% for quote requests
 - **Average conversion rate for construction**: 2.4-7.6%
 - **Time on page**: 3-5 minutes (portfolio browsing)
 - **Phone call rate**: Track click-to-call conversions
 
 ### A/B Testing Priorities
+
 1. Hero image (project photo vs. video vs. team photo)
 2. CTA text ("Free Estimate" vs. "Free Consultation" vs. "Start Your Project")
 3. Form length (quick form vs. detailed form)
@@ -286,6 +303,7 @@
 ## Industry-Specific Insights
 
 ### What Makes Construction Different
+
 - **High-value purchases** - Significant investment requires extensive trust-building
 - **Long sales cycle** - Multiple touchpoints often needed
 - **Visual portfolio critical** - Show, don't just tell
@@ -293,12 +311,14 @@
 - **Phone calls preferred** - Many clients prefer calling over forms
 
 ### Mobile Optimization
+
 - Click-to-call buttons essential
 - Portfolio images optimized for mobile
 - Form inputs large enough for touch
 - Fast loading (large images compressed)
 
 ### Video Content Recommendations
+
 - Drone footage of completed projects
 - Time-lapse construction videos
 - Client testimonial videos
@@ -306,6 +326,7 @@
 - Process explainer video
 
 ### SEO Considerations
+
 - Location-specific pages for each service area
 - Project-type landing pages
 - Long-tail keywords: "[city] commercial general contractor"

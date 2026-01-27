@@ -75,6 +75,11 @@ output "gsi1_name" {
   value       = "GSI1"
 }
 
+output "gsi2_name" {
+  description = "GSI2 index name for admin queries (same for all tables)"
+  value       = "GSI2"
+}
+
 # -----------------------------------------------------------------------------
 # Summary Outputs
 # -----------------------------------------------------------------------------

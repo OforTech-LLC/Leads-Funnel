@@ -13,18 +13,19 @@ interface FunnelBenefitsProps {
   service: ServiceConfig;
 }
 
-const benefitIcons = ['check', 'star', 'shield', 'clock'] as const;
+/** Benefit icon types */
+type BenefitIconType = 'check' | 'star' | 'shield' | 'clock';
+
+/** Benefit configuration with stable IDs */
+const BENEFIT_CONFIGS: Array<{ id: string; index: number; icon: BenefitIconType }> = [
+  { id: 'benefit-0', index: 0, icon: 'check' },
+  { id: 'benefit-1', index: 1, icon: 'star' },
+  { id: 'benefit-2', index: 2, icon: 'shield' },
+];
 
 export function FunnelBenefits({ service }: FunnelBenefitsProps) {
   // Use type assertion for dynamic funnel namespaces
   const t = useTranslations(`funnels.${service.slug}` as 'funnels.real-estate');
-
-  // Use numeric indices to match translation array structure (benefits.items)
-  const benefits = [
-    { index: 0, icon: benefitIcons[0] },
-    { index: 1, icon: benefitIcons[1] },
-    { index: 2, icon: benefitIcons[2] },
-  ];
 
   return (
     <section
@@ -48,7 +49,6 @@ export function FunnelBenefits({ service }: FunnelBenefitsProps) {
           </h2>
         </FadeIn>
 
-
         <StaggerChildren
           staggerDelay={0.1}
           style={{
@@ -57,8 +57,8 @@ export function FunnelBenefits({ service }: FunnelBenefitsProps) {
             gap: '24px',
           }}
         >
-          {benefits.map(({ index, icon }) => (
-            <StaggerItem key={index}>
+          {BENEFIT_CONFIGS.map(({ id, index, icon }) => (
+            <StaggerItem key={id}>
               <CardTilt maxTilt={5} glareEnable>
                 <div
                   style={{
@@ -112,7 +112,7 @@ export function FunnelBenefits({ service }: FunnelBenefitsProps) {
   );
 }
 
-function BenefitIcon({ icon, color }: { icon: string; color: string }) {
+function BenefitIcon({ icon, color }: { icon: BenefitIconType; color: string }) {
   const svgProps = {
     width: 28,
     height: 28,

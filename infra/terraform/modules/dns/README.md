@@ -33,24 +33,24 @@ module "dns" {
 
 ## Important Notes
 
-After initial deployment, you must update your domain registrar's nameservers
-to point to the Route 53 nameservers output by this module.
+After initial deployment, you must update your domain registrar's nameservers to point to the Route
+53 nameservers output by this module.
 
 ## Inputs
 
-| Name | Description | Type | Required |
-|------|-------------|------|----------|
-| project_name | Project name for resource naming | string | yes |
-| environment | Environment (dev/prod) | string | yes |
-| root_domain | Root domain name | string | yes |
-| cloudfront_domain_name | CloudFront distribution domain | string | yes |
-| api_gateway_domain_name | API Gateway custom domain | string | yes |
-| api_gateway_hosted_zone_id | API Gateway hosted zone ID | string | yes |
-| acm_validation_records | ACM validation DNS records | map | no |
+| Name                       | Description                      | Type   | Required |
+| -------------------------- | -------------------------------- | ------ | -------- |
+| project_name               | Project name for resource naming | string | yes      |
+| environment                | Environment (dev/prod)           | string | yes      |
+| root_domain                | Root domain name                 | string | yes      |
+| cloudfront_domain_name     | CloudFront distribution domain   | string | yes      |
+| api_gateway_domain_name    | API Gateway custom domain        | string | yes      |
+| api_gateway_hosted_zone_id | API Gateway hosted zone ID       | string | yes      |
+| acm_validation_records     | ACM validation DNS records       | map    | no       |
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| zone_id | Route 53 hosted zone ID |
+| Name        | Description                             |
+| ----------- | --------------------------------------- |
+| zone_id     | Route 53 hosted zone ID                 |
 | nameservers | Nameservers for registrar configuration |

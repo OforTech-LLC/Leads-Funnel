@@ -58,6 +58,9 @@ export interface SubmitLeadOptions {
 
 /**
  * Submit a lead to the API
+ *
+ * Uses the public POST endpoint since lead submission does not require
+ * authentication. CSRF protection is not needed for public endpoints.
  */
 export async function submitLead(options: SubmitLeadOptions): Promise<LeadResponse> {
   const { funnelId, formData, customFields } = options;
@@ -93,7 +96,9 @@ export async function submitLead(options: SubmitLeadOptions): Promise<LeadRespon
   }
 
   try {
-    return await apiClient.post<LeadResponse>('/lead', payload);
+    // Use postPublic since lead submission is a public endpoint
+    // and does not require authentication or CSRF protection
+    return await apiClient.postPublic<LeadResponse>('/lead', payload);
   } catch (error) {
     if (error instanceof ApiRequestError) {
       return {

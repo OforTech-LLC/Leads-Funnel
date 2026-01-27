@@ -5,6 +5,7 @@ This document explains how to render and update the hero videos for each service
 ## Overview
 
 Each service landing page displays a full-viewport hero video on initial load. These videos are:
+
 - Pre-rendered during build time using Remotion
 - Stored in `/public/videos/` as MP4 files
 - Loaded and played by the `<HeroVideo>` component
@@ -13,6 +14,7 @@ Each service landing page displays a full-viewport hero video on initial load. T
 
 1. **Node.js 18+**
 2. **ffmpeg** - Required for video encoding
+
    ```bash
    # macOS
    brew install ffmpeg
@@ -72,14 +74,14 @@ This opens Remotion Studio where you can preview and test compositions.
 
 ## Video Specifications
 
-| Property | Value |
-|----------|-------|
-| Resolution | 1920x1080 (Full HD) |
-| Frame Rate | 30 fps |
-| Duration | 3 seconds (90 frames) |
-| Codec | H.264 |
-| Quality | CRF 23 (good balance of quality/size) |
-| Format | MP4 |
+| Property   | Value                                 |
+| ---------- | ------------------------------------- |
+| Resolution | 1920x1080 (Full HD)                   |
+| Frame Rate | 30 fps                                |
+| Duration   | 3 seconds (90 frames)                 |
+| Codec      | H.264                                 |
+| Quality    | CRF 23 (good balance of quality/size) |
+| Format     | MP4                                   |
 
 ## Customizing Videos
 
@@ -92,13 +94,14 @@ const SERVICE_THEMES: Record<string, { icon: string; gradient: string; accent: s
   'real-estate': {
     icon: '🏠',
     gradient: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
-    accent: '#818cf8'
+    accent: '#818cf8',
   },
   // ... more services
 };
 ```
 
 To customize a service's video:
+
 1. Edit `SERVICE_THEMES` in `ServiceHeroVideo.tsx`
 2. Re-render that service's video
 
@@ -143,13 +146,13 @@ export default function ServicePage() {
 
 ### Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `serviceId` | string | required | Service identifier |
-| `onComplete` | function | - | Called when video ends or is skipped |
-| `autoSkipDelay` | number | 3000 | Ms before auto-transition |
-| `showSkipButton` | boolean | true | Show skip intro button |
-| `posterImage` | string | - | Fallback image URL |
+| Prop             | Type     | Default  | Description                          |
+| ---------------- | -------- | -------- | ------------------------------------ |
+| `serviceId`      | string   | required | Service identifier                   |
+| `onComplete`     | function | -        | Called when video ends or is skipped |
+| `autoSkipDelay`  | number   | 3000     | Ms before auto-transition            |
+| `showSkipButton` | boolean  | true     | Show skip intro button               |
+| `posterImage`    | string   | -        | Fallback image URL                   |
 
 ### Accessibility
 
@@ -161,6 +164,7 @@ export default function ServicePage() {
 ## Fallback Strategy
 
 If the video fails to load:
+
 1. Component shows a loading spinner briefly
 2. Automatically transitions to the page content
 3. Uses poster image if available
@@ -178,15 +182,19 @@ Current estimated file size: ~500KB - 1MB per video
 ## Troubleshooting
 
 ### "ffmpeg not found"
+
 Install ffmpeg and ensure it's in your PATH.
 
 ### "Out of memory during render"
+
 Render fewer videos at once or increase Node memory:
+
 ```bash
 NODE_OPTIONS=--max-old-space-size=4096 npx ts-node src/remotion/render.ts
 ```
 
 ### Videos not updating
+
 Clear the `/public/videos/` directory and re-render.
 
 ## CI/CD Integration

@@ -13,20 +13,22 @@ Creates SES configuration for sending email notifications.
 ## Important: Sandbox Mode
 
 AWS SES starts in **sandbox mode** with these limitations:
+
 - Can only send to verified email addresses
 - Daily sending limit: 200 emails
 - Sending rate: 1 email per second
 
-To use in production, you must [request production access](https://docs.aws.amazon.com/ses/latest/dg/request-production-access.html).
+To use in production, you must
+[request production access](https://docs.aws.amazon.com/ses/latest/dg/request-production-access.html).
 
 ## DNS Records Created
 
-| Record Type | Name | Purpose |
-|-------------|------|---------|
-| TXT | `_amazonses.<domain>` | Domain verification |
-| CNAME (x3) | `<token>._domainkey.<domain>` | DKIM signing |
-| MX | `mail.<domain>` | MAIL FROM domain |
-| TXT | `mail.<domain>` | SPF for MAIL FROM |
+| Record Type | Name                          | Purpose             |
+| ----------- | ----------------------------- | ------------------- |
+| TXT         | `_amazonses.<domain>`         | Domain verification |
+| CNAME (x3)  | `<token>._domainkey.<domain>` | DKIM signing        |
+| MX          | `mail.<domain>`               | MAIL FROM domain    |
+| TXT         | `mail.<domain>`               | SPF for MAIL FROM   |
 
 ## Usage
 
@@ -87,20 +89,20 @@ If SES is enabled, add this to your Lambda policy:
 
 ## Inputs
 
-| Name | Description | Type | Default |
-|------|-------------|------|---------|
-| project_name | Project name | string | - |
-| environment | Environment (dev/prod) | string | - |
-| root_domain | Root domain for SES | string | - |
-| route53_zone_id | Route 53 zone ID | string | - |
-| notification_email | Email for notifications | string | "" |
-| enable_mail_from | Enable MAIL FROM domain | bool | true |
+| Name               | Description             | Type   | Default |
+| ------------------ | ----------------------- | ------ | ------- |
+| project_name       | Project name            | string | -       |
+| environment        | Environment (dev/prod)  | string | -       |
+| root_domain        | Root domain for SES     | string | -       |
+| route53_zone_id    | Route 53 zone ID        | string | -       |
+| notification_email | Email for notifications | string | ""      |
+| enable_mail_from   | Enable MAIL FROM domain | bool   | true    |
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| domain_identity_arn | SES domain identity ARN |
-| configuration_set_name | Configuration set name |
-| notification_email | Verified notification email |
-| mail_from_domain | MAIL FROM domain |
+| Name                   | Description                 |
+| ---------------------- | --------------------------- |
+| domain_identity_arn    | SES domain identity ARN     |
+| configuration_set_name | Configuration set name      |
+| notification_email     | Verified notification email |
+| mail_from_domain       | MAIL FROM domain            |

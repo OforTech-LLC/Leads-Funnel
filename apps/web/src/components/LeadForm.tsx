@@ -2,7 +2,7 @@
 
 /**
  * Lead Capture Form Component
- * Handles lead submission with validation and Redux state management
+ * Handles lead submission with validation, sanitization, and Redux state management
  */
 
 import { useState, useCallback, useEffect, type FormEvent, type ChangeEvent } from 'react';
@@ -77,35 +77,38 @@ export function LeadForm({ funnelId, primaryColor = '#0070f3' }: LeadFormProps) 
   }, []);
 
   /**
-   * Handle form submission
+   * Handle form submission with sanitization
    */
   const handleSubmit = useCallback(
     async (e: FormEvent) => {
       e.preventDefault();
 
-      // Validate form
+      // Validate and sanitize form data
       const validation = validateLeadForm(formData);
 
-      if (!validation.isValid) {
+      if (!validation.isValid || !validation.sanitizedData) {
         setErrors(validation.errors);
         // Mark all fields as touched
         setTouched({ name: true, email: true, phone: true, message: true });
         return;
       }
 
+      // Use sanitized data for submission
+      const { sanitizedData } = validation;
+
       // Get tracking data
       const utm = getBestUTMParams();
       const pageUrl = getCurrentPageUrl();
       const referrer = getReferrer();
 
-      // Submit lead with optional funnelId
+      // Submit lead with sanitized data
       dispatch(
         submitLead({
           funnelId,
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone || undefined,
-          message: formData.message || undefined,
+          name: sanitizedData.name,
+          email: sanitizedData.email,
+          phone: sanitizedData.phone || undefined,
+          message: sanitizedData.message || undefined,
           pageUrl,
           referrer,
           utm,
@@ -175,6 +178,8 @@ export function LeadForm({ funnelId, primaryColor = '#0070f3' }: LeadFormProps) 
               placeholder={t('name.placeholder')}
               required
               disabled={isSubmitting}
+              autoComplete="name"
+              maxLength={100}
               aria-invalid={touched.name && !!errors.name}
               aria-describedby={errors.name ? 'name-error' : undefined}
               style={{
@@ -204,6 +209,8 @@ export function LeadForm({ funnelId, primaryColor = '#0070f3' }: LeadFormProps) 
               placeholder={t('email.placeholder')}
               required
               disabled={isSubmitting}
+              autoComplete="email"
+              maxLength={254}
               aria-invalid={touched.email && !!errors.email}
               aria-describedby={errors.email ? 'email-error' : undefined}
               style={{
@@ -232,6 +239,8 @@ export function LeadForm({ funnelId, primaryColor = '#0070f3' }: LeadFormProps) 
               onBlur={handleBlur}
               placeholder={t('phone.placeholder')}
               disabled={isSubmitting}
+              autoComplete="tel"
+              maxLength={20}
               aria-invalid={touched.phone && !!errors.phone}
               aria-describedby={errors.phone ? 'phone-error' : undefined}
               style={{
@@ -260,6 +269,7 @@ export function LeadForm({ funnelId, primaryColor = '#0070f3' }: LeadFormProps) 
               placeholder={t('message.placeholder')}
               disabled={isSubmitting}
               rows={4}
+              maxLength={1000}
               aria-invalid={touched.message && !!errors.message}
               aria-describedby={errors.message ? 'message-error' : undefined}
               style={{

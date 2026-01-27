@@ -54,850 +54,3093 @@
   },
   "funnels": {
     "real-estate": {
-      "meta": { "title": "Encuentra Tu Casa Ideal | Servicios Inmobiliarios Expertos", "description": "Conecta con los mejores agentes inmobiliarios de tu area. Ya sea comprando, vendiendo o invirtiendo, obtén orientación personalizada." },
-      "hero": { "headline": "Encuentra Tu Propiedad Perfecta Hoy", "subheadline": "Conecta con profesionales inmobiliarios experimentados que conocen tu mercado local." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios Inmobiliarios?", "items": [
-        { "title": "Experiencia en el Mercado Local", "description": "Nuestros agentes conocen tu vecindario a fondo." },
-        { "title": "Búsqueda Personalizada", "description": "Te conectamos con propiedades que se ajustan a tus criterios exactos." },
-        { "title": "Transacciones Sin Problemas", "description": "Manejamos todos los detalles desde la oferta hasta el cierre." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Cuánto tiempo toma el proceso de compra?", "answer": "Típicamente 30-60 días desde la aceptación de la oferta hasta el cierre." },
-        { "question": "¿Necesito pre-aprobación antes de buscar casa?", "answer": "Sí, la pre-aprobación te ayuda a entender tu presupuesto." },
-        { "question": "¿Qué costos están involucrados?", "answer": "Incluyen costos de cierre (2-5%), inspecciones, avalúos y comisiones." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Miguel Rodríguez", "text": "Encontramos nuestra casa soñada en solo dos semanas. El equipo hizo todo muy fácil.", "location": "Austin, TX" }]},
-      "cta": { "title": "¿Listo Para Encontrar Tu Casa Ideal?", "subtitle": "Conecta con un experto inmobiliario local hoy", "button": "Comenzar Búsqueda" },
-      "form": { "title": "Obtén Tu Valuación Gratis", "subtitle": "Cuéntanos sobre tus metas inmobiliarias" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Consulta Gratis" }
+      "meta": {
+        "title": "Encuentra Tu Casa Ideal | Servicios Inmobiliarios Expertos",
+        "description": "Conecta con los mejores agentes inmobiliarios de tu area. Ya sea comprando, vendiendo o invirtiendo, obtén orientación personalizada."
+      },
+      "hero": {
+        "headline": "Encuentra Tu Propiedad Perfecta Hoy",
+        "subheadline": "Conecta con profesionales inmobiliarios experimentados que conocen tu mercado local."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios Inmobiliarios?",
+        "items": [
+          {
+            "title": "Experiencia en el Mercado Local",
+            "description": "Nuestros agentes conocen tu vecindario a fondo."
+          },
+          {
+            "title": "Búsqueda Personalizada",
+            "description": "Te conectamos con propiedades que se ajustan a tus criterios exactos."
+          },
+          {
+            "title": "Transacciones Sin Problemas",
+            "description": "Manejamos todos los detalles desde la oferta hasta el cierre."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Cuánto tiempo toma el proceso de compra?",
+            "answer": "Típicamente 30-60 días desde la aceptación de la oferta hasta el cierre."
+          },
+          {
+            "question": "¿Necesito pre-aprobación antes de buscar casa?",
+            "answer": "Sí, la pre-aprobación te ayuda a entender tu presupuesto."
+          },
+          {
+            "question": "¿Qué costos están involucrados?",
+            "answer": "Incluyen costos de cierre (2-5%), inspecciones, avalúos y comisiones."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Miguel Rodríguez",
+            "text": "Encontramos nuestra casa soñada en solo dos semanas. El equipo hizo todo muy fácil.",
+            "location": "Austin, TX"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Listo Para Encontrar Tu Casa Ideal?",
+        "subtitle": "Conecta con un experto inmobiliario local hoy",
+        "button": "Comenzar Búsqueda"
+      },
+      "form": {
+        "title": "Obtén Tu Valuación Gratis",
+        "subtitle": "Cuéntanos sobre tus metas inmobiliarias"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Consulta Gratis"
+      }
     },
     "life-insurance": {
-      "meta": { "title": "Protege el Futuro de Tu Familia | Cotizaciones de Seguro de Vida", "description": "Obtén cotizaciones personalizadas de seguros de vida. Protege a tus seres queridos con cobertura de vida a término o permanente." },
-      "hero": { "headline": "Protege Lo Que Más Importa", "subheadline": "Obtén cobertura de seguro de vida asequible adaptada a las necesidades de tu familia." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios de Seguro de Vida?", "items": [
-        { "title": "Múltiples Opciones de Aseguradoras", "description": "Compara cotizaciones de docenas de compañías de seguros." },
-        { "title": "Cobertura Personalizada", "description": "Obtén recomendaciones basadas en las necesidades únicas de tu familia." },
-        { "title": "Orientación Experta", "description": "Agentes licenciados te ayudan a entender tus opciones." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Cuánto seguro de vida necesito?", "answer": "Una regla general es 10-12 veces tu ingreso anual." },
-        { "question": "¿Cuál es la diferencia entre vida a término y permanente?", "answer": "El seguro a término cubre un período específico. El permanente ofrece cobertura de por vida." },
-        { "question": "¿Puedo obtener cobertura si tengo problemas de salud?", "answer": "Sí, muchas aseguradoras ofrecen cobertura para diversas condiciones de salud." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Ana García", "text": "Me ayudaron a encontrar una póliza que se ajustó a mi presupuesto. Muy recomendado!", "location": "Denver, CO" }]},
-      "cta": { "title": "¿Listo Para Proteger a Tu Familia?", "subtitle": "Obtén tu cotización gratis de seguro de vida en minutos", "button": "Obtener Mi Cotización Gratis" },
-      "form": { "title": "Obtén Tu Cotización Gratis de Seguro de Vida", "subtitle": "Compara tarifas de las mejores aseguradoras sin compromiso" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Cotización Gratis" }
+      "meta": {
+        "title": "Protege el Futuro de Tu Familia | Cotizaciones de Seguro de Vida",
+        "description": "Obtén cotizaciones personalizadas de seguros de vida. Protege a tus seres queridos con cobertura de vida a término o permanente."
+      },
+      "hero": {
+        "headline": "Protege Lo Que Más Importa",
+        "subheadline": "Obtén cobertura de seguro de vida asequible adaptada a las necesidades de tu familia."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios de Seguro de Vida?",
+        "items": [
+          {
+            "title": "Múltiples Opciones de Aseguradoras",
+            "description": "Compara cotizaciones de docenas de compañías de seguros."
+          },
+          {
+            "title": "Cobertura Personalizada",
+            "description": "Obtén recomendaciones basadas en las necesidades únicas de tu familia."
+          },
+          {
+            "title": "Orientación Experta",
+            "description": "Agentes licenciados te ayudan a entender tus opciones."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Cuánto seguro de vida necesito?",
+            "answer": "Una regla general es 10-12 veces tu ingreso anual."
+          },
+          {
+            "question": "¿Cuál es la diferencia entre vida a término y permanente?",
+            "answer": "El seguro a término cubre un período específico. El permanente ofrece cobertura de por vida."
+          },
+          {
+            "question": "¿Puedo obtener cobertura si tengo problemas de salud?",
+            "answer": "Sí, muchas aseguradoras ofrecen cobertura para diversas condiciones de salud."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Ana García",
+            "text": "Me ayudaron a encontrar una póliza que se ajustó a mi presupuesto. Muy recomendado!",
+            "location": "Denver, CO"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Listo Para Proteger a Tu Familia?",
+        "subtitle": "Obtén tu cotización gratis de seguro de vida en minutos",
+        "button": "Obtener Mi Cotización Gratis"
+      },
+      "form": {
+        "title": "Obtén Tu Cotización Gratis de Seguro de Vida",
+        "subtitle": "Compara tarifas de las mejores aseguradoras sin compromiso"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Cotización Gratis"
+      }
     },
     "construction": {
-      "meta": { "title": "Servicios de Construcción de Calidad | Construye Tu Visión", "description": "Servicios profesionales de construcción para proyectos residenciales y comerciales." },
-      "hero": { "headline": "Construye Tu Visión Con Contratistas Expertos", "subheadline": "Desde construcción nueva hasta renovaciones mayores, nuestros contratistas licenciados entregan calidad a tiempo y dentro del presupuesto." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios de Construcción?", "items": [
-        { "title": "Licenciados y Asegurados", "description": "Todos nuestros contratistas están completamente licenciados y asegurados." },
-        { "title": "Artesanía de Calidad", "description": "Usamos materiales premium y trabajadores calificados." },
-        { "title": "Precios Transparentes", "description": "Presupuestos detallados sin cargos ocultos." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Cuánto tiempo tomará mi proyecto?", "answer": "Los tiempos varían según el alcance. Renovaciones pequeñas toman semanas, construcciones nuevas 6-12 meses." },
-        { "question": "¿Manejan permisos e inspecciones?", "answer": "Sí, gestionamos todos los permisos y coordinamos inspecciones." },
-        { "question": "¿Qué garantía ofrecen?", "answer": "Proporcionamos garantía completa en toda la mano de obra, típicamente 1-5 años." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Carlos Mendoza", "text": "Construyeron nuestra casa exactamente como la imaginamos. Equipo profesional de principio a fin.", "location": "Phoenix, AZ" }]},
-      "cta": { "title": "¿Listo Para Comenzar Tu Proyecto?", "subtitle": "Obtén un presupuesto de construcción gratis hoy", "button": "Obtener Presupuesto Gratis" },
-      "form": { "title": "Obtén Tu Presupuesto de Construcción Gratis", "subtitle": "Cuéntanos sobre tu proyecto y te proporcionaremos una cotización detallada" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Presupuesto Gratis" }
+      "meta": {
+        "title": "Servicios de Construcción de Calidad | Construye Tu Visión",
+        "description": "Servicios profesionales de construcción para proyectos residenciales y comerciales."
+      },
+      "hero": {
+        "headline": "Construye Tu Visión Con Contratistas Expertos",
+        "subheadline": "Desde construcción nueva hasta renovaciones mayores, nuestros contratistas licenciados entregan calidad a tiempo y dentro del presupuesto."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios de Construcción?",
+        "items": [
+          {
+            "title": "Licenciados y Asegurados",
+            "description": "Todos nuestros contratistas están completamente licenciados y asegurados."
+          },
+          {
+            "title": "Artesanía de Calidad",
+            "description": "Usamos materiales premium y trabajadores calificados."
+          },
+          {
+            "title": "Precios Transparentes",
+            "description": "Presupuestos detallados sin cargos ocultos."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Cuánto tiempo tomará mi proyecto?",
+            "answer": "Los tiempos varían según el alcance. Renovaciones pequeñas toman semanas, construcciones nuevas 6-12 meses."
+          },
+          {
+            "question": "¿Manejan permisos e inspecciones?",
+            "answer": "Sí, gestionamos todos los permisos y coordinamos inspecciones."
+          },
+          {
+            "question": "¿Qué garantía ofrecen?",
+            "answer": "Proporcionamos garantía completa en toda la mano de obra, típicamente 1-5 años."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Carlos Mendoza",
+            "text": "Construyeron nuestra casa exactamente como la imaginamos. Equipo profesional de principio a fin.",
+            "location": "Phoenix, AZ"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Listo Para Comenzar Tu Proyecto?",
+        "subtitle": "Obtén un presupuesto de construcción gratis hoy",
+        "button": "Obtener Presupuesto Gratis"
+      },
+      "form": {
+        "title": "Obtén Tu Presupuesto de Construcción Gratis",
+        "subtitle": "Cuéntanos sobre tu proyecto y te proporcionaremos una cotización detallada"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Presupuesto Gratis"
+      }
     },
     "moving": {
-      "meta": { "title": "Servicios de Mudanza Profesionales | Local y Larga Distancia", "description": "Servicios de mudanza sin estrés para hogares y negocios. Mudanzas licenciadas y tarifas competitivas." },
-      "hero": { "headline": "Múdate Con Confianza", "subheadline": "Servicios de mudanza profesionales con manejo cuidadoso de tus pertenencias y precios transparentes." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios de Mudanza?", "items": [
-        { "title": "Equipos Profesionales", "description": "Mudanzas capacitados que manejan tus artículos con cuidado." },
-        { "title": "Precios Transparentes", "description": "Cotizaciones por adelantado sin cargos sorpresa." },
-        { "title": "Servicio Completo", "description": "Desde empacar hasta desempacar, manejamos todo." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Con cuánta anticipación debo reservar?", "answer": "Recomendamos reservar 2-4 semanas de anticipación, especialmente en temporadas altas." },
-        { "question": "¿Ofrecen servicios de empaque?", "answer": "Sí, ofrecemos opciones de servicio completo o empaque parcial." },
-        { "question": "¿Mis pertenencias están aseguradas?", "answer": "Sí, proporcionamos cobertura básica y ofrecemos opciones de protección adicional." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Laura Fernández", "text": "La mudanza más fácil que hemos tenido. El equipo fue puntual, cuidadoso y eficiente.", "location": "Miami, FL" }]},
-      "cta": { "title": "¿Listo Para Mudarte?", "subtitle": "Obtén tu cotización de mudanza gratis hoy", "button": "Obtener Cotización Gratis" },
-      "form": { "title": "Obtén Tu Cotización de Mudanza Gratis", "subtitle": "Cuéntanos sobre tu mudanza y te proporcionaremos un precio justo" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Cotización Gratis" }
+      "meta": {
+        "title": "Servicios de Mudanza Profesionales | Local y Larga Distancia",
+        "description": "Servicios de mudanza sin estrés para hogares y negocios. Mudanzas licenciadas y tarifas competitivas."
+      },
+      "hero": {
+        "headline": "Múdate Con Confianza",
+        "subheadline": "Servicios de mudanza profesionales con manejo cuidadoso de tus pertenencias y precios transparentes."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios de Mudanza?",
+        "items": [
+          {
+            "title": "Equipos Profesionales",
+            "description": "Mudanzas capacitados que manejan tus artículos con cuidado."
+          },
+          {
+            "title": "Precios Transparentes",
+            "description": "Cotizaciones por adelantado sin cargos sorpresa."
+          },
+          {
+            "title": "Servicio Completo",
+            "description": "Desde empacar hasta desempacar, manejamos todo."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Con cuánta anticipación debo reservar?",
+            "answer": "Recomendamos reservar 2-4 semanas de anticipación, especialmente en temporadas altas."
+          },
+          {
+            "question": "¿Ofrecen servicios de empaque?",
+            "answer": "Sí, ofrecemos opciones de servicio completo o empaque parcial."
+          },
+          {
+            "question": "¿Mis pertenencias están aseguradas?",
+            "answer": "Sí, proporcionamos cobertura básica y ofrecemos opciones de protección adicional."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Laura Fernández",
+            "text": "La mudanza más fácil que hemos tenido. El equipo fue puntual, cuidadoso y eficiente.",
+            "location": "Miami, FL"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Listo Para Mudarte?",
+        "subtitle": "Obtén tu cotización de mudanza gratis hoy",
+        "button": "Obtener Cotización Gratis"
+      },
+      "form": {
+        "title": "Obtén Tu Cotización de Mudanza Gratis",
+        "subtitle": "Cuéntanos sobre tu mudanza y te proporcionaremos un precio justo"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Cotización Gratis"
+      }
     },
     "dentist": {
-      "meta": { "title": "Encuentra Tu Dentista Ideal | Cuidado Dental de Calidad", "description": "Conecta con dentistas de confianza en tu área. Desde limpiezas hasta procedimientos cosméticos." },
-      "hero": { "headline": "Tu Sonrisa Merece Lo Mejor", "subheadline": "Encuentra dentistas experimentados que priorizan tu comodidad y salud oral." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios Dentales?", "items": [
-        { "title": "Dentistas Verificados", "description": "Todos los dentistas están verificados y tienen excelentes calificaciones." },
-        { "title": "Citas Convenientes", "description": "Agenda citas que funcionen con tu horario." },
-        { "title": "Servicios Completos", "description": "Desde limpiezas rutinarias hasta procedimientos avanzados." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Con qué frecuencia debo visitar al dentista?", "answer": "Recomendamos chequeos cada 6 meses para una salud oral óptima." },
-        { "question": "¿Aceptan seguro dental?", "answer": "La mayoría de nuestros dentistas aceptan varios planes de seguro." },
-        { "question": "¿Qué pasa si tengo ansiedad dental?", "answer": "Muchos de nuestros dentistas ofrecen opciones de sedación." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Roberto Sánchez", "text": "Encontré un dentista increíble que me hizo sentir cómodo. Muy recomendado!", "location": "Los Angeles, CA" }]},
-      "cta": { "title": "¿Listo Para Una Sonrisa Más Saludable?", "subtitle": "Encuentra tu dentista ideal hoy", "button": "Encontrar Dentista" },
-      "form": { "title": "Encuentra Tu Dentista", "subtitle": "Cuéntanos tus necesidades dentales" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Consulta Gratis" }
+      "meta": {
+        "title": "Encuentra Tu Dentista Ideal | Cuidado Dental de Calidad",
+        "description": "Conecta con dentistas de confianza en tu área. Desde limpiezas hasta procedimientos cosméticos."
+      },
+      "hero": {
+        "headline": "Tu Sonrisa Merece Lo Mejor",
+        "subheadline": "Encuentra dentistas experimentados que priorizan tu comodidad y salud oral."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios Dentales?",
+        "items": [
+          {
+            "title": "Dentistas Verificados",
+            "description": "Todos los dentistas están verificados y tienen excelentes calificaciones."
+          },
+          {
+            "title": "Citas Convenientes",
+            "description": "Agenda citas que funcionen con tu horario."
+          },
+          {
+            "title": "Servicios Completos",
+            "description": "Desde limpiezas rutinarias hasta procedimientos avanzados."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Con qué frecuencia debo visitar al dentista?",
+            "answer": "Recomendamos chequeos cada 6 meses para una salud oral óptima."
+          },
+          {
+            "question": "¿Aceptan seguro dental?",
+            "answer": "La mayoría de nuestros dentistas aceptan varios planes de seguro."
+          },
+          {
+            "question": "¿Qué pasa si tengo ansiedad dental?",
+            "answer": "Muchos de nuestros dentistas ofrecen opciones de sedación."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Roberto Sánchez",
+            "text": "Encontré un dentista increíble que me hizo sentir cómodo. Muy recomendado!",
+            "location": "Los Angeles, CA"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Listo Para Una Sonrisa Más Saludable?",
+        "subtitle": "Encuentra tu dentista ideal hoy",
+        "button": "Encontrar Dentista"
+      },
+      "form": {
+        "title": "Encuentra Tu Dentista",
+        "subtitle": "Cuéntanos tus necesidades dentales"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Consulta Gratis"
+      }
     },
     "plastic-surgeon": {
-      "meta": { "title": "Cirugía Plástica de Calidad | Resultados Naturales", "description": "Conecta con cirujanos plásticos certificados para procedimientos cosméticos y reconstructivos." },
-      "hero": { "headline": "Logra Tus Metas Estéticas", "subheadline": "Cirujanos plásticos certificados dedicados a resultados naturales y tu seguridad." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios de Cirugía Plástica?", "items": [
-        { "title": "Cirujanos Certificados", "description": "Solo trabajamos con cirujanos plásticos certificados." },
-        { "title": "Consultas Personalizadas", "description": "Planes de tratamiento adaptados a tus metas únicas." },
-        { "title": "Instalaciones Acreditadas", "description": "Procedimientos realizados en centros quirúrgicos acreditados." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Cuál es el tiempo de recuperación?", "answer": "Varía según el procedimiento, típicamente 1-6 semanas." },
-        { "question": "¿Ofrecen opciones de financiamiento?", "answer": "Sí, muchos de nuestros cirujanos ofrecen planes de pago flexibles." },
-        { "question": "¿Cómo elijo el procedimiento correcto?", "answer": "Una consulta ayudará a determinar las mejores opciones para tus metas." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Patricia López", "text": "Resultados increíbles y atención excepcional. Me siento más segura que nunca.", "location": "Houston, TX" }]},
-      "cta": { "title": "¿Lista Para Tu Transformación?", "subtitle": "Agenda tu consulta gratuita hoy", "button": "Agendar Consulta" },
-      "form": { "title": "Agenda Tu Consulta Gratis", "subtitle": "Da el primer paso hacia tus metas estéticas" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Consulta Gratis" }
+      "meta": {
+        "title": "Cirugía Plástica de Calidad | Resultados Naturales",
+        "description": "Conecta con cirujanos plásticos certificados para procedimientos cosméticos y reconstructivos."
+      },
+      "hero": {
+        "headline": "Logra Tus Metas Estéticas",
+        "subheadline": "Cirujanos plásticos certificados dedicados a resultados naturales y tu seguridad."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios de Cirugía Plástica?",
+        "items": [
+          {
+            "title": "Cirujanos Certificados",
+            "description": "Solo trabajamos con cirujanos plásticos certificados."
+          },
+          {
+            "title": "Consultas Personalizadas",
+            "description": "Planes de tratamiento adaptados a tus metas únicas."
+          },
+          {
+            "title": "Instalaciones Acreditadas",
+            "description": "Procedimientos realizados en centros quirúrgicos acreditados."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Cuál es el tiempo de recuperación?",
+            "answer": "Varía según el procedimiento, típicamente 1-6 semanas."
+          },
+          {
+            "question": "¿Ofrecen opciones de financiamiento?",
+            "answer": "Sí, muchos de nuestros cirujanos ofrecen planes de pago flexibles."
+          },
+          {
+            "question": "¿Cómo elijo el procedimiento correcto?",
+            "answer": "Una consulta ayudará a determinar las mejores opciones para tus metas."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Patricia López",
+            "text": "Resultados increíbles y atención excepcional. Me siento más segura que nunca.",
+            "location": "Houston, TX"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Lista Para Tu Transformación?",
+        "subtitle": "Agenda tu consulta gratuita hoy",
+        "button": "Agendar Consulta"
+      },
+      "form": {
+        "title": "Agenda Tu Consulta Gratis",
+        "subtitle": "Da el primer paso hacia tus metas estéticas"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Consulta Gratis"
+      }
     },
     "roofing": {
-      "meta": { "title": "Servicios de Techado Profesionales | Reparación e Instalación", "description": "Contratistas de techado expertos para instalación, reparación y reemplazo de techos." },
-      "hero": { "headline": "Protege Tu Hogar Desde Arriba", "subheadline": "Contratistas de techado licenciados ofreciendo instalación de calidad y reparaciones confiables." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios de Techado?", "items": [
-        { "title": "Contratistas Licenciados", "description": "Todos los techadores están licenciados, asegurados y garantizados." },
-        { "title": "Materiales de Calidad", "description": "Usamos materiales de techado de primera calidad." },
-        { "title": "Inspecciones Gratis", "description": "Evaluación completa del techo sin obligación." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Cuánto dura un techo nuevo?", "answer": "Dependiendo de los materiales, típicamente 20-50 años." },
-        { "question": "¿Trabajan con reclamaciones de seguro?", "answer": "Sí, ayudamos a navegar el proceso de reclamaciones de seguro." },
-        { "question": "¿Cuánto tiempo toma el reemplazo?", "answer": "La mayoría de los reemplazos se completan en 1-3 días." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Fernando Torres", "text": "Excelente trabajo reemplazando nuestro techo después de la tormenta. Rápidos y profesionales.", "location": "Dallas, TX" }]},
-      "cta": { "title": "¿Necesitas un Nuevo Techo?", "subtitle": "Obtén tu inspección de techo gratis hoy", "button": "Programar Inspección" },
-      "form": { "title": "Obtén Tu Inspección de Techo Gratis", "subtitle": "Evaluación profesional sin compromiso" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Inspección Gratis" }
+      "meta": {
+        "title": "Servicios de Techado Profesionales | Reparación e Instalación",
+        "description": "Contratistas de techado expertos para instalación, reparación y reemplazo de techos."
+      },
+      "hero": {
+        "headline": "Protege Tu Hogar Desde Arriba",
+        "subheadline": "Contratistas de techado licenciados ofreciendo instalación de calidad y reparaciones confiables."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios de Techado?",
+        "items": [
+          {
+            "title": "Contratistas Licenciados",
+            "description": "Todos los techadores están licenciados, asegurados y garantizados."
+          },
+          {
+            "title": "Materiales de Calidad",
+            "description": "Usamos materiales de techado de primera calidad."
+          },
+          {
+            "title": "Inspecciones Gratis",
+            "description": "Evaluación completa del techo sin obligación."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Cuánto dura un techo nuevo?",
+            "answer": "Dependiendo de los materiales, típicamente 20-50 años."
+          },
+          {
+            "question": "¿Trabajan con reclamaciones de seguro?",
+            "answer": "Sí, ayudamos a navegar el proceso de reclamaciones de seguro."
+          },
+          {
+            "question": "¿Cuánto tiempo toma el reemplazo?",
+            "answer": "La mayoría de los reemplazos se completan en 1-3 días."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Fernando Torres",
+            "text": "Excelente trabajo reemplazando nuestro techo después de la tormenta. Rápidos y profesionales.",
+            "location": "Dallas, TX"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Necesitas un Nuevo Techo?",
+        "subtitle": "Obtén tu inspección de techo gratis hoy",
+        "button": "Programar Inspección"
+      },
+      "form": {
+        "title": "Obtén Tu Inspección de Techo Gratis",
+        "subtitle": "Evaluación profesional sin compromiso"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Inspección Gratis"
+      }
     },
     "cleaning": {
-      "meta": { "title": "Servicios de Limpieza Profesionales | Hogar y Oficina", "description": "Servicios de limpieza confiables para hogares y negocios. Personal verificado y productos ecológicos." },
-      "hero": { "headline": "Un Espacio Impecable Te Espera", "subheadline": "Servicios de limpieza profesionales que hacen tu vida más fácil y tu espacio más brillante." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios de Limpieza?", "items": [
-        { "title": "Personal Verificado", "description": "Todos los limpiadores pasan verificación de antecedentes." },
-        { "title": "Horarios Flexibles", "description": "Limpieza semanal, quincenal o según necesidad." },
-        { "title": "Productos Ecológicos", "description": "Usamos productos de limpieza seguros y ecológicos." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Qué incluye la limpieza estándar?", "answer": "Incluye limpieza de todas las habitaciones, baños, cocina, aspirado y trapeado." },
-        { "question": "¿Necesito proporcionar suministros?", "answer": "No, traemos todos los suministros y equipos necesarios." },
-        { "question": "¿Ofrecen limpieza profunda?", "answer": "Sí, ofrecemos servicios de limpieza profunda y mudanza." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Carmen Ruiz", "text": "Mi casa nunca ha estado tan limpia. El equipo es increíble y muy profesional.", "location": "San Diego, CA" }]},
-      "cta": { "title": "¿Listo Para un Espacio Más Limpio?", "subtitle": "Obtén tu cotización de limpieza hoy", "button": "Obtener Cotización" },
-      "form": { "title": "Obtén Tu Cotización de Limpieza", "subtitle": "Cuéntanos sobre tus necesidades de limpieza" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Cotización Gratis" }
+      "meta": {
+        "title": "Servicios de Limpieza Profesionales | Hogar y Oficina",
+        "description": "Servicios de limpieza confiables para hogares y negocios. Personal verificado y productos ecológicos."
+      },
+      "hero": {
+        "headline": "Un Espacio Impecable Te Espera",
+        "subheadline": "Servicios de limpieza profesionales que hacen tu vida más fácil y tu espacio más brillante."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios de Limpieza?",
+        "items": [
+          {
+            "title": "Personal Verificado",
+            "description": "Todos los limpiadores pasan verificación de antecedentes."
+          },
+          {
+            "title": "Horarios Flexibles",
+            "description": "Limpieza semanal, quincenal o según necesidad."
+          },
+          {
+            "title": "Productos Ecológicos",
+            "description": "Usamos productos de limpieza seguros y ecológicos."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Qué incluye la limpieza estándar?",
+            "answer": "Incluye limpieza de todas las habitaciones, baños, cocina, aspirado y trapeado."
+          },
+          {
+            "question": "¿Necesito proporcionar suministros?",
+            "answer": "No, traemos todos los suministros y equipos necesarios."
+          },
+          {
+            "question": "¿Ofrecen limpieza profunda?",
+            "answer": "Sí, ofrecemos servicios de limpieza profunda y mudanza."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Carmen Ruiz",
+            "text": "Mi casa nunca ha estado tan limpia. El equipo es increíble y muy profesional.",
+            "location": "San Diego, CA"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Listo Para un Espacio Más Limpio?",
+        "subtitle": "Obtén tu cotización de limpieza hoy",
+        "button": "Obtener Cotización"
+      },
+      "form": {
+        "title": "Obtén Tu Cotización de Limpieza",
+        "subtitle": "Cuéntanos sobre tus necesidades de limpieza"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Cotización Gratis"
+      }
     },
     "hvac": {
-      "meta": { "title": "Servicios de HVAC | Calefacción y Aire Acondicionado", "description": "Técnicos de HVAC expertos para instalación, reparación y mantenimiento." },
-      "hero": { "headline": "Confort en Cada Temporada", "subheadline": "Técnicos de HVAC certificados manteniendo tu hogar a la temperatura perfecta todo el año." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios de HVAC?", "items": [
-        { "title": "Técnicos Certificados", "description": "Profesionales de HVAC licenciados y con experiencia." },
-        { "title": "Servicio 24/7", "description": "Reparaciones de emergencia disponibles día y noche." },
-        { "title": "Eficiencia Energética", "description": "Soluciones que reducen tus facturas de energía." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Con qué frecuencia debo dar servicio a mi HVAC?", "answer": "Recomendamos mantenimiento dos veces al año, primavera y otoño." },
-        { "question": "¿Cuánto dura un sistema HVAC?", "answer": "Con mantenimiento adecuado, típicamente 15-25 años." },
-        { "question": "¿Ofrecen financiamiento para nuevos sistemas?", "answer": "Sí, ofrecemos opciones de financiamiento flexibles." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "José Martínez", "text": "Servicio excelente y rápido. Repararon nuestro AC el mismo día.", "location": "Las Vegas, NV" }]},
-      "cta": { "title": "¿Necesitas Servicio de HVAC?", "subtitle": "Agenda tu diagnóstico gratuito hoy", "button": "Agendar Servicio" },
-      "form": { "title": "Agenda Tu Servicio de HVAC", "subtitle": "Diagnóstico gratuito para tu sistema" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Diagnóstico Gratis" }
+      "meta": {
+        "title": "Servicios de HVAC | Calefacción y Aire Acondicionado",
+        "description": "Técnicos de HVAC expertos para instalación, reparación y mantenimiento."
+      },
+      "hero": {
+        "headline": "Confort en Cada Temporada",
+        "subheadline": "Técnicos de HVAC certificados manteniendo tu hogar a la temperatura perfecta todo el año."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios de HVAC?",
+        "items": [
+          {
+            "title": "Técnicos Certificados",
+            "description": "Profesionales de HVAC licenciados y con experiencia."
+          },
+          {
+            "title": "Servicio 24/7",
+            "description": "Reparaciones de emergencia disponibles día y noche."
+          },
+          {
+            "title": "Eficiencia Energética",
+            "description": "Soluciones que reducen tus facturas de energía."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Con qué frecuencia debo dar servicio a mi HVAC?",
+            "answer": "Recomendamos mantenimiento dos veces al año, primavera y otoño."
+          },
+          {
+            "question": "¿Cuánto dura un sistema HVAC?",
+            "answer": "Con mantenimiento adecuado, típicamente 15-25 años."
+          },
+          {
+            "question": "¿Ofrecen financiamiento para nuevos sistemas?",
+            "answer": "Sí, ofrecemos opciones de financiamiento flexibles."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "José Martínez",
+            "text": "Servicio excelente y rápido. Repararon nuestro AC el mismo día.",
+            "location": "Las Vegas, NV"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Necesitas Servicio de HVAC?",
+        "subtitle": "Agenda tu diagnóstico gratuito hoy",
+        "button": "Agendar Servicio"
+      },
+      "form": {
+        "title": "Agenda Tu Servicio de HVAC",
+        "subtitle": "Diagnóstico gratuito para tu sistema"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Diagnóstico Gratis"
+      }
     },
     "plumbing": {
-      "meta": { "title": "Servicios de Plomería | Reparaciones y Emergencias 24/7", "description": "Plomeros licenciados para reparaciones, instalaciones y emergencias de plomería." },
-      "hero": { "headline": "Soluciones de Plomería Confiables", "subheadline": "Plomeros licenciados disponibles 24/7 para todas tus necesidades de plomería." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios de Plomería?", "items": [
-        { "title": "Disponibilidad 24/7", "description": "Servicio de emergencia cuando más lo necesitas." },
-        { "title": "Precios Fijos", "description": "Conoce el precio antes de que comience el trabajo." },
-        { "title": "Trabajo Garantizado", "description": "Respaldamos toda nuestra mano de obra." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Ofrecen servicio de emergencia?", "answer": "Sí, tenemos plomeros disponibles 24/7 para emergencias." },
-        { "question": "¿Cuánto cuesta una llamada de servicio?", "answer": "Ofrecemos diagnósticos gratuitos con cualquier reparación." },
-        { "question": "¿Trabajan en casas antiguas?", "answer": "Sí, tenemos experiencia con todo tipo de sistemas de plomería." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Ricardo Gómez", "text": "Llegaron rápido y arreglaron la fuga inmediatamente. Muy profesionales.", "location": "Chicago, IL" }]},
-      "cta": { "title": "¿Problema de Plomería?", "subtitle": "Obtén ayuda de un plomero experto ahora", "button": "Llamar Plomero" },
-      "form": { "title": "Obtén Ayuda de Plomería", "subtitle": "Describe tu problema de plomería" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Diagnóstico Gratis" }
+      "meta": {
+        "title": "Servicios de Plomería | Reparaciones y Emergencias 24/7",
+        "description": "Plomeros licenciados para reparaciones, instalaciones y emergencias de plomería."
+      },
+      "hero": {
+        "headline": "Soluciones de Plomería Confiables",
+        "subheadline": "Plomeros licenciados disponibles 24/7 para todas tus necesidades de plomería."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios de Plomería?",
+        "items": [
+          {
+            "title": "Disponibilidad 24/7",
+            "description": "Servicio de emergencia cuando más lo necesitas."
+          },
+          {
+            "title": "Precios Fijos",
+            "description": "Conoce el precio antes de que comience el trabajo."
+          },
+          {
+            "title": "Trabajo Garantizado",
+            "description": "Respaldamos toda nuestra mano de obra."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Ofrecen servicio de emergencia?",
+            "answer": "Sí, tenemos plomeros disponibles 24/7 para emergencias."
+          },
+          {
+            "question": "¿Cuánto cuesta una llamada de servicio?",
+            "answer": "Ofrecemos diagnósticos gratuitos con cualquier reparación."
+          },
+          {
+            "question": "¿Trabajan en casas antiguas?",
+            "answer": "Sí, tenemos experiencia con todo tipo de sistemas de plomería."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Ricardo Gómez",
+            "text": "Llegaron rápido y arreglaron la fuga inmediatamente. Muy profesionales.",
+            "location": "Chicago, IL"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Problema de Plomería?",
+        "subtitle": "Obtén ayuda de un plomero experto ahora",
+        "button": "Llamar Plomero"
+      },
+      "form": {
+        "title": "Obtén Ayuda de Plomería",
+        "subtitle": "Describe tu problema de plomería"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Diagnóstico Gratis"
+      }
     },
     "electrician": {
-      "meta": { "title": "Servicios Eléctricos | Electricistas Licenciados", "description": "Electricistas certificados para instalaciones, reparaciones y actualizaciones eléctricas." },
-      "hero": { "headline": "Soluciones Eléctricas Seguras", "subheadline": "Electricistas licenciados proporcionando servicio seguro y confiable para tu hogar o negocio." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios Eléctricos?", "items": [
-        { "title": "Licenciados y Asegurados", "description": "Todos los electricistas están completamente certificados." },
-        { "title": "La Seguridad Primero", "description": "Cumplimos con todos los códigos eléctricos locales." },
-        { "title": "Precios Honestos", "description": "Estimaciones claras sin cargos ocultos." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Cuándo debo actualizar mi panel eléctrico?", "answer": "Si tu casa tiene más de 25 años o experimentas problemas frecuentes." },
-        { "question": "¿Pueden instalar cargadores de vehículos eléctricos?", "answer": "Sí, somos expertos en instalación de estaciones de carga." },
-        { "question": "¿Manejan emergencias eléctricas?", "answer": "Sí, ofrecemos servicio de emergencia 24/7." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Eduardo Reyes", "text": "Actualizaron todo el sistema eléctrico de nuestra casa. Trabajo impecable.", "location": "Seattle, WA" }]},
-      "cta": { "title": "¿Necesitas un Electricista?", "subtitle": "Obtén servicio eléctrico profesional hoy", "button": "Contactar Electricista" },
-      "form": { "title": "Contacta a un Electricista", "subtitle": "Describe tu necesidad eléctrica" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Estimación Gratis" }
+      "meta": {
+        "title": "Servicios Eléctricos | Electricistas Licenciados",
+        "description": "Electricistas certificados para instalaciones, reparaciones y actualizaciones eléctricas."
+      },
+      "hero": {
+        "headline": "Soluciones Eléctricas Seguras",
+        "subheadline": "Electricistas licenciados proporcionando servicio seguro y confiable para tu hogar o negocio."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios Eléctricos?",
+        "items": [
+          {
+            "title": "Licenciados y Asegurados",
+            "description": "Todos los electricistas están completamente certificados."
+          },
+          {
+            "title": "La Seguridad Primero",
+            "description": "Cumplimos con todos los códigos eléctricos locales."
+          },
+          { "title": "Precios Honestos", "description": "Estimaciones claras sin cargos ocultos." }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Cuándo debo actualizar mi panel eléctrico?",
+            "answer": "Si tu casa tiene más de 25 años o experimentas problemas frecuentes."
+          },
+          {
+            "question": "¿Pueden instalar cargadores de vehículos eléctricos?",
+            "answer": "Sí, somos expertos en instalación de estaciones de carga."
+          },
+          {
+            "question": "¿Manejan emergencias eléctricas?",
+            "answer": "Sí, ofrecemos servicio de emergencia 24/7."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Eduardo Reyes",
+            "text": "Actualizaron todo el sistema eléctrico de nuestra casa. Trabajo impecable.",
+            "location": "Seattle, WA"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Necesitas un Electricista?",
+        "subtitle": "Obtén servicio eléctrico profesional hoy",
+        "button": "Contactar Electricista"
+      },
+      "form": {
+        "title": "Contacta a un Electricista",
+        "subtitle": "Describe tu necesidad eléctrica"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Estimación Gratis"
+      }
     },
     "pest-control": {
-      "meta": { "title": "Control de Plagas | Eliminación de Insectos y Roedores", "description": "Servicios profesionales de control de plagas para hogares y negocios." },
-      "hero": { "headline": "Mantén Tu Hogar Libre de Plagas", "subheadline": "Servicios expertos de control de plagas que eliminan visitantes no deseados de forma segura." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios de Control de Plagas?", "items": [
-        { "title": "Tratamientos Efectivos", "description": "Métodos comprobados que eliminan plagas de raíz." },
-        { "title": "Seguro para Familias", "description": "Tratamientos seguros para niños y mascotas." },
-        { "title": "Prevención a Largo Plazo", "description": "No solo eliminamos, prevenimos futuras infestaciones." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Son seguros los tratamientos para mascotas?", "answer": "Sí, usamos productos seguros para familias y mascotas." },
-        { "question": "¿Cuánto tiempo toma el tratamiento?", "answer": "La mayoría de los tratamientos toman 1-2 horas." },
-        { "question": "¿Ofrecen planes de mantenimiento?", "answer": "Sí, ofrecemos planes mensuales, trimestrales y anuales." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Sofía Hernández", "text": "Finalmente libres de cucarachas. El servicio fue rápido y efectivo.", "location": "Tampa, FL" }]},
-      "cta": { "title": "¿Problemas con Plagas?", "subtitle": "Obtén una inspección gratuita hoy", "button": "Programar Inspección" },
-      "form": { "title": "Programa Tu Inspección", "subtitle": "Cuéntanos sobre tu problema de plagas" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Inspección Gratis" }
+      "meta": {
+        "title": "Control de Plagas | Eliminación de Insectos y Roedores",
+        "description": "Servicios profesionales de control de plagas para hogares y negocios."
+      },
+      "hero": {
+        "headline": "Mantén Tu Hogar Libre de Plagas",
+        "subheadline": "Servicios expertos de control de plagas que eliminan visitantes no deseados de forma segura."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios de Control de Plagas?",
+        "items": [
+          {
+            "title": "Tratamientos Efectivos",
+            "description": "Métodos comprobados que eliminan plagas de raíz."
+          },
+          {
+            "title": "Seguro para Familias",
+            "description": "Tratamientos seguros para niños y mascotas."
+          },
+          {
+            "title": "Prevención a Largo Plazo",
+            "description": "No solo eliminamos, prevenimos futuras infestaciones."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Son seguros los tratamientos para mascotas?",
+            "answer": "Sí, usamos productos seguros para familias y mascotas."
+          },
+          {
+            "question": "¿Cuánto tiempo toma el tratamiento?",
+            "answer": "La mayoría de los tratamientos toman 1-2 horas."
+          },
+          {
+            "question": "¿Ofrecen planes de mantenimiento?",
+            "answer": "Sí, ofrecemos planes mensuales, trimestrales y anuales."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Sofía Hernández",
+            "text": "Finalmente libres de cucarachas. El servicio fue rápido y efectivo.",
+            "location": "Tampa, FL"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Problemas con Plagas?",
+        "subtitle": "Obtén una inspección gratuita hoy",
+        "button": "Programar Inspección"
+      },
+      "form": {
+        "title": "Programa Tu Inspección",
+        "subtitle": "Cuéntanos sobre tu problema de plagas"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Inspección Gratis"
+      }
     },
     "landscaping": {
-      "meta": { "title": "Servicios de Jardinería y Paisajismo | Diseño de Jardines", "description": "Diseño y mantenimiento de jardines profesional para espacios exteriores hermosos." },
-      "hero": { "headline": "Transforma Tu Espacio Exterior", "subheadline": "Servicios de paisajismo profesional que crean espacios exteriores impresionantes." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios de Paisajismo?", "items": [
-        { "title": "Diseño Personalizado", "description": "Paisajes únicos diseñados para tu propiedad." },
-        { "title": "Mantenimiento Completo", "description": "Desde poda hasta riego, lo manejamos todo." },
-        { "title": "Plantas Nativas", "description": "Usamos plantas que prosperan en tu clima local." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Ofrecen servicios de diseño?", "answer": "Sí, nuestros diseñadores crean planes personalizados para tu propiedad." },
-        { "question": "¿Cuánto cuesta el mantenimiento mensual?", "answer": "Depende del tamaño, típicamente desde $150-500 mensuales." },
-        { "question": "¿Instalan sistemas de riego?", "answer": "Sí, diseñamos e instalamos sistemas de riego eficientes." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "María Torres", "text": "Nuestro jardín se ve increíble. El mejor trabajo de paisajismo que hemos visto.", "location": "Phoenix, AZ" }]},
-      "cta": { "title": "¿Listo Para un Jardín Hermoso?", "subtitle": "Obtén tu consulta de diseño gratis", "button": "Consulta Gratis" },
-      "form": { "title": "Obtén Tu Consulta de Paisajismo", "subtitle": "Cuéntanos sobre tu visión para tu jardín" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Consulta Gratis" }
+      "meta": {
+        "title": "Servicios de Jardinería y Paisajismo | Diseño de Jardines",
+        "description": "Diseño y mantenimiento de jardines profesional para espacios exteriores hermosos."
+      },
+      "hero": {
+        "headline": "Transforma Tu Espacio Exterior",
+        "subheadline": "Servicios de paisajismo profesional que crean espacios exteriores impresionantes."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios de Paisajismo?",
+        "items": [
+          {
+            "title": "Diseño Personalizado",
+            "description": "Paisajes únicos diseñados para tu propiedad."
+          },
+          {
+            "title": "Mantenimiento Completo",
+            "description": "Desde poda hasta riego, lo manejamos todo."
+          },
+          {
+            "title": "Plantas Nativas",
+            "description": "Usamos plantas que prosperan en tu clima local."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Ofrecen servicios de diseño?",
+            "answer": "Sí, nuestros diseñadores crean planes personalizados para tu propiedad."
+          },
+          {
+            "question": "¿Cuánto cuesta el mantenimiento mensual?",
+            "answer": "Depende del tamaño, típicamente desde $150-500 mensuales."
+          },
+          {
+            "question": "¿Instalan sistemas de riego?",
+            "answer": "Sí, diseñamos e instalamos sistemas de riego eficientes."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "María Torres",
+            "text": "Nuestro jardín se ve increíble. El mejor trabajo de paisajismo que hemos visto.",
+            "location": "Phoenix, AZ"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Listo Para un Jardín Hermoso?",
+        "subtitle": "Obtén tu consulta de diseño gratis",
+        "button": "Consulta Gratis"
+      },
+      "form": {
+        "title": "Obtén Tu Consulta de Paisajismo",
+        "subtitle": "Cuéntanos sobre tu visión para tu jardín"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Consulta Gratis"
+      }
     },
     "pool-service": {
-      "meta": { "title": "Servicios de Piscina | Mantenimiento y Reparación", "description": "Mantenimiento profesional de piscinas, reparaciones y servicios de limpieza." },
-      "hero": { "headline": "Mantén Tu Piscina Perfecta", "subheadline": "Servicios profesionales de piscina para agua cristalina todo el año." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios de Piscina?", "items": [
-        { "title": "Técnicos Certificados", "description": "Expertos en todo tipo de piscinas y equipos." },
-        { "title": "Servicio Regular", "description": "Planes de mantenimiento semanal o quincenal." },
-        { "title": "Reparaciones Expertas", "description": "Arreglamos bombas, filtros y más." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Con qué frecuencia necesito servicio?", "answer": "Recomendamos mantenimiento semanal para piscinas activas." },
-        { "question": "¿Qué incluye el servicio básico?", "answer": "Limpieza, balance químico, vaciado de canastas y revisión de equipos." },
-        { "question": "¿Pueden abrir/cerrar mi piscina por temporada?", "answer": "Sí, ofrecemos servicios de apertura y cierre estacional." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Luis Jiménez", "text": "Mi piscina nunca ha estado tan limpia. Servicio confiable cada semana.", "location": "Orlando, FL" }]},
-      "cta": { "title": "¿Listo Para una Piscina Perfecta?", "subtitle": "Obtén tu evaluación de piscina gratis", "button": "Programar Servicio" },
-      "form": { "title": "Programa Tu Servicio de Piscina", "subtitle": "Cuéntanos sobre tu piscina" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Evaluación Gratis" }
+      "meta": {
+        "title": "Servicios de Piscina | Mantenimiento y Reparación",
+        "description": "Mantenimiento profesional de piscinas, reparaciones y servicios de limpieza."
+      },
+      "hero": {
+        "headline": "Mantén Tu Piscina Perfecta",
+        "subheadline": "Servicios profesionales de piscina para agua cristalina todo el año."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios de Piscina?",
+        "items": [
+          {
+            "title": "Técnicos Certificados",
+            "description": "Expertos en todo tipo de piscinas y equipos."
+          },
+          {
+            "title": "Servicio Regular",
+            "description": "Planes de mantenimiento semanal o quincenal."
+          },
+          { "title": "Reparaciones Expertas", "description": "Arreglamos bombas, filtros y más." }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Con qué frecuencia necesito servicio?",
+            "answer": "Recomendamos mantenimiento semanal para piscinas activas."
+          },
+          {
+            "question": "¿Qué incluye el servicio básico?",
+            "answer": "Limpieza, balance químico, vaciado de canastas y revisión de equipos."
+          },
+          {
+            "question": "¿Pueden abrir/cerrar mi piscina por temporada?",
+            "answer": "Sí, ofrecemos servicios de apertura y cierre estacional."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Luis Jiménez",
+            "text": "Mi piscina nunca ha estado tan limpia. Servicio confiable cada semana.",
+            "location": "Orlando, FL"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Listo Para una Piscina Perfecta?",
+        "subtitle": "Obtén tu evaluación de piscina gratis",
+        "button": "Programar Servicio"
+      },
+      "form": {
+        "title": "Programa Tu Servicio de Piscina",
+        "subtitle": "Cuéntanos sobre tu piscina"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Evaluación Gratis"
+      }
     },
     "home-remodeling": {
-      "meta": { "title": "Remodelación del Hogar | Renovaciones y Mejoras", "description": "Servicios completos de remodelación para cocinas, baños y toda la casa." },
-      "hero": { "headline": "Reinventa Tu Espacio", "subheadline": "Contratistas expertos de remodelación transformando tu visión en realidad." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios de Remodelación?", "items": [
-        { "title": "Diseño y Construcción", "description": "Servicio completo desde el concepto hasta la finalización." },
-        { "title": "Artesanía de Calidad", "description": "Atención al detalle en cada proyecto." },
-        { "title": "Gestión de Proyecto", "description": "Un punto de contacto para toda la renovación." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Cuánto cuesta remodelar una cocina?", "answer": "Típicamente $15,000-75,000 dependiendo del alcance." },
-        { "question": "¿Cuánto tiempo toma una remodelación de baño?", "answer": "Una remodelación completa usualmente toma 2-4 semanas." },
-        { "question": "¿Necesito mudarme durante la remodelación?", "answer": "Generalmente no, pero depende del alcance del proyecto." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Andrea Morales", "text": "Nuestra nueva cocina es hermosa. El equipo fue profesional y limpio.", "location": "San Francisco, CA" }]},
-      "cta": { "title": "¿Listo Para Remodelar?", "subtitle": "Obtén tu consulta de diseño gratis", "button": "Consulta Gratis" },
-      "form": { "title": "Comienza Tu Remodelación", "subtitle": "Cuéntanos sobre tu proyecto de renovación" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Consulta Gratis" }
+      "meta": {
+        "title": "Remodelación del Hogar | Renovaciones y Mejoras",
+        "description": "Servicios completos de remodelación para cocinas, baños y toda la casa."
+      },
+      "hero": {
+        "headline": "Reinventa Tu Espacio",
+        "subheadline": "Contratistas expertos de remodelación transformando tu visión en realidad."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios de Remodelación?",
+        "items": [
+          {
+            "title": "Diseño y Construcción",
+            "description": "Servicio completo desde el concepto hasta la finalización."
+          },
+          {
+            "title": "Artesanía de Calidad",
+            "description": "Atención al detalle en cada proyecto."
+          },
+          {
+            "title": "Gestión de Proyecto",
+            "description": "Un punto de contacto para toda la renovación."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Cuánto cuesta remodelar una cocina?",
+            "answer": "Típicamente $15,000-75,000 dependiendo del alcance."
+          },
+          {
+            "question": "¿Cuánto tiempo toma una remodelación de baño?",
+            "answer": "Una remodelación completa usualmente toma 2-4 semanas."
+          },
+          {
+            "question": "¿Necesito mudarme durante la remodelación?",
+            "answer": "Generalmente no, pero depende del alcance del proyecto."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Andrea Morales",
+            "text": "Nuestra nueva cocina es hermosa. El equipo fue profesional y limpio.",
+            "location": "San Francisco, CA"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Listo Para Remodelar?",
+        "subtitle": "Obtén tu consulta de diseño gratis",
+        "button": "Consulta Gratis"
+      },
+      "form": {
+        "title": "Comienza Tu Remodelación",
+        "subtitle": "Cuéntanos sobre tu proyecto de renovación"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Consulta Gratis"
+      }
     },
     "solar": {
-      "meta": { "title": "Paneles Solares | Energía Limpia y Ahorro", "description": "Instalación de paneles solares para hogares y negocios. Reduce tu factura eléctrica." },
-      "hero": { "headline": "Energiza Tu Hogar Con el Sol", "subheadline": "Cambia a energía solar y comienza a ahorrar mientras ayudas al planeta." },
-      "benefits": { "title": "¿Por Qué Elegir Energía Solar?", "items": [
-        { "title": "Ahorra en Energía", "description": "Reduce drásticamente tus facturas eléctricas mensuales." },
-        { "title": "Incentivos Fiscales", "description": "Aprovecha créditos fiscales federales y estatales." },
-        { "title": "Aumenta el Valor", "description": "Los paneles solares aumentan el valor de tu propiedad." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Cuánto cuesta un sistema solar?", "answer": "Los sistemas residenciales típicamente cuestan $15,000-30,000 antes de incentivos." },
-        { "question": "¿Cuánto tiempo dura la instalación?", "answer": "La instalación típica toma 1-3 días." },
-        { "question": "¿Qué pasa en días nublados?", "answer": "Los paneles producen menos energía, pero aún generan electricidad." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Pablo Vargas", "text": "Mi factura eléctrica bajó un 80%. La inversión se paga sola.", "location": "San Jose, CA" }]},
-      "cta": { "title": "¿Listo Para Ir Solar?", "subtitle": "Obtén tu análisis solar gratuito", "button": "Análisis Gratis" },
-      "form": { "title": "Obtén Tu Análisis Solar Gratis", "subtitle": "Descubre cuánto puedes ahorrar" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Análisis Gratis" }
+      "meta": {
+        "title": "Paneles Solares | Energía Limpia y Ahorro",
+        "description": "Instalación de paneles solares para hogares y negocios. Reduce tu factura eléctrica."
+      },
+      "hero": {
+        "headline": "Energiza Tu Hogar Con el Sol",
+        "subheadline": "Cambia a energía solar y comienza a ahorrar mientras ayudas al planeta."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Energía Solar?",
+        "items": [
+          {
+            "title": "Ahorra en Energía",
+            "description": "Reduce drásticamente tus facturas eléctricas mensuales."
+          },
+          {
+            "title": "Incentivos Fiscales",
+            "description": "Aprovecha créditos fiscales federales y estatales."
+          },
+          {
+            "title": "Aumenta el Valor",
+            "description": "Los paneles solares aumentan el valor de tu propiedad."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Cuánto cuesta un sistema solar?",
+            "answer": "Los sistemas residenciales típicamente cuestan $15,000-30,000 antes de incentivos."
+          },
+          {
+            "question": "¿Cuánto tiempo dura la instalación?",
+            "answer": "La instalación típica toma 1-3 días."
+          },
+          {
+            "question": "¿Qué pasa en días nublados?",
+            "answer": "Los paneles producen menos energía, pero aún generan electricidad."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Pablo Vargas",
+            "text": "Mi factura eléctrica bajó un 80%. La inversión se paga sola.",
+            "location": "San Jose, CA"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Listo Para Ir Solar?",
+        "subtitle": "Obtén tu análisis solar gratuito",
+        "button": "Análisis Gratis"
+      },
+      "form": {
+        "title": "Obtén Tu Análisis Solar Gratis",
+        "subtitle": "Descubre cuánto puedes ahorrar"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Análisis Gratis"
+      }
     },
     "locksmith": {
-      "meta": { "title": "Cerrajero 24/7 | Servicios de Emergencia", "description": "Cerrajeros profesionales disponibles 24/7 para emergencias y servicios regulares." },
-      "hero": { "headline": "Soluciones de Cerrajería Rápidas", "subheadline": "Cerrajeros profesionales disponibles 24/7 para emergencias y servicios programados." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios de Cerrajería?", "items": [
-        { "title": "Disponibilidad 24/7", "description": "Servicio de emergencia a cualquier hora, cualquier día." },
-        { "title": "Respuesta Rápida", "description": "Llegamos en 30 minutos o menos." },
-        { "title": "Precios Honestos", "description": "Sin cargos ocultos ni sorpresas." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Pueden abrir mi auto si dejé las llaves adentro?", "answer": "Sí, manejamos todo tipo de bloqueos de vehículos." },
-        { "question": "¿Cambian cerraduras el mismo día?", "answer": "Sí, ofrecemos reemplazo de cerraduras el mismo día." },
-        { "question": "¿Instalan cerraduras inteligentes?", "answer": "Sí, instalamos todo tipo de cerraduras electrónicas." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Diana Castillo", "text": "Me quedé fuera a medianoche y llegaron en 20 minutos. Salvadores!", "location": "Atlanta, GA" }]},
-      "cta": { "title": "¿Necesitas un Cerrajero?", "subtitle": "Obtén ayuda inmediata ahora", "button": "Llamar Ahora" },
-      "form": { "title": "Contacta a un Cerrajero", "subtitle": "Describe tu situación de emergencia" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Estimación Gratis" }
+      "meta": {
+        "title": "Cerrajero 24/7 | Servicios de Emergencia",
+        "description": "Cerrajeros profesionales disponibles 24/7 para emergencias y servicios regulares."
+      },
+      "hero": {
+        "headline": "Soluciones de Cerrajería Rápidas",
+        "subheadline": "Cerrajeros profesionales disponibles 24/7 para emergencias y servicios programados."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios de Cerrajería?",
+        "items": [
+          {
+            "title": "Disponibilidad 24/7",
+            "description": "Servicio de emergencia a cualquier hora, cualquier día."
+          },
+          { "title": "Respuesta Rápida", "description": "Llegamos en 30 minutos o menos." },
+          { "title": "Precios Honestos", "description": "Sin cargos ocultos ni sorpresas." }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Pueden abrir mi auto si dejé las llaves adentro?",
+            "answer": "Sí, manejamos todo tipo de bloqueos de vehículos."
+          },
+          {
+            "question": "¿Cambian cerraduras el mismo día?",
+            "answer": "Sí, ofrecemos reemplazo de cerraduras el mismo día."
+          },
+          {
+            "question": "¿Instalan cerraduras inteligentes?",
+            "answer": "Sí, instalamos todo tipo de cerraduras electrónicas."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Diana Castillo",
+            "text": "Me quedé fuera a medianoche y llegaron en 20 minutos. Salvadores!",
+            "location": "Atlanta, GA"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Necesitas un Cerrajero?",
+        "subtitle": "Obtén ayuda inmediata ahora",
+        "button": "Llamar Ahora"
+      },
+      "form": {
+        "title": "Contacta a un Cerrajero",
+        "subtitle": "Describe tu situación de emergencia"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Estimación Gratis"
+      }
     },
     "pressure-washing": {
-      "meta": { "title": "Lavado a Presión | Limpieza Exterior Profesional", "description": "Servicios de lavado a presión para casas, patios, entradas y más." },
-      "hero": { "headline": "Renueva Tus Superficies Exteriores", "subheadline": "Lavado a presión profesional que restaura el brillo de tu propiedad." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios de Lavado a Presión?", "items": [
-        { "title": "Equipo Profesional", "description": "Equipos comerciales para resultados superiores." },
-        { "title": "Seguro para Superficies", "description": "Técnicas apropiadas para cada material." },
-        { "title": "Resultados Garantizados", "description": "Satisfacción garantizada en cada trabajo." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Es seguro para mi casa?", "answer": "Sí, ajustamos la presión según la superficie." },
-        { "question": "¿Con qué frecuencia debo lavar mi casa?", "answer": "Recomendamos anualmente o según necesidad." },
-        { "question": "¿Limpian techos?", "answer": "Sí, usamos técnicas de lavado suave para techos." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Jorge Mendez", "text": "Mi entrada parecía nueva después del lavado. Increíble diferencia!", "location": "Charlotte, NC" }]},
-      "cta": { "title": "¿Listo Para una Limpieza Profunda?", "subtitle": "Obtén tu cotización de lavado a presión", "button": "Cotización Gratis" },
-      "form": { "title": "Obtén Tu Cotización de Lavado", "subtitle": "Cuéntanos qué áreas necesitan limpieza" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Cotización Gratis" }
+      "meta": {
+        "title": "Lavado a Presión | Limpieza Exterior Profesional",
+        "description": "Servicios de lavado a presión para casas, patios, entradas y más."
+      },
+      "hero": {
+        "headline": "Renueva Tus Superficies Exteriores",
+        "subheadline": "Lavado a presión profesional que restaura el brillo de tu propiedad."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios de Lavado a Presión?",
+        "items": [
+          {
+            "title": "Equipo Profesional",
+            "description": "Equipos comerciales para resultados superiores."
+          },
+          {
+            "title": "Seguro para Superficies",
+            "description": "Técnicas apropiadas para cada material."
+          },
+          {
+            "title": "Resultados Garantizados",
+            "description": "Satisfacción garantizada en cada trabajo."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Es seguro para mi casa?",
+            "answer": "Sí, ajustamos la presión según la superficie."
+          },
+          {
+            "question": "¿Con qué frecuencia debo lavar mi casa?",
+            "answer": "Recomendamos anualmente o según necesidad."
+          },
+          {
+            "question": "¿Limpian techos?",
+            "answer": "Sí, usamos técnicas de lavado suave para techos."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Jorge Mendez",
+            "text": "Mi entrada parecía nueva después del lavado. Increíble diferencia!",
+            "location": "Charlotte, NC"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Listo Para una Limpieza Profunda?",
+        "subtitle": "Obtén tu cotización de lavado a presión",
+        "button": "Cotización Gratis"
+      },
+      "form": {
+        "title": "Obtén Tu Cotización de Lavado",
+        "subtitle": "Cuéntanos qué áreas necesitan limpieza"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Cotización Gratis"
+      }
     },
     "water-damage-restoration": {
-      "meta": { "title": "Restauración de Daños por Agua | Emergencia 24/7", "description": "Servicios de restauración de daños por agua disponibles 24/7. Extracción, secado y reparación." },
-      "hero": { "headline": "Restauración Rápida de Daños por Agua", "subheadline": "Respuesta de emergencia 24/7 para minimizar daños y restaurar tu propiedad." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios de Restauración?", "items": [
-        { "title": "Respuesta de Emergencia", "description": "Llegamos en menos de una hora a cualquier hora." },
-        { "title": "Equipo Avanzado", "description": "Tecnología de secado industrial de última generación." },
-        { "title": "Asistencia con Seguros", "description": "Trabajamos directamente con tu aseguradora." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Cuánto tiempo toma el secado?", "answer": "Típicamente 3-5 días dependiendo de la severidad." },
-        { "question": "¿Trabajan con seguros?", "answer": "Sí, manejamos toda la documentación del seguro." },
-        { "question": "¿Pueden prevenir el moho?", "answer": "Sí, el secado rápido y tratamientos previenen el crecimiento de moho." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Claudia Vega", "text": "Llegaron a las 2am cuando se rompió nuestra tubería. Salvaron nuestros pisos.", "location": "Houston, TX" }]},
-      "cta": { "title": "¿Daños por Agua?", "subtitle": "Obtén ayuda de emergencia ahora", "button": "Emergencia 24/7" },
-      "form": { "title": "Reporta Tu Emergencia", "subtitle": "Describe la situación de daños por agua" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Inmediata", "free": "Evaluación Gratis" }
+      "meta": {
+        "title": "Restauración de Daños por Agua | Emergencia 24/7",
+        "description": "Servicios de restauración de daños por agua disponibles 24/7. Extracción, secado y reparación."
+      },
+      "hero": {
+        "headline": "Restauración Rápida de Daños por Agua",
+        "subheadline": "Respuesta de emergencia 24/7 para minimizar daños y restaurar tu propiedad."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios de Restauración?",
+        "items": [
+          {
+            "title": "Respuesta de Emergencia",
+            "description": "Llegamos en menos de una hora a cualquier hora."
+          },
+          {
+            "title": "Equipo Avanzado",
+            "description": "Tecnología de secado industrial de última generación."
+          },
+          {
+            "title": "Asistencia con Seguros",
+            "description": "Trabajamos directamente con tu aseguradora."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Cuánto tiempo toma el secado?",
+            "answer": "Típicamente 3-5 días dependiendo de la severidad."
+          },
+          {
+            "question": "¿Trabajan con seguros?",
+            "answer": "Sí, manejamos toda la documentación del seguro."
+          },
+          {
+            "question": "¿Pueden prevenir el moho?",
+            "answer": "Sí, el secado rápido y tratamientos previenen el crecimiento de moho."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Claudia Vega",
+            "text": "Llegaron a las 2am cuando se rompió nuestra tubería. Salvaron nuestros pisos.",
+            "location": "Houston, TX"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Daños por Agua?",
+        "subtitle": "Obtén ayuda de emergencia ahora",
+        "button": "Emergencia 24/7"
+      },
+      "form": {
+        "title": "Reporta Tu Emergencia",
+        "subtitle": "Describe la situación de daños por agua"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Inmediata",
+        "free": "Evaluación Gratis"
+      }
     },
     "mold-remediation": {
-      "meta": { "title": "Eliminación de Moho | Inspección y Remediación", "description": "Servicios profesionales de eliminación de moho para hogares y negocios seguros." },
-      "hero": { "headline": "Elimina el Moho de Forma Segura", "subheadline": "Especialistas certificados en remediación de moho protegiendo tu salud y propiedad." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios de Remediación?", "items": [
-        { "title": "Técnicos Certificados", "description": "Especialistas certificados en remediación de moho." },
-        { "title": "Protocolo Completo", "description": "Seguimos los estándares de la industria EPA/IICRC." },
-        { "title": "Prevención Futura", "description": "Abordamos las causas raíz para prevenir recurrencia." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Es peligroso el moho?", "answer": "Algunos tipos pueden causar problemas de salud, especialmente respiratorios." },
-        { "question": "¿Cuánto tiempo toma la remediación?", "answer": "Típicamente 1-5 días dependiendo del tamaño del área afectada." },
-        { "question": "¿Ofrecen pruebas de moho?", "answer": "Sí, realizamos pruebas de aire y superficies." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Alberto Rojas", "text": "Profesionales y meticulosos. El moho se eliminó completamente.", "location": "Miami, FL" }]},
-      "cta": { "title": "¿Preocupado por el Moho?", "subtitle": "Obtén tu inspección de moho hoy", "button": "Inspección Gratis" },
-      "form": { "title": "Programa Tu Inspección de Moho", "subtitle": "Cuéntanos sobre tu preocupación de moho" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Inspección Gratis" }
+      "meta": {
+        "title": "Eliminación de Moho | Inspección y Remediación",
+        "description": "Servicios profesionales de eliminación de moho para hogares y negocios seguros."
+      },
+      "hero": {
+        "headline": "Elimina el Moho de Forma Segura",
+        "subheadline": "Especialistas certificados en remediación de moho protegiendo tu salud y propiedad."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios de Remediación?",
+        "items": [
+          {
+            "title": "Técnicos Certificados",
+            "description": "Especialistas certificados en remediación de moho."
+          },
+          {
+            "title": "Protocolo Completo",
+            "description": "Seguimos los estándares de la industria EPA/IICRC."
+          },
+          {
+            "title": "Prevención Futura",
+            "description": "Abordamos las causas raíz para prevenir recurrencia."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Es peligroso el moho?",
+            "answer": "Algunos tipos pueden causar problemas de salud, especialmente respiratorios."
+          },
+          {
+            "question": "¿Cuánto tiempo toma la remediación?",
+            "answer": "Típicamente 1-5 días dependiendo del tamaño del área afectada."
+          },
+          {
+            "question": "¿Ofrecen pruebas de moho?",
+            "answer": "Sí, realizamos pruebas de aire y superficies."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Alberto Rojas",
+            "text": "Profesionales y meticulosos. El moho se eliminó completamente.",
+            "location": "Miami, FL"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Preocupado por el Moho?",
+        "subtitle": "Obtén tu inspección de moho hoy",
+        "button": "Inspección Gratis"
+      },
+      "form": {
+        "title": "Programa Tu Inspección de Moho",
+        "subtitle": "Cuéntanos sobre tu preocupación de moho"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Inspección Gratis"
+      }
     },
     "flooring": {
-      "meta": { "title": "Instalación de Pisos | Madera, Azulejo y Más", "description": "Servicios profesionales de instalación de pisos para todos los tipos y materiales." },
-      "hero": { "headline": "Pisos Hermosos Para Tu Hogar", "subheadline": "Instaladores expertos de pisos ofreciendo artesanía de calidad para cada habitación." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios de Pisos?", "items": [
-        { "title": "Amplia Selección", "description": "Madera, azulejo, vinilo, alfombra y más." },
-        { "title": "Instalación Experta", "description": "Instaladores certificados con años de experiencia." },
-        { "title": "Garantía Incluida", "description": "Garantizamos nuestra mano de obra y materiales." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Cuánto tiempo toma la instalación?", "answer": "Típicamente 1-3 días para una habitación promedio." },
-        { "question": "¿Remueven el piso viejo?", "answer": "Sí, manejamos remoción y disposición del piso existente." },
-        { "question": "¿Qué tipo de piso es mejor para mí?", "answer": "Depende del uso, preferencias y presupuesto. Te asesoramos gratis." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Mónica Delgado", "text": "Nuestros pisos de madera quedaron perfectos. Trabajo impecable.", "location": "Denver, CO" }]},
-      "cta": { "title": "¿Listo Para Pisos Nuevos?", "subtitle": "Obtén tu estimación de pisos gratis", "button": "Estimación Gratis" },
-      "form": { "title": "Obtén Tu Estimación de Pisos", "subtitle": "Cuéntanos sobre tu proyecto de pisos" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Estimación Gratis" }
+      "meta": {
+        "title": "Instalación de Pisos | Madera, Azulejo y Más",
+        "description": "Servicios profesionales de instalación de pisos para todos los tipos y materiales."
+      },
+      "hero": {
+        "headline": "Pisos Hermosos Para Tu Hogar",
+        "subheadline": "Instaladores expertos de pisos ofreciendo artesanía de calidad para cada habitación."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios de Pisos?",
+        "items": [
+          {
+            "title": "Amplia Selección",
+            "description": "Madera, azulejo, vinilo, alfombra y más."
+          },
+          {
+            "title": "Instalación Experta",
+            "description": "Instaladores certificados con años de experiencia."
+          },
+          {
+            "title": "Garantía Incluida",
+            "description": "Garantizamos nuestra mano de obra y materiales."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Cuánto tiempo toma la instalación?",
+            "answer": "Típicamente 1-3 días para una habitación promedio."
+          },
+          {
+            "question": "¿Remueven el piso viejo?",
+            "answer": "Sí, manejamos remoción y disposición del piso existente."
+          },
+          {
+            "question": "¿Qué tipo de piso es mejor para mí?",
+            "answer": "Depende del uso, preferencias y presupuesto. Te asesoramos gratis."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Mónica Delgado",
+            "text": "Nuestros pisos de madera quedaron perfectos. Trabajo impecable.",
+            "location": "Denver, CO"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Listo Para Pisos Nuevos?",
+        "subtitle": "Obtén tu estimación de pisos gratis",
+        "button": "Estimación Gratis"
+      },
+      "form": {
+        "title": "Obtén Tu Estimación de Pisos",
+        "subtitle": "Cuéntanos sobre tu proyecto de pisos"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Estimación Gratis"
+      }
     },
     "painting": {
-      "meta": { "title": "Servicios de Pintura | Interior y Exterior", "description": "Pintores profesionales para proyectos residenciales y comerciales." },
-      "hero": { "headline": "Transforma Tu Espacio Con Color", "subheadline": "Pintores profesionales entregando acabados impecables para interiores y exteriores." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios de Pintura?", "items": [
-        { "title": "Pinturas Premium", "description": "Usamos solo pinturas de primera calidad." },
-        { "title": "Preparación Detallada", "description": "Preparación meticulosa para resultados duraderos." },
-        { "title": "Trabajo Limpio", "description": "Protegemos tus muebles y limpiamos al terminar." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Cuánto tiempo toma pintar una casa?", "answer": "Interior: 2-5 días. Exterior: 3-7 días dependiendo del tamaño." },
-        { "question": "¿Ayudan a elegir colores?", "answer": "Sí, ofrecemos consulta de colores gratuita." },
-        { "question": "¿Necesito mover mis muebles?", "answer": "No, nosotros movemos y cubrimos todo." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Carolina Paz", "text": "Transformaron nuestra casa completamente. Profesionales y limpios.", "location": "Austin, TX" }]},
-      "cta": { "title": "¿Listo Para un Nuevo Look?", "subtitle": "Obtén tu cotización de pintura gratis", "button": "Cotización Gratis" },
-      "form": { "title": "Obtén Tu Cotización de Pintura", "subtitle": "Cuéntanos sobre tu proyecto de pintura" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Cotización Gratis" }
+      "meta": {
+        "title": "Servicios de Pintura | Interior y Exterior",
+        "description": "Pintores profesionales para proyectos residenciales y comerciales."
+      },
+      "hero": {
+        "headline": "Transforma Tu Espacio Con Color",
+        "subheadline": "Pintores profesionales entregando acabados impecables para interiores y exteriores."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios de Pintura?",
+        "items": [
+          {
+            "title": "Pinturas Premium",
+            "description": "Usamos solo pinturas de primera calidad."
+          },
+          {
+            "title": "Preparación Detallada",
+            "description": "Preparación meticulosa para resultados duraderos."
+          },
+          {
+            "title": "Trabajo Limpio",
+            "description": "Protegemos tus muebles y limpiamos al terminar."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Cuánto tiempo toma pintar una casa?",
+            "answer": "Interior: 2-5 días. Exterior: 3-7 días dependiendo del tamaño."
+          },
+          {
+            "question": "¿Ayudan a elegir colores?",
+            "answer": "Sí, ofrecemos consulta de colores gratuita."
+          },
+          {
+            "question": "¿Necesito mover mis muebles?",
+            "answer": "No, nosotros movemos y cubrimos todo."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Carolina Paz",
+            "text": "Transformaron nuestra casa completamente. Profesionales y limpios.",
+            "location": "Austin, TX"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Listo Para un Nuevo Look?",
+        "subtitle": "Obtén tu cotización de pintura gratis",
+        "button": "Cotización Gratis"
+      },
+      "form": {
+        "title": "Obtén Tu Cotización de Pintura",
+        "subtitle": "Cuéntanos sobre tu proyecto de pintura"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Cotización Gratis"
+      }
     },
     "windows-doors": {
-      "meta": { "title": "Ventanas y Puertas | Instalación y Reemplazo", "description": "Instalación profesional de ventanas y puertas para eficiencia y seguridad." },
-      "hero": { "headline": "Mejora Tus Ventanas y Puertas", "subheadline": "Ventanas y puertas de calidad que mejoran la eficiencia energética y el atractivo de tu hogar." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios?", "items": [
-        { "title": "Eficiencia Energética", "description": "Reduce tus facturas con productos Energy Star." },
-        { "title": "Mayor Seguridad", "description": "Cerraduras y vidrios de seguridad modernos." },
-        { "title": "Instalación Experta", "description": "Instalación perfecta garantizada." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Cuánto ahorro con ventanas nuevas?", "answer": "Puedes ahorrar 15-30% en facturas de energía." },
-        { "question": "¿Cuánto tiempo toma la instalación?", "answer": "Típicamente 1 día para una casa promedio." },
-        { "question": "¿Ofrecen financiamiento?", "answer": "Sí, ofrecemos opciones de financiamiento flexibles." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Roberto Silva", "text": "Nuestras facturas de energía bajaron significativamente. Gran inversión.", "location": "Portland, OR" }]},
-      "cta": { "title": "¿Listo Para Nuevas Ventanas?", "subtitle": "Obtén tu estimación gratis hoy", "button": "Estimación Gratis" },
-      "form": { "title": "Obtén Tu Estimación", "subtitle": "Cuéntanos sobre tu proyecto de ventanas/puertas" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Estimación Gratis" }
+      "meta": {
+        "title": "Ventanas y Puertas | Instalación y Reemplazo",
+        "description": "Instalación profesional de ventanas y puertas para eficiencia y seguridad."
+      },
+      "hero": {
+        "headline": "Mejora Tus Ventanas y Puertas",
+        "subheadline": "Ventanas y puertas de calidad que mejoran la eficiencia energética y el atractivo de tu hogar."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios?",
+        "items": [
+          {
+            "title": "Eficiencia Energética",
+            "description": "Reduce tus facturas con productos Energy Star."
+          },
+          {
+            "title": "Mayor Seguridad",
+            "description": "Cerraduras y vidrios de seguridad modernos."
+          },
+          { "title": "Instalación Experta", "description": "Instalación perfecta garantizada." }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Cuánto ahorro con ventanas nuevas?",
+            "answer": "Puedes ahorrar 15-30% en facturas de energía."
+          },
+          {
+            "question": "¿Cuánto tiempo toma la instalación?",
+            "answer": "Típicamente 1 día para una casa promedio."
+          },
+          {
+            "question": "¿Ofrecen financiamiento?",
+            "answer": "Sí, ofrecemos opciones de financiamiento flexibles."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Roberto Silva",
+            "text": "Nuestras facturas de energía bajaron significativamente. Gran inversión.",
+            "location": "Portland, OR"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Listo Para Nuevas Ventanas?",
+        "subtitle": "Obtén tu estimación gratis hoy",
+        "button": "Estimación Gratis"
+      },
+      "form": {
+        "title": "Obtén Tu Estimación",
+        "subtitle": "Cuéntanos sobre tu proyecto de ventanas/puertas"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Estimación Gratis"
+      }
     },
     "fencing": {
-      "meta": { "title": "Instalación de Cercas | Privacidad y Seguridad", "description": "Servicios profesionales de instalación de cercas para hogares y negocios." },
-      "hero": { "headline": "Cercas de Calidad Para Tu Propiedad", "subheadline": "Cercas hermosas y duraderas que agregan privacidad, seguridad y valor." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios de Cercas?", "items": [
-        { "title": "Variedad de Estilos", "description": "Madera, vinilo, aluminio, cadena y más." },
-        { "title": "Instalación Profesional", "description": "Cercas rectas y duraderas garantizadas." },
-        { "title": "Cumplimiento de Códigos", "description": "Conocemos y cumplimos los códigos locales." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Cuánto dura una cerca?", "answer": "Depende del material: madera 15-20 años, vinilo 25-30, metal 20-30." },
-        { "question": "¿Necesito permiso?", "answer": "Generalmente sí, nosotros manejamos los permisos por ti." },
-        { "question": "¿Pueden reparar mi cerca existente?", "answer": "Sí, ofrecemos servicios de reparación y reemplazo." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Alejandro Cruz", "text": "Nuestra cerca de privacidad quedó perfecta. Instalación rápida y limpia.", "location": "San Antonio, TX" }]},
-      "cta": { "title": "¿Listo Para una Nueva Cerca?", "subtitle": "Obtén tu estimación de cerca gratis", "button": "Estimación Gratis" },
-      "form": { "title": "Obtén Tu Estimación de Cerca", "subtitle": "Cuéntanos sobre tu proyecto de cerca" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Estimación Gratis" }
+      "meta": {
+        "title": "Instalación de Cercas | Privacidad y Seguridad",
+        "description": "Servicios profesionales de instalación de cercas para hogares y negocios."
+      },
+      "hero": {
+        "headline": "Cercas de Calidad Para Tu Propiedad",
+        "subheadline": "Cercas hermosas y duraderas que agregan privacidad, seguridad y valor."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios de Cercas?",
+        "items": [
+          {
+            "title": "Variedad de Estilos",
+            "description": "Madera, vinilo, aluminio, cadena y más."
+          },
+          {
+            "title": "Instalación Profesional",
+            "description": "Cercas rectas y duraderas garantizadas."
+          },
+          {
+            "title": "Cumplimiento de Códigos",
+            "description": "Conocemos y cumplimos los códigos locales."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Cuánto dura una cerca?",
+            "answer": "Depende del material: madera 15-20 años, vinilo 25-30, metal 20-30."
+          },
+          {
+            "question": "¿Necesito permiso?",
+            "answer": "Generalmente sí, nosotros manejamos los permisos por ti."
+          },
+          {
+            "question": "¿Pueden reparar mi cerca existente?",
+            "answer": "Sí, ofrecemos servicios de reparación y reemplazo."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Alejandro Cruz",
+            "text": "Nuestra cerca de privacidad quedó perfecta. Instalación rápida y limpia.",
+            "location": "San Antonio, TX"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Listo Para una Nueva Cerca?",
+        "subtitle": "Obtén tu estimación de cerca gratis",
+        "button": "Estimación Gratis"
+      },
+      "form": {
+        "title": "Obtén Tu Estimación de Cerca",
+        "subtitle": "Cuéntanos sobre tu proyecto de cerca"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Estimación Gratis"
+      }
     },
     "concrete": {
-      "meta": { "title": "Servicios de Concreto | Entradas, Patios y Más", "description": "Contratistas de concreto profesionales para entradas, patios, cimientos y más." },
-      "hero": { "headline": "Soluciones de Concreto Duraderas", "subheadline": "Contratistas expertos de concreto entregando resultados de calidad para cada proyecto." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios de Concreto?", "items": [
-        { "title": "Experiencia Comprobada", "description": "Décadas de experiencia en todo tipo de proyectos." },
-        { "title": "Mezclas de Calidad", "description": "Usamos concreto de alta resistencia." },
-        { "title": "Acabados Decorativos", "description": "Estampado, teñido y acabados expuestos." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Cuánto dura el concreto?", "answer": "Con mantenimiento adecuado, 25-30 años o más." },
-        { "question": "¿Cuánto tiempo toma curar?", "answer": "Se puede caminar en 24-48 horas, curado completo en 28 días." },
-        { "question": "¿Pueden reemplazar concreto agrietado?", "answer": "Sí, removemos y reemplazamos concreto dañado." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Mario López", "text": "Nuestra nueva entrada de concreto estampado se ve increíble.", "location": "Phoenix, AZ" }]},
-      "cta": { "title": "¿Listo Para Tu Proyecto de Concreto?", "subtitle": "Obtén tu estimación de concreto gratis", "button": "Estimación Gratis" },
-      "form": { "title": "Obtén Tu Estimación de Concreto", "subtitle": "Cuéntanos sobre tu proyecto de concreto" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Estimación Gratis" }
+      "meta": {
+        "title": "Servicios de Concreto | Entradas, Patios y Más",
+        "description": "Contratistas de concreto profesionales para entradas, patios, cimientos y más."
+      },
+      "hero": {
+        "headline": "Soluciones de Concreto Duraderas",
+        "subheadline": "Contratistas expertos de concreto entregando resultados de calidad para cada proyecto."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios de Concreto?",
+        "items": [
+          {
+            "title": "Experiencia Comprobada",
+            "description": "Décadas de experiencia en todo tipo de proyectos."
+          },
+          { "title": "Mezclas de Calidad", "description": "Usamos concreto de alta resistencia." },
+          {
+            "title": "Acabados Decorativos",
+            "description": "Estampado, teñido y acabados expuestos."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Cuánto dura el concreto?",
+            "answer": "Con mantenimiento adecuado, 25-30 años o más."
+          },
+          {
+            "question": "¿Cuánto tiempo toma curar?",
+            "answer": "Se puede caminar en 24-48 horas, curado completo en 28 días."
+          },
+          {
+            "question": "¿Pueden reemplazar concreto agrietado?",
+            "answer": "Sí, removemos y reemplazamos concreto dañado."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Mario López",
+            "text": "Nuestra nueva entrada de concreto estampado se ve increíble.",
+            "location": "Phoenix, AZ"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Listo Para Tu Proyecto de Concreto?",
+        "subtitle": "Obtén tu estimación de concreto gratis",
+        "button": "Estimación Gratis"
+      },
+      "form": {
+        "title": "Obtén Tu Estimación de Concreto",
+        "subtitle": "Cuéntanos sobre tu proyecto de concreto"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Estimación Gratis"
+      }
     },
     "junk-removal": {
-      "meta": { "title": "Remoción de Basura | Limpieza de Escombros", "description": "Servicios de remoción de basura rápidos y asequibles para hogares y negocios." },
-      "hero": { "headline": "Despeja Tu Espacio Hoy", "subheadline": "Servicios de remoción de basura rápidos y responsables para cualquier proyecto de limpieza." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios de Remoción?", "items": [
-        { "title": "Servicio el Mismo Día", "description": "Agenda hoy, removemos hoy." },
-        { "title": "Precios Transparentes", "description": "Cotizaciones por volumen sin sorpresas." },
-        { "title": "Disposición Responsable", "description": "Reciclamos y donamos cuando es posible." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Qué tipos de artículos remueven?", "answer": "Casi todo excepto materiales peligrosos." },
-        { "question": "¿Cómo se determinan los precios?", "answer": "Por volumen de artículos removidos." },
-        { "question": "¿Necesito estar presente?", "answer": "Preferiblemente, pero podemos coordinar si no es posible." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Gabriela Ortiz", "text": "Limpiaron el garaje completo en 2 horas. Servicio increíble.", "location": "Tampa, FL" }]},
-      "cta": { "title": "¿Listo Para Despejar?", "subtitle": "Obtén tu cotización de remoción gratis", "button": "Cotización Gratis" },
-      "form": { "title": "Obtén Tu Cotización de Remoción", "subtitle": "Cuéntanos qué necesitas remover" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Servicio Rápido", "free": "Cotización Gratis" }
+      "meta": {
+        "title": "Remoción de Basura | Limpieza de Escombros",
+        "description": "Servicios de remoción de basura rápidos y asequibles para hogares y negocios."
+      },
+      "hero": {
+        "headline": "Despeja Tu Espacio Hoy",
+        "subheadline": "Servicios de remoción de basura rápidos y responsables para cualquier proyecto de limpieza."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios de Remoción?",
+        "items": [
+          { "title": "Servicio el Mismo Día", "description": "Agenda hoy, removemos hoy." },
+          {
+            "title": "Precios Transparentes",
+            "description": "Cotizaciones por volumen sin sorpresas."
+          },
+          {
+            "title": "Disposición Responsable",
+            "description": "Reciclamos y donamos cuando es posible."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Qué tipos de artículos remueven?",
+            "answer": "Casi todo excepto materiales peligrosos."
+          },
+          {
+            "question": "¿Cómo se determinan los precios?",
+            "answer": "Por volumen de artículos removidos."
+          },
+          {
+            "question": "¿Necesito estar presente?",
+            "answer": "Preferiblemente, pero podemos coordinar si no es posible."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Gabriela Ortiz",
+            "text": "Limpiaron el garaje completo en 2 horas. Servicio increíble.",
+            "location": "Tampa, FL"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Listo Para Despejar?",
+        "subtitle": "Obtén tu cotización de remoción gratis",
+        "button": "Cotización Gratis"
+      },
+      "form": {
+        "title": "Obtén Tu Cotización de Remoción",
+        "subtitle": "Cuéntanos qué necesitas remover"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Servicio Rápido",
+        "free": "Cotización Gratis"
+      }
     },
     "appliance-repair": {
-      "meta": { "title": "Reparación de Electrodomésticos | Servicio Mismo Día", "description": "Reparación profesional de electrodomésticos para lavadoras, refrigeradores y más." },
-      "hero": { "headline": "Repara Tus Electrodomésticos Rápido", "subheadline": "Técnicos expertos reparando todos los electrodomésticos principales el mismo día." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios de Reparación?", "items": [
-        { "title": "Servicio el Mismo Día", "description": "Reparaciones rápidas cuando más las necesitas." },
-        { "title": "Todas las Marcas", "description": "Reparamos todas las marcas principales." },
-        { "title": "Piezas Garantizadas", "description": "Usamos piezas OEM con garantía." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Qué electrodomésticos reparan?", "answer": "Refrigeradores, lavadoras, secadoras, lavavajillas, hornos y más." },
-        { "question": "¿Cuánto cuesta una llamada de servicio?", "answer": "La tarifa de diagnóstico se aplica a la reparación si procedes." },
-        { "question": "¿Tienen garantía?", "answer": "Sí, ofrecemos garantía en mano de obra y piezas." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Isabel Ramírez", "text": "Arreglaron mi refrigerador el mismo día. Excelente servicio.", "location": "Dallas, TX" }]},
-      "cta": { "title": "¿Electrodoméstico Descompuesto?", "subtitle": "Agenda tu reparación hoy", "button": "Agendar Reparación" },
-      "form": { "title": "Agenda Tu Reparación", "subtitle": "Cuéntanos sobre tu electrodoméstico" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Mismo Día", "free": "Diagnóstico con Reparación" }
+      "meta": {
+        "title": "Reparación de Electrodomésticos | Servicio Mismo Día",
+        "description": "Reparación profesional de electrodomésticos para lavadoras, refrigeradores y más."
+      },
+      "hero": {
+        "headline": "Repara Tus Electrodomésticos Rápido",
+        "subheadline": "Técnicos expertos reparando todos los electrodomésticos principales el mismo día."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios de Reparación?",
+        "items": [
+          {
+            "title": "Servicio el Mismo Día",
+            "description": "Reparaciones rápidas cuando más las necesitas."
+          },
+          { "title": "Todas las Marcas", "description": "Reparamos todas las marcas principales." },
+          { "title": "Piezas Garantizadas", "description": "Usamos piezas OEM con garantía." }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Qué electrodomésticos reparan?",
+            "answer": "Refrigeradores, lavadoras, secadoras, lavavajillas, hornos y más."
+          },
+          {
+            "question": "¿Cuánto cuesta una llamada de servicio?",
+            "answer": "La tarifa de diagnóstico se aplica a la reparación si procedes."
+          },
+          {
+            "question": "¿Tienen garantía?",
+            "answer": "Sí, ofrecemos garantía en mano de obra y piezas."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Isabel Ramírez",
+            "text": "Arreglaron mi refrigerador el mismo día. Excelente servicio.",
+            "location": "Dallas, TX"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Electrodoméstico Descompuesto?",
+        "subtitle": "Agenda tu reparación hoy",
+        "button": "Agendar Reparación"
+      },
+      "form": {
+        "title": "Agenda Tu Reparación",
+        "subtitle": "Cuéntanos sobre tu electrodoméstico"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Mismo Día",
+        "free": "Diagnóstico con Reparación"
+      }
     },
     "orthodontist": {
-      "meta": { "title": "Ortodoncia | Brackets e Invisalign", "description": "Tratamientos de ortodoncia para sonrisas perfectas. Brackets, Invisalign y más." },
-      "hero": { "headline": "Logra Tu Sonrisa Perfecta", "subheadline": "Ortodoncistas expertos ofreciendo tratamientos modernos para dientes perfectamente alineados." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios de Ortodoncia?", "items": [
-        { "title": "Tecnología Avanzada", "description": "Brackets modernos e Invisalign disponibles." },
-        { "title": "Planes Personalizados", "description": "Tratamientos adaptados a tus necesidades específicas." },
-        { "title": "Opciones de Pago", "description": "Planes de pago flexibles disponibles." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Cuánto tiempo dura el tratamiento?", "answer": "Típicamente 12-24 meses dependiendo de la complejidad." },
-        { "question": "¿Es doloroso?", "answer": "Puede haber molestias leves inicialmente, que desaparecen rápidamente." },
-        { "question": "¿Invisalign o brackets tradicionales?", "answer": "Depende de tu caso, te asesoramos en la consulta." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Valentina Mora", "text": "Mi experiencia con Invisalign fue increíble. Sonrisa perfecta en 14 meses.", "location": "Miami, FL" }]},
-      "cta": { "title": "¿Listo Para una Sonrisa Perfecta?", "subtitle": "Agenda tu consulta de ortodoncia gratis", "button": "Consulta Gratis" },
-      "form": { "title": "Agenda Tu Consulta de Ortodoncia", "subtitle": "Da el primer paso hacia dientes perfectos" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Consulta Gratis" }
+      "meta": {
+        "title": "Ortodoncia | Brackets e Invisalign",
+        "description": "Tratamientos de ortodoncia para sonrisas perfectas. Brackets, Invisalign y más."
+      },
+      "hero": {
+        "headline": "Logra Tu Sonrisa Perfecta",
+        "subheadline": "Ortodoncistas expertos ofreciendo tratamientos modernos para dientes perfectamente alineados."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios de Ortodoncia?",
+        "items": [
+          {
+            "title": "Tecnología Avanzada",
+            "description": "Brackets modernos e Invisalign disponibles."
+          },
+          {
+            "title": "Planes Personalizados",
+            "description": "Tratamientos adaptados a tus necesidades específicas."
+          },
+          { "title": "Opciones de Pago", "description": "Planes de pago flexibles disponibles." }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Cuánto tiempo dura el tratamiento?",
+            "answer": "Típicamente 12-24 meses dependiendo de la complejidad."
+          },
+          {
+            "question": "¿Es doloroso?",
+            "answer": "Puede haber molestias leves inicialmente, que desaparecen rápidamente."
+          },
+          {
+            "question": "¿Invisalign o brackets tradicionales?",
+            "answer": "Depende de tu caso, te asesoramos en la consulta."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Valentina Mora",
+            "text": "Mi experiencia con Invisalign fue increíble. Sonrisa perfecta en 14 meses.",
+            "location": "Miami, FL"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Listo Para una Sonrisa Perfecta?",
+        "subtitle": "Agenda tu consulta de ortodoncia gratis",
+        "button": "Consulta Gratis"
+      },
+      "form": {
+        "title": "Agenda Tu Consulta de Ortodoncia",
+        "subtitle": "Da el primer paso hacia dientes perfectos"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Consulta Gratis"
+      }
     },
     "dermatology": {
-      "meta": { "title": "Dermatología | Cuidado de la Piel Experto", "description": "Dermatólogos certificados para tratamientos médicos y cosméticos de la piel." },
-      "hero": { "headline": "Piel Saludable, Tú Radiante", "subheadline": "Dermatólogos certificados ofreciendo cuidado experto para todas tus necesidades de piel." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios de Dermatología?", "items": [
-        { "title": "Dermatólogos Certificados", "description": "Especialistas altamente capacitados y certificados." },
-        { "title": "Tratamientos Completos", "description": "Desde acné hasta cáncer de piel." },
-        { "title": "Tecnología Avanzada", "description": "Los tratamientos más modernos disponibles." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Con qué frecuencia debo ver al dermatólogo?", "answer": "Chequeos anuales de piel son recomendados." },
-        { "question": "¿Tratan el acné adulto?", "answer": "Sí, ofrecemos tratamientos efectivos para el acné a cualquier edad." },
-        { "question": "¿Ofrecen procedimientos cosméticos?", "answer": "Sí, Botox, rellenos, láser y más." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Daniela Herrera", "text": "Finalmente mi piel está clara gracias a su tratamiento de acné.", "location": "Los Angeles, CA" }]},
-      "cta": { "title": "¿Listo Para Piel Hermosa?", "subtitle": "Agenda tu cita de dermatología", "button": "Agendar Cita" },
-      "form": { "title": "Agenda Tu Cita de Dermatología", "subtitle": "Cuéntanos sobre tus preocupaciones de piel" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Consulta Inicial" }
+      "meta": {
+        "title": "Dermatología | Cuidado de la Piel Experto",
+        "description": "Dermatólogos certificados para tratamientos médicos y cosméticos de la piel."
+      },
+      "hero": {
+        "headline": "Piel Saludable, Tú Radiante",
+        "subheadline": "Dermatólogos certificados ofreciendo cuidado experto para todas tus necesidades de piel."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios de Dermatología?",
+        "items": [
+          {
+            "title": "Dermatólogos Certificados",
+            "description": "Especialistas altamente capacitados y certificados."
+          },
+          { "title": "Tratamientos Completos", "description": "Desde acné hasta cáncer de piel." },
+          {
+            "title": "Tecnología Avanzada",
+            "description": "Los tratamientos más modernos disponibles."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Con qué frecuencia debo ver al dermatólogo?",
+            "answer": "Chequeos anuales de piel son recomendados."
+          },
+          {
+            "question": "¿Tratan el acné adulto?",
+            "answer": "Sí, ofrecemos tratamientos efectivos para el acné a cualquier edad."
+          },
+          {
+            "question": "¿Ofrecen procedimientos cosméticos?",
+            "answer": "Sí, Botox, rellenos, láser y más."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Daniela Herrera",
+            "text": "Finalmente mi piel está clara gracias a su tratamiento de acné.",
+            "location": "Los Angeles, CA"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Listo Para Piel Hermosa?",
+        "subtitle": "Agenda tu cita de dermatología",
+        "button": "Agendar Cita"
+      },
+      "form": {
+        "title": "Agenda Tu Cita de Dermatología",
+        "subtitle": "Cuéntanos sobre tus preocupaciones de piel"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Consulta Inicial"
+      }
     },
     "medspa": {
-      "meta": { "title": "MedSpa | Tratamientos Estéticos Avanzados", "description": "Tratamientos de spa médico para rejuvenecimiento, Botox, rellenos y más." },
-      "hero": { "headline": "Rejuvenece Tu Belleza Natural", "subheadline": "Tratamientos estéticos avanzados en un ambiente de spa lujoso y relajante." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestro MedSpa?", "items": [
-        { "title": "Supervisión Médica", "description": "Todos los tratamientos supervisados por médicos." },
-        { "title": "Tratamientos Premium", "description": "Solo usamos productos de primera calidad." },
-        { "title": "Resultados Naturales", "description": "Mejoras sutiles que realzan tu belleza." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Cuánto dura el Botox?", "answer": "Típicamente 3-4 meses antes de necesitar retoque." },
-        { "question": "¿Es seguro?", "answer": "Sí, todos los tratamientos son aprobados y supervisados médicamente." },
-        { "question": "¿Cuándo veré resultados?", "answer": "Depende del tratamiento, algunos inmediatos, otros en 1-2 semanas." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Natalia Campos", "text": "Los resultados son naturales y me veo años más joven. Encantada!", "location": "Beverly Hills, CA" }]},
-      "cta": { "title": "¿Lista Para Brillar?", "subtitle": "Agenda tu consulta de belleza gratis", "button": "Consulta Gratis" },
-      "form": { "title": "Agenda Tu Consulta de MedSpa", "subtitle": "Descubre los tratamientos perfectos para ti" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Consulta Gratis" }
+      "meta": {
+        "title": "MedSpa | Tratamientos Estéticos Avanzados",
+        "description": "Tratamientos de spa médico para rejuvenecimiento, Botox, rellenos y más."
+      },
+      "hero": {
+        "headline": "Rejuvenece Tu Belleza Natural",
+        "subheadline": "Tratamientos estéticos avanzados en un ambiente de spa lujoso y relajante."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestro MedSpa?",
+        "items": [
+          {
+            "title": "Supervisión Médica",
+            "description": "Todos los tratamientos supervisados por médicos."
+          },
+          {
+            "title": "Tratamientos Premium",
+            "description": "Solo usamos productos de primera calidad."
+          },
+          {
+            "title": "Resultados Naturales",
+            "description": "Mejoras sutiles que realzan tu belleza."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Cuánto dura el Botox?",
+            "answer": "Típicamente 3-4 meses antes de necesitar retoque."
+          },
+          {
+            "question": "¿Es seguro?",
+            "answer": "Sí, todos los tratamientos son aprobados y supervisados médicamente."
+          },
+          {
+            "question": "¿Cuándo veré resultados?",
+            "answer": "Depende del tratamiento, algunos inmediatos, otros en 1-2 semanas."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Natalia Campos",
+            "text": "Los resultados son naturales y me veo años más joven. Encantada!",
+            "location": "Beverly Hills, CA"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Lista Para Brillar?",
+        "subtitle": "Agenda tu consulta de belleza gratis",
+        "button": "Consulta Gratis"
+      },
+      "form": {
+        "title": "Agenda Tu Consulta de MedSpa",
+        "subtitle": "Descubre los tratamientos perfectos para ti"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Consulta Gratis"
+      }
     },
     "chiropractic": {
-      "meta": { "title": "Quiropráctico | Alivio del Dolor de Espalda", "description": "Cuidado quiropráctico experto para dolor de espalda, cuello y bienestar general." },
-      "hero": { "headline": "Vive Sin Dolor", "subheadline": "Quiroprácticos expertos ayudándote a lograr alivio del dolor y bienestar óptimo." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios Quiroprácticos?", "items": [
-        { "title": "Enfoque Holístico", "description": "Tratamos la causa raíz, no solo los síntomas." },
-        { "title": "Planes Personalizados", "description": "Tratamientos adaptados a tu condición específica." },
-        { "title": "Técnicas Modernas", "description": "Ajustes suaves y efectivos." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Los ajustes duelen?", "answer": "No, la mayoría de pacientes sienten alivio inmediato." },
-        { "question": "¿Cuántas sesiones necesitaré?", "answer": "Depende de tu condición, típicamente 6-12 sesiones iniciales." },
-        { "question": "¿Acepta seguro?", "answer": "Sí, trabajamos con la mayoría de seguros." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Francisco Luna", "text": "Después de años de dolor de espalda, finalmente encontré alivio.", "location": "Chicago, IL" }]},
-      "cta": { "title": "¿Listo Para Vivir Sin Dolor?", "subtitle": "Agenda tu evaluación quiroprática", "button": "Agendar Evaluación" },
-      "form": { "title": "Agenda Tu Evaluación Quiroprática", "subtitle": "Cuéntanos sobre tu dolor o molestias" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Evaluación Inicial" }
+      "meta": {
+        "title": "Quiropráctico | Alivio del Dolor de Espalda",
+        "description": "Cuidado quiropráctico experto para dolor de espalda, cuello y bienestar general."
+      },
+      "hero": {
+        "headline": "Vive Sin Dolor",
+        "subheadline": "Quiroprácticos expertos ayudándote a lograr alivio del dolor y bienestar óptimo."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios Quiroprácticos?",
+        "items": [
+          {
+            "title": "Enfoque Holístico",
+            "description": "Tratamos la causa raíz, no solo los síntomas."
+          },
+          {
+            "title": "Planes Personalizados",
+            "description": "Tratamientos adaptados a tu condición específica."
+          },
+          { "title": "Técnicas Modernas", "description": "Ajustes suaves y efectivos." }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Los ajustes duelen?",
+            "answer": "No, la mayoría de pacientes sienten alivio inmediato."
+          },
+          {
+            "question": "¿Cuántas sesiones necesitaré?",
+            "answer": "Depende de tu condición, típicamente 6-12 sesiones iniciales."
+          },
+          { "question": "¿Acepta seguro?", "answer": "Sí, trabajamos con la mayoría de seguros." }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Francisco Luna",
+            "text": "Después de años de dolor de espalda, finalmente encontré alivio.",
+            "location": "Chicago, IL"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Listo Para Vivir Sin Dolor?",
+        "subtitle": "Agenda tu evaluación quiroprática",
+        "button": "Agendar Evaluación"
+      },
+      "form": {
+        "title": "Agenda Tu Evaluación Quiroprática",
+        "subtitle": "Cuéntanos sobre tu dolor o molestias"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Evaluación Inicial"
+      }
     },
     "physical-therapy": {
-      "meta": { "title": "Fisioterapia | Rehabilitación y Recuperación", "description": "Servicios de fisioterapia para recuperación de lesiones y mejora de movilidad." },
-      "hero": { "headline": "Recupera Tu Movilidad", "subheadline": "Fisioterapeutas expertos ayudándote a recuperarte y volver a tu mejor estado." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios de Fisioterapia?", "items": [
-        { "title": "Terapeutas Licenciados", "description": "Fisioterapeutas altamente capacitados y licenciados." },
-        { "title": "Tratamiento Individualizado", "description": "Planes personalizados para tu recuperación." },
-        { "title": "Equipamiento Moderno", "description": "Instalaciones de última generación." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Necesito una referencia médica?", "answer": "Depende de tu seguro, muchos aceptan acceso directo." },
-        { "question": "¿Cuántas sesiones necesitaré?", "answer": "Varía según la condición, típicamente 8-12 sesiones." },
-        { "question": "¿Qué debo traer?", "answer": "Ropa cómoda y tu información de seguro." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Rosa Gutiérrez", "text": "Después de mi cirugía de rodilla, me ayudaron a caminar de nuevo.", "location": "Boston, MA" }]},
-      "cta": { "title": "¿Listo Para Recuperarte?", "subtitle": "Agenda tu evaluación de fisioterapia", "button": "Agendar Evaluación" },
-      "form": { "title": "Agenda Tu Evaluación", "subtitle": "Cuéntanos sobre tu condición o lesión" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Evaluación Inicial" }
+      "meta": {
+        "title": "Fisioterapia | Rehabilitación y Recuperación",
+        "description": "Servicios de fisioterapia para recuperación de lesiones y mejora de movilidad."
+      },
+      "hero": {
+        "headline": "Recupera Tu Movilidad",
+        "subheadline": "Fisioterapeutas expertos ayudándote a recuperarte y volver a tu mejor estado."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios de Fisioterapia?",
+        "items": [
+          {
+            "title": "Terapeutas Licenciados",
+            "description": "Fisioterapeutas altamente capacitados y licenciados."
+          },
+          {
+            "title": "Tratamiento Individualizado",
+            "description": "Planes personalizados para tu recuperación."
+          },
+          { "title": "Equipamiento Moderno", "description": "Instalaciones de última generación." }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Necesito una referencia médica?",
+            "answer": "Depende de tu seguro, muchos aceptan acceso directo."
+          },
+          {
+            "question": "¿Cuántas sesiones necesitaré?",
+            "answer": "Varía según la condición, típicamente 8-12 sesiones."
+          },
+          { "question": "¿Qué debo traer?", "answer": "Ropa cómoda y tu información de seguro." }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Rosa Gutiérrez",
+            "text": "Después de mi cirugía de rodilla, me ayudaron a caminar de nuevo.",
+            "location": "Boston, MA"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Listo Para Recuperarte?",
+        "subtitle": "Agenda tu evaluación de fisioterapia",
+        "button": "Agendar Evaluación"
+      },
+      "form": {
+        "title": "Agenda Tu Evaluación",
+        "subtitle": "Cuéntanos sobre tu condición o lesión"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Evaluación Inicial"
+      }
     },
     "hair-transplant": {
-      "meta": { "title": "Trasplante de Cabello | Restauración Capilar", "description": "Procedimientos de trasplante de cabello de última generación para resultados naturales." },
-      "hero": { "headline": "Recupera Tu Cabello Con Confianza", "subheadline": "Procedimientos avanzados de trasplante de cabello con resultados naturales y permanentes." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios de Trasplante?", "items": [
-        { "title": "Técnicas Avanzadas", "description": "FUE y DHI para resultados más naturales." },
-        { "title": "Cirujanos Expertos", "description": "Especialistas con miles de procedimientos exitosos." },
-        { "title": "Resultados Permanentes", "description": "Tu propio cabello que crece de forma natural." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Es doloroso el procedimiento?", "answer": "No, se realiza con anestesia local. Mínima molestia." },
-        { "question": "¿Cuándo veré resultados?", "answer": "Resultados iniciales en 3-4 meses, completos en 12-18 meses." },
-        { "question": "¿Los resultados son permanentes?", "answer": "Sí, el cabello trasplantado es permanente." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Andrés Molina", "text": "Recuperé mi confianza. El procedimiento cambió mi vida.", "location": "Miami, FL" }]},
-      "cta": { "title": "¿Listo Para Recuperar Tu Cabello?", "subtitle": "Agenda tu consulta de trasplante gratis", "button": "Consulta Gratis" },
-      "form": { "title": "Agenda Tu Consulta de Trasplante", "subtitle": "Descubre si eres candidato para el procedimiento" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Consulta Gratis" }
+      "meta": {
+        "title": "Trasplante de Cabello | Restauración Capilar",
+        "description": "Procedimientos de trasplante de cabello de última generación para resultados naturales."
+      },
+      "hero": {
+        "headline": "Recupera Tu Cabello Con Confianza",
+        "subheadline": "Procedimientos avanzados de trasplante de cabello con resultados naturales y permanentes."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios de Trasplante?",
+        "items": [
+          {
+            "title": "Técnicas Avanzadas",
+            "description": "FUE y DHI para resultados más naturales."
+          },
+          {
+            "title": "Cirujanos Expertos",
+            "description": "Especialistas con miles de procedimientos exitosos."
+          },
+          {
+            "title": "Resultados Permanentes",
+            "description": "Tu propio cabello que crece de forma natural."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Es doloroso el procedimiento?",
+            "answer": "No, se realiza con anestesia local. Mínima molestia."
+          },
+          {
+            "question": "¿Cuándo veré resultados?",
+            "answer": "Resultados iniciales en 3-4 meses, completos en 12-18 meses."
+          },
+          {
+            "question": "¿Los resultados son permanentes?",
+            "answer": "Sí, el cabello trasplantado es permanente."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Andrés Molina",
+            "text": "Recuperé mi confianza. El procedimiento cambió mi vida.",
+            "location": "Miami, FL"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Listo Para Recuperar Tu Cabello?",
+        "subtitle": "Agenda tu consulta de trasplante gratis",
+        "button": "Consulta Gratis"
+      },
+      "form": {
+        "title": "Agenda Tu Consulta de Trasplante",
+        "subtitle": "Descubre si eres candidato para el procedimiento"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Consulta Gratis"
+      }
     },
     "cosmetic-dentistry": {
-      "meta": { "title": "Odontología Cosmética | Sonrisas Perfectas", "description": "Servicios de odontología cosmética para carillas, blanqueamiento y diseño de sonrisa." },
-      "hero": { "headline": "La Sonrisa de Tus Sueños", "subheadline": "Odontología cosmética avanzada transformando sonrisas con resultados espectaculares." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestra Odontología Cosmética?", "items": [
-        { "title": "Tecnología Digital", "description": "Vista previa de tu nueva sonrisa antes del tratamiento." },
-        { "title": "Materiales Premium", "description": "Carillas y coronas de la más alta calidad." },
-        { "title": "Resultados Naturales", "description": "Mejoras que lucen naturalmente hermosas." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Cuánto duran las carillas?", "answer": "Con cuidado adecuado, 10-15 años o más." },
-        { "question": "¿Es doloroso el procedimiento?", "answer": "No, usamos técnicas mínimamente invasivas y anestesia." },
-        { "question": "¿Cuántas citas necesitaré?", "answer": "Típicamente 2-3 citas para carillas completas." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Lucía Santos", "text": "Mis carillas se ven increíblemente naturales. No puedo dejar de sonreír!", "location": "New York, NY" }]},
-      "cta": { "title": "¿Lista Para Tu Sonrisa Soñada?", "subtitle": "Agenda tu diseño de sonrisa gratis", "button": "Diseño de Sonrisa Gratis" },
-      "form": { "title": "Agenda Tu Diseño de Sonrisa", "subtitle": "Descubre las opciones para tu nueva sonrisa" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Consulta Gratis" }
+      "meta": {
+        "title": "Odontología Cosmética | Sonrisas Perfectas",
+        "description": "Servicios de odontología cosmética para carillas, blanqueamiento y diseño de sonrisa."
+      },
+      "hero": {
+        "headline": "La Sonrisa de Tus Sueños",
+        "subheadline": "Odontología cosmética avanzada transformando sonrisas con resultados espectaculares."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestra Odontología Cosmética?",
+        "items": [
+          {
+            "title": "Tecnología Digital",
+            "description": "Vista previa de tu nueva sonrisa antes del tratamiento."
+          },
+          {
+            "title": "Materiales Premium",
+            "description": "Carillas y coronas de la más alta calidad."
+          },
+          {
+            "title": "Resultados Naturales",
+            "description": "Mejoras que lucen naturalmente hermosas."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Cuánto duran las carillas?",
+            "answer": "Con cuidado adecuado, 10-15 años o más."
+          },
+          {
+            "question": "¿Es doloroso el procedimiento?",
+            "answer": "No, usamos técnicas mínimamente invasivas y anestesia."
+          },
+          {
+            "question": "¿Cuántas citas necesitaré?",
+            "answer": "Típicamente 2-3 citas para carillas completas."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Lucía Santos",
+            "text": "Mis carillas se ven increíblemente naturales. No puedo dejar de sonreír!",
+            "location": "New York, NY"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Lista Para Tu Sonrisa Soñada?",
+        "subtitle": "Agenda tu diseño de sonrisa gratis",
+        "button": "Diseño de Sonrisa Gratis"
+      },
+      "form": {
+        "title": "Agenda Tu Diseño de Sonrisa",
+        "subtitle": "Descubre las opciones para tu nueva sonrisa"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Consulta Gratis"
+      }
     },
     "personal-injury-attorney": {
-      "meta": { "title": "Abogado de Lesiones Personales | Compensación Máxima", "description": "Abogados de lesiones personales luchando por la compensación que mereces." },
-      "hero": { "headline": "Obtén la Justicia Que Mereces", "subheadline": "Abogados experimentados en lesiones personales luchando por tu compensación máxima." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Abogados?", "items": [
-        { "title": "Sin Honorarios por Adelantado", "description": "No pagas a menos que ganemos tu caso." },
-        { "title": "Experiencia Comprobada", "description": "Millones recuperados para nuestros clientes." },
-        { "title": "Atención Personalizada", "description": "Tu caso recibe atención individual." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Cuánto cuesta una consulta?", "answer": "Las consultas son 100% gratuitas y sin compromiso." },
-        { "question": "¿Cuánto tiempo tengo para presentar una demanda?", "answer": "Los plazos varían por estado, típicamente 2-3 años." },
-        { "question": "¿Qué compensación puedo recibir?", "answer": "Gastos médicos, salarios perdidos, dolor y sufrimiento, y más." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Miguel Ángel Ruiz", "text": "Obtuvieron una compensación mucho mayor de lo que esperaba.", "location": "Los Angeles, CA" }]},
-      "cta": { "title": "¿Lesionado? Obtén Ayuda Ahora", "subtitle": "Consulta gratis con un abogado experto", "button": "Consulta Gratis" },
-      "form": { "title": "Obtén Tu Consulta Legal Gratis", "subtitle": "Cuéntanos sobre tu accidente o lesión" },
-      "trust": { "secure": "Confidencial", "fast": "Respuesta en 24h", "free": "Sin Costo Hasta Ganar" }
+      "meta": {
+        "title": "Abogado de Lesiones Personales | Compensación Máxima",
+        "description": "Abogados de lesiones personales luchando por la compensación que mereces."
+      },
+      "hero": {
+        "headline": "Obtén la Justicia Que Mereces",
+        "subheadline": "Abogados experimentados en lesiones personales luchando por tu compensación máxima."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Abogados?",
+        "items": [
+          {
+            "title": "Sin Honorarios por Adelantado",
+            "description": "No pagas a menos que ganemos tu caso."
+          },
+          {
+            "title": "Experiencia Comprobada",
+            "description": "Millones recuperados para nuestros clientes."
+          },
+          {
+            "title": "Atención Personalizada",
+            "description": "Tu caso recibe atención individual."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Cuánto cuesta una consulta?",
+            "answer": "Las consultas son 100% gratuitas y sin compromiso."
+          },
+          {
+            "question": "¿Cuánto tiempo tengo para presentar una demanda?",
+            "answer": "Los plazos varían por estado, típicamente 2-3 años."
+          },
+          {
+            "question": "¿Qué compensación puedo recibir?",
+            "answer": "Gastos médicos, salarios perdidos, dolor y sufrimiento, y más."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Miguel Ángel Ruiz",
+            "text": "Obtuvieron una compensación mucho mayor de lo que esperaba.",
+            "location": "Los Angeles, CA"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Lesionado? Obtén Ayuda Ahora",
+        "subtitle": "Consulta gratis con un abogado experto",
+        "button": "Consulta Gratis"
+      },
+      "form": {
+        "title": "Obtén Tu Consulta Legal Gratis",
+        "subtitle": "Cuéntanos sobre tu accidente o lesión"
+      },
+      "trust": {
+        "secure": "Confidencial",
+        "fast": "Respuesta en 24h",
+        "free": "Sin Costo Hasta Ganar"
+      }
     },
     "immigration-attorney": {
-      "meta": { "title": "Abogado de Inmigración | Visas y Ciudadanía", "description": "Abogados de inmigración expertos ayudándote con visas, green cards y ciudadanía." },
-      "hero": { "headline": "Tu Camino a Un Nuevo Comienzo", "subheadline": "Abogados de inmigración experimentados guiándote en cada paso del proceso." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Abogados de Inmigración?", "items": [
-        { "title": "Experiencia Especializada", "description": "Enfocados exclusivamente en ley de inmigración." },
-        { "title": "Equipo Bilingüe", "description": "Atención en español e inglés." },
-        { "title": "Alto Éxito", "description": "Historial probado de casos aprobados." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Cuánto tiempo toma obtener una green card?", "answer": "Varía según la categoría, típicamente 1-10 años." },
-        { "question": "¿Pueden ayudar si estoy indocumentado?", "answer": "Sí, evaluamos cada caso para encontrar opciones legales." },
-        { "question": "¿Qué documentos necesito?", "answer": "Depende del caso, te proporcionamos una lista personalizada." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Carmen Elena Rivera", "text": "Gracias a ellos, finalmente tengo mi green card después de años de espera.", "location": "Houston, TX" }]},
-      "cta": { "title": "Comienza Tu Camino Hoy", "subtitle": "Consulta de inmigración confidencial", "button": "Consulta Gratis" },
-      "form": { "title": "Agenda Tu Consulta de Inmigración", "subtitle": "Cuéntanos sobre tu situación migratoria" },
-      "trust": { "secure": "Confidencial", "fast": "Respuesta Rápida", "free": "Consulta Inicial Gratis" }
+      "meta": {
+        "title": "Abogado de Inmigración | Visas y Ciudadanía",
+        "description": "Abogados de inmigración expertos ayudándote con visas, green cards y ciudadanía."
+      },
+      "hero": {
+        "headline": "Tu Camino a Un Nuevo Comienzo",
+        "subheadline": "Abogados de inmigración experimentados guiándote en cada paso del proceso."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Abogados de Inmigración?",
+        "items": [
+          {
+            "title": "Experiencia Especializada",
+            "description": "Enfocados exclusivamente en ley de inmigración."
+          },
+          { "title": "Equipo Bilingüe", "description": "Atención en español e inglés." },
+          { "title": "Alto Éxito", "description": "Historial probado de casos aprobados." }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Cuánto tiempo toma obtener una green card?",
+            "answer": "Varía según la categoría, típicamente 1-10 años."
+          },
+          {
+            "question": "¿Pueden ayudar si estoy indocumentado?",
+            "answer": "Sí, evaluamos cada caso para encontrar opciones legales."
+          },
+          {
+            "question": "¿Qué documentos necesito?",
+            "answer": "Depende del caso, te proporcionamos una lista personalizada."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Carmen Elena Rivera",
+            "text": "Gracias a ellos, finalmente tengo mi green card después de años de espera.",
+            "location": "Houston, TX"
+          }
+        ]
+      },
+      "cta": {
+        "title": "Comienza Tu Camino Hoy",
+        "subtitle": "Consulta de inmigración confidencial",
+        "button": "Consulta Gratis"
+      },
+      "form": {
+        "title": "Agenda Tu Consulta de Inmigración",
+        "subtitle": "Cuéntanos sobre tu situación migratoria"
+      },
+      "trust": {
+        "secure": "Confidencial",
+        "fast": "Respuesta Rápida",
+        "free": "Consulta Inicial Gratis"
+      }
     },
     "criminal-defense-attorney": {
-      "meta": { "title": "Abogado Defensor Criminal | Protección Legal", "description": "Defensa criminal agresiva protegiendo tus derechos en todos los cargos." },
-      "hero": { "headline": "Defiende Tus Derechos", "subheadline": "Abogados defensores criminales agresivos protegiendo tu libertad y futuro." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Defensores?", "items": [
-        { "title": "Disponibilidad 24/7", "description": "Emergencias legales atendidas día y noche." },
-        { "title": "Ex Fiscales", "description": "Conocemos las tácticas del otro lado." },
-        { "title": "Defensa Agresiva", "description": "Luchamos incansablemente por tu caso." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Qué hago si me arrestan?", "answer": "Permanece en silencio y pide un abogado inmediatamente." },
-        { "question": "¿Pueden reducir o desestimar cargos?", "answer": "Sí, negociamos y luchamos por el mejor resultado posible." },
-        { "question": "¿Esto quedará en mi récord?", "answer": "Dependiendo del caso, podemos buscar expungir tu récord." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Anónimo", "text": "Me sacaron de una situación muy difícil. Eternamente agradecido.", "location": "Phoenix, AZ" }]},
-      "cta": { "title": "¿Enfrentas Cargos Criminales?", "subtitle": "Obtén defensa legal inmediata", "button": "Llamar Ahora" },
-      "form": { "title": "Obtén Defensa Legal Urgente", "subtitle": "Cuéntanos sobre tu situación (confidencial)" },
-      "trust": { "secure": "100% Confidencial", "fast": "Respuesta Inmediata", "free": "Consulta Gratis" }
+      "meta": {
+        "title": "Abogado Defensor Criminal | Protección Legal",
+        "description": "Defensa criminal agresiva protegiendo tus derechos en todos los cargos."
+      },
+      "hero": {
+        "headline": "Defiende Tus Derechos",
+        "subheadline": "Abogados defensores criminales agresivos protegiendo tu libertad y futuro."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Defensores?",
+        "items": [
+          {
+            "title": "Disponibilidad 24/7",
+            "description": "Emergencias legales atendidas día y noche."
+          },
+          { "title": "Ex Fiscales", "description": "Conocemos las tácticas del otro lado." },
+          { "title": "Defensa Agresiva", "description": "Luchamos incansablemente por tu caso." }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Qué hago si me arrestan?",
+            "answer": "Permanece en silencio y pide un abogado inmediatamente."
+          },
+          {
+            "question": "¿Pueden reducir o desestimar cargos?",
+            "answer": "Sí, negociamos y luchamos por el mejor resultado posible."
+          },
+          {
+            "question": "¿Esto quedará en mi récord?",
+            "answer": "Dependiendo del caso, podemos buscar expungir tu récord."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Anónimo",
+            "text": "Me sacaron de una situación muy difícil. Eternamente agradecido.",
+            "location": "Phoenix, AZ"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Enfrentas Cargos Criminales?",
+        "subtitle": "Obtén defensa legal inmediata",
+        "button": "Llamar Ahora"
+      },
+      "form": {
+        "title": "Obtén Defensa Legal Urgente",
+        "subtitle": "Cuéntanos sobre tu situación (confidencial)"
+      },
+      "trust": {
+        "secure": "100% Confidencial",
+        "fast": "Respuesta Inmediata",
+        "free": "Consulta Gratis"
+      }
     },
     "tax-accounting": {
-      "meta": { "title": "Contabilidad e Impuestos | Servicios Profesionales", "description": "Contadores profesionales para impuestos personales, negocios y planificación fiscal." },
-      "hero": { "headline": "Maximiza Tus Ahorros Fiscales", "subheadline": "Contadores expertos ayudándote a optimizar impuestos y hacer crecer tu riqueza." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios Contables?", "items": [
-        { "title": "CPAs Certificados", "description": "Contadores públicos certificados con experiencia." },
-        { "title": "Máximos Reembolsos", "description": "Encontramos cada deducción legal posible." },
-        { "title": "Servicio Todo el Año", "description": "Planificación fiscal y soporte continuo." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Cuánto cuesta preparar mis impuestos?", "answer": "Depende de la complejidad, ofrecemos cotizaciones gratuitas." },
-        { "question": "¿Qué documentos necesito?", "answer": "W-2s, 1099s, recibos de gastos deducibles." },
-        { "question": "¿Pueden representarme ante el IRS?", "answer": "Sí, manejamos auditorías y negociaciones con el IRS." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Ricardo Méndez", "text": "Mi reembolso fue el triple de lo que esperaba. Excelentes profesionales.", "location": "Dallas, TX" }]},
-      "cta": { "title": "¿Listo Para Ahorrar en Impuestos?", "subtitle": "Agenda tu consulta fiscal gratis", "button": "Consulta Gratis" },
-      "form": { "title": "Agenda Tu Consulta Fiscal", "subtitle": "Cuéntanos sobre tus necesidades contables" },
+      "meta": {
+        "title": "Contabilidad e Impuestos | Servicios Profesionales",
+        "description": "Contadores profesionales para impuestos personales, negocios y planificación fiscal."
+      },
+      "hero": {
+        "headline": "Maximiza Tus Ahorros Fiscales",
+        "subheadline": "Contadores expertos ayudándote a optimizar impuestos y hacer crecer tu riqueza."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios Contables?",
+        "items": [
+          {
+            "title": "CPAs Certificados",
+            "description": "Contadores públicos certificados con experiencia."
+          },
+          {
+            "title": "Máximos Reembolsos",
+            "description": "Encontramos cada deducción legal posible."
+          },
+          {
+            "title": "Servicio Todo el Año",
+            "description": "Planificación fiscal y soporte continuo."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Cuánto cuesta preparar mis impuestos?",
+            "answer": "Depende de la complejidad, ofrecemos cotizaciones gratuitas."
+          },
+          {
+            "question": "¿Qué documentos necesito?",
+            "answer": "W-2s, 1099s, recibos de gastos deducibles."
+          },
+          {
+            "question": "¿Pueden representarme ante el IRS?",
+            "answer": "Sí, manejamos auditorías y negociaciones con el IRS."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Ricardo Méndez",
+            "text": "Mi reembolso fue el triple de lo que esperaba. Excelentes profesionales.",
+            "location": "Dallas, TX"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Listo Para Ahorrar en Impuestos?",
+        "subtitle": "Agenda tu consulta fiscal gratis",
+        "button": "Consulta Gratis"
+      },
+      "form": {
+        "title": "Agenda Tu Consulta Fiscal",
+        "subtitle": "Cuéntanos sobre tus necesidades contables"
+      },
       "trust": { "secure": "Confidencial", "fast": "Respuesta Rápida", "free": "Consulta Gratis" }
     },
     "business-consulting": {
-      "meta": { "title": "Consultoría de Negocios | Estrategia y Crecimiento", "description": "Consultores de negocios ayudándote a escalar y optimizar tu empresa." },
-      "hero": { "headline": "Lleva Tu Negocio al Siguiente Nivel", "subheadline": "Consultores expertos ayudándote a escalar, optimizar y alcanzar tus metas empresariales." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestra Consultoría?", "items": [
-        { "title": "Experiencia Diversa", "description": "Consultores con experiencia en múltiples industrias." },
-        { "title": "Resultados Medibles", "description": "Estrategias con KPIs claros y seguimiento." },
-        { "title": "Enfoque Práctico", "description": "Soluciones implementables, no solo teoría." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Qué tipo de negocios atienden?", "answer": "Desde startups hasta empresas establecidas en cualquier industria." },
-        { "question": "¿Cuánto tiempo dura una consultoría?", "answer": "Depende del proyecto, desde sesiones únicas hasta contratos continuos." },
-        { "question": "¿Cómo miden el éxito?", "answer": "Establecemos métricas claras y revisamos progreso regularmente." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Empresa ABC", "text": "Duplicamos nuestros ingresos en 18 meses siguiendo su estrategia.", "location": "New York, NY" }]},
-      "cta": { "title": "¿Listo Para Crecer?", "subtitle": "Agenda tu sesión de estrategia gratis", "button": "Sesión Gratis" },
-      "form": { "title": "Agenda Tu Sesión de Estrategia", "subtitle": "Cuéntanos sobre tu negocio y desafíos" },
-      "trust": { "secure": "Confidencial", "fast": "Respuesta Rápida", "free": "Sesión Inicial Gratis" }
+      "meta": {
+        "title": "Consultoría de Negocios | Estrategia y Crecimiento",
+        "description": "Consultores de negocios ayudándote a escalar y optimizar tu empresa."
+      },
+      "hero": {
+        "headline": "Lleva Tu Negocio al Siguiente Nivel",
+        "subheadline": "Consultores expertos ayudándote a escalar, optimizar y alcanzar tus metas empresariales."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestra Consultoría?",
+        "items": [
+          {
+            "title": "Experiencia Diversa",
+            "description": "Consultores con experiencia en múltiples industrias."
+          },
+          {
+            "title": "Resultados Medibles",
+            "description": "Estrategias con KPIs claros y seguimiento."
+          },
+          {
+            "title": "Enfoque Práctico",
+            "description": "Soluciones implementables, no solo teoría."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Qué tipo de negocios atienden?",
+            "answer": "Desde startups hasta empresas establecidas en cualquier industria."
+          },
+          {
+            "question": "¿Cuánto tiempo dura una consultoría?",
+            "answer": "Depende del proyecto, desde sesiones únicas hasta contratos continuos."
+          },
+          {
+            "question": "¿Cómo miden el éxito?",
+            "answer": "Establecemos métricas claras y revisamos progreso regularmente."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Empresa ABC",
+            "text": "Duplicamos nuestros ingresos en 18 meses siguiendo su estrategia.",
+            "location": "New York, NY"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Listo Para Crecer?",
+        "subtitle": "Agenda tu sesión de estrategia gratis",
+        "button": "Sesión Gratis"
+      },
+      "form": {
+        "title": "Agenda Tu Sesión de Estrategia",
+        "subtitle": "Cuéntanos sobre tu negocio y desafíos"
+      },
+      "trust": {
+        "secure": "Confidencial",
+        "fast": "Respuesta Rápida",
+        "free": "Sesión Inicial Gratis"
+      }
     },
     "commercial-cleaning": {
-      "meta": { "title": "Limpieza Comercial | Oficinas y Negocios", "description": "Servicios de limpieza comercial profesionales para oficinas, tiendas y más." },
-      "hero": { "headline": "Espacios Comerciales Impecables", "subheadline": "Servicios de limpieza comercial confiables manteniendo tu negocio brillante y profesional." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestra Limpieza Comercial?", "items": [
-        { "title": "Personal Verificado", "description": "Empleados con verificación de antecedentes." },
-        { "title": "Horarios Flexibles", "description": "Limpieza fuera de horario comercial." },
-        { "title": "Servicios Completos", "description": "Desde limpieza básica hasta desinfección profunda." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Ofrecen limpieza nocturna?", "answer": "Sí, trabajamos según el horario de tu negocio." },
-        { "question": "¿Están asegurados?", "answer": "Sí, completamente asegurados y garantizados." },
-        { "question": "¿Proporcionan suministros?", "answer": "Sí, traemos todos los suministros necesarios." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Oficinas XYZ", "text": "Nuestras oficinas nunca han lucido mejor. Servicio consistente y confiable.", "location": "Seattle, WA" }]},
-      "cta": { "title": "¿Necesitas Limpieza Comercial?", "subtitle": "Obtén tu cotización de limpieza empresarial", "button": "Cotización Gratis" },
-      "form": { "title": "Obtén Tu Cotización Comercial", "subtitle": "Cuéntanos sobre tu espacio de trabajo" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Cotización Gratis" }
+      "meta": {
+        "title": "Limpieza Comercial | Oficinas y Negocios",
+        "description": "Servicios de limpieza comercial profesionales para oficinas, tiendas y más."
+      },
+      "hero": {
+        "headline": "Espacios Comerciales Impecables",
+        "subheadline": "Servicios de limpieza comercial confiables manteniendo tu negocio brillante y profesional."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestra Limpieza Comercial?",
+        "items": [
+          {
+            "title": "Personal Verificado",
+            "description": "Empleados con verificación de antecedentes."
+          },
+          { "title": "Horarios Flexibles", "description": "Limpieza fuera de horario comercial." },
+          {
+            "title": "Servicios Completos",
+            "description": "Desde limpieza básica hasta desinfección profunda."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Ofrecen limpieza nocturna?",
+            "answer": "Sí, trabajamos según el horario de tu negocio."
+          },
+          {
+            "question": "¿Están asegurados?",
+            "answer": "Sí, completamente asegurados y garantizados."
+          },
+          {
+            "question": "¿Proporcionan suministros?",
+            "answer": "Sí, traemos todos los suministros necesarios."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Oficinas XYZ",
+            "text": "Nuestras oficinas nunca han lucido mejor. Servicio consistente y confiable.",
+            "location": "Seattle, WA"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Necesitas Limpieza Comercial?",
+        "subtitle": "Obtén tu cotización de limpieza empresarial",
+        "button": "Cotización Gratis"
+      },
+      "form": {
+        "title": "Obtén Tu Cotización Comercial",
+        "subtitle": "Cuéntanos sobre tu espacio de trabajo"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Cotización Gratis"
+      }
     },
     "security-systems": {
-      "meta": { "title": "Sistemas de Seguridad | Alarmas y Cámaras", "description": "Sistemas de seguridad profesionales para hogares y negocios con monitoreo 24/7." },
-      "hero": { "headline": "Protege Lo Que Más Importa", "subheadline": "Sistemas de seguridad de última generación con monitoreo profesional 24/7." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Sistemas de Seguridad?", "items": [
-        { "title": "Monitoreo 24/7", "description": "Centro de monitoreo profesional siempre alerta." },
-        { "title": "Tecnología Inteligente", "description": "Control desde tu teléfono en cualquier lugar." },
-        { "title": "Instalación Profesional", "description": "Técnicos certificados para instalación perfecta." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Necesito internet para el sistema?", "answer": "Recomendado pero no siempre requerido, tenemos opciones celulares." },
-        { "question": "¿Cuánto cuesta el monitoreo mensual?", "answer": "Planes desde $19.99/mes dependiendo de las características." },
-        { "question": "¿Puedo ver las cámaras desde mi teléfono?", "answer": "Sí, acceso remoto 24/7 desde cualquier dispositivo." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Familia González", "text": "Dormimos tranquilos sabiendo que nuestra casa está protegida 24/7.", "location": "San Diego, CA" }]},
-      "cta": { "title": "¿Listo Para Mayor Seguridad?", "subtitle": "Obtén tu evaluación de seguridad gratis", "button": "Evaluación Gratis" },
-      "form": { "title": "Obtén Tu Evaluación de Seguridad", "subtitle": "Cuéntanos sobre tus necesidades de seguridad" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Evaluación Gratis" }
+      "meta": {
+        "title": "Sistemas de Seguridad | Alarmas y Cámaras",
+        "description": "Sistemas de seguridad profesionales para hogares y negocios con monitoreo 24/7."
+      },
+      "hero": {
+        "headline": "Protege Lo Que Más Importa",
+        "subheadline": "Sistemas de seguridad de última generación con monitoreo profesional 24/7."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Sistemas de Seguridad?",
+        "items": [
+          {
+            "title": "Monitoreo 24/7",
+            "description": "Centro de monitoreo profesional siempre alerta."
+          },
+          {
+            "title": "Tecnología Inteligente",
+            "description": "Control desde tu teléfono en cualquier lugar."
+          },
+          {
+            "title": "Instalación Profesional",
+            "description": "Técnicos certificados para instalación perfecta."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Necesito internet para el sistema?",
+            "answer": "Recomendado pero no siempre requerido, tenemos opciones celulares."
+          },
+          {
+            "question": "¿Cuánto cuesta el monitoreo mensual?",
+            "answer": "Planes desde $19.99/mes dependiendo de las características."
+          },
+          {
+            "question": "¿Puedo ver las cámaras desde mi teléfono?",
+            "answer": "Sí, acceso remoto 24/7 desde cualquier dispositivo."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Familia González",
+            "text": "Dormimos tranquilos sabiendo que nuestra casa está protegida 24/7.",
+            "location": "San Diego, CA"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Listo Para Mayor Seguridad?",
+        "subtitle": "Obtén tu evaluación de seguridad gratis",
+        "button": "Evaluación Gratis"
+      },
+      "form": {
+        "title": "Obtén Tu Evaluación de Seguridad",
+        "subtitle": "Cuéntanos sobre tus necesidades de seguridad"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Evaluación Gratis"
+      }
     },
     "it-services": {
-      "meta": { "title": "Servicios de TI | Soporte Técnico Empresarial", "description": "Servicios de TI completos para pequeñas y medianas empresas." },
-      "hero": { "headline": "Tecnología Sin Preocupaciones", "subheadline": "Soporte de TI profesional manteniendo tu negocio funcionando sin interrupciones." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios de TI?", "items": [
-        { "title": "Soporte 24/7", "description": "Ayuda técnica disponible cuando la necesitas." },
-        { "title": "Seguridad Cibernética", "description": "Protección contra amenazas y hackers." },
-        { "title": "Soluciones en la Nube", "description": "Migración y gestión de servicios cloud." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Ofrecen soporte remoto?", "answer": "Sí, la mayoría de problemas se resuelven remotamente." },
-        { "question": "¿Pueden manejar todo nuestro TI?", "answer": "Sí, ofrecemos servicios de TI gestionados completos." },
-        { "question": "¿Qué tan rápido responden?", "answer": "Tiempo de respuesta garantizado de 1-4 horas." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Tech Solutions Inc", "text": "Desde que los contratamos, no hemos tenido tiempo de inactividad.", "location": "Austin, TX" }]},
-      "cta": { "title": "¿Necesitas Soporte de TI?", "subtitle": "Obtén tu evaluación tecnológica gratis", "button": "Evaluación Gratis" },
-      "form": { "title": "Obtén Tu Evaluación de TI", "subtitle": "Cuéntanos sobre tus necesidades tecnológicas" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Evaluación Gratis" }
+      "meta": {
+        "title": "Servicios de TI | Soporte Técnico Empresarial",
+        "description": "Servicios de TI completos para pequeñas y medianas empresas."
+      },
+      "hero": {
+        "headline": "Tecnología Sin Preocupaciones",
+        "subheadline": "Soporte de TI profesional manteniendo tu negocio funcionando sin interrupciones."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios de TI?",
+        "items": [
+          {
+            "title": "Soporte 24/7",
+            "description": "Ayuda técnica disponible cuando la necesitas."
+          },
+          {
+            "title": "Seguridad Cibernética",
+            "description": "Protección contra amenazas y hackers."
+          },
+          {
+            "title": "Soluciones en la Nube",
+            "description": "Migración y gestión de servicios cloud."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Ofrecen soporte remoto?",
+            "answer": "Sí, la mayoría de problemas se resuelven remotamente."
+          },
+          {
+            "question": "¿Pueden manejar todo nuestro TI?",
+            "answer": "Sí, ofrecemos servicios de TI gestionados completos."
+          },
+          {
+            "question": "¿Qué tan rápido responden?",
+            "answer": "Tiempo de respuesta garantizado de 1-4 horas."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Tech Solutions Inc",
+            "text": "Desde que los contratamos, no hemos tenido tiempo de inactividad.",
+            "location": "Austin, TX"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Necesitas Soporte de TI?",
+        "subtitle": "Obtén tu evaluación tecnológica gratis",
+        "button": "Evaluación Gratis"
+      },
+      "form": {
+        "title": "Obtén Tu Evaluación de TI",
+        "subtitle": "Cuéntanos sobre tus necesidades tecnológicas"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Evaluación Gratis"
+      }
     },
     "marketing-agency": {
-      "meta": { "title": "Agencia de Marketing | Digital y Tradicional", "description": "Agencia de marketing de servicio completo para crecer tu negocio." },
-      "hero": { "headline": "Crece Tu Marca Con Expertos", "subheadline": "Estrategias de marketing probadas que generan leads, ventas y crecimiento para tu negocio." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestra Agencia?", "items": [
-        { "title": "Estrategia Integral", "description": "Marketing digital, redes sociales, SEO y más." },
-        { "title": "Resultados Medibles", "description": "Reportes claros con ROI demostrable." },
-        { "title": "Equipo Dedicado", "description": "Un equipo enfocado en tu éxito." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Cuánto cuesta el marketing?", "answer": "Planes personalizados según tus objetivos y presupuesto." },
-        { "question": "¿Cuándo veré resultados?", "answer": "Algunos canales muestran resultados en semanas, otros en meses." },
-        { "question": "¿Manejan redes sociales?", "answer": "Sí, gestión completa de todas las plataformas sociales." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Startup XYZ", "text": "Triplicamos nuestros leads en 6 meses. Inversión que vale la pena.", "location": "San Francisco, CA" }]},
-      "cta": { "title": "¿Listo Para Crecer?", "subtitle": "Obtén tu estrategia de marketing gratis", "button": "Estrategia Gratis" },
-      "form": { "title": "Obtén Tu Estrategia de Marketing", "subtitle": "Cuéntanos sobre tu negocio y metas" },
+      "meta": {
+        "title": "Agencia de Marketing | Digital y Tradicional",
+        "description": "Agencia de marketing de servicio completo para crecer tu negocio."
+      },
+      "hero": {
+        "headline": "Crece Tu Marca Con Expertos",
+        "subheadline": "Estrategias de marketing probadas que generan leads, ventas y crecimiento para tu negocio."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestra Agencia?",
+        "items": [
+          {
+            "title": "Estrategia Integral",
+            "description": "Marketing digital, redes sociales, SEO y más."
+          },
+          { "title": "Resultados Medibles", "description": "Reportes claros con ROI demostrable." },
+          { "title": "Equipo Dedicado", "description": "Un equipo enfocado en tu éxito." }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Cuánto cuesta el marketing?",
+            "answer": "Planes personalizados según tus objetivos y presupuesto."
+          },
+          {
+            "question": "¿Cuándo veré resultados?",
+            "answer": "Algunos canales muestran resultados en semanas, otros en meses."
+          },
+          {
+            "question": "¿Manejan redes sociales?",
+            "answer": "Sí, gestión completa de todas las plataformas sociales."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Startup XYZ",
+            "text": "Triplicamos nuestros leads en 6 meses. Inversión que vale la pena.",
+            "location": "San Francisco, CA"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Listo Para Crecer?",
+        "subtitle": "Obtén tu estrategia de marketing gratis",
+        "button": "Estrategia Gratis"
+      },
+      "form": {
+        "title": "Obtén Tu Estrategia de Marketing",
+        "subtitle": "Cuéntanos sobre tu negocio y metas"
+      },
       "trust": { "secure": "Confidencial", "fast": "Respuesta Rápida", "free": "Estrategia Gratis" }
     },
     "auto-repair": {
-      "meta": { "title": "Reparación de Autos | Mecánicos Certificados", "description": "Servicios de reparación automotriz confiables para todas las marcas y modelos." },
-      "hero": { "headline": "Tu Auto en Manos Expertas", "subheadline": "Mecánicos certificados ofreciendo reparaciones confiables y precios justos." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestro Taller?", "items": [
-        { "title": "Mecánicos Certificados", "description": "Técnicos ASE certificados y experimentados." },
-        { "title": "Garantía de Trabajo", "description": "Respaldamos todas nuestras reparaciones." },
-        { "title": "Precios Honestos", "description": "Estimaciones claras antes de comenzar." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Trabajan con todas las marcas?", "answer": "Sí, reparamos todas las marcas y modelos." },
-        { "question": "¿Ofrecen servicio de grúa?", "answer": "Sí, podemos coordinar servicio de grúa si es necesario." },
-        { "question": "¿Cuánto toma una reparación típica?", "answer": "Depende del trabajo, le damos un tiempo estimado por adelantado." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Pedro Núñez", "text": "Honestos y confiables. No intentan vender reparaciones innecesarias.", "location": "Phoenix, AZ" }]},
-      "cta": { "title": "¿Problemas Con Tu Auto?", "subtitle": "Agenda tu diagnóstico hoy", "button": "Agendar Servicio" },
-      "form": { "title": "Agenda Tu Servicio de Auto", "subtitle": "Describe el problema con tu vehículo" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Servicio Rápido", "free": "Diagnóstico con Reparación" }
+      "meta": {
+        "title": "Reparación de Autos | Mecánicos Certificados",
+        "description": "Servicios de reparación automotriz confiables para todas las marcas y modelos."
+      },
+      "hero": {
+        "headline": "Tu Auto en Manos Expertas",
+        "subheadline": "Mecánicos certificados ofreciendo reparaciones confiables y precios justos."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestro Taller?",
+        "items": [
+          {
+            "title": "Mecánicos Certificados",
+            "description": "Técnicos ASE certificados y experimentados."
+          },
+          {
+            "title": "Garantía de Trabajo",
+            "description": "Respaldamos todas nuestras reparaciones."
+          },
+          { "title": "Precios Honestos", "description": "Estimaciones claras antes de comenzar." }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Trabajan con todas las marcas?",
+            "answer": "Sí, reparamos todas las marcas y modelos."
+          },
+          {
+            "question": "¿Ofrecen servicio de grúa?",
+            "answer": "Sí, podemos coordinar servicio de grúa si es necesario."
+          },
+          {
+            "question": "¿Cuánto toma una reparación típica?",
+            "answer": "Depende del trabajo, le damos un tiempo estimado por adelantado."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Pedro Núñez",
+            "text": "Honestos y confiables. No intentan vender reparaciones innecesarias.",
+            "location": "Phoenix, AZ"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Problemas Con Tu Auto?",
+        "subtitle": "Agenda tu diagnóstico hoy",
+        "button": "Agendar Servicio"
+      },
+      "form": {
+        "title": "Agenda Tu Servicio de Auto",
+        "subtitle": "Describe el problema con tu vehículo"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Servicio Rápido",
+        "free": "Diagnóstico con Reparación"
+      }
     },
     "auto-detailing": {
-      "meta": { "title": "Detallado de Autos | Limpieza Profesional", "description": "Servicios de detallado automotriz para que tu auto luzca como nuevo." },
-      "hero": { "headline": "Tu Auto Como Nuevo", "subheadline": "Detallado profesional que restaura el brillo y protege tu inversión." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestro Detallado?", "items": [
-        { "title": "Productos Premium", "description": "Solo usamos productos de detallado de primera calidad." },
-        { "title": "Atención al Detalle", "description": "Limpieza meticulosa de cada rincón." },
-        { "title": "Protección Duradera", "description": "Tratamientos que protegen tu pintura." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Cuánto tiempo toma el detallado?", "answer": "Detallado completo toma 3-5 horas típicamente." },
-        { "question": "¿Ofrecen servicio móvil?", "answer": "Sí, podemos ir a tu ubicación." },
-        { "question": "¿Qué incluye el detallado completo?", "answer": "Interior, exterior, motor, y protección de pintura." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Elena Vargas", "text": "Mi auto de 5 años parece recién salido de la agencia. Increíble trabajo.", "location": "Miami, FL" }]},
-      "cta": { "title": "¿Listo Para un Auto Brillante?", "subtitle": "Agenda tu detallado hoy", "button": "Agendar Detallado" },
+      "meta": {
+        "title": "Detallado de Autos | Limpieza Profesional",
+        "description": "Servicios de detallado automotriz para que tu auto luzca como nuevo."
+      },
+      "hero": {
+        "headline": "Tu Auto Como Nuevo",
+        "subheadline": "Detallado profesional que restaura el brillo y protege tu inversión."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestro Detallado?",
+        "items": [
+          {
+            "title": "Productos Premium",
+            "description": "Solo usamos productos de detallado de primera calidad."
+          },
+          { "title": "Atención al Detalle", "description": "Limpieza meticulosa de cada rincón." },
+          { "title": "Protección Duradera", "description": "Tratamientos que protegen tu pintura." }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Cuánto tiempo toma el detallado?",
+            "answer": "Detallado completo toma 3-5 horas típicamente."
+          },
+          { "question": "¿Ofrecen servicio móvil?", "answer": "Sí, podemos ir a tu ubicación." },
+          {
+            "question": "¿Qué incluye el detallado completo?",
+            "answer": "Interior, exterior, motor, y protección de pintura."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Elena Vargas",
+            "text": "Mi auto de 5 años parece recién salido de la agencia. Increíble trabajo.",
+            "location": "Miami, FL"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Listo Para un Auto Brillante?",
+        "subtitle": "Agenda tu detallado hoy",
+        "button": "Agendar Detallado"
+      },
       "form": { "title": "Agenda Tu Detallado", "subtitle": "Cuéntanos sobre tu vehículo" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Rápida", "free": "Cotización Gratis" }
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Rápida",
+        "free": "Cotización Gratis"
+      }
     },
     "towing": {
-      "meta": { "title": "Servicio de Grúa | Asistencia 24/7", "description": "Servicio de grúa y asistencia vial disponible 24 horas, 7 días a la semana." },
-      "hero": { "headline": "Ayuda en el Camino Cuando la Necesitas", "subheadline": "Servicio de grúa confiable disponible 24/7 para cualquier emergencia vehicular." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestro Servicio de Grúa?", "items": [
-        { "title": "Disponibilidad 24/7", "description": "Servicio a cualquier hora, cualquier día." },
-        { "title": "Respuesta Rápida", "description": "Llegamos en 30 minutos o menos." },
-        { "title": "Precios Justos", "description": "Tarifas claras sin sorpresas." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Cuánto cuesta el servicio?", "answer": "Depende de la distancia, te damos precio exacto por teléfono." },
-        { "question": "¿Pueden remolcar cualquier vehículo?", "answer": "Sí, autos, camionetas, motos y más." },
-        { "question": "¿Ofrecen asistencia vial?", "answer": "Sí, cambio de llantas, arranque de batería, apertura de puertas." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Juan Carlos Pérez", "text": "Me quedé varado a las 2am y llegaron en 20 minutos. Excelente servicio.", "location": "Houston, TX" }]},
-      "cta": { "title": "¿Necesitas una Grúa?", "subtitle": "Llama ahora para asistencia inmediata", "button": "Llamar Ahora" },
+      "meta": {
+        "title": "Servicio de Grúa | Asistencia 24/7",
+        "description": "Servicio de grúa y asistencia vial disponible 24 horas, 7 días a la semana."
+      },
+      "hero": {
+        "headline": "Ayuda en el Camino Cuando la Necesitas",
+        "subheadline": "Servicio de grúa confiable disponible 24/7 para cualquier emergencia vehicular."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestro Servicio de Grúa?",
+        "items": [
+          {
+            "title": "Disponibilidad 24/7",
+            "description": "Servicio a cualquier hora, cualquier día."
+          },
+          { "title": "Respuesta Rápida", "description": "Llegamos en 30 minutos o menos." },
+          { "title": "Precios Justos", "description": "Tarifas claras sin sorpresas." }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Cuánto cuesta el servicio?",
+            "answer": "Depende de la distancia, te damos precio exacto por teléfono."
+          },
+          {
+            "question": "¿Pueden remolcar cualquier vehículo?",
+            "answer": "Sí, autos, camionetas, motos y más."
+          },
+          {
+            "question": "¿Ofrecen asistencia vial?",
+            "answer": "Sí, cambio de llantas, arranque de batería, apertura de puertas."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Juan Carlos Pérez",
+            "text": "Me quedé varado a las 2am y llegaron en 20 minutos. Excelente servicio.",
+            "location": "Houston, TX"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Necesitas una Grúa?",
+        "subtitle": "Llama ahora para asistencia inmediata",
+        "button": "Llamar Ahora"
+      },
       "form": { "title": "Solicita Asistencia", "subtitle": "Describe tu ubicación y situación" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Respuesta Inmediata", "free": "Cotización por Teléfono" }
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Respuesta Inmediata",
+        "free": "Cotización por Teléfono"
+      }
     },
     "auto-glass": {
-      "meta": { "title": "Vidrios para Autos | Reparación y Reemplazo", "description": "Reparación y reemplazo de parabrisas y vidrios automotrices." },
-      "hero": { "headline": "Vidrios de Auto Perfectos", "subheadline": "Reparación y reemplazo de vidrios automotrices con calidad garantizada." },
-      "benefits": { "title": "¿Por Qué Elegir Nuestros Servicios de Vidrios?", "items": [
-        { "title": "Servicio Móvil", "description": "Vamos a tu ubicación sin costo extra." },
-        { "title": "Vidrios OEM", "description": "Usamos vidrios de calidad original." },
-        { "title": "Trabajo Garantizado", "description": "Garantía de por vida contra fugas." }
-      ]},
-      "faq": { "title": "Preguntas Frecuentes", "items": [
-        { "question": "¿Pueden reparar grietas pequeñas?", "answer": "Sí, grietas menores de 6 pulgadas usualmente se pueden reparar." },
-        { "question": "¿Trabajan con seguros?", "answer": "Sí, facturamos directamente a tu aseguradora." },
-        { "question": "¿Cuánto tiempo toma el reemplazo?", "answer": "Típicamente 1-2 horas para un parabrisas." }
-      ]},
-      "testimonials": { "title": "Lo Que Dicen Nuestros Clientes", "items": [{ "name": "Sandra Mejía", "text": "Vinieron a mi trabajo y reemplazaron el parabrisas en una hora.", "location": "Denver, CO" }]},
-      "cta": { "title": "¿Vidrio Dañado?", "subtitle": "Obtén reparación o reemplazo hoy", "button": "Cotización Gratis" },
-      "form": { "title": "Solicita Tu Servicio de Vidrios", "subtitle": "Describe el daño en tu vidrio" },
-      "trust": { "secure": "Seguro y Privado", "fast": "Servicio Móvil", "free": "Cotización Gratis" }
+      "meta": {
+        "title": "Vidrios para Autos | Reparación y Reemplazo",
+        "description": "Reparación y reemplazo de parabrisas y vidrios automotrices."
+      },
+      "hero": {
+        "headline": "Vidrios de Auto Perfectos",
+        "subheadline": "Reparación y reemplazo de vidrios automotrices con calidad garantizada."
+      },
+      "benefits": {
+        "title": "¿Por Qué Elegir Nuestros Servicios de Vidrios?",
+        "items": [
+          { "title": "Servicio Móvil", "description": "Vamos a tu ubicación sin costo extra." },
+          { "title": "Vidrios OEM", "description": "Usamos vidrios de calidad original." },
+          { "title": "Trabajo Garantizado", "description": "Garantía de por vida contra fugas." }
+        ]
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "items": [
+          {
+            "question": "¿Pueden reparar grietas pequeñas?",
+            "answer": "Sí, grietas menores de 6 pulgadas usualmente se pueden reparar."
+          },
+          {
+            "question": "¿Trabajan con seguros?",
+            "answer": "Sí, facturamos directamente a tu aseguradora."
+          },
+          {
+            "question": "¿Cuánto tiempo toma el reemplazo?",
+            "answer": "Típicamente 1-2 horas para un parabrisas."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo Que Dicen Nuestros Clientes",
+        "items": [
+          {
+            "name": "Sandra Mejía",
+            "text": "Vinieron a mi trabajo y reemplazaron el parabrisas en una hora.",
+            "location": "Denver, CO"
+          }
+        ]
+      },
+      "cta": {
+        "title": "¿Vidrio Dañado?",
+        "subtitle": "Obtén reparación o reemplazo hoy",
+        "button": "Cotización Gratis"
+      },
+      "form": {
+        "title": "Solicita Tu Servicio de Vidrios",
+        "subtitle": "Describe el daño en tu vidrio"
+      },
+      "trust": {
+        "secure": "Seguro y Privado",
+        "fast": "Servicio Móvil",
+        "free": "Cotización Gratis"
+      }
     }
   }
 }

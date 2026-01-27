@@ -13,13 +13,7 @@ export type UTMParams = LeadUtm;
 /**
  * Valid UTM parameter keys
  */
-const UTM_KEYS = [
-  'utm_source',
-  'utm_medium',
-  'utm_campaign',
-  'utm_term',
-  'utm_content',
-] as const;
+const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'] as const;
 
 /**
  * Parse UTM parameters from URL search params
@@ -44,7 +38,12 @@ export function parseUTMFromUrl(url: string): UTMParams {
   try {
     const urlObj = new URL(url);
     return parseUTMParams(urlObj.searchParams);
-  } catch {
+  } catch (error) {
+    // Log invalid URL but return empty params
+    console.warn(
+      '[UTM] Failed to parse URL:',
+      error instanceof Error ? error.message : 'Invalid URL format'
+    );
     return {};
   }
 }
@@ -74,8 +73,12 @@ export function storeUTMParams(utm: UTMParams): void {
     if (Object.keys(utm).length > 0) {
       window.sessionStorage.setItem('utm_params', JSON.stringify(utm));
     }
-  } catch {
-    // Silently fail if storage is not available
+  } catch (error) {
+    // Session storage may be unavailable (private browsing, storage full, etc.)
+    console.warn(
+      '[UTM] Failed to store UTM params:',
+      error instanceof Error ? error.message : 'Storage unavailable'
+    );
   }
 }
 
@@ -92,8 +95,12 @@ export function getStoredUTMParams(): UTMParams {
     if (stored) {
       return JSON.parse(stored) as UTMParams;
     }
-  } catch {
-    // Silently fail if storage is not available or parsing fails
+  } catch (error) {
+    // Storage unavailable or corrupted data
+    console.warn(
+      '[UTM] Failed to retrieve stored UTM params:',
+      error instanceof Error ? error.message : 'Parse error'
+    );
   }
 
   return {};

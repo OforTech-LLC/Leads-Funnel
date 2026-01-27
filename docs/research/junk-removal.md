@@ -18,6 +18,7 @@
 ## Above-Fold Patterns
 
 ### Headline Formulas
+
 - **Action-focused**: "Get Rid of Your Junk Today"
 - **Ease-focused**: "Junk Removal Made Easy"
 - **Speed-focused**: "Same-Day Junk Pickup Available"
@@ -26,6 +27,7 @@
 - **Relief-focused**: "Finally Clear Out That Clutter"
 
 ### Hero Section Elements
+
 1. **Prominent booking CTA** or quote request
 2. **Phone number** highly visible
 3. **Same-day service** messaging
@@ -34,6 +36,7 @@
 6. **Clean, clutter-free imagery** (ironic but effective)
 
 ### Visual Patterns
+
 - Before/after cluttered space transformations
 - Trucks and uniformed crews
 - Happy customers with cleared spaces
@@ -45,6 +48,7 @@
 ## CTA Patterns
 
 ### Primary CTA Text
+
 - "Book Now"
 - "Get a Free Quote"
 - "Schedule Pickup"
@@ -53,6 +57,7 @@
 - "Schedule Today"
 
 ### CTA Design Patterns
+
 - **Bright, action colors** (green, orange common)
 - **"Same-day service" badge** near CTA
 - **Phone number prominently displayed**
@@ -60,6 +65,7 @@
 - **"No obligation" messaging**
 
 ### Secondary CTAs
+
 - "See Our Pricing"
 - "What We Take"
 - "How It Works"
@@ -72,6 +78,7 @@
 ### Quick Quote Form (4-5 fields)
 
 **Essential Fields**
+
 - Name
 - Phone number
 - Email address
@@ -81,27 +88,32 @@
 ### Online Booking Form
 
 **Step 1: Service Details**
+
 - What do you need removed? (checkboxes)
 - Furniture | Appliances | Yard Waste | Construction Debris | General Junk
 - Estimated amount (dropdown: Few items, 1/4 truck, 1/2 truck, Full truck)
 
 **Step 2: Scheduling**
+
 - Preferred date (calendar)
 - Preferred time window
 - Location (address)
 
 **Step 3: Contact**
+
 - Name, phone, email
 - Access instructions (optional)
 - Photo upload (optional)
 
 ### Instant Pricing Features
+
 - LoadUp's instant price quote model
 - Volume-based pricing display
 - Photo upload for accurate quotes
 - "Book in seconds" messaging
 
 ### Form Best Practices
+
 - **Volume estimation** helps with pricing
 - **Photo upload option** for accuracy
 - **Same-day availability** indicator
@@ -113,18 +125,21 @@
 ## Trust Signals
 
 ### Industry Credentials
+
 - Licensed and Insured badge
 - BBB accreditation
 - Local business licensing
 - Background-checked employees
 
 ### Environmental Commitment
+
 - Recycling percentage ("We recycle/donate 70%+")
 - Eco-friendly disposal practices
 - Donation partnerships (Goodwill, Salvation Army, Habitat)
 - "Green junk removal" messaging
 
 ### Social Proof Elements
+
 - Customer review ratings
 - Google/Yelp review widgets
 - Number of items removed
@@ -133,6 +148,7 @@
 - Video testimonials
 
 ### Guarantees
+
 - Satisfaction guarantee
 - Upfront pricing guarantee
 - "No hidden fees"
@@ -214,17 +230,18 @@
 
 ### Common Objections & Responses
 
-| Objection | Landing Page Response |
-|-----------|----------------------|
-| "It's too expensive" | Volume-based pricing, compare to DIY (time, dump fees, truck rental) |
-| "I can do it myself" | Time savings, no heavy lifting, proper disposal, convenience |
-| "What if they damage something?" | Insured, careful handling, professional crews |
-| "I'm not sure how much I have" | Free estimates, volume-based pricing explanation |
-| "Do you take [specific item]?" | Comprehensive "What We Take" section |
-| "Is it eco-friendly?" | Recycling/donation statistics, environmental commitment |
-| "How soon can you come?" | Same-day service messaging, easy booking |
+| Objection                        | Landing Page Response                                                |
+| -------------------------------- | -------------------------------------------------------------------- |
+| "It's too expensive"             | Volume-based pricing, compare to DIY (time, dump fees, truck rental) |
+| "I can do it myself"             | Time savings, no heavy lifting, proper disposal, convenience         |
+| "What if they damage something?" | Insured, careful handling, professional crews                        |
+| "I'm not sure how much I have"   | Free estimates, volume-based pricing explanation                     |
+| "Do you take [specific item]?"   | Comprehensive "What We Take" section                                 |
+| "Is it eco-friendly?"            | Recycling/donation statistics, environmental commitment              |
+| "How soon can you come?"         | Same-day service messaging, easy booking                             |
 
 ### FAQ Questions to Include
+
 1. How much does junk removal cost?
 2. What items do you take?
 3. Do you offer same-day service?
@@ -320,12 +337,14 @@
 ```
 
 ### Key Metrics to Target
+
 - **Conversion rate**: 10-15% for booking/quote requests
 - **Same-day booking rate**: Track urgency conversions
 - **Average job value**: Track volume per booking
 - **Phone call rate**: Track click-to-call
 
 ### A/B Testing Priorities
+
 1. Hero imagery (clean space vs. truck loading vs. before/after)
 2. CTA text ("Book Now" vs. "Get Quote" vs. "Schedule Pickup")
 3. Pricing display (upfront vs. quote-based)
@@ -337,6 +356,7 @@
 ## Industry-Specific Insights
 
 ### What Makes Junk Removal Different
+
 - **Urgency-driven** - Many customers want same-day service
 - **Volume-based pricing** - Truck space model common
 - **Eco-consciousness** - Recycling/donation important to customers
@@ -344,30 +364,35 @@
 - **Visual transformation** - Before/after powerful
 
 ### Same-Day Service Positioning
+
 - Critical differentiator
 - Availability checker tool
 - Urgent booking options
 - "Book now, pickup today" messaging
 
 ### Environmental Messaging
+
 - College Hunks: 70%+ recycled/donated
 - 1-800-GOT-JUNK: 60%+ diverted from landfills
 - Donation partnerships as trust signals
 - Appeal to eco-conscious customers
 
 ### Pricing Transparency
+
 - LoadUp: Instant online pricing model
 - Volume visualization (1/4 truck, 1/2 truck, etc.)
 - No hidden fees emphasis
 - Free on-site estimates for complex jobs
 
 ### Service Expansion Opportunities
+
 - Moving services (College Hunks model)
 - Cleanout services (estate, hoarding)
 - Light demolition
 - Donation pickup coordination
 
 ### SEO Focus Areas
+
 - "Junk removal near me"
 - "Same-day junk pickup [city]"
 - "Furniture removal [city]"

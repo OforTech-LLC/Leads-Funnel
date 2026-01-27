@@ -3,6 +3,7 @@
 ## Research Sources & Real Landing Page URLs
 
 ### Major Brand Examples
+
 1. **Safelite AutoGlass** - https://www.safelite.com
 2. **Auto Glass Now** - https://www.autoglassnow.com
 3. **Glass Doctor** - https://glassdoctor.com
@@ -10,11 +11,13 @@
 5. **Novus Auto Glass** - https://www.novusautoglass.com
 
 ### Regional/Specialty Examples
+
 6. **National Auto Glass** - https://nationalautoglassus.com/promo/
 7. **Portsmouth Glass** - https://portsmouthglass.com
 8. **myWindshield** - https://www.mywindshield.com
 
 ### Landing Page Resources
+
 - https://www.landingpageflow.com/example/auto-glass-repair
 - https://creatego.net/auto-glass-landing-page/
 - https://www.servgrow.com/pro-websites/auto-glass
@@ -56,6 +59,7 @@
    - Trust badges (insurance partners)
 
 ### Visual Design Patterns
+
 - Clean, professional aesthetic
 - Before/after damage visuals
 - Insurance company logos prominent
@@ -69,20 +73,22 @@
 
 ### Primary CTAs
 
-| CTA Text | Purpose |
-|----------|---------|
-| "Get Free Quote" | Lead capture |
-| "Schedule Service" | Booking |
+| CTA Text                   | Purpose              |
+| -------------------------- | -------------------- |
+| "Get Free Quote"           | Lead capture         |
+| "Schedule Service"         | Booking              |
 | "Check Insurance Coverage" | Insurance-first flow |
-| "Call for Quote" | Phone conversion |
-| "Book Mobile Service" | Convenience focus |
+| "Call for Quote"           | Phone conversion     |
+| "Book Mobile Service"      | Convenience focus    |
 
 ### Insurance-First CTA Flow
+
 1. "Check Your Coverage" (primary)
 2. "Get Insurance Quote" (secondary)
 3. "Pay Out of Pocket" (tertiary)
 
 ### CTA Placement Strategy
+
 - Hero section: Primary quote CTA
 - Below damage types: Service-specific CTAs
 - After insurance section: "File Claim Now"
@@ -94,6 +100,7 @@
 ## Form Field Patterns
 
 ### Quick Quote Form (Highest Conversion)
+
 ```
 - Name *
 - Phone *
@@ -102,6 +109,7 @@
 ```
 
 ### Detailed Quote Form
+
 ```
 - First Name *
 - Last Name
@@ -127,6 +135,7 @@
 ```
 
 ### Insurance-Optimized Form
+
 ```
 Step 1: Insurance Info
 - Insurance Company *
@@ -143,6 +152,7 @@ Step 4: Damage Description
 ```
 
 ### Form Best Practices
+
 - Insurance company dropdown with major carriers
 - Vehicle year/make/model auto-complete
 - Damage size visual selector
@@ -155,6 +165,7 @@ Step 4: Damage Description
 ## Trust Signals
 
 ### Insurance Partnership Badges
+
 - Allstate Preferred
 - State Farm Select
 - GEICO Partner
@@ -165,6 +176,7 @@ Step 4: Damage Description
 - "We work with ALL insurance companies"
 
 ### Certification & Quality
+
 - OEM-equivalent glass
 - AGRSS (Auto Glass Replacement Safety Standard) Certified
 - NGA (National Glass Association) Member
@@ -172,6 +184,7 @@ Step 4: Damage Description
 - EPA compliant adhesives
 
 ### Warranty Badges
+
 - "Lifetime Warranty"
 - "National Warranty"
 - "Workmanship Guarantee"
@@ -179,6 +192,7 @@ Step 4: Damage Description
 - "OEM Glass Available"
 
 ### Social Proof
+
 - Google Reviews widget
 - "X windshields replaced"
 - Insurance partner count
@@ -269,20 +283,21 @@ Step 4: Damage Description
 
 ### Common Objections & Responses
 
-| Objection | Landing Page Solution |
-|-----------|----------------------|
-| "How much will it cost?" | "May be $0 with insurance", price ranges |
-| "Will insurance cover it?" | Insurance checker tool, partner logos |
-| "Will my rates go up?" | "Glass claims typically don't affect rates" |
-| "How long will it take?" | "Most services completed in 1-2 hours" |
-| "Can you come to me?" | Mobile service prominently featured |
-| "Is repair or replace better?" | Damage assessment guide with visuals |
-| "Will the glass be quality?" | OEM options, warranty, certifications |
-| "What about my sensors?" | ADAS calibration service mention |
+| Objection                      | Landing Page Solution                       |
+| ------------------------------ | ------------------------------------------- |
+| "How much will it cost?"       | "May be $0 with insurance", price ranges    |
+| "Will insurance cover it?"     | Insurance checker tool, partner logos       |
+| "Will my rates go up?"         | "Glass claims typically don't affect rates" |
+| "How long will it take?"       | "Most services completed in 1-2 hours"      |
+| "Can you come to me?"          | Mobile service prominently featured         |
+| "Is repair or replace better?" | Damage assessment guide with visuals        |
+| "Will the glass be quality?"   | OEM options, warranty, certifications       |
+| "What about my sensors?"       | ADAS calibration service mention            |
 
 ### Objection-Handling Content Blocks
 
 **Insurance Objection Handler**
+
 ```
 "Will Filing a Claim Raise My Rates?"
 In most cases, no. Filing an insurance claim for windshield
@@ -292,6 +307,7 @@ coverage, which doesn't usually affect your rates.
 ```
 
 **Cost Objection Handler**
+
 ```
 "What Will It Cost Me?"
 - With Insurance: Often $0 (deductible may be waived)
@@ -301,6 +317,7 @@ coverage, which doesn't usually affect your rates.
 ```
 
 **Quality Objection Handler**
+
 ```
 "What Kind of Glass Do You Use?"
 - OEM (Original Equipment Manufacturer) available
@@ -377,6 +394,7 @@ coverage, which doesn't usually affect your rates.
 ```
 
 ### Key Conversion Metrics
+
 - Quote form conversion: 8-12%
 - Insurance-first flow conversion: 15-20%
 - Phone call rate: 10-15%
@@ -384,6 +402,7 @@ coverage, which doesn't usually affect your rates.
 - Average lead cost: $15-30
 
 ### A/B Testing Priorities
+
 1. "$0 with insurance" prominence
 2. Form length (4 vs 7 fields)
 3. Insurance logos placement
@@ -396,6 +415,7 @@ coverage, which doesn't usually affect your rates.
 ## Mobile-Specific Patterns
 
 ### Critical Mobile Elements
+
 - Click-to-call prominent
 - Quick quote form above fold
 - Insurance selector easy to tap
@@ -404,6 +424,7 @@ coverage, which doesn't usually affect your rates.
 - GPS for service area check
 
 ### Mobile Form Optimization
+
 - Insurance company auto-complete
 - Vehicle info auto-detect (if possible)
 - Photo capture for damage
@@ -415,18 +436,21 @@ coverage, which doesn't usually affect your rates.
 ## Special Considerations
 
 ### ADAS Calibration
+
 - Mention for vehicles with sensors
 - Additional service offering
 - Safety importance messaging
 - Premium service upsell
 
 ### OEM vs Aftermarket
+
 - Option to choose glass type
 - Price difference explanation
 - Quality assurance for both
 - Insurance coverage differences
 
 ### Seasonal Messaging
+
 - Winter: "Cold can spread cracks"
 - Summer: "Heat causes expansion"
 - Storm season: "Hail damage experts"

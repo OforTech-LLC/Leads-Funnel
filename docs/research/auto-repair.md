@@ -3,6 +3,7 @@
 ## Research Sources & Real Landing Page URLs
 
 ### Major Brand Examples
+
 1. **Midas** - https://www.midas.com
 2. **Meineke** - https://www.meineke.com
 3. **Firestone Complete Auto Care** - https://www.firestonecompleteautocare.com
@@ -15,6 +16,7 @@
 10. **Christian Brothers Automotive** - https://www.cbac.com
 
 ### Landing Page Resources
+
 - https://landingi.com/blog/automotive-landing-page-examples/
 - https://intentcliq.com/auto-repair-landing-page-examples/
 - https://conceptualminds.com/increase-orders-auto-repair-leads/
@@ -26,6 +28,7 @@
 ## Above-Fold Patterns
 
 ### Hero Section Structure
+
 1. **Full-width hero image** featuring:
    - Mechanic working on vehicle (action shot)
    - Clean, professional shop environment
@@ -52,6 +55,7 @@
    - Address/service area indicator
 
 ### Visual Design Patterns
+
 - High-contrast color scheme (often red/blue + white)
 - Professional photography over stock images
 - Clean, uncluttered layout
@@ -63,15 +67,17 @@
 ## CTA Patterns
 
 ### Primary CTAs
-| CTA Text | Use Case |
-|----------|----------|
-| "Get a Free Quote" | Lead capture focus |
-| "Schedule Service" | Appointment booking |
-| "Call Now" | Immediate contact |
-| "Book Online" | Self-service scheduling |
-| "Request Appointment" | Form-based booking |
+
+| CTA Text              | Use Case                |
+| --------------------- | ----------------------- |
+| "Get a Free Quote"    | Lead capture focus      |
+| "Schedule Service"    | Appointment booking     |
+| "Call Now"            | Immediate contact       |
+| "Book Online"         | Self-service scheduling |
+| "Request Appointment" | Form-based booking      |
 
 ### CTA Placement Strategy
+
 1. **Above the fold** - Primary CTA visible without scrolling
 2. **Sticky header** - Phone number + CTA always visible
 3. **After each service section** - Contextual CTAs
@@ -79,6 +85,7 @@
 5. **Exit intent popup** - Discount/coupon offer
 
 ### CTA Design Patterns
+
 - Contrasting button color (orange, green, or red)
 - Large, thumb-friendly buttons (mobile)
 - Action-oriented text (verbs first)
@@ -90,6 +97,7 @@
 ## Form Field Patterns
 
 ### Minimal Form (Highest Conversion)
+
 ```
 - Name
 - Phone Number
@@ -97,6 +105,7 @@
 ```
 
 ### Standard Quote Form
+
 ```
 - First Name *
 - Last Name
@@ -109,11 +118,13 @@
 ```
 
 ### Progressive Disclosure
+
 1. **Step 1**: Contact info (name, phone, email)
 2. **Step 2**: Vehicle info (year, make, model)
 3. **Step 3**: Service details (issue description)
 
 ### Form Best Practices
+
 - Maximum 4-5 fields for initial contact
 - Phone number as required field
 - Service dropdown with common issues
@@ -126,6 +137,7 @@
 ## Trust Signals
 
 ### Certification Badges
+
 - ASE Certified Technicians
 - AAA Approved Auto Repair
 - BBB Accredited (with rating)
@@ -134,6 +146,7 @@
 - Bosch Car Service
 
 ### Social Proof Elements
+
 1. **Review Integration**
    - Google Reviews widget (star rating + count)
    - Yelp rating display
@@ -153,6 +166,7 @@
    - "Free Re-inspection"
 
 ### Trust Content
+
 - "Family Owned & Operated"
 - "Honest, Transparent Pricing"
 - "No Surprise Charges"
@@ -223,17 +237,18 @@
 
 ### Common Objections & Responses
 
-| Objection | Landing Page Solution |
-|-----------|----------------------|
-| "Is this shop trustworthy?" | Certifications, reviews, years in business |
-| "Will they overcharge me?" | "Free estimates", "No hidden fees", price match |
-| "Is the work quality?" | Warranty guarantee, ASE certification, before/after |
-| "Will it take too long?" | "Same-day service", "While-you-wait repairs" |
-| "Can I afford it?" | Financing options, coupons, payment plans |
-| "Do they work on my car?" | "All makes and models" statement |
-| "Are they convenient?" | Hours, location, shuttle service, loaner cars |
+| Objection                   | Landing Page Solution                               |
+| --------------------------- | --------------------------------------------------- |
+| "Is this shop trustworthy?" | Certifications, reviews, years in business          |
+| "Will they overcharge me?"  | "Free estimates", "No hidden fees", price match     |
+| "Is the work quality?"      | Warranty guarantee, ASE certification, before/after |
+| "Will it take too long?"    | "Same-day service", "While-you-wait repairs"        |
+| "Can I afford it?"          | Financing options, coupons, payment plans           |
+| "Do they work on my car?"   | "All makes and models" statement                    |
+| "Are they convenient?"      | Hours, location, shuttle service, loaner cars       |
 
 ### Objection-Handling Content
+
 - **Warranty Section**: Detailed coverage explanation
 - **Pricing Transparency**: "We'll never start work without approval"
 - **Expertise Proof**: Tech bios, certifications, training
@@ -284,6 +299,7 @@
 ```
 
 ### Key Conversion Metrics to Target
+
 - Form conversion rate: 5-10%
 - Phone call rate: 3-5%
 - Average page time: 2+ minutes
@@ -291,6 +307,7 @@
 - Mobile conversion: At least 60% of desktop
 
 ### A/B Testing Priorities
+
 1. Headline variations
 2. CTA button color/text
 3. Form length (3 vs 5 fields)

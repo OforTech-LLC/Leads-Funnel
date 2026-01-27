@@ -14,24 +14,27 @@ Creates AWS WAF Web ACL for CloudFront protection with managed rules and rate li
 
 ## Important Notes
 
-1. **Region Requirement**: This module MUST be applied in `us-east-1` for
-   CloudFront compatibility. Use a provider alias if your default region differs.
+1. **Region Requirement**: This module MUST be applied in `us-east-1` for CloudFront compatibility.
+   Use a provider alias if your default region differs.
 
-2. **Cost**: WAF costs ~$5/month base + $1/million requests. Rate limiting
-   and managed rules have additional costs.
+2. **Cost**: WAF costs ~$5/month base + $1/million requests. Rate limiting and managed rules have
+   additional costs.
 
 ## Rules
 
 ### Priority 0: Rate Limiting
+
 - Blocks IPs that exceed 500 requests per 5 minutes
 - Configurable via `rate_limit_requests` variable
 
 ### Priority 1: Common Rule Set
+
 - Protects against common web exploits
 - XSS, LFI, RFI, etc.
 - Some rules can be excluded if causing false positives
 
 ### Priority 2: Known Bad Inputs
+
 - Blocks requests with known malicious patterns
 - Log4j exploits, etc.
 
@@ -76,25 +79,26 @@ module "static_site" {
 ## Monitoring
 
 WAF metrics are available in CloudWatch:
+
 - `BlockedRequests`
 - `AllowedRequests`
 - `CountedRequests`
 
 ## Inputs
 
-| Name | Description | Type | Default |
-|------|-------------|------|---------|
-| project_name | Project name | string | - |
-| environment | Environment (dev/prod) | string | - |
-| rate_limit_requests | Requests per 5 min per IP | number | 500 |
-| common_rules_excluded | Rules to count instead of block | list(string) | [] |
-| enable_logging | Enable CloudWatch logging | bool | true |
-| log_retention_days | Log retention period | number | 30 |
+| Name                  | Description                     | Type         | Default |
+| --------------------- | ------------------------------- | ------------ | ------- |
+| project_name          | Project name                    | string       | -       |
+| environment           | Environment (dev/prod)          | string       | -       |
+| rate_limit_requests   | Requests per 5 min per IP       | number       | 500     |
+| common_rules_excluded | Rules to count instead of block | list(string) | []      |
+| enable_logging        | Enable CloudWatch logging       | bool         | true    |
+| log_retention_days    | Log retention period            | number       | 30      |
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| web_acl_id | WAF Web ACL ID |
-| web_acl_arn | WAF Web ACL ARN |
+| Name          | Description              |
+| ------------- | ------------------------ |
+| web_acl_id    | WAF Web ACL ID           |
+| web_acl_arn   | WAF Web ACL ARN          |
 | log_group_arn | CloudWatch Log Group ARN |

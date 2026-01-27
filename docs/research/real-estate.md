@@ -23,20 +23,22 @@
 
 ## CTA Patterns
 
-| Type | Examples |
-|------|----------|
+| Type      | Examples                                            |
+| --------- | --------------------------------------------------- |
 | Valuation | "Get Your Free Home Value", "What's My Home Worth?" |
-| Search | "Search Homes", "Find Your Dream Home" |
-| Contact | "Schedule a Consultation", "Talk to an Agent" |
-| Offer | "Get Your Cash Offer", "See Your Offer" |
+| Search    | "Search Homes", "Find Your Dream Home"              |
+| Contact   | "Schedule a Consultation", "Talk to an Agent"       |
+| Offer     | "Get Your Cash Offer", "See Your Offer"             |
 
 ## Form Field Patterns
 
 **Minimal (Highest Conversion)**
+
 - Property address only
 - Email only
 
 **Standard**
+
 - Full name
 - Email
 - Phone
@@ -44,6 +46,7 @@
 - Budget range (for buyers)
 
 **Extended**
+
 - Timeline (When looking to buy/sell?)
 - Pre-approval status
 - Property type preference
@@ -71,21 +74,23 @@
 
 ## Objection Handling
 
-| Objection | How They Address It |
-|-----------|---------------------|
-| "Agents cost too much" | Highlight savings (1% listing fee vs 3%) |
-| "Process is stressful" | Emphasize concierge service, hand-holding |
-| "Don't know market value" | Free instant home valuation |
-| "Not ready yet" | "Just exploring? That's okay" soft CTA |
-| "Don't trust online" | Local agent photos, credentials, reviews |
+| Objection                 | How They Address It                       |
+| ------------------------- | ----------------------------------------- |
+| "Agents cost too much"    | Highlight savings (1% listing fee vs 3%)  |
+| "Process is stressful"    | Emphasize concierge service, hand-holding |
+| "Don't know market value" | Free instant home valuation               |
+| "Not ready yet"           | "Just exploring? That's okay" soft CTA    |
+| "Don't trust online"      | Local agent photos, credentials, reviews  |
 
 ## Conversion Blueprint
 
 ### Recommended Headline Formula
-"[Benefit] Your [Property Type] in [Location] — [Unique Value Prop]"
-Example: "Sell Your Miami Home for 20% More — In Half the Time"
+
+"[Benefit] Your [Property Type] in [Location] — [Unique Value Prop]" Example: "Sell Your Miami Home
+for 20% More — In Half the Time"
 
 ### Section Order
+
 1. Hero with address input or consultation CTA
 2. 3-Step Process (Simple visualization)
 3. Key Benefits (3 cards: Save Money, Sell Faster, Expert Guidance)
@@ -96,6 +101,7 @@ Example: "Sell Your Miami Home for 20% More — In Half the Time"
 8. Final CTA Section (Repeat hero offer)
 
 ### Form Fields
+
 - Name (required)
 - Email (required)
 - Phone (required)
@@ -103,6 +109,7 @@ Example: "Sell Your Miami Home for 20% More — In Half the Time"
 - "Best time to contact" (optional dropdown)
 
 ### CTA Wording
+
 - Primary: "Get Your Free Home Valuation"
 - Secondary: "Schedule a No-Obligation Consultation"
 - Soft: "See Homes in My Area"

@@ -59,12 +59,32 @@ resource "aws_dynamodb_table" "funnel" {
     type = "S"
   }
 
+  # GSI2 attributes for admin queries (by status)
+  attribute {
+    name = "gsi2pk"
+    type = "S"
+  }
+
+  attribute {
+    name = "gsi2sk"
+    type = "S"
+  }
+
   # Global Secondary Index for querying by email
   # Pattern: gsi1pk=EMAIL#<email>, gsi1sk=CREATED#<timestamp>
   global_secondary_index {
     name            = "GSI1"
     hash_key        = "gsi1pk"
     range_key       = "gsi1sk"
+    projection_type = "ALL"
+  }
+
+  # Global Secondary Index for admin queries by status
+  # Pattern: gsi2pk=STATUS#<status>, gsi2sk=CREATED#<timestamp>
+  global_secondary_index {
+    name            = "GSI2"
+    hash_key        = "gsi2pk"
+    range_key       = "gsi2sk"
     projection_type = "ALL"
   }
 

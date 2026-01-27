@@ -18,6 +18,7 @@
 ## Above-Fold Patterns
 
 ### Headline Formulas
+
 - **Transformation-focused**: "Transform Your Home with Beautiful Floors"
 - **Speed-focused**: "New Floors Installed as Soon as Tomorrow"
 - **Price-focused**: "Quality Flooring at Unbeatable Prices"
@@ -26,6 +27,7 @@
 - **Guarantee-focused**: "Love Your Floors or We'll Replace Them"
 
 ### Hero Section Elements
+
 1. **Room visualizer tool** prominently featured
 2. **Flooring type navigation** (hardwood, carpet, vinyl, tile)
 3. **Free in-home estimate CTA**
@@ -34,6 +36,7 @@
 6. **Beautiful room imagery** with various floor types
 
 ### Visual Patterns
+
 - Large, inspiring room photography
 - Flooring close-up textures
 - Before/after room transformations
@@ -45,6 +48,7 @@
 ## CTA Patterns
 
 ### Primary CTA Text
+
 - "Get a Free Estimate"
 - "Schedule Free In-Home Appointment"
 - "Shop at Home - It's Free"
@@ -53,6 +57,7 @@
 - "Find Your Perfect Floor"
 
 ### CTA Design Patterns
+
 - **"Shop at Home" positioning** as primary differentiator
 - **Room visualizer CTA** for engagement
 - **Phone number prominently displayed**
@@ -60,6 +65,7 @@
 - **Price match guarantees** near CTA
 
 ### Secondary CTAs
+
 - "Browse Products"
 - "See Flooring Styles"
 - "View Special Offers"
@@ -72,6 +78,7 @@
 ### Free Estimate Form (5-6 fields)
 
 **Essential Fields**
+
 - Name
 - Phone number
 - Email address
@@ -82,22 +89,27 @@
 ### Shop-at-Home Appointment Form
 
 **Step 1: Service Selection**
+
 - What rooms need flooring?
 - What type of flooring interests you? (hardwood, carpet, vinyl, tile, unsure)
 
 **Step 2: Home Details**
+
 - Approximate square footage
 - Timeline (ASAP, 1-3 months, 3-6 months, just browsing)
 
 **Step 3: Appointment Scheduling**
+
 - Preferred date (calendar)
 - Preferred time slot (morning, afternoon, evening)
 
 **Step 4: Contact Info**
+
 - Name, phone, email
 - Address (for appointment)
 
 ### Form Best Practices
+
 - **Room visualizer integration** before form
 - **Flooring type pre-selection** shows interest
 - **"Free, no-obligation" messaging** prominent
@@ -109,6 +121,7 @@
 ## Trust Signals
 
 ### Price & Quality Guarantees
+
 - "Lowest Price Guarantee"
 - "We'll Beat Any Competitor's Price"
 - "Love Your Floor Guarantee"
@@ -116,6 +129,7 @@
 - Free installation promotions
 
 ### Industry Credentials
+
 - Better Business Bureau rating
 - Licensed and insured installers
 - Manufacturer certifications
@@ -123,6 +137,7 @@
 - Number of installations completed
 
 ### Social Proof Elements
+
 - Customer review ratings
 - "X Million Homes Floored"
 - Review platform integrations
@@ -130,6 +145,7 @@
 - Video testimonials
 
 ### Quality Indicators
+
 - Brand partnerships (Shaw, Mohawk, Armstrong)
 - Product warranties
 - Professional installation guarantee
@@ -207,17 +223,18 @@
 
 ### Common Objections & Responses
 
-| Objection | Landing Page Response |
-|-----------|----------------------|
-| "Flooring is too expensive" | Price match guarantee, financing options, "starting at" pricing |
-| "I don't know what type I need" | Free consultation, room visualizer, style guides |
+| Objection                         | Landing Page Response                                                 |
+| --------------------------------- | --------------------------------------------------------------------- |
+| "Flooring is too expensive"       | Price match guarantee, financing options, "starting at" pricing       |
+| "I don't know what type I need"   | Free consultation, room visualizer, style guides                      |
 | "Installation will be disruptive" | Fast installation timeline, professional installers, furniture moving |
-| "I'm worried about quality" | Brand partnerships, product warranties, satisfaction guarantee |
-| "I want to see it first" | Shop-at-home service, bring samples to you |
-| "Hidden costs concern me" | All-inclusive pricing, no hidden fees messaging |
-| "I need to measure first" | Free in-home measurement included |
+| "I'm worried about quality"       | Brand partnerships, product warranties, satisfaction guarantee        |
+| "I want to see it first"          | Shop-at-home service, bring samples to you                            |
+| "Hidden costs concern me"         | All-inclusive pricing, no hidden fees messaging                       |
+| "I need to measure first"         | Free in-home measurement included                                     |
 
 ### FAQ Questions to Include
+
 1. What type of flooring is best for my room?
 2. How long does installation take?
 3. Do you move furniture?
@@ -300,12 +317,14 @@
 ```
 
 ### Key Metrics to Target
+
 - **Conversion rate**: 8-12% for appointment requests
 - **Visualizer engagement**: Track tool usage
 - **Appointment show rate**: Monitor no-shows
 - **Average order value**: Track upsells
 
 ### A/B Testing Priorities
+
 1. Hero imagery (room shot vs. flooring close-up)
 2. CTA text ("Free Quote" vs. "Shop at Home" vs. "See Prices")
 3. Visualizer placement (hero vs. dedicated section)
@@ -317,13 +336,16 @@
 ## Industry-Specific Insights
 
 ### What Makes Flooring Different
+
 - **Visual decision** - Room visualizers highly effective
 - **Shop-at-home model** - Key differentiator for many companies
 - **Installation bundled** - Total price matters
 - **Room-specific needs** - Kitchen vs. bedroom vs. bathroom
 
 ### Product-Specific Landing Pages
+
 Create separate pages for:
+
 - Hardwood flooring
 - Luxury vinyl plank (LVP)
 - Carpet
@@ -333,18 +355,21 @@ Create separate pages for:
 Each with tailored benefits and imagery
 
 ### Room Visualizer Best Practices
+
 - Empire Today's visualizer increases engagement significantly
 - Allow photo upload AND preset rooms
 - Show multiple flooring options
 - Lead capture after visualization
 
 ### Financing Messaging
+
 - 0% APR financing options
 - "As low as $X/month" pricing
 - Buy now, pay later options
 - Credit approval messaging
 
 ### SEO Focus Areas
+
 - "Flooring installation [city]"
 - "Hardwood floors near me"
 - "[Flooring type] installation cost"

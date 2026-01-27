@@ -165,6 +165,12 @@ variable "enable_alarms" {
   description = "Enable CloudWatch alarms"
 }
 
+variable "enable_synthetics" {
+  type        = bool
+  default     = false
+  description = "Enable CloudWatch Synthetics canary monitoring"
+}
+
 variable "enable_pitr" {
   type        = bool
   default     = false
@@ -187,6 +193,12 @@ variable "enable_elevenlabs" {
   type        = bool
   default     = false
   description = "Enable ElevenLabs AI voice synthesis"
+}
+
+variable "enable_cloudtrail" {
+  type        = bool
+  default     = false
+  description = "Enable CloudTrail for AWS API audit logging"
 }
 
 # -----------------------------------------------------------------------------
@@ -258,4 +270,57 @@ variable "basic_auth_password" {
   default     = "admin"
   description = "Password for basic authentication"
   sensitive   = true
+}
+
+# -----------------------------------------------------------------------------
+# Admin Console Configuration (DISABLED by default)
+# -----------------------------------------------------------------------------
+variable "enable_admin_console" {
+  type        = bool
+  default     = false
+  description = "Enable admin console feature. MUST be explicitly enabled."
+}
+
+variable "enable_admin_ip_allowlist" {
+  type        = bool
+  default     = false
+  description = "Enable IP allowlist restriction for admin access"
+}
+
+variable "admin_allowed_emails" {
+  type        = string
+  default     = ""
+  description = "Comma-separated list of allowed admin email addresses"
+  sensitive   = true
+}
+
+variable "admin_allowed_cidrs" {
+  type        = string
+  default     = "0.0.0.0/0"
+  description = "Comma-separated list of allowed CIDR blocks for admin access"
+  sensitive   = true
+}
+
+variable "admin_cognito_domain_prefix" {
+  type        = string
+  default     = "kanjona-admin-dev"
+  description = "Cognito hosted UI domain prefix for admin authentication"
+}
+
+variable "admin_exports_bucket_name" {
+  type        = string
+  default     = "kanjona-admin-exports-dev"
+  description = "S3 bucket name for admin exports (must be globally unique)"
+}
+
+variable "admin_lambda_zip_path" {
+  type        = string
+  default     = "../../../apps/api/dist/admin-handler.zip"
+  description = "Path to admin Lambda deployment package"
+}
+
+variable "admin_lambda_zip_hash" {
+  type        = string
+  default     = ""
+  description = "Base64-encoded SHA256 hash of admin Lambda package"
 }

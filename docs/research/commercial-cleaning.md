@@ -3,6 +3,7 @@
 ## Research Sources & Real Landing Page URLs
 
 ### Major Franchise/National Brand Examples
+
 1. **JAN-PRO Cleaning & Disinfecting** - https://jan-pro.com
 2. **ServiceMaster Clean** - https://www.servicemasterclean.com
 3. **Jani-King** - https://www.janiking.com
@@ -13,10 +14,12 @@
 8. **Anago Cleaning Systems** - https://anagocleaning.com
 
 ### Regional Examples
+
 9. **The Cleaning Authority (Commercial)** - https://www.thecleaningauthority.com
 10. **Merry Maids (Commercial)** - https://www.merrymaids.com
 
 ### Landing Page Resources
+
 - https://methodcleanbiz.com/2025/04/09/sample-cleaning-service-landing-page-that-converts/
 - https://methodcleanbiz.com/2025/04/13/10-must-have-elements-for-a-cleaning-service-landing-page/
 - https://www.abstraktmg.com/landing-page-for-commercial-cleaning/
@@ -60,6 +63,7 @@
    - Service area mention
 
 ### Visual Design Patterns
+
 - Clean, professional aesthetic (literally)
 - Blue/green color schemes (trust + clean)
 - High-quality facility imagery
@@ -73,21 +77,23 @@
 
 ### Primary CTAs
 
-| CTA Text | Purpose |
-|----------|---------|
-| "Get a Free Quote" | Lead capture |
+| CTA Text                          | Purpose             |
+| --------------------------------- | ------------------- |
+| "Get a Free Quote"                | Lead capture        |
 | "Request a Facility Consultation" | Premium positioning |
-| "Schedule My Cleaning" | Booking focus |
-| "Get Custom Pricing" | B2B sales |
-| "See Our Services" | Information seekers |
+| "Schedule My Cleaning"            | Booking focus       |
+| "Get Custom Pricing"              | B2B sales           |
+| "See Our Services"                | Information seekers |
 
 ### B2B CTA Hierarchy
+
 1. **Free Quote/Consultation** - Primary
 2. **Call to Discuss** - Secondary
 3. **Download Checklist** - Lead magnet
 4. **View Case Studies** - Research phase
 
 ### CTA Placement Strategy
+
 - Hero section: Primary quote CTA
 - After each industry section: Specific CTAs
 - Testimonials section: "Join Our Clients"
@@ -99,6 +105,7 @@
 ## Form Field Patterns
 
 ### Quick Quote Form (B2B Optimized)
+
 ```
 - Company Name *
 - Contact Name *
@@ -109,6 +116,7 @@
 ```
 
 ### Detailed Commercial Quote Form
+
 ```
 - Company Name *
 - Contact Person *
@@ -153,6 +161,7 @@
 ```
 
 ### Form Best Practices
+
 - Company name first (B2B signal)
 - Square footage ranges (not exact)
 - Multi-select for services
@@ -165,6 +174,7 @@
 ## Trust Signals
 
 ### Certification & Compliance Badges
+
 - Green Seal Certified
 - ISSA Member (Cleaning Industry Association)
 - BSCAI Member (Building Service Contractors)
@@ -175,18 +185,21 @@
 - Disinfection certifications
 
 ### Insurance & Bonding
+
 - "Fully Bonded & Insured"
 - "$X Million Liability Coverage"
 - "Workers' Compensation Coverage"
 - "Fidelity Bonding"
 
 ### Industry-Specific Certifications
+
 - Healthcare: HIPAA Compliant
 - Food Service: Health Department Approved
 - Schools: Background-Checked Staff
 - Office: Commercial Insurance
 
 ### Social Proof Elements
+
 1. **Client Logos**
    - Major company logos served
    - Industry diversity
@@ -289,20 +302,21 @@
 
 ### Common Objections & Responses
 
-| Objection | Landing Page Solution |
-|-----------|----------------------|
-| "How much does it cost?" | "Custom quotes based on your needs", pricing factors explanation |
-| "Are your workers trustworthy?" | Background check policy, bonding/insurance details |
-| "What if I'm not satisfied?" | Satisfaction guarantee, re-clean policy |
-| "Do you use safe products?" | Green cleaning certifications, product info |
-| "Will you damage our property?" | Insurance coverage, liability limits |
-| "Can you handle our industry?" | Industry-specific pages, relevant certifications |
-| "What about security?" | Key/alarm protocols, NDA availability |
-| "Are you flexible with scheduling?" | 24/7 availability, custom scheduling |
+| Objection                           | Landing Page Solution                                            |
+| ----------------------------------- | ---------------------------------------------------------------- |
+| "How much does it cost?"            | "Custom quotes based on your needs", pricing factors explanation |
+| "Are your workers trustworthy?"     | Background check policy, bonding/insurance details               |
+| "What if I'm not satisfied?"        | Satisfaction guarantee, re-clean policy                          |
+| "Do you use safe products?"         | Green cleaning certifications, product info                      |
+| "Will you damage our property?"     | Insurance coverage, liability limits                             |
+| "Can you handle our industry?"      | Industry-specific pages, relevant certifications                 |
+| "What about security?"              | Key/alarm protocols, NDA availability                            |
+| "Are you flexible with scheduling?" | 24/7 availability, custom scheduling                             |
 
 ### Objection-Handling Content Blocks
 
 **Cost Objection Handler**
+
 ```
 "How Much Does Commercial Cleaning Cost?"
 Pricing depends on:
@@ -317,6 +331,7 @@ Most businesses pay $0.05-$0.25 per sq ft.
 ```
 
 **Trust/Security Handler**
+
 ```
 "Your Security is Our Priority"
 - All employees background-checked
@@ -327,6 +342,7 @@ Most businesses pay $0.05-$0.25 per sq ft.
 ```
 
 **Quality Assurance Handler**
+
 ```
 "100% Satisfaction Guaranteed"
 - Regular quality inspections
@@ -408,6 +424,7 @@ Most businesses pay $0.05-$0.25 per sq ft.
 ```
 
 ### Key Conversion Metrics
+
 - Quote form conversion: 3-7% (B2B typical)
 - Phone call rate: 5-8%
 - Lead-to-appointment: 25-35%
@@ -415,6 +432,7 @@ Most businesses pay $0.05-$0.25 per sq ft.
 - Client logos impact: +69% conversion
 
 ### A/B Testing Priorities
+
 1. Headline (benefit vs feature)
 2. Form length (5 vs 8 fields)
 3. Client logo placement
@@ -427,6 +445,7 @@ Most businesses pay $0.05-$0.25 per sq ft.
 ## Mobile-Specific Patterns
 
 ### Critical Mobile Elements
+
 - Click-to-call prominent
 - Simplified quote form (5 fields max)
 - Collapsible service sections
@@ -435,6 +454,7 @@ Most businesses pay $0.05-$0.25 per sq ft.
 - Fast loading (compressed images)
 
 ### Mobile Form Optimization
+
 - Dropdown menus over typing
 - Square footage ranges (not exact)
 - Checkbox multi-select
@@ -446,6 +466,7 @@ Most businesses pay $0.05-$0.25 per sq ft.
 ## B2B-Specific Considerations
 
 ### Decision Maker Targeting
+
 - Facility Manager
 - Office Manager
 - Operations Director
@@ -453,11 +474,13 @@ Most businesses pay $0.05-$0.25 per sq ft.
 - Property Manager
 
 ### Content for Each Stage
+
 1. **Awareness**: Industry stats, cleaning benefits
 2. **Consideration**: Case studies, comparisons
 3. **Decision**: Pricing, guarantees, testimonials
 
 ### Lead Magnet Ideas
+
 - "Commercial Cleaning Checklist"
 - "Facility Hygiene Assessment"
 - "Cleaning Frequency Guide"
@@ -465,6 +488,7 @@ Most businesses pay $0.05-$0.25 per sq ft.
 - "Industry-Specific Cleaning Standards"
 
 ### Follow-up Strategy
+
 - Immediate email confirmation
 - Same-day phone call
 - Site visit offer

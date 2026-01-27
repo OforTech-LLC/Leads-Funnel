@@ -91,6 +91,7 @@ POST /funnel/:funnelId/leads
 ```
 
 **Request Body:**
+
 ```json
 {
   "name": "John Doe",
@@ -107,6 +108,7 @@ POST /funnel/:funnelId/leads
 ```
 
 **Headers:**
+
 - `Content-Type: application/json`
 - `Idempotency-Key: <unique-key>` (optional, prevents duplicates)
 - `X-API-Key: <api-key>` (if API key auth enabled)

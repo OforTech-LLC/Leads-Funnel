@@ -37,6 +37,7 @@
 ## Above-Fold Patterns
 
 ### Headline Formulas
+
 - **Results-focused**: "Restore Your Hair. Restore Your Confidence."
 - **Transformation-driven**: "Get Your Hair Back - Permanently"
 - **Specific procedure**: "Natural-Looking FUE Hair Transplant Results"
@@ -45,6 +46,7 @@
 - **Outcome-focused**: "Full, Natural Hair in 12 Months"
 
 ### Visual Elements
+
 - Before/after transformation photos (prominent)
 - Professional surgeon/team imagery
 - Modern clinic environment
@@ -53,6 +55,7 @@
 - Video backgrounds of procedures/results
 
 ### Above-Fold Components
+
 - Clear, emotional headline
 - Subheadline with unique value proposition
 - Lead capture form or prominent CTA
@@ -61,6 +64,7 @@
 - Phone number displayed
 
 ### Hero Section Layouts
+
 - Split layout: Transformation image + form
 - Full-width before/after slider
 - Video hero with overlay CTA
@@ -71,6 +75,7 @@
 ## CTA Patterns
 
 ### Primary CTAs
+
 - "Book Your Free Consultation"
 - "Get Your Free Hair Analysis"
 - "Schedule Your Assessment"
@@ -78,18 +83,21 @@
 - "Request Your Custom Quote"
 
 ### Procedure-Specific CTAs
+
 - **FUE**: "Learn About FUE Hair Transplant"
 - **FUT**: "Explore Strip Method Options"
 - **Beard**: "Book Beard Transplant Consultation"
 - **Eyebrow**: "Schedule Eyebrow Restoration Consult"
 
 ### Lead Magnet CTAs
+
 - "Download Our Hair Transplant Guide"
 - "Get Your Free Cost Estimate"
 - "Take the Hair Loss Assessment Quiz"
 - "Watch Our Patient Transformation Videos"
 
 ### CTA Design
+
 - High contrast colors
 - Large, clickable buttons
 - Action-oriented text
@@ -97,6 +105,7 @@
 - Multiple placements throughout page
 
 ### CTA Placement Strategy
+
 - Hero section (above fold)
 - After before/after gallery
 - Following testimonial sections
@@ -109,11 +118,13 @@
 ## Form Field Patterns
 
 ### Minimal Lead Capture (Highest Conversion)
+
 1. Full Name
 2. Phone Number
 3. Email Address
 
 ### Standard Consultation Request
+
 1. Full Name
 2. Phone Number
 3. Email Address
@@ -121,6 +132,7 @@
 5. Preferred Contact Time
 
 ### Extended Assessment Form
+
 1. Full Name
 2. Phone Number
 3. Email Address
@@ -132,11 +144,13 @@
 9. How did you hear about us?
 
 ### Visual Hair Loss Selector
+
 - Include Norwood Scale diagram
 - Allow patients to identify their stage
 - Helps qualify leads and personalize follow-up
 
 ### Form Best Practices
+
 - Minimize required fields
 - Use visual selectors where possible
 - Include privacy assurance
@@ -148,6 +162,7 @@
 ## Trust Signals
 
 ### Professional Credentials
+
 - Board-certified surgeon credentials
 - Hair restoration society memberships
 - ISHRS (International Society of Hair Restoration Surgery)
@@ -155,6 +170,7 @@
 - Years of specialized experience
 
 ### Results Proof
+
 - Before/after gallery (extensive)
 - Number of procedures performed
 - Success rate statistics
@@ -162,6 +178,7 @@
 - Time-lapse transformation videos
 
 ### Reviews & Testimonials
+
 - Video testimonials from patients
 - Written reviews with photos
 - Real patient stories and journeys
@@ -169,12 +186,14 @@
 - Google/RealSelf reviews integration
 
 ### Technology Indicators
+
 - FUE technology badges
 - Robotic systems (ARTAS, NeoGraft)
 - Advanced extraction tools
 - Latest techniques highlighted
 
 ### Safety & Quality
+
 - Accredited facility
 - Sterile environment emphasis
 - Medical team qualifications
@@ -266,6 +285,7 @@
 ### Common Objections & Responses
 
 **"Hair transplants look unnatural"**
+
 - Extensive before/after gallery
 - "Natural hairline design" emphasis
 - Surgeon's artistic approach explained
@@ -273,6 +293,7 @@
 - Modern technique vs. older "plug" look
 
 **"It's too expensive"**
+
 - Financing options prominently displayed
 - Cost per graft breakdown
 - Long-term value vs. ongoing treatments
@@ -280,18 +301,21 @@
 - "Investment in permanent results" framing
 
 **"The procedure is painful"**
+
 - Local anesthesia explanation
 - "Minimal discomfort" testimonials
 - Pain management approach
 - Recovery comfort measures
 
 **"Recovery takes too long"**
+
 - Clear recovery timeline
 - "Back to work in X days"
 - "Social presentable" timeline
 - Recovery support and guidance
 
 **"Results aren't guaranteed"**
+
 - Success rate statistics
 - Before/after proof
 - Patient testimonials
@@ -299,12 +323,14 @@
 - Realistic expectations set upfront
 
 **"I'm not a good candidate"**
+
 - Free consultation to assess
 - Various options for different stages
 - Non-surgical alternatives mentioned
 - Honest assessment promise
 
 **"What if it doesn't work?"**
+
 - Success rate statistics
 - Follow-up care included
 - Touch-up policies
@@ -317,6 +343,7 @@
 ### High-Converting Page Checklist
 
 **Above the Fold (0-3 seconds)**
+
 - [ ] Transformation-focused headline
 - [ ] Before/after visual proof
 - [ ] Visible CTA or lead form
@@ -325,6 +352,7 @@
 - [ ] Phone number displayed
 
 **Building Trust**
+
 - [ ] Extensive before/after gallery
 - [ ] Surgeon credentials prominent
 - [ ] Patient video testimonials
@@ -332,6 +360,7 @@
 - [ ] Professional facility imagery
 
 **Reducing Friction**
+
 - [ ] Financing options clear
 - [ ] FAQ addressing top concerns
 - [ ] Free consultation emphasis
@@ -339,6 +368,7 @@
 - [ ] Multiple contact methods
 
 **Conversion Optimization**
+
 - [ ] Single focused goal
 - [ ] Remove navigation distractions
 - [ ] Mobile-responsive design
@@ -348,6 +378,7 @@
 ### Procedure-Specific Landing Pages
 
 **Create Separate Pages For:**
+
 - FUE Hair Transplant
 - FUT/Strip Method
 - Beard Transplant
@@ -356,6 +387,7 @@
 - Hairline Restoration
 
 **Each Procedure Page Should Include:**
+
 - Procedure-specific headline
 - How the procedure works
 - Ideal candidates
@@ -367,6 +399,7 @@
 ### Critical Visual Content
 
 **Before/After Gallery Requirements:**
+
 - Consistent lighting and angles
 - Multiple views (front, crown, side)
 - Various hair loss stages represented
@@ -375,6 +408,7 @@
 - Clear labels and descriptions
 
 **Video Content:**
+
 - Patient testimonial videos (highest impact)
 - Procedure explanation videos
 - Surgeon introduction video
@@ -382,6 +416,7 @@
 - Virtual tour of facility
 
 ### Key Metrics to Track
+
 - Form submission rate
 - Phone call clicks
 - Gallery engagement time
@@ -394,18 +429,21 @@
 ### Design Best Practices
 
 **Color Palette:**
+
 - Professional, trustworthy colors (blue, dark green)
 - Clean whites for medical feel
 - Warm accents for approachability
 - Avoid clinical sterility
 
 **Typography:**
+
 - Clear, readable fonts
 - Professional but not cold
 - Strong hierarchy
 - Easy scanning
 
 **Imagery Guidelines:**
+
 - Real patient results (not stock)
 - Professional quality photos
 - Diverse patient representation
@@ -413,6 +451,7 @@
 - Modern facility showcasing
 
 ### Mobile Optimization
+
 - Click-to-call prominently displayed
 - Simplified forms
 - Fast loading images
@@ -421,6 +460,7 @@
 - Before/after slider functionality
 
 ### Industry-Specific Considerations
+
 - Address hair loss stigma sensitively
 - Emphasize confidentiality
 - Show age diversity in results

@@ -18,6 +18,7 @@
 ## Above-Fold Patterns
 
 ### Headline Formulas
+
 - **Security-focused**: "Protect Your Property with Quality Fencing"
 - **Privacy-focused**: "Create Your Private Outdoor Oasis"
 - **Quality-focused**: "Premium Fencing Built to Last"
@@ -26,6 +27,7 @@
 - **Free estimate**: "Free Estimates on All Fence Installations"
 
 ### Hero Section Elements
+
 1. **Beautiful fence imagery** (various styles)
 2. **Free estimate CTA** prominently displayed
 3. **Fence type navigation** (wood, vinyl, aluminum, chain link)
@@ -34,6 +36,7 @@
 6. **Phone number** visible
 
 ### Visual Patterns
+
 - Beautiful backyard/property shots with fencing
 - Fence style galleries
 - Before/after property transformations
@@ -45,6 +48,7 @@
 ## CTA Patterns
 
 ### Primary CTA Text
+
 - "Get a Free Estimate"
 - "Request Free Quote"
 - "Schedule Your Consultation"
@@ -53,6 +57,7 @@
 - "Start Your Project"
 
 ### CTA Design Patterns
+
 - **Contrasting button colors**
 - **Phone number prominently displayed**
 - **"Free, no-obligation" messaging**
@@ -60,6 +65,7 @@
 - **Seasonal promotions** near CTA
 
 ### Secondary CTAs
+
 - "View Fence Styles"
 - "See Our Work"
 - "Explore Materials"
@@ -72,6 +78,7 @@
 ### Quick Quote Form (5-6 fields)
 
 **Essential Fields**
+
 - Name
 - Phone number
 - Email address
@@ -82,27 +89,32 @@
 ### Detailed Estimate Form
 
 **Step 1: Project Details**
+
 - Fence purpose (Privacy, Security, Pet containment, Decorative, Pool)
 - Approximate linear feet (or "Not sure")
 - Fence type preference
 
 **Step 2: Property Information**
+
 - Property type (Residential, Commercial)
 - Current fence removal needed? (Yes/No)
 - HOA requirements? (Yes/No/Not sure)
 
 **Step 3: Contact & Scheduling**
+
 - Name, phone, email
 - Address
 - Preferred contact time
 
 ### Interactive Quote Tool (Advanced)
+
 - Map-based fence drawing tool
 - Select fence style
 - Get ballpark estimate
 - Lead capture after estimate
 
 ### Form Best Practices
+
 - **Purpose selection** helps qualify (pool fence vs. decorative)
 - **Linear feet optional** - many don't know
 - **HOA question** shows awareness
@@ -113,6 +125,7 @@
 ## Trust Signals
 
 ### Industry Credentials
+
 - Licensed and Insured badge
 - State contractor license number
 - Bonded contractor
@@ -120,12 +133,14 @@
 - ACCI (American Chain Link Fencing Council) where applicable
 
 ### Material Certifications
+
 - Manufacturer authorized installer
 - Specific brand partnerships (Simtek, Bufftech, etc.)
 - Material warranties displayed
 - Quality material sourcing
 
 ### Social Proof Elements
+
 - Years in business
 - Number of fences installed
 - Customer review ratings
@@ -134,6 +149,7 @@
 - Video testimonials
 
 ### Guarantees
+
 - Workmanship warranty (1-5 years typical)
 - Material warranties passed through
 - Satisfaction guarantee
@@ -215,17 +231,18 @@
 
 ### Common Objections & Responses
 
-| Objection | Landing Page Response |
-|-----------|----------------------|
-| "Fencing is too expensive" | Material options at various price points, financing, value/longevity |
-| "I can install it myself" | Professional quality, warranty, time savings, permit handling |
-| "I'm not sure what type I need" | Free consultation, fence guide, expert recommendations |
-| "Will it look good with my property?" | Portfolio gallery, style guide, design consultation |
-| "What about permits/HOA?" | "We handle permits", HOA-compliant options |
-| "How long will it last?" | Material warranties, quality construction, maintenance tips |
-| "I've had bad contractor experiences" | Reviews, warranty, licensed/insured, local reputation |
+| Objection                             | Landing Page Response                                                |
+| ------------------------------------- | -------------------------------------------------------------------- |
+| "Fencing is too expensive"            | Material options at various price points, financing, value/longevity |
+| "I can install it myself"             | Professional quality, warranty, time savings, permit handling        |
+| "I'm not sure what type I need"       | Free consultation, fence guide, expert recommendations               |
+| "Will it look good with my property?" | Portfolio gallery, style guide, design consultation                  |
+| "What about permits/HOA?"             | "We handle permits", HOA-compliant options                           |
+| "How long will it last?"              | Material warranties, quality construction, maintenance tips          |
+| "I've had bad contractor experiences" | Reviews, warranty, licensed/insured, local reputation                |
 
 ### FAQ Questions to Include
+
 1. How much does fence installation cost?
 2. What type of fence is best for my needs?
 3. Do I need a permit for a fence?
@@ -315,12 +332,14 @@
 ```
 
 ### Key Metrics to Target
+
 - **Conversion rate**: 8-12% for estimate requests
 - **Form completion rate**: 70-80%
 - **Phone call rate**: Track click-to-call
 - **Estimate-to-close rate**: Monitor lead quality
 
 ### A/B Testing Priorities
+
 1. Hero imagery (fence close-up vs. property with fence)
 2. CTA text ("Free Estimate" vs. "Free Quote" vs. "Get Pricing")
 3. Form length (quick vs. detailed)
@@ -332,6 +351,7 @@
 ## Industry-Specific Insights
 
 ### What Makes Fencing Different
+
 - **Purpose-driven purchase** - Privacy, security, pets, pool
 - **Material education needed** - Wood vs. vinyl vs. metal
 - **Permit awareness** - Regulations vary by location
@@ -339,7 +359,9 @@
 - **Seasonal business** - Weather impacts installation
 
 ### Fence Purpose Segmentation
+
 Create targeted content for:
+
 - Privacy fencing
 - Pet containment
 - Pool fencing (safety regulations)
@@ -347,6 +369,7 @@ Create targeted content for:
 - Security fencing
 
 ### Material Comparison Content
+
 - Wood: Natural beauty, requires maintenance
 - Vinyl: Low maintenance, higher upfront cost
 - Aluminum: Elegant, durable, no rust
@@ -354,12 +377,14 @@ Create targeted content for:
 - Composite: Eco-friendly, wood look
 
 ### Interactive Features
+
 - High & Tight Fencing's fence drawing tool
 - Cost calculator by linear feet
 - Style visualizer
 - Material comparison tool
 
 ### SEO Focus Areas
+
 - "Fence installation [city]"
 - "[Material] fence near me"
 - "Privacy fence cost"

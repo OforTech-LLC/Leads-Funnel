@@ -18,6 +18,7 @@
 ## Above-Fold Patterns
 
 ### Headline Formulas
+
 - **Speed-focused**: "Same-Day Appliance Repair Service"
 - **Problem-solving**: "Appliance Not Working? We Can Help."
 - **Trust-focused**: "Expert Appliance Repair You Can Trust"
@@ -26,6 +27,7 @@
 - **Availability**: "Fast, Reliable Repair - Schedule Now"
 
 ### Hero Section Elements
+
 1. **Prominent phone number** (critical for emergency calls)
 2. **Schedule service CTA** above fold
 3. **Same-day service** messaging
@@ -34,6 +36,7 @@
 6. **Service area** indicator
 
 ### Visual Patterns
+
 - Technicians working on appliances
 - Brand logos (all brands serviced)
 - Before/after repair imagery
@@ -45,6 +48,7 @@
 ## CTA Patterns
 
 ### Primary CTA Text
+
 - "Schedule Service"
 - "Book Repair Now"
 - "Call for Same-Day Service"
@@ -53,6 +57,7 @@
 - "Schedule Your Repair"
 
 ### CTA Design Patterns
+
 - **Phone number as primary CTA** (emergency nature of service)
 - **Click-to-call prominently displayed**
 - **"Same-day" badge** near CTA
@@ -60,6 +65,7 @@
 - **24/7 availability** messaging (if applicable)
 
 ### Secondary CTAs
+
 - "See Our Services"
 - "View Pricing"
 - "Common Problems"
@@ -72,6 +78,7 @@
 ### Quick Service Form (5-6 fields)
 
 **Essential Fields**
+
 - Name
 - Phone number
 - Email address
@@ -82,20 +89,24 @@
 ### Detailed Scheduling Form
 
 **Step 1: Appliance Details**
+
 - Appliance type (Washer, Dryer, Refrigerator, Dishwasher, Oven/Range, Microwave)
 - Brand (dropdown or "Other")
 - What's the problem? (dropdown or description)
 
 **Step 2: Scheduling**
+
 - Preferred date (calendar)
 - Preferred time window
 - Address
 
 **Step 3: Contact Information**
+
 - Name, phone, email
 - Additional notes (optional)
 
 ### Form Best Practices
+
 - **Appliance type dropdown** for qualification
 - **Problem description** helps prepare technician
 - **Urgent option** for emergency repairs
@@ -107,6 +118,7 @@
 ## Trust Signals
 
 ### Industry Credentials
+
 - Licensed and Insured badge
 - Factory-certified/authorized service
 - EPA certification (for refrigerant handling)
@@ -114,12 +126,14 @@
 - BBB accreditation
 
 ### Brand Expertise
+
 - "All Major Brands Serviced"
 - Brand logo display (Samsung, LG, Whirlpool, GE, etc.)
 - Factory-trained technicians
 - Genuine parts usage
 
 ### Social Proof Elements
+
 - Customer review ratings
 - Google/Yelp review widgets
 - Number of repairs completed
@@ -127,6 +141,7 @@
 - Video testimonials
 
 ### Guarantees
+
 - Parts and labor warranty
 - "If we can't fix it, you don't pay"
 - Satisfaction guarantee
@@ -208,17 +223,18 @@
 
 ### Common Objections & Responses
 
-| Objection | Landing Page Response |
-|-----------|----------------------|
-| "Should I just replace it?" | Cost comparison (repair vs. replace), appliance lifespan info |
-| "How much will it cost?" | Transparent service fee, "no hidden fees", waived fee with repair |
-| "Can you fix my brand?" | "All major brands" messaging, brand logos, factory-trained |
-| "How soon can you come?" | Same-day service messaging, availability indicator |
-| "What if it breaks again?" | Parts and labor warranty, satisfaction guarantee |
-| "I don't know what's wrong" | "We'll diagnose it", common problems list |
-| "I found a cheaper option" | Quality parts, warranty, certified technicians value |
+| Objection                   | Landing Page Response                                             |
+| --------------------------- | ----------------------------------------------------------------- |
+| "Should I just replace it?" | Cost comparison (repair vs. replace), appliance lifespan info     |
+| "How much will it cost?"    | Transparent service fee, "no hidden fees", waived fee with repair |
+| "Can you fix my brand?"     | "All major brands" messaging, brand logos, factory-trained        |
+| "How soon can you come?"    | Same-day service messaging, availability indicator                |
+| "What if it breaks again?"  | Parts and labor warranty, satisfaction guarantee                  |
+| "I don't know what's wrong" | "We'll diagnose it", common problems list                         |
+| "I found a cheaper option"  | Quality parts, warranty, certified technicians value              |
 
 ### FAQ Questions to Include
+
 1. How much does appliance repair cost?
 2. Do you offer same-day service?
 3. What brands do you repair?
@@ -306,12 +322,14 @@
 ```
 
 ### Key Metrics to Target
+
 - **Conversion rate**: 15-20% for service requests
 - **Phone call rate**: Critical - track click-to-call
 - **Same-day booking rate**: Track urgency conversions
 - **Average ticket value**: Track parts + labor
 
 ### A/B Testing Priorities
+
 1. Phone number prominence (size, color, placement)
 2. CTA text ("Schedule" vs. "Book" vs. "Call Now")
 3. Same-day messaging emphasis
@@ -323,6 +341,7 @@
 ## Industry-Specific Insights
 
 ### What Makes Appliance Repair Different
+
 - **Urgency-driven** - Broken appliances need immediate attention
 - **Phone calls critical** - Many customers call rather than fill forms
 - **Same-day expectation** - Fast service is a key differentiator
@@ -330,25 +349,30 @@
 - **Diagnostic nature** - "We'll figure out the problem" messaging
 
 ### Phone-First Design
+
 - 88% of local searches result in call within 24 hours (Google)
 - Phone number should be largest element on page
 - Click-to-call must work flawlessly
 - Consider call tracking for optimization
 
 ### Same-Day Service Positioning
+
 - Critical differentiator in emergency situations
 - Availability checker tool
 - Real-time scheduling
 - "Book now, service today" messaging
 
 ### Pricing Transparency
+
 - Service call fee upfront
 - "Fee waived with repair" common model
 - Upfront quotes before work begins
 - No hidden fees emphasis
 
 ### Appliance-Specific Landing Pages
+
 Consider separate pages for:
+
 - Washer repair
 - Dryer repair
 - Refrigerator repair
@@ -356,12 +380,14 @@ Consider separate pages for:
 - Oven/range repair
 
 Each with appliance-specific:
+
 - Common problems
 - Brand expertise
 - Testimonials
 - SEO optimization
 
 ### SEO Focus Areas
+
 - "[Appliance] repair near me"
 - "[Brand] repair [city]"
 - "[Appliance] not working"
@@ -369,6 +395,7 @@ Each with appliance-specific:
 - "[Appliance] repair cost"
 
 ### After-Hours Consideration
+
 - 24/7 availability (if offered)
 - Emergency service messaging
 - Callback scheduling for after hours

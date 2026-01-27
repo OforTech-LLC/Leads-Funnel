@@ -2,12 +2,7 @@
  * API client for lead submission
  */
 
-import type {
-  LeadInput,
-  LeadUtm,
-  LeadSubmitResponse,
-  LeadRequestPayload,
-} from '@kanjona/shared';
+import type { LeadInput, LeadUtm, LeadSubmitResponse, LeadRequestPayload } from '@kanjona/shared';
 
 // Re-export shared types for convenience
 export type { LeadInput, LeadUtm, LeadSubmitResponse, LeadRequestPayload };
@@ -70,7 +65,10 @@ export async function submitLeadToApi(payload: LeadPayload): Promise<LeadRespons
   const apiUrl = `${getApiBaseUrl()}/lead`;
 
   // Build API request payload (maps client fields to API fields)
-  const apiPayload: LeadRequestPayload & { funnelId?: string; customFields?: Record<string, string> } = {
+  const apiPayload: LeadRequestPayload & {
+    funnelId?: string;
+    customFields?: Record<string, string>;
+  } = {
     funnelId: payload.funnelId,
     name: payload.name.trim(),
     email: payload.email.trim().toLowerCase(),
@@ -101,8 +99,12 @@ export async function submitLeadToApi(payload: LeadPayload): Promise<LeadRespons
     let apiResponse: LeadSubmitResponse;
     try {
       apiResponse = await response.json();
-    } catch {
-      // If JSON parsing fails, create a generic response
+    } catch (parseError) {
+      // Log JSON parsing failure for debugging
+      console.error(
+        '[API] Failed to parse response JSON:',
+        parseError instanceof Error ? parseError.message : 'Parse error'
+      );
       return {
         success: response.ok,
         error: response.ok ? undefined : 'Failed to parse response',
@@ -112,6 +114,7 @@ export async function submitLeadToApi(payload: LeadPayload): Promise<LeadRespons
     // Handle non-2xx responses
     if (!response.ok) {
       const errorMsg = apiResponse.error?.message || `API error: ${response.status}`;
+      console.warn('[API] Lead submission failed:', { status: response.status, error: errorMsg });
       throw new ApiError(errorMsg, response.status, {
         success: false,
         error: errorMsg,
@@ -133,13 +136,13 @@ export async function submitLeadToApi(payload: LeadPayload): Promise<LeadRespons
 
     // Handle network errors
     if (error instanceof TypeError && error.message.includes('fetch')) {
+      console.error('[API] Network error during lead submission:', error.message);
       throw new ApiError('Network error. Please check your connection.', 0);
     }
 
     // Handle other errors
-    throw new ApiError(
-      error instanceof Error ? error.message : 'An unexpected error occurred',
-      0
-    );
+    const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+    console.error('[API] Unexpected error during lead submission:', errorMessage);
+    throw new ApiError(errorMessage, 0);
   }
 }

@@ -37,6 +37,7 @@
 ## Above-Fold Patterns
 
 ### Headline Formulas
+
 - **Transformation-focused**: "Get the Smile You've Always Wanted"
 - **Treatment-specific**: "Straighter Teeth in 6-18 Months with Invisalign"
 - **Confidence-building**: "Smile with Confidence Again"
@@ -44,6 +45,7 @@
 - **Offer-driven**: "Free Consultation + $500 Off Your Treatment"
 
 ### Visual Elements
+
 - Hero image of confident person with perfect smile
 - Before/after smile transformation (side by side)
 - Happy patient testimonial photo
@@ -51,6 +53,7 @@
 - Clean, bright clinical environment
 
 ### Key Above-Fold Components
+
 - Clear headline matching ad copy
 - Subheadline with specific benefit
 - Lead capture form OR prominent CTA button
@@ -58,6 +61,7 @@
 - Phone number (click-to-call on mobile)
 
 ### Hero Section Layouts
+
 1. **Split layout**: Image left, form right
 2. **Full-width hero**: Overlay form on image
 3. **Video hero**: Auto-play treatment overview
@@ -68,6 +72,7 @@
 ## CTA Patterns
 
 ### Primary CTAs
+
 - "Book Your Free Consultation"
 - "Get Your Free Smile Assessment"
 - "Schedule Your Invisalign Consult"
@@ -75,12 +80,14 @@
 - "Claim Your $500 Off"
 
 ### Service-Specific CTAs
+
 - **Invisalign**: "See If You're a Candidate"
 - **Braces**: "Explore Your Options"
 - **Teen Ortho**: "Schedule Your Child's Evaluation"
 - **Adult Ortho**: "It's Never Too Late - Book Now"
 
 ### CTA Design Best Practices
+
 - Contrasting color (orange stands out on blue/white)
 - Action-oriented verbs
 - Benefit in the button when possible
@@ -88,6 +95,7 @@
 - White space around button
 
 ### CTA Placement
+
 - Top of page (hero section)
 - After treatment benefits section
 - Following testimonials
@@ -100,11 +108,13 @@
 ## Form Field Patterns
 
 ### Minimal Form (Highest Conversion)
+
 1. Name
 2. Phone Number
 3. Email
 
 ### Standard Orthodontic Form
+
 1. Full Name
 2. Phone Number
 3. Email Address
@@ -112,6 +122,7 @@
 5. Best Time to Call
 
 ### Extended Form
+
 1. Patient Name
 2. Phone Number
 3. Email
@@ -121,6 +132,7 @@
 7. Preferred appointment time
 
 ### Form Optimization
+
 - Minimize required fields (3-4 max for landing pages)
 - Use dropdowns for structured data
 - Include "Not sure yet" option for treatment type
@@ -132,6 +144,7 @@
 ## Trust Signals
 
 ### Professional Credentials
+
 - American Association of Orthodontists (AAO) member
 - Board-certified orthodontist badge
 - State dental board license
@@ -139,6 +152,7 @@
 - Years of orthodontic experience
 
 ### Social Proof Elements
+
 - Google Reviews rating + count
 - Video testimonials from patients
 - Before/after smile gallery
@@ -146,12 +160,14 @@
 - Real patient photos with their stories
 
 ### Treatment-Specific Trust
+
 - Invisalign Certified Provider tiers
 - SureSmile/ClearCorrect certifications
 - Technology badges (iTero scanner, 3D imaging)
 - "Latest technology" messaging
 
 ### Awards & Recognition
+
 - "Top Orthodontist" local awards
 - Best of [City] recognitions
 - Patient's Choice awards
@@ -234,6 +250,7 @@
 ### Common Objections & Responses
 
 **"It's too expensive"**
+
 - Affordable monthly payment options ($XX/month)
 - Insurance acceptance emphasized
 - Financing with 0% interest available
@@ -241,30 +258,35 @@
 - Cost comparison to alternatives
 
 **"Treatment takes too long"**
+
 - Specific timeline expectations (6-18 months)
 - "Faster than traditional braces" (for Invisalign)
 - Progress check-ins and updates
 - "Before you know it" testimonials
 
 **"Braces are for kids"**
+
 - Adult patient testimonials
 - "1 in 4 orthodontic patients is an adult"
 - Discreet options emphasis (Invisalign, clear braces)
 - Professional/career-friendly messaging
 
 **"I'm worried about discomfort"**
+
 - Modern, comfortable technology
 - "Minimal discomfort" testimonials
 - Comparison to past braces experiences
 - Pain management support mentioned
 
 **"I don't know which treatment is right for me"**
+
 - Free consultation to assess
 - "We'll help you decide" messaging
 - Treatment comparison chart
 - Personalized treatment plan promise
 
 **"I've had braces before and my teeth shifted"**
+
 - Retention/retainer emphasis
 - "This time, we'll make it last"
 - Re-treatment special offers
@@ -277,6 +299,7 @@
 ### High-Converting Page Checklist
 
 **Above the Fold (0-3 seconds)**
+
 - [ ] Clear headline matching visitor intent
 - [ ] Smiling patient or transformation image
 - [ ] Visible CTA or lead form
@@ -284,18 +307,21 @@
 - [ ] Phone number visible
 
 **Trust Building (3-30 seconds)**
+
 - [ ] Before/after gallery prominently placed
 - [ ] Doctor credentials and photo
 - [ ] Patient testimonials with real photos
 - [ ] Review ratings displayed
 
 **Reducing Friction**
+
 - [ ] Financing options clearly explained
 - [ ] FAQ addressing top concerns
 - [ ] "Free consultation" emphasized
 - [ ] Easy appointment scheduling
 
 **Conversion Optimization**
+
 - [ ] Single focused goal (book consultation)
 - [ ] Remove site navigation/distractions
 - [ ] Mobile-optimized design
@@ -305,6 +331,7 @@
 ### Treatment-Specific Landing Pages
 
 **Invisalign Landing Page Must-Haves**
+
 - Invisalign logo and provider status
 - Clear aligners imagery
 - "Virtually invisible" messaging
@@ -312,6 +339,7 @@
 - Before/after of Invisalign cases specifically
 
 **Braces Landing Page Must-Haves**
+
 - Options showcase (metal, ceramic, lingual)
 - Modern braces imagery (not dated)
 - Teen-focused messaging and imagery
@@ -319,10 +347,12 @@
 - Color options for brackets (teen appeal)
 
 ### Conversion Rate Benchmark
+
 - Average health-related landing page: **7.4%** conversion rate
 - Top-performing dental pages can exceed **15%**
 
 ### Key Metrics to Track
+
 - Form submission rate
 - Phone call clicks
 - Time on page
@@ -332,6 +362,7 @@
 - Mobile vs desktop performance
 
 ### Color & Design Psychology
+
 - **Blue**: Trust, professionalism, calm
 - **White**: Cleanliness, dental association
 - **Green**: Health, growth, new beginning

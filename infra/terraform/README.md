@@ -78,23 +78,27 @@ terraform/
 ## Modules
 
 ### DynamoDB (`modules/dynamodb`)
+
 - Creates 47 funnel-specific tables
 - Rate limits table
 - Idempotency table
 - Single-table design with GSI
 
 ### Lambda (`modules/lambda`)
+
 - `lead-handler`: Main lead processing
 - `health-handler`: Health checks
 - `voice-start`: Voice call initiation
 - `voice-webhook`: Twilio webhooks
 
 ### SSM (`modules/ssm`)
+
 - Feature flags
 - Runtime configuration
 - Funnel configurations
 
 ### Secrets (`modules/secrets`)
+
 - Twilio credentials
 - ElevenLabs API key
 - Webhook signing secret
@@ -129,15 +133,15 @@ terraform destroy
 
 ## Environment Differences
 
-| Feature | Dev | Prod |
-|---------|-----|------|
-| WAF | Disabled | Enabled |
-| PITR | Disabled | Enabled |
-| Deletion Protection | Disabled | Enabled |
-| CloudFront Logging | Disabled | Enabled |
-| X-Ray Tracing | Disabled | Enabled |
-| Lambda Memory | 128 MB | 512 MB |
-| CORS | + localhost | Strict |
+| Feature             | Dev         | Prod    |
+| ------------------- | ----------- | ------- |
+| WAF                 | Disabled    | Enabled |
+| PITR                | Disabled    | Enabled |
+| Deletion Protection | Disabled    | Enabled |
+| CloudFront Logging  | Disabled    | Enabled |
+| X-Ray Tracing       | Disabled    | Enabled |
+| Lambda Memory       | 128 MB      | 512 MB  |
+| CORS                | + localhost | Strict  |
 
 ## Feature Flags
 
@@ -161,6 +165,7 @@ enable_sms_notifications   = false
 ## Outputs
 
 After apply, key outputs include:
+
 - `site_url`: Frontend URL
 - `api_url`: API Gateway URL
 - `cloudfront_distribution_id`: For cache invalidation

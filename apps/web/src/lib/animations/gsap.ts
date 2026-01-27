@@ -334,7 +334,10 @@ export const createBackgroundGlowAnimation = (
 ): gsap.core.Timeline | null => {
   if (prefersReducedMotion()) return null;
 
-  const { colors = ['rgba(139, 92, 246, 0.3)', 'rgba(99, 102, 241, 0.3)', 'rgba(236, 72, 153, 0.2)'], duration = 8 } = options || {};
+  const {
+    colors = ['rgba(139, 92, 246, 0.3)', 'rgba(99, 102, 241, 0.3)', 'rgba(236, 72, 153, 0.2)'],
+    duration = 8,
+  } = options || {};
 
   const elements = document.querySelectorAll(selector);
   const tl = gsap.timeline({ repeat: -1 });
@@ -391,7 +394,7 @@ export const createParallaxEffect = (
 };
 
 // =============================================================================
-// Text Reveal Animation
+// Text Reveal Animation (XSS-safe version)
 // =============================================================================
 
 export const createTextReveal = (
@@ -423,8 +426,26 @@ export const createTextReveal = (
       parts = text.split(' ');
   }
 
-  // Wrap each part in a span
-  element.innerHTML = parts.map((part) => `<span class="text-reveal-part" style="display: inline-block; opacity: 0;">${part}${type === 'words' ? '&nbsp;' : ''}</span>`).join('');
+  // Clear existing content safely
+  while (element.firstChild) {
+    element.removeChild(element.firstChild);
+  }
+
+  // Build DOM elements safely using textContent (prevents XSS)
+  parts.forEach((part, index) => {
+    const span = document.createElement('span');
+    span.className = 'text-reveal-part';
+    span.style.display = 'inline-block';
+    span.style.opacity = '0';
+    span.textContent = part; // Safe: textContent escapes HTML
+
+    // Add space after words (except last)
+    if (type === 'words' && index < parts.length - 1) {
+      span.textContent = part + '\u00A0'; // Non-breaking space
+    }
+
+    element.appendChild(span);
+  });
 
   return gsap.to(`${selector} .text-reveal-part`, {
     opacity: 1,
@@ -451,7 +472,11 @@ export const createMagneticEffect = (
   const { strength = 0.3, radius = 100 } = options || {};
   const elements = document.querySelectorAll(selector);
 
-  const handlers: Array<{ element: Element; handler: (e: MouseEvent) => void; leaveHandler: () => void }> = [];
+  const handlers: Array<{
+    element: Element;
+    handler: (e: MouseEvent) => void;
+    leaveHandler: () => void;
+  }> = [];
 
   elements.forEach((element) => {
     const handler = (e: MouseEvent) => {

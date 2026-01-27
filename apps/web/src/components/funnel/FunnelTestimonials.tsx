@@ -13,13 +13,16 @@ interface FunnelTestimonialsProps {
   service: ServiceConfig;
 }
 
+/** Star rating positions for stable keys */
+const STAR_POSITIONS = [1, 2, 3, 4, 5] as const;
+
 export function FunnelTestimonials({ service }: FunnelTestimonialsProps) {
   // Use type assertion for dynamic funnel namespaces
   const t = useTranslations(`funnels.${service.slug}` as 'funnels.real-estate');
 
   // Use indices to match translation array structure (testimonials.items)
   // Only 1 testimonial per funnel in translations
-  const testimonials = [{ index: 0 }];
+  const testimonials = [{ id: 'testimonial-0', index: 0 }];
 
   return (
     <section
@@ -51,8 +54,8 @@ export function FunnelTestimonials({ service }: FunnelTestimonialsProps) {
             gap: '24px',
           }}
         >
-          {testimonials.map(({ index }) => (
-            <StaggerItem key={index}>
+          {testimonials.map(({ id, index }) => (
+            <StaggerItem key={id}>
               <CardTilt maxTilt={3} glareEnable>
                 <div
                   style={{
@@ -67,8 +70,11 @@ export function FunnelTestimonials({ service }: FunnelTestimonialsProps) {
                 >
                   {/* Stars */}
                   <div style={{ marginBottom: '16px' }}>
-                    {[...Array(5)].map((_, i) => (
-                      <span key={i} style={{ color: '#FBBF24', fontSize: '18px' }}>
+                    {STAR_POSITIONS.map((starPosition) => (
+                      <span
+                        key={`star-${starPosition}`}
+                        style={{ color: '#FBBF24', fontSize: '18px' }}
+                      >
                         ★
                       </span>
                     ))}
@@ -84,7 +90,7 @@ export function FunnelTestimonials({ service }: FunnelTestimonialsProps) {
                       fontStyle: 'italic',
                     }}
                   >
-                    "{t(`testimonials.items.${index}.text` as Parameters<typeof t>[0])}"
+                    &ldquo;{t(`testimonials.items.${index}.text` as Parameters<typeof t>[0])}&rdquo;
                   </p>
 
                   {/* Author */}

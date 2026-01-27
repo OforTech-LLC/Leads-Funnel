@@ -37,6 +37,7 @@
 ## Above-Fold Patterns
 
 ### Headline Formulas
+
 - **Transformation-focused**: "Achieve Youthful, Radiant Skin"
 - **Luxury/experience**: "Indulge in the Ultimate Self-Care Experience"
 - **Results-driven**: "Real Results. Real Confidence."
@@ -44,6 +45,7 @@
 - **Offer-based**: "Book Your Free Consultation + $100 Off First Treatment"
 
 ### Visual Elements
+
 - High-end, spa-like imagery
 - Before/after transformation photos
 - Luxurious treatment room visuals
@@ -52,6 +54,7 @@
 - Video backgrounds of treatments/facility
 
 ### Hero Section Components
+
 - Compelling headline with emotional appeal
 - Subheadline highlighting unique value
 - Primary CTA button or lead form
@@ -59,6 +62,7 @@
 - Trust indicators (reviews, certifications)
 
 ### Design Aesthetic
+
 - Clean, minimalist layouts
 - White space for luxury feel
 - Soft, feminine color palettes (pink, gold, cream)
@@ -70,6 +74,7 @@
 ## CTA Patterns
 
 ### Primary CTAs
+
 - "Book Your Free Consultation"
 - "Schedule Your Treatment"
 - "Claim Your Special Offer"
@@ -77,6 +82,7 @@
 - "Book Now - Limited Availability"
 
 ### Treatment-Specific CTAs
+
 - **Botox**: "Book Your Botox Appointment"
 - **Fillers**: "Schedule Your Filler Consultation"
 - **Laser**: "See If Laser is Right for You"
@@ -84,6 +90,7 @@
 - **Facials**: "Book Your Glow-Up"
 
 ### CTA Design Best Practices
+
 - High contrast colors (gold, coral, rose against white/cream)
 - Action-oriented language
 - Urgency words when appropriate ("Now", "Today", "Limited")
@@ -91,6 +98,7 @@
 - Multiple CTAs throughout page
 
 ### Offer-Based CTAs
+
 - "Get $50 Off Your First Treatment"
 - "Book Now for Free Consultation"
 - "Claim Your New Patient Special"
@@ -101,12 +109,14 @@
 ## Form Field Patterns
 
 ### Minimal Lead Capture (Highest Conversion)
+
 1. Name
 2. Phone Number
 3. Email
 4. Treatment Interest (dropdown)
 
 ### Standard Consultation Form
+
 1. Full Name
 2. Phone Number
 3. Email Address
@@ -115,12 +125,14 @@
 6. How did you hear about us?
 
 ### Special Offer Form
+
 1. Name
 2. Email
 3. Phone Number
 4. Offer/Promotion Interest
 
 ### Form Optimization
+
 - Keep fields to minimum (4-5 max)
 - Use dropdowns for treatment selection
 - Include privacy/consent statement
@@ -133,6 +145,7 @@
 ## Trust Signals
 
 ### Certifications & Credentials
+
 - Medical director credentials (MD, DO)
 - Nurse practitioner certifications
 - Allergan/Galderma trained injectors
@@ -141,6 +154,7 @@
 - **"63% of patients prefer providers with recognized credentials"**
 
 ### Reviews & Social Proof
+
 - Google Reviews integration
 - Yelp ratings
 - RealSelf ratings
@@ -150,6 +164,7 @@
 - **"79% of consumers influenced by user-generated content"**
 
 ### Before/After Gallery
+
 - Treatment-specific transformations
 - Consistent, professional photography
 - Real patients (not stock photos)
@@ -157,12 +172,14 @@
 - **Before/after photos can boost conversions by up to 86%**
 
 ### Awards & Recognition
+
 - "Best MedSpa" local awards (with year)
 - Industry recognitions
 - Publication features
 - Provider tier badges (Allergan Diamond, etc.)
 
 ### Safety Indicators
+
 - Medical-grade products
 - Licensed providers
 - Sterile environment
@@ -246,6 +263,7 @@
 ### Common Objections & Responses
 
 **"It's too expensive"**
+
 - Financing options prominently displayed
 - Membership programs for savings
 - Package deals highlighted
@@ -253,6 +271,7 @@
 - Price per treatment vs long-term value
 
 **"I'm worried about looking unnatural"**
+
 - "Natural-looking results" emphasis
 - Before/after showing subtle enhancements
 - Provider expertise highlighted
@@ -260,24 +279,28 @@
 - Patient testimonials about natural results
 
 **"I don't know which treatment is right for me"**
+
 - Free consultation offer
 - "We'll create a personalized plan"
 - Treatment comparison information
 - Self-assessment quiz
 
 **"Will it hurt?"**
+
 - Comfort measures explained
 - Numbing options available
 - "Minimal discomfort" testimonials
 - Recovery expectations set
 
 **"Results won't last"**
+
 - Treatment longevity explained
 - Maintenance plan options
 - "Touch-up" pricing
 - Long-term value perspective
 
 **"I'm not sure if I can trust this provider"**
+
 - Credentials prominently displayed
 - Real patient testimonials
 - Before/after volume
@@ -291,6 +314,7 @@
 ### High-Converting Page Checklist
 
 **Above the Fold (0-3 seconds)**
+
 - [ ] Emotionally compelling headline
 - [ ] Luxury/results-focused imagery
 - [ ] Visible CTA or lead form
@@ -298,24 +322,28 @@
 - [ ] Trust indicator (reviews/credentials)
 
 **Building Trust**
+
 - [ ] Before/after gallery prominent
 - [ ] Provider credentials displayed
 - [ ] Patient testimonials
 - [ ] Social proof numbers
 
 **Creating Desire**
+
 - [ ] Treatment benefits clearly explained
 - [ ] Results expectations set
 - [ ] Luxury experience highlighted
 - [ ] Special offers/packages visible
 
 **Reducing Friction**
+
 - [ ] Financing/payment options clear
 - [ ] FAQ addressing concerns
 - [ ] Easy booking process
 - [ ] Multiple contact methods
 
 **Conversion Optimization**
+
 - [ ] Single focused goal
 - [ ] Remove navigation distractions
 - [ ] Mobile-optimized design
@@ -325,6 +353,7 @@
 ### Treatment-Specific Landing Pages
 
 **Create Separate Pages For:**
+
 - Botox/Neuromodulators
 - Dermal Fillers
 - Laser Hair Removal
@@ -334,6 +363,7 @@
 - Facials/Skin Treatments
 
 **Each Treatment Page Should Include:**
+
 - Treatment-specific headline
 - How it works explanation
 - Expected results/timeline
@@ -344,6 +374,7 @@
 ### Design Best Practices
 
 **Color Psychology**
+
 - **White/Cream**: Cleanliness, purity, luxury
 - **Gold/Rose Gold**: Premium, luxury, feminine
 - **Soft Pink/Blush**: Feminine, welcoming
@@ -351,12 +382,14 @@
 - **Teal/Mint**: Fresh, rejuvenating
 
 **Typography**
+
 - Elegant, modern fonts
 - Clear hierarchy
 - Easy readability
 - Consistent throughout
 
 **Imagery Guidelines**
+
 - Real staff and patients (not stock)
 - High-quality, professional photos
 - Consistent editing style
@@ -364,6 +397,7 @@
 - Authentic, relatable imagery
 
 ### Key Metrics to Track
+
 - Form submission rate
 - Phone call clicks
 - Special offer claims
@@ -374,6 +408,7 @@
 - Mobile vs desktop conversion
 
 ### Industry Context
+
 - Medical spa industry projected to reach $33.9 billion by 2026
 - Mobile users are over 50% of traffic
 - Social proof is crucial for elective procedures

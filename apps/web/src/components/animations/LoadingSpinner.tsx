@@ -13,6 +13,9 @@ interface LoadingSpinnerProps {
   className?: string;
 }
 
+/** Dot positions for stable keys */
+const DOT_POSITIONS = [1, 2, 3] as const;
+
 export function LoadingSpinner({
   size = 24,
   color = 'currentColor',
@@ -91,9 +94,9 @@ export function LoadingDots({
       initial="start"
       animate="end"
     >
-      {[0, 1, 2].map((index) => (
+      {DOT_POSITIONS.map((dotPosition) => (
         <motion.span
-          key={index}
+          key={`loading-dot-${dotPosition}`}
           style={{
             width: size,
             height: size,

@@ -37,6 +37,7 @@
 ## Above-Fold Patterns
 
 ### Headline Formulas
+
 - **Pain-focused**: "End Your Back Pain Without Surgery"
 - **Movement-focused**: "Get Back to the Activities You Love"
 - **Question-based**: "Do you suffer from debilitating back pain?"
@@ -45,6 +46,7 @@
 - **Specific**: "[Condition] Treatment in [City] - Schedule Today"
 
 ### Visual Elements
+
 - Active patients engaged in therapy
 - One-on-one treatment sessions
 - Modern, clean clinic environment
@@ -53,6 +55,7 @@
 - Professional therapist working with patient
 
 ### Above-Fold Components
+
 - Clear headline addressing pain/mobility
 - Subheadline with solution focus
 - Lead capture form or prominent CTA
@@ -61,6 +64,7 @@
 - Direct access messaging (no referral needed)
 
 ### Color Psychology
+
 - Calm colors dominate (blue, teal, green)
 - CTA buttons in action colors (red, orange)
 - White space for clean, professional feel
@@ -71,6 +75,7 @@
 ## CTA Patterns
 
 ### Primary CTAs
+
 - "Schedule Your Evaluation"
 - "Book Your Appointment"
 - "Start Your Recovery"
@@ -78,13 +83,17 @@
 - "Request Your Free Consultation"
 
 ### Psychology-Based CTAs
+
 Address pain avoidance psychology:
+
 - "Stop Suffering - Schedule Today"
 - "End Your Pain Now"
 - "Get Relief Today"
 
 ### Action-Oriented Language
+
 Use words like:
+
 - "Try"
 - "Now"
 - "Free"
@@ -92,11 +101,13 @@ Use words like:
 - "Get Started"
 
 Examples:
+
 - "Get Started" (immediate start to healthcare journey)
 - "Schedule Now" (urgency)
 - "Try Your First Session" (low commitment)
 
 ### CTA Button Design
+
 - Large enough for easy tapping (minimum 44x44 CSS pixels)
 - High contrast against background
 - Action-specific text (not "Submit" or "Send")
@@ -104,6 +115,7 @@ Examples:
 - White space around button
 
 ### CTA Placement
+
 - Above the fold (essential copy and CTAs visible)
 - After pain point descriptions
 - Following testimonials
@@ -117,11 +129,13 @@ Examples:
 ## Form Field Patterns
 
 ### Minimal Lead Capture
+
 1. Name
 2. Phone Number
 3. Email
 
 ### Standard PT Form
+
 1. Full Name
 2. Phone Number
 3. Email Address
@@ -129,6 +143,7 @@ Examples:
 5. Preferred Location (if multi-clinic)
 
 ### Extended Evaluation Form
+
 1. Full Name
 2. Phone Number
 3. Email
@@ -139,6 +154,7 @@ Examples:
 8. Have you had PT before?
 
 ### Form Optimization
+
 - Minimal required fields
 - "New Patient" vs "Existing Patient" toggle
 - Condition/body area dropdown
@@ -151,6 +167,7 @@ Examples:
 ## Trust Signals
 
 ### Professional Credentials
+
 - Doctor of Physical Therapy (DPT)
 - State license
 - Specialty certifications (OCS, SCS, etc.)
@@ -158,12 +175,14 @@ Examples:
 - Years of experience
 
 ### Outcome Statistics
+
 - Patient satisfaction scores
 - Success rates by condition
 - "X% of patients report improvement"
 - Average sessions to recovery
 
 ### Reviews & Testimonials
+
 - Google Reviews integration
 - Video testimonials
 - Patient success stories with photos
@@ -171,12 +190,14 @@ Examples:
 - Diversity in patient cases
 
 ### Insurance & Accessibility
+
 - Insurance plans accepted list
 - Direct access state compliance
 - Medicare/Medicaid acceptance
 - Self-pay options
 
 ### Quality Indicators
+
 - Modern equipment display
 - Clean, professional facility photos
 - Treatment technique certifications
@@ -260,6 +281,7 @@ Examples:
     - Direct phone number
 
 ### Recommended 4-Part Structure (Condition Pages)
+
 1. **Part 1**: Information on the topic/condition
 2. **Part 2**: How therapy can help with that problem
 3. **Part 3**: Why you specifically are a great choice
@@ -272,43 +294,51 @@ Examples:
 ### Common Objections & Responses
 
 **"Do I really need physical therapy?"**
+
 - "Don't wait until it gets worse"
 - Direct access benefits explained
 - Free evaluation offer
 - "Prevent surgery" messaging
 
 **"It will take too long to see results"**
+
 - Realistic timeline expectations
 - "Most patients see improvement in X sessions"
 - Progress tracking mentioned
 - Success story testimonials
 
 **"I can just do exercises at home"**
+
 - Personalized program vs generic
 - Hands-on manual therapy benefits
 - Progress monitoring importance
 - Injury prevention during recovery
 
 **"Physical therapy is painful"**
+
 - "We work within your comfort level"
 - Therapeutic vs harmful pain explained
 - Gentle techniques highlighted
 - Patient testimonials about comfort
 
 **"It's too expensive / not covered"**
+
 - Insurance acceptance displayed
 - Direct access saves money
 - Self-pay options
 - Compare to surgery/medication costs
 
 **"I don't have time for appointments"**
+
 - Flexible scheduling
 - Efficient appointments
 - Home exercise program reduces visits
 - Telehealth options (if available)
 
 ### Pain Psychology
+
 **Leverage pain avoidance:**
+
 - "Think about what your prospective patients want to avoid"
 - "Use cues to make them remember the pain they feel"
 - "They'll automatically start looking for a solution"
@@ -322,6 +352,7 @@ Example: "Do you suffer from debilitating back pain?" followed by solution and C
 ### High-Converting Page Checklist
 
 **Above the Fold (0-3 seconds)**
+
 - [ ] Pain/mobility-focused headline
 - [ ] Therapy-in-action or active patient image
 - [ ] Visible CTA or lead form
@@ -330,12 +361,14 @@ Example: "Do you suffer from debilitating back pain?" followed by solution and C
 - [ ] "No referral needed" badge
 
 **Building Trust**
+
 - [ ] Therapist credentials displayed
 - [ ] Patient testimonials with outcomes
 - [ ] Success statistics
 - [ ] Clean, modern facility imagery
 
 **Reducing Friction**
+
 - [ ] Insurance information clear
 - [ ] Direct access explained
 - [ ] FAQ addressing concerns
@@ -343,6 +376,7 @@ Example: "Do you suffer from debilitating back pain?" followed by solution and C
 - [ ] Multiple contact options
 
 **Conversion Optimization**
+
 - [ ] Single focused goal
 - [ ] Remove navigation distractions
 - [ ] Mobile-responsive design
@@ -350,6 +384,7 @@ Example: "Do you suffer from debilitating back pain?" followed by solution and C
 - [ ] Multiple CTAs throughout
 
 ### Visual Hierarchy Priority
+
 1. **Headline** - Most important, catch attention
 2. **CTA** - Clear action to take
 3. **Opt-in form** - Lead capture
@@ -358,6 +393,7 @@ Example: "Do you suffer from debilitating back pain?" followed by solution and C
 ### Condition-Specific Landing Pages
 
 **Create Separate Pages For:**
+
 - Back pain
 - Neck pain
 - Sports injuries
@@ -368,6 +404,7 @@ Example: "Do you suffer from debilitating back pain?" followed by solution and C
 - Auto accident injuries
 
 **Each Page Should Include:**
+
 - Condition-specific headline
 - How PT helps this condition
 - Why you're a good choice for it
@@ -375,6 +412,7 @@ Example: "Do you suffer from debilitating back pain?" followed by solution and C
 - Specific CTA
 
 ### Key Metrics to Track
+
 - Form submission rate
 - Phone call clicks
 - Time on page
@@ -384,11 +422,13 @@ Example: "Do you suffer from debilitating back pain?" followed by solution and C
 - Lead-to-appointment rate
 
 ### Performance Benchmark
+
 - Industry average conversion: 2-3%
 - Top performers: 14% (Beyond Therapy and Wellness example)
 - Potential: 10x increase in patient leads with optimization
 
 ### Essential Conversion Elements
+
 - Schedule Appointment buttons prominent in header and multiple sections
 - Click-to-call functionality on mobile
 - Free consultation offers as low-barrier entry
@@ -398,6 +438,7 @@ Example: "Do you suffer from debilitating back pain?" followed by solution and C
 - Appointment booking CTA on every page
 
 ### Mobile Optimization (Critical)
+
 - Over 60% of searches on mobile
 - One-click calling
 - Simplified forms

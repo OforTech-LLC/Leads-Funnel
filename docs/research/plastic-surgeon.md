@@ -31,12 +31,14 @@
 ## Above-Fold Patterns
 
 ### Headline Formulas
+
 - **Transformation-focused**: "Ready for a Transformation?" / "Discover Your Ideal Look"
 - **Outcome-driven**: "Achieve the [Body Part] You've Always Wanted"
 - **Question-based**: Resonates with patient desires and pain points
 - **Benefit-first**: Highlight the end result, not the procedure
 
 ### Visual Elements
+
 - High-quality hero image showing confident, natural results
 - Before/after slider or subtle transformation visual
 - Professional portrait of lead surgeon
@@ -44,12 +46,14 @@
 - Video background of consultation or facility tour
 
 ### Trust Badges Above Fold
+
 - Board certification logos (ABPS, ASPS)
 - "As Featured In" media logos
 - Years of experience badge
 - Patient count indicator ("10,000+ Procedures")
 
 ### Form Placement
+
 - Floating form on right side of hero
 - Sticky header with "Book Consultation" button
 - Minimal fields visible (expand on click)
@@ -59,6 +63,7 @@
 ## CTA Patterns
 
 ### Primary CTAs
+
 - "Book Your Free Consultation"
 - "Schedule Your Transformation"
 - "Get Your Personalized Quote"
@@ -66,12 +71,14 @@
 - "See What's Possible"
 
 ### CTA Button Design
+
 - High contrast colors (orange, coral, gold against neutral backgrounds)
 - Large, thumb-friendly size (minimum 44x44px)
 - Rounded corners for approachability
 - Subtle hover animation
 
 ### CTA Placement Strategy
+
 - Hero section (above fold)
 - After before/after gallery
 - Following testimonial sections
@@ -79,6 +86,7 @@
 - After procedure description
 
 ### Supporting CTAs
+
 - "View Before & After Gallery"
 - "Take the Virtual Consultation"
 - "Download Procedure Guide"
@@ -89,12 +97,14 @@
 ## Form Field Patterns
 
 ### Minimal Lead Capture (Recommended)
+
 1. Full Name
 2. Phone Number
 3. Email Address
 4. Procedure of Interest (dropdown)
 
 ### Extended Consultation Form
+
 1. Full Name
 2. Phone Number
 3. Email Address
@@ -104,11 +114,13 @@
 7. How did you hear about us?
 
 ### Progressive Disclosure Pattern
+
 - Stage 1: Name + Email only
 - Stage 2: Phone + Procedure
 - Stage 3: Availability + Additional details
 
 ### Form UX Best Practices
+
 - Single-column layout
 - Inline validation
 - Clear privacy statement
@@ -121,6 +133,7 @@
 ## Trust Signals
 
 ### Certifications & Credentials
+
 - American Board of Plastic Surgery (ABPS)
 - American Society of Plastic Surgeons (ASPS)
 - American Society for Aesthetic Plastic Surgery (ASAPS)
@@ -128,6 +141,7 @@
 - Hospital privileges badges
 
 ### Before/After Gallery Patterns
+
 - Consistent lighting and positioning
 - Multiple angles for each case
 - Patient demographics diversity
@@ -136,6 +150,7 @@
 - "Real Patient Results" label
 
 ### Reviews & Testimonials
+
 - Google reviews integration (star rating + count)
 - RealSelf ratings and reviews
 - Video testimonials from patients
@@ -143,12 +158,14 @@
 - "Verified Patient" badges
 
 ### Media & Recognition
+
 - "As Seen In" publication logos
 - TV appearance clips
 - Award badges (Top Doctor, Best of)
 - Social media follower counts
 
 ### Safety Indicators
+
 - Accredited surgical facility
 - Board-certified anesthesiologist
 - Safety record statistics
@@ -224,12 +241,14 @@
 ### Common Objections & Responses
 
 **"It's too expensive"**
+
 - Financing options prominently displayed
 - "Investment in yourself" framing
 - Payment plan calculator
 - Price transparency section
 
 **"I'm worried about safety"**
+
 - Board certification emphasis
 - Accredited facility badges
 - Safety statistics
@@ -237,24 +256,28 @@
 - "What to expect" transparency
 
 **"Results won't look natural"**
+
 - "Natural-looking results" language
 - Before/after showing subtle enhancements
 - Surgeon's aesthetic philosophy
 - Patient testimonials about natural results
 
 **"Recovery will be too long"**
+
 - Clear recovery timeline
 - "Back to work in X days" claims
 - Post-op support description
 - Recovery tips/resources
 
 **"I'm not sure if I'm a candidate"**
+
 - "Free consultation" to assess candidacy
 - Self-assessment quiz
 - Ideal candidate description
 - "Every body is different" messaging
 
 **"I don't know if I can trust this surgeon"**
+
 - Extensive credentials display
 - Patient testimonials
 - Media features
@@ -268,6 +291,7 @@
 ### High-Converting Page Checklist
 
 **Above the Fold (0-3 seconds)**
+
 - [ ] Clear, benefit-focused headline
 - [ ] High-quality hero visual
 - [ ] Visible CTA button
@@ -275,18 +299,21 @@
 - [ ] Lead capture form or consultation button
 
 **Building Trust (3-30 seconds)**
+
 - [ ] Before/after gallery visible without much scrolling
 - [ ] Surgeon credentials prominently displayed
 - [ ] Patient testimonials with photos/names
 - [ ] Social proof numbers (patients, years, reviews)
 
 **Reducing Friction (30-60 seconds)**
+
 - [ ] FAQ section addressing top concerns
 - [ ] Financing information visible
 - [ ] Clear next steps explanation
 - [ ] Multiple contact options
 
 **Conversion Elements**
+
 - [ ] Single, focused goal (consultation booking)
 - [ ] No external links or navigation distractions
 - [ ] Mobile-optimized experience
@@ -294,12 +321,14 @@
 - [ ] Multiple CTA placements throughout page
 
 **Procedure-Specific Pages**
+
 - [ ] Create separate landing pages for each major procedure
 - [ ] Match ad copy to landing page headline
 - [ ] Include procedure-specific before/afters
 - [ ] Address procedure-specific objections
 
 ### Key Metrics to Track
+
 - Form completion rate
 - Phone call clicks
 - Time on page
@@ -309,6 +338,7 @@
 - Mobile vs desktop conversion
 
 ### Color Psychology
+
 - **Blue**: Trust, dependability (financial/medical institutions)
 - **Green**: Growth, freshness, harmony
 - **White**: Cleanliness, purity (medical environments)
@@ -316,6 +346,7 @@
 - Avoid: Aggressive reds, harsh neons
 
 ### 2026 Trends
+
 - AI-powered virtual consultations
 - Personalized landing page experiences
 - Interactive treatment simulators

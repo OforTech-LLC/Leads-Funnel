@@ -3,6 +3,7 @@
 ## Research Sources & Real Landing Page URLs
 
 ### Major Brand Examples
+
 1. **ADT** - https://www.adt.com
 2. **Vivint** - https://www.vivint.com
 3. **SimpliSafe** - https://www.simplisafe.com
@@ -13,10 +14,12 @@
 8. **abode** - https://goabode.com
 
 ### B2B/Commercial Examples
+
 9. **Wayne Alarm** - https://waynealarm.com
 10. **GeoArm Security** - https://www.geoarm.com
 
 ### Landing Page Resources
+
 - https://instapage.com/blog/security-landing-pages/
 - https://www.caffeinemarketing.com/blog/best-16-cybersecurity-landing-pages
 - https://www.templatemonster.com/category/security-landing-page-templates/
@@ -60,6 +63,7 @@
    - Monthly monitoring price (starting at)
 
 ### Visual Design Patterns
+
 - Clean, trustworthy aesthetic
 - Blue/navy (trust) + green (safety) colors
 - Family/home imagery
@@ -73,21 +77,23 @@
 
 ### Primary CTAs
 
-| CTA Text | Purpose |
-|----------|---------|
-| "Get Free Quote" | Lead capture |
-| "Build My System" | Interactive configurator |
-| "Call for Free Consultation" | Phone conversion |
-| "Shop Security Systems" | E-commerce focus |
-| "Request Free Home Survey" | In-home consultation |
+| CTA Text                     | Purpose                  |
+| ---------------------------- | ------------------------ |
+| "Get Free Quote"             | Lead capture             |
+| "Build My System"            | Interactive configurator |
+| "Call for Free Consultation" | Phone conversion         |
+| "Shop Security Systems"      | E-commerce focus         |
+| "Request Free Home Survey"   | In-home consultation     |
 
 ### Offer-Based CTAs
+
 - "Claim Your Free Doorbell Camera"
 - "Start Your Free Trial"
 - "Get Free Installation"
 - "$0 Activation Special"
 
 ### CTA Placement Strategy
+
 - Hero section: Primary quote/build CTA
 - After equipment section: "Customize Your System"
 - Testimonials: "Join X Happy Customers"
@@ -99,6 +105,7 @@
 ## Form Field Patterns
 
 ### Quick Quote Form (High Conversion - 4 Fields)
+
 ```
 - Name *
 - Phone *
@@ -107,6 +114,7 @@
 ```
 
 ### Home Security Assessment Form
+
 ```
 - First Name *
 - Last Name
@@ -137,6 +145,7 @@
 ```
 
 ### Business Security Form
+
 ```
 - Business Name *
 - Contact Name *
@@ -161,6 +170,7 @@
 ```
 
 ### Form Best Practices
+
 - Maximum 4-5 fields for initial capture
 - Homeowner/renter question (qualifies lead)
 - Zip code for service area verification
@@ -173,6 +183,7 @@
 ## Trust Signals
 
 ### Industry Certifications
+
 - UL Listed/Certified
 - Five Diamond Certified
 - Better Business Bureau (BBB) A+ Rating
@@ -181,6 +192,7 @@
 - State licensing badges
 
 ### Monitoring & Response
+
 - "24/7/365 Professional Monitoring"
 - "Average Response Time: X Seconds"
 - "6 U.S. Monitoring Centers" (like ADT)
@@ -188,6 +200,7 @@
 - Police/Fire/Medical Dispatch
 
 ### Guarantees
+
 - "Money-Back Guarantee"
 - "Price Lock Guarantee"
 - "Equipment Warranty"
@@ -195,6 +208,7 @@
 - "Satisfaction Guarantee"
 
 ### Social Proof Elements
+
 1. **Customer Numbers**
    - "Protecting X Million Homes"
    - "X+ Years in Business"
@@ -290,20 +304,21 @@
 
 ### Common Objections & Responses
 
-| Objection | Landing Page Solution |
-|-----------|----------------------|
-| "It's too expensive" | "Starting at $X/month", value comparison to cost of theft |
-| "I don't want a contract" | "No long-term contract" or contract flexibility options |
-| "I can protect myself" | Statistics on break-ins, response time data |
-| "Cameras are enough" | Professional monitoring benefits, police dispatch |
-| "Installation is complicated" | "Free professional installation" or "DIY in 30 min" |
-| "False alarms are annoying" | Smart detection technology, verification process |
-| "Renters can't get security" | Renter-friendly options, portable systems |
-| "What if power goes out?" | Backup battery, cellular connection |
+| Objection                     | Landing Page Solution                                     |
+| ----------------------------- | --------------------------------------------------------- |
+| "It's too expensive"          | "Starting at $X/month", value comparison to cost of theft |
+| "I don't want a contract"     | "No long-term contract" or contract flexibility options   |
+| "I can protect myself"        | Statistics on break-ins, response time data               |
+| "Cameras are enough"          | Professional monitoring benefits, police dispatch         |
+| "Installation is complicated" | "Free professional installation" or "DIY in 30 min"       |
+| "False alarms are annoying"   | Smart detection technology, verification process          |
+| "Renters can't get security"  | Renter-friendly options, portable systems                 |
+| "What if power goes out?"     | Backup battery, cellular connection                       |
 
 ### Objection-Handling Content Blocks
 
 **Price Objection Handler**
+
 ```
 "Affordable Protection for Every Budget"
 - Monitoring from $19.99/month
@@ -314,6 +329,7 @@
 ```
 
 **Contract Objection Handler**
+
 ```
 "Flexibility You Deserve"
 - Month-to-month options available
@@ -323,6 +339,7 @@
 ```
 
 **DIY vs Pro Handler**
+
 ```
 "Professional Results, Your Way"
 Option A: Professional Installation (Free)
@@ -411,6 +428,7 @@ Option B: Easy DIY
 ```
 
 ### Key Conversion Metrics
+
 - Quote form conversion: 5-10%
 - Phone call rate: 8-12%
 - Equipment configurator engagement: 30%+
@@ -418,6 +436,7 @@ Option B: Easy DIY
 - Lead-to-sale: 20-30%
 
 ### A/B Testing Priorities
+
 1. Free offer headline (camera vs installation vs month free)
 2. Form length (4 vs 6 fields)
 3. Pricing display (show vs request quote)
@@ -430,6 +449,7 @@ Option B: Easy DIY
 ## Mobile-Specific Patterns
 
 ### Critical Mobile Elements
+
 - Click-to-call (primary action)
 - Simplified quote form (4 fields)
 - Sticky CTA bar
@@ -438,6 +458,7 @@ Option B: Easy DIY
 - Fast loading
 
 ### Mobile Navigation
+
 - Hamburger menu
 - Prominent phone number
 - Quick quote button
@@ -448,12 +469,14 @@ Option B: Easy DIY
 ## Special Considerations
 
 ### Residential vs Commercial
+
 - Separate landing pages recommended
 - Different equipment showcases
 - Different pricing structures
 - Different trust signals (B2B vs B2C)
 
 ### Smart Home Integration
+
 - Amazon Alexa compatibility
 - Google Home integration
 - Apple HomeKit (if applicable)
@@ -461,12 +484,14 @@ Option B: Easy DIY
 - Smart lock integration
 
 ### Compliance & Licensing
+
 - Display state licensing info
 - Permit information
 - False alarm fine prevention
 - Local code compliance
 
 ### Competitor Differentiation
+
 - No contract vs competitors' 3-year contracts
 - Price comparison tools
 - Equipment ownership vs rental

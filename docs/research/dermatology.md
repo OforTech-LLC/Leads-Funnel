@@ -37,6 +37,7 @@
 ## Above-Fold Patterns
 
 ### Headline Formulas
+
 - **Solution-focused**: "Clear, Healthy Skin Starts Here"
 - **Expertise-driven**: "Board-Certified Dermatologists You Can Trust"
 - **Condition-specific**: "Expert Acne Treatment That Actually Works"
@@ -44,6 +45,7 @@
 - **Confidence-building**: "Feel Confident in Your Skin Again"
 
 ### Visual Elements
+
 - Clean, minimalist hero with professional imagery
 - Before/after skin transformation (subtle, professional)
 - Doctor portrait with friendly, approachable expression
@@ -52,12 +54,14 @@
 - White or light backgrounds conveying cleanliness
 
 ### Above-Fold Design Patterns
+
 - Split layout: Hero image + appointment form
 - Full-width video hero with overlay CTA
 - Minimalist design with prominent phone number
 - Service category cards visible above fold
 
 ### Trust Indicators Above Fold
+
 - Board-certified dermatologist badge
 - Google review rating
 - "Accepting New Patients" banner
@@ -68,6 +72,7 @@
 ## CTA Patterns
 
 ### Primary CTAs
+
 - "Book Your Appointment"
 - "Schedule a Consultation"
 - "Request an Appointment"
@@ -75,12 +80,14 @@
 - "See a Dermatologist"
 
 ### Service-Specific CTAs
+
 - **Medical**: "Schedule Your Skin Check"
 - **Cosmetic**: "Book Your Consultation"
 - **Acne**: "Start Your Acne Treatment"
 - **Skin Cancer**: "Schedule Your Screening"
 
 ### CTA Button Design
+
 - Clean, professional colors (blue, teal, coral)
 - Sufficient size for easy clicking
 - High contrast against background
@@ -88,6 +95,7 @@
 - White space around button
 
 ### CTA Placement Strategy
+
 - Hero section (primary)
 - After service descriptions
 - Following before/after gallery
@@ -100,12 +108,14 @@
 ## Form Field Patterns
 
 ### Quick Appointment Request
+
 1. Full Name
 2. Phone Number
 3. Email Address
 4. Reason for Visit (dropdown)
 
 ### Standard Dermatology Form
+
 1. Full Name
 2. Phone Number
 3. Email Address
@@ -115,6 +125,7 @@
 7. Preferred Day/Time
 
 ### Condition-Specific Form
+
 1. Name
 2. Contact Information
 3. Primary Skin Concern
@@ -123,6 +134,7 @@
 6. Insurance provider
 
 ### Form Best Practices
+
 - Keep to 4-5 fields maximum
 - Use conditional logic (show relevant fields based on selection)
 - Include HIPAA compliance notice
@@ -134,6 +146,7 @@
 ## Trust Signals
 
 ### Professional Credentials
+
 - American Academy of Dermatology (AAD) member
 - Board-certified dermatologist
 - Fellowship training credentials
@@ -141,6 +154,7 @@
 - State medical license
 
 ### Before/After Gallery Best Practices
+
 - HIPAA-compliant patient consent required
 - Consistent lighting and positioning
 - Multiple angles when relevant
@@ -149,6 +163,7 @@
 - Optimized images for fast loading
 
 ### Reviews & Testimonials
+
 - Google Reviews integration
 - Healthgrades ratings
 - RealSelf reviews (for cosmetic)
@@ -157,6 +172,7 @@
 - Diversity in patient testimonials
 
 ### Treatment-Specific Trust
+
 - Laser technology certifications
 - Cosmetic injection training (Allergan, Galderma)
 - Mohs surgery certification
@@ -164,6 +180,7 @@
 - Published research
 
 ### Safety & Quality Indicators
+
 - Sterile environment emphasis
 - State-of-the-art technology
 - Continuing education commitment
@@ -248,36 +265,42 @@
 ### Common Objections & Responses
 
 **"I can handle this with over-the-counter products"**
+
 - "When OTC isn't working" messaging
 - Professional-grade treatment emphasis
 - Faster results with prescription options
 - Prevent scarring/long-term damage
 
 **"Dermatologists are too expensive"**
+
 - Insurance acceptance prominently displayed
 - Payment plans for cosmetic services
 - "Investment in your skin health" framing
 - Price transparency for common services
 
 **"I'm embarrassed about my skin condition"**
+
 - "Judgment-free environment" messaging
 - "We've seen it all" reassurance
 - Patient testimonials about comfort
 - Confidential, professional care emphasis
 
 **"Will treatments damage my skin?"**
+
 - Board-certified expertise emphasis
 - FDA-approved treatments only
 - Patch testing mentioned
 - Side effect transparency with mitigation
 
 **"I don't know if I need a dermatologist or can see my GP"**
+
 - Specialist expertise highlighted
 - Conditions that require dermatologist care
 - "Get expert answers" consultation offer
 - Referral process explanation
 
 **"Results will take too long"**
+
 - Realistic timeline expectations
 - "See improvement in X weeks" claims
 - Progress tracking offered
@@ -290,6 +313,7 @@
 ### High-Converting Page Checklist
 
 **Above the Fold (0-3 seconds)**
+
 - [ ] Clear, benefit-focused headline
 - [ ] Professional, clean imagery
 - [ ] Visible appointment CTA or form
@@ -297,18 +321,21 @@
 - [ ] Phone number displayed
 
 **Building Trust**
+
 - [ ] Board certification prominently displayed
 - [ ] Before/after gallery (HIPAA-compliant)
 - [ ] Patient testimonials with outcomes
 - [ ] Modern technology/equipment highlighted
 
 **Reducing Friction**
+
 - [ ] Insurance information clearly stated
 - [ ] FAQ addressing common concerns
 - [ ] Easy appointment booking
 - [ ] Multiple contact methods
 
 **Conversion Optimization**
+
 - [ ] Single focused conversion goal
 - [ ] Minimal navigation distractions
 - [ ] Mobile-responsive design
@@ -318,6 +345,7 @@
 ### Medical vs Cosmetic Landing Pages
 
 **Medical Dermatology Focus**
+
 - Insurance acceptance emphasized
 - Condition-specific content
 - Medical credentials prominent
@@ -325,6 +353,7 @@
 - Urgency for skin checks
 
 **Cosmetic Dermatology Focus**
+
 - Before/after gallery prominence
 - Treatment benefits highlighted
 - Pricing/financing visible
@@ -334,17 +363,20 @@
 ### Design Best Practices
 
 **Color Palette**
+
 - White/cream backgrounds (cleanliness)
 - Soft blue or teal accents (trust, calm)
 - Pink/coral for cosmetic focus
 - Avoid harsh or clinical colors
 
 **Typography**
+
 - Clean, modern sans-serif fonts
 - Easy readability on all devices
 - Clear hierarchy (headlines, body, captions)
 
 **Imagery Guidelines**
+
 - Real staff and facility photos
 - Authentic patient images (with consent)
 - Avoid generic stock photos
@@ -352,6 +384,7 @@
 - Diverse patient representation
 
 ### Key Metrics to Track
+
 - Appointment form submissions
 - Phone call clicks
 - Service page navigation

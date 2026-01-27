@@ -1,34 +1,116 @@
 /**
  * Hashing utilities for privacy-preserving logging and idempotency
+ *
+ * All hash functions use SHA-256 for security.
+ * Sensitive data (emails, IPs) should always use salted hashing.
  */
 
-import { createHash } from 'crypto';
+import { createHash, createHmac } from 'crypto';
 
 /**
  * Compute SHA-256 hash of a string
+ *
+ * @param input - String to hash
+ * @returns Hex-encoded SHA-256 hash
  */
 export function sha256(input: string): string {
   return createHash('sha256').update(input).digest('hex');
 }
 
 /**
- * Hash an IP address with optional salt
- * Never store or log raw IP addresses
+ * Compute HMAC-SHA-256 with a secret key
+ *
+ * More secure than concatenation for keyed hashing.
+ *
+ * @param input - String to hash
+ * @param key - Secret key for HMAC
+ * @returns Hex-encoded HMAC-SHA-256
  */
-export function hashIp(ip: string, salt: string = ''): string {
-  return sha256(`${ip}${salt}`);
+export function hmacSha256(input: string, key: string): string {
+  return createHmac('sha256', key).update(input).digest('hex');
 }
 
 /**
- * Hash an email address for logging
- * Never log raw email addresses
+ * Hash an IP address with salt for privacy-preserving rate limiting
+ *
+ * Uses HMAC for proper keyed hashing instead of simple concatenation.
+ * Never store or log raw IP addresses.
+ *
+ * @param ip - The IP address to hash
+ * @param salt - Salt for the hash (environment-specific)
+ * @returns Hex-encoded hashed IP
+ *
+ * @example
+ * ```typescript
+ * const ipHash = hashIp(clientIp, process.env.IP_HASH_SALT);
+ * ```
+ */
+export function hashIp(ip: string, salt: string = ''): string {
+  if (!salt) {
+    // Fallback to simple hash if no salt provided (development only)
+    return sha256(ip);
+  }
+  return hmacSha256(ip, salt);
+}
+
+/**
+ * Hash an email address for logging (without salt)
+ *
+ * @deprecated Use hashEmailWithSalt for better privacy protection
+ * @param email - The email address to hash
+ * @returns Hex-encoded hashed email
  */
 export function hashEmail(email: string): string {
   return sha256(email.toLowerCase().trim());
 }
 
 /**
+ * Hash an email address with salt for privacy-preserving logging
+ *
+ * Uses HMAC for proper keyed hashing. This prevents rainbow table attacks
+ * and ensures emails cannot be correlated across different systems.
+ *
+ * @param email - The email address to hash
+ * @param salt - Salt for the hash (from EMAIL_HASH_SALT environment variable)
+ * @returns Hex-encoded hashed email
+ *
+ * @example
+ * ```typescript
+ * const emailHash = hashEmailWithSalt(email, process.env.EMAIL_HASH_SALT);
+ * ```
+ */
+export function hashEmailWithSalt(email: string, salt: string): string {
+  const normalizedEmail = email.toLowerCase().trim();
+
+  if (!salt) {
+    // Warn and fallback if salt is not provided
+    console.warn('[Hash] Email hashing without salt is not recommended');
+    return sha256(normalizedEmail);
+  }
+
+  return hmacSha256(normalizedEmail, salt);
+}
+
+/**
  * Generate idempotency key from email, pageUrl, and window bucket
+ *
+ * This key is used to detect duplicate submissions within a time window.
+ * The hash includes the time bucket to allow repeated submissions after
+ * the window expires.
+ *
+ * @param normalizedEmail - Normalized (lowercase, trimmed) email
+ * @param pageUrl - The page URL where the form was submitted
+ * @param windowBucket - Time window bucket identifier
+ * @returns Hex-encoded idempotency key
+ *
+ * @example
+ * ```typescript
+ * const key = generateIdempotencyKey(
+ *   email.toLowerCase(),
+ *   pageUrl,
+ *   getWindowBucket(60) // 60 minute windows
+ * );
+ * ```
  */
 export function generateIdempotencyKey(
   normalizedEmail: string,
@@ -37,4 +119,22 @@ export function generateIdempotencyKey(
 ): string {
   const input = `${normalizedEmail}|${pageUrl || ''}|${windowBucket}`;
   return sha256(input);
+}
+
+/**
+ * Generate a truncated hash for display/logging purposes
+ *
+ * Useful for showing a partial identifier without revealing the full hash.
+ *
+ * @param input - String to hash
+ * @param length - Number of characters to include (default 12)
+ * @returns Truncated hex-encoded hash
+ *
+ * @example
+ * ```typescript
+ * const shortHash = truncatedHash(email, 8); // e.g., "a1b2c3d4"
+ * ```
+ */
+export function truncatedHash(input: string, length: number = 12): string {
+  return sha256(input).slice(0, length);
 }

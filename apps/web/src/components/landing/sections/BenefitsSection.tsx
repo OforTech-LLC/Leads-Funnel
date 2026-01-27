@@ -58,13 +58,12 @@ export const BenefitsSection: React.FC<BenefitsSectionProps> = ({
   };
 
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
+    <motion.div variants={containerVariants} initial="hidden" animate="visible">
       {/* Section Header */}
-      <motion.div variants={itemVariants} style={{ textAlign: 'center', marginBottom: tokens.spacing[12] }}>
+      <motion.div
+        variants={itemVariants}
+        style={{ textAlign: 'center', marginBottom: tokens.spacing[12] }}
+      >
         <h2
           style={{
             fontSize: 'clamp(2rem, 5vw, 3rem)',
@@ -97,8 +96,8 @@ export const BenefitsSection: React.FC<BenefitsSectionProps> = ({
           gap: tokens.spacing[6],
         }}
       >
-        {benefits.map((benefit, index) => (
-          <motion.div key={index} variants={itemVariants}>
+        {benefits.map((benefit) => (
+          <motion.div key={`benefit-${benefit.title}`} variants={itemVariants}>
             <GlassCard variant="light" padding="lg" glow>
               <div
                 style={{

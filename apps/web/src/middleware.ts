@@ -1,14 +1,114 @@
-import createMiddleware from 'next-intl/middleware';
+import { type NextRequest } from 'next/server';
+import createIntlMiddleware from 'next-intl/middleware';
 import { routing } from './i18n/routing';
 
 /**
- * next-intl middleware for locale detection and routing
- * Handles:
- * - Redirecting `/` to `/en` (or detected locale)
- * - Locale detection from Accept-Language header
- * - Locale prefix enforcement
+ * Generate a cryptographically secure nonce for CSP
+ * Uses Array.from for TypeScript compatibility
  */
-export default createMiddleware(routing);
+function generateNonce(): string {
+  const array = new Uint8Array(16);
+  crypto.getRandomValues(array);
+  const chars = Array.from(array, (byte) => String.fromCharCode(byte));
+  return btoa(chars.join('')).slice(0, 24);
+}
+
+/**
+ * Build Content-Security-Policy header with nonce
+ */
+function buildCSPHeader(nonce: string): string {
+  const directives = [
+    "default-src 'self'",
+    // script-src: use nonce and strict-dynamic for modern browsers
+    // strict-dynamic ignores 'self' and 'unsafe-inline' in supporting browsers
+    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://www.googletagmanager.com https://www.google-analytics.com`,
+    // style-src: unsafe-inline needed for CSS-in-JS (React inline styles, framer-motion)
+    // TODO: Consider using CSS modules or external stylesheets to remove unsafe-inline
+    `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
+    "img-src 'self' data: https: blob:",
+    "font-src 'self' https://fonts.gstatic.com",
+    "connect-src 'self' https://api.kanjona.com https://*.amazonaws.com https://www.google-analytics.com",
+    "frame-src 'none'",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "object-src 'none'",
+    "media-src 'self'",
+    "worker-src 'self' blob:",
+    "manifest-src 'self'",
+    'upgrade-insecure-requests',
+  ];
+
+  return directives.join('; ');
+}
+
+/**
+ * Security headers applied to all responses
+ */
+const securityHeaders: Record<string, string> = {
+  // Prevent clickjacking
+  'X-Frame-Options': 'DENY',
+
+  // Prevent MIME type sniffing
+  'X-Content-Type-Options': 'nosniff',
+
+  // Control referrer information
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+
+  // XSS protection (legacy, but still useful for older browsers)
+  'X-XSS-Protection': '1; mode=block',
+
+  // Permissions Policy - restrict browser features
+  'Permissions-Policy':
+    'camera=(), microphone=(), geolocation=(), interest-cohort=(), payment=(), usb=(), bluetooth=(), serial=()',
+
+  // HSTS - force HTTPS (1 year, include subdomains, allow preload list)
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
+
+  // Cross-Origin policies for enhanced isolation
+  'Cross-Origin-Opener-Policy': 'same-origin',
+  'Cross-Origin-Resource-Policy': 'same-origin',
+
+  // Prevent DNS prefetching to external domains (privacy)
+  'X-DNS-Prefetch-Control': 'off',
+
+  // Prevent IE from executing downloads in site context
+  'X-Download-Options': 'noopen',
+
+  // Disable content type sniffing
+  'X-Permitted-Cross-Domain-Policies': 'none',
+};
+
+// Create next-intl middleware
+const intlMiddleware = createIntlMiddleware(routing);
+
+/**
+ * Combined middleware for i18n and security headers
+ * Handles:
+ * - Locale detection and routing (next-intl)
+ * - CSP nonce generation
+ * - Security headers injection
+ */
+export default async function middleware(request: NextRequest) {
+  // Run next-intl middleware first
+  const response = intlMiddleware(request);
+
+  // Generate a unique nonce for this request
+  const nonce = generateNonce();
+
+  // Add CSP header with nonce
+  response.headers.set('Content-Security-Policy', buildCSPHeader(nonce));
+
+  // Add nonce header for server components to access
+  response.headers.set('x-nonce', nonce);
+
+  // Add all security headers
+  for (const [key, value] of Object.entries(securityHeaders)) {
+    response.headers.set(key, value);
+  }
+
+  return response;
+}
 
 /**
  * Matcher configuration
@@ -19,10 +119,11 @@ export default createMiddleware(routing);
  */
 export const config = {
   matcher: [
-    // Match all pathnames except for
+    // Match all pathnames except for:
     // - API routes
     // - Static files (with extensions)
-    // - Next.js internals
+    // - Next.js internals (_next)
+    // - Vercel internals (_vercel)
     '/((?!api|_next|_vercel|.*\\..*).*)',
   ],
 };

@@ -3,10 +3,14 @@
 ## Research Sources
 
 ### Landing Page Examples & Case Studies
+
 1. **Morgan & Morgan** - https://www.forthepeople.com/ - America's largest personal injury firm
-2. **Jacob D. Fuchsberg Law Firm** - https://www.jacobfuchsberg.com/ - Empathetic, justice-driven positioning
-3. **Wattel & York** - https://www.wattelyork.com/ - Arizona-based firm with strong credibility hooks
-4. **Brown & Charbonneau** - https://www.bc-llp.com/ - Houston firm with professional headshots focus
+2. **Jacob D. Fuchsberg Law Firm** - https://www.jacobfuchsberg.com/ - Empathetic, justice-driven
+   positioning
+3. **Wattel & York** - https://www.wattelyork.com/ - Arizona-based firm with strong credibility
+   hooks
+4. **Brown & Charbonneau** - https://www.bc-llp.com/ - Houston firm with professional headshots
+   focus
 5. **George Sink** - https://www.sinklaw.com/ - Multiple social proof elements near lead forms
 6. **Salvi, Schostok & Pritchard** - https://www.salvilaw.com/ - $3 billion+ recovered showcase
 7. **The Cochran Firm** - https://www.cochranfirm.com/ - High verdict displays ($100M+)
@@ -14,6 +18,7 @@
 9. **Olson Law Firm** - https://olsonlawfirm.com/ - Denver market local focus
 
 ### Industry Resources
+
 - [Slamdot - 19 Conversion Tips for Personal Injury Law Firms](https://www.slamdot.com/blog/19-conversion-tips-for-personal-injury-law-firms-for-2025/)
 - [Grow Law - Attorney Landing Page Guide](https://growlaw.co/blog/lawyer-landing-page-guide)
 - [Apexure - Personal Injury Lawyer Landing Page](https://www.apexure.com/personal-injury-lawyer-landing-page/)
@@ -25,15 +30,17 @@
 ## Above-Fold Patterns
 
 ### Headline Formulas
-| Pattern | Example | Why It Works |
-|---------|---------|--------------|
-| **Problem + Solution** | "Injured in an Accident? Let Us Fight for the Compensation You Deserve" | Client-focused, not resume-focused |
-| **Credential + Promise** | "25,000+ Satisfied Clients. Free Consultation." | Immediate credibility hook |
-| **Urgency + Support** | "Hurt? We're Here 24/7. No Fee Unless We Win." | Removes barriers instantly |
-| **Location + Specialty** | "Denver's Trusted Car Accident Lawyers" | Local SEO + specificity |
-| **Empathy + Action** | "We Understand Your Pain. Let Us Handle the Fight." | Emotional connection |
+
+| Pattern                  | Example                                                                 | Why It Works                       |
+| ------------------------ | ----------------------------------------------------------------------- | ---------------------------------- |
+| **Problem + Solution**   | "Injured in an Accident? Let Us Fight for the Compensation You Deserve" | Client-focused, not resume-focused |
+| **Credential + Promise** | "25,000+ Satisfied Clients. Free Consultation."                         | Immediate credibility hook         |
+| **Urgency + Support**    | "Hurt? We're Here 24/7. No Fee Unless We Win."                          | Removes barriers instantly         |
+| **Location + Specialty** | "Denver's Trusted Car Accident Lawyers"                                 | Local SEO + specificity            |
+| **Empathy + Action**     | "We Understand Your Pain. Let Us Handle the Fight."                     | Emotional connection               |
 
 ### Hero Image Patterns
+
 - **Lawyer + Client Interaction**: Attorney speaking with client in professional setting
 - **Confident Attorney Portrait**: Professional headshot with courthouse/office background
 - **Founding Partner Team**: Multiple attorneys conveying firm strength
@@ -41,6 +48,7 @@
 - **Location Imagery**: Local courthouse, city skyline (for geo-targeting)
 
 ### Value Proposition Elements (Above Fold)
+
 1. **No Fee Promise**: "You Don't Pay Unless We Win" (removes financial barrier)
 2. **Experience Credential**: "35+ Years of Experience" / "$3 Billion Recovered"
 3. **Availability**: "24/7 Free Consultation"
@@ -52,15 +60,17 @@
 ## CTA Patterns
 
 ### Primary CTA Button Text
-| High-Converting | Avoid |
-|-----------------|-------|
-| "Get My Free Case Evaluation" | "Submit" |
-| "Speak to an Attorney Now" | "Contact Us" |
-| "Start Your Free Consultation" | "Learn More" |
-| "Get Help Now" | "Send Message" |
-| "Call for Free Case Review" | "Inquire" |
+
+| High-Converting                | Avoid          |
+| ------------------------------ | -------------- |
+| "Get My Free Case Evaluation"  | "Submit"       |
+| "Speak to an Attorney Now"     | "Contact Us"   |
+| "Start Your Free Consultation" | "Learn More"   |
+| "Get Help Now"                 | "Send Message" |
+| "Call for Free Case Review"    | "Inquire"      |
 
 ### CTA Placement Strategy
+
 1. **Hero Section**: Primary CTA button (high contrast color - green on white, orange on dark)
 2. **Floating Header**: Persistent "Call Now" button on scroll
 3. **Mid-Page**: After trust signals section
@@ -68,6 +78,7 @@
 5. **Exit Intent**: Popup with consultation offer
 
 ### Urgency Elements
+
 - "Limited Statute of Limitations - Act Now"
 - "Evidence Can Disappear - Don't Wait"
 - "Insurance Companies Are Already Building Their Case"
@@ -79,6 +90,7 @@
 ## Form Field Patterns
 
 ### Minimal Form (Highest Conversion)
+
 ```
 - Full Name (required)
 - Phone Number (required)
@@ -86,6 +98,7 @@
 ```
 
 ### Standard Form
+
 ```
 - Full Name (required)
 - Phone Number (required)
@@ -95,6 +108,7 @@
 ```
 
 ### Qualification Form
+
 ```
 - Full Name
 - Phone Number
@@ -106,6 +120,7 @@
 ```
 
 ### Form Best Practices
+
 - Keep to 3-5 fields maximum for initial capture
 - Use dropdown menus for case type (reduces friction)
 - Make phone number the primary required field
@@ -117,15 +132,17 @@
 ## Trust Signals
 
 ### Case Results Display
-| Format | Example |
-|--------|---------|
-| **Single Large Number** | "$500 Million+ Recovered for Clients" |
-| **Verdict Ticker** | Scrolling display of recent settlements |
-| **Category Results** | "Car Accidents: $25M | Medical Malpractice: $18M" |
-| **Record Verdicts** | "$363 Million - Largest Verdict in IL History" |
-| **Aggregate Count** | "1,600+ Successful Cases Since 1988" |
+
+| Format                  | Example                                        |
+| ----------------------- | ---------------------------------------------- | -------------------------- |
+| **Single Large Number** | "$500 Million+ Recovered for Clients"          |
+| **Verdict Ticker**      | Scrolling display of recent settlements        |
+| **Category Results**    | "Car Accidents: $25M                           | Medical Malpractice: $18M" |
+| **Record Verdicts**     | "$363 Million - Largest Verdict in IL History" |
+| **Aggregate Count**     | "1,600+ Successful Cases Since 1988"           |
 
 ### Badge Types
+
 1. **Rating Badges**: Avvo 10.0, Super Lawyers, Best Lawyers
 2. **Association Badges**: State Bar, American Association for Justice
 3. **Award Badges**: "Best Law Firm" from local publications
@@ -133,6 +150,7 @@
 5. **Security Badges**: SSL, confidential consultation promise
 
 ### Review Integration
+
 - Google Reviews widget with star rating
 - Video testimonials from past clients
 - Written quotes with full name and photo
@@ -140,6 +158,7 @@
 - Third-party review site ratings (Avvo, Martindale)
 
 ### Media Mentions
+
 - "As Seen On" with news channel logos
 - Press coverage links
 - Notable case coverage
@@ -149,6 +168,7 @@
 ## Section Structure
 
 ### Recommended Page Flow
+
 ```
 1. HERO SECTION
    - Headline (benefit-driven)
@@ -212,16 +232,17 @@
 
 ### Common Objections & Responses
 
-| Objection | Landing Page Response |
-|-----------|----------------------|
-| "I can't afford a lawyer" | "No upfront fees. You don't pay unless we win." |
-| "Is my case worth pursuing?" | "Free case evaluation - find out in minutes" |
-| "Will this take too long?" | "We handle everything so you can focus on recovery" |
-| "I don't know if I have a case" | "Not sure? Let us review your situation for free" |
+| Objection                             | Landing Page Response                                                     |
+| ------------------------------------- | ------------------------------------------------------------------------- |
+| "I can't afford a lawyer"             | "No upfront fees. You don't pay unless we win."                           |
+| "Is my case worth pursuing?"          | "Free case evaluation - find out in minutes"                              |
+| "Will this take too long?"            | "We handle everything so you can focus on recovery"                       |
+| "I don't know if I have a case"       | "Not sure? Let us review your situation for free"                         |
 | "The insurance company made an offer" | "Insurance companies often lowball. We fight for what you truly deserve." |
-| "I was partially at fault" | "Even if you share some fault, you may still recover compensation" |
+| "I was partially at fault"            | "Even if you share some fault, you may still recover compensation"        |
 
 ### FAQ Section Topics
+
 1. What does "contingency fee" mean?
 2. How long do I have to file a claim?
 3. What is my case worth?
@@ -236,6 +257,7 @@
 ## Conversion Blueprint
 
 ### Page Architecture
+
 ```
 [STICKY HEADER: Logo | Phone Number | "Free Consultation" CTA]
 
@@ -286,6 +308,7 @@
 ```
 
 ### Mobile Optimization
+
 - Click-to-call as primary CTA
 - Collapsible form
 - Sticky call button
@@ -293,6 +316,7 @@
 - Thumb-friendly button sizing
 
 ### Key Metrics to Track
+
 - Form completion rate
 - Click-to-call rate
 - Time on page
@@ -301,6 +325,7 @@
 - Exit intent trigger rate
 
 ### A/B Testing Priorities
+
 1. Headline variations (empathy vs. credentials)
 2. CTA button text and color
 3. Form field count (3 vs 5)
@@ -312,6 +337,7 @@
 ## Design Best Practices
 
 ### Color Psychology
+
 - **Navy Blue**: Trust, professionalism, authority
 - **Green**: "Go" action, money/compensation association
 - **White**: Cleanliness, clarity
@@ -319,18 +345,21 @@
 - Avoid: Aggressive reds, overly playful colors
 
 ### Typography
+
 - Headlines: Strong serif or bold sans-serif
 - Body: Clean, readable sans-serif
 - Minimum 16px for body text
 - Strong contrast for accessibility
 
 ### Visual Hierarchy
+
 1. Headline first (largest, boldest)
 2. Subheadline second
 3. CTA button (high contrast color)
 4. Supporting elements below
 
 ### Page Speed
+
 - Optimize hero images
 - Lazy load below-fold content
 - Target under 3-second load time

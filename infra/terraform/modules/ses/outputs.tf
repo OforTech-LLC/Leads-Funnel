@@ -36,3 +36,32 @@ output "mail_from_domain" {
   description = "MAIL FROM domain"
   value       = var.enable_mail_from ? "mail.${var.root_domain}" : null
 }
+
+# -----------------------------------------------------------------------------
+# Bounce/Complaint Handling Outputs
+# -----------------------------------------------------------------------------
+
+output "bounces_topic_arn" {
+  description = "SNS topic ARN for bounce notifications"
+  value       = var.enable_bounce_handling ? aws_sns_topic.ses_bounces[0].arn : null
+}
+
+output "complaints_topic_arn" {
+  description = "SNS topic ARN for complaint notifications"
+  value       = var.enable_bounce_handling ? aws_sns_topic.ses_complaints[0].arn : null
+}
+
+output "deliveries_topic_arn" {
+  description = "SNS topic ARN for delivery notifications"
+  value       = var.enable_delivery_notifications ? aws_sns_topic.ses_deliveries[0].arn : null
+}
+
+output "bounce_alarm_arn" {
+  description = "CloudWatch alarm ARN for bounce rate"
+  value       = var.enable_bounce_handling && var.enable_bounce_alarm ? aws_cloudwatch_metric_alarm.ses_bounce_rate[0].arn : null
+}
+
+output "complaint_alarm_arn" {
+  description = "CloudWatch alarm ARN for complaint rate"
+  value       = var.enable_bounce_handling && var.enable_bounce_alarm ? aws_cloudwatch_metric_alarm.ses_complaint_rate[0].arn : null
+}

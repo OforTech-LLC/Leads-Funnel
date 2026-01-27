@@ -9,14 +9,13 @@ Creates ACM SSL/TLS certificate with DNS validation for CloudFront and API Gatew
 
 ## Important Notes
 
-1. **Region Requirement**: This module MUST be applied in `us-east-1` for CloudFront
-   compatibility. Use a provider alias if your default region differs.
+1. **Region Requirement**: This module MUST be applied in `us-east-1` for CloudFront compatibility.
+   Use a provider alias if your default region differs.
 
-2. **Validation**: The certificate uses DNS validation. The `validation_records`
-   output should be passed to the DNS module to create the required CNAME records.
+2. **Validation**: The certificate uses DNS validation. The `validation_records` output should be
+   passed to the DNS module to create the required CNAME records.
 
-3. **Timing**: Certificate validation can take 10-30 minutes after DNS records
-   are created.
+3. **Timing**: Certificate validation can take 10-30 minutes after DNS records are created.
 
 ## Usage
 
@@ -45,22 +44,23 @@ module "acm" {
 ## SANs (Subject Alternative Names)
 
 The certificate covers:
+
 - `<root_domain>` (e.g., kanjona.com)
 - `www.<root_domain>` (e.g., www.kanjona.com)
 - `api.<root_domain>` (e.g., api.kanjona.com)
 
 ## Inputs
 
-| Name | Description | Type | Required |
-|------|-------------|------|----------|
-| project_name | Project name for resource naming | string | yes |
-| environment | Environment (dev/prod) | string | yes |
-| root_domain | Root domain name | string | yes |
+| Name         | Description                      | Type   | Required |
+| ------------ | -------------------------------- | ------ | -------- |
+| project_name | Project name for resource naming | string | yes      |
+| environment  | Environment (dev/prod)           | string | yes      |
+| root_domain  | Root domain name                 | string | yes      |
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| certificate_arn | ARN of the certificate |
+| Name                      | Description                 |
+| ------------------------- | --------------------------- |
+| certificate_arn           | ARN of the certificate      |
 | validated_certificate_arn | ARN to use after validation |
-| validation_records | DNS records for validation |
+| validation_records        | DNS records for validation  |

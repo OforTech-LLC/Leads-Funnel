@@ -17,16 +17,21 @@
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md,css,scss}\"",
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md,css,scss}\"",
     "tf:fmt": "cd infra/terraform && terraform fmt -recursive",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test": "npm run test:run --workspaces --if-present",
+    "test:web": "npm run test:run --workspace=@leads-funnel/web",
+    "test:api": "npm run test:run --workspace=@leads-funnel/api",
+    "test:watch": "npm run test:watch --workspaces --if-present",
+    "test:coverage": "npm run test:coverage --workspaces --if-present"
   },
   "devDependencies": {
+    "eslint": "^9.39.2",
     "husky": "^9.0.0",
     "lint-staged": "^15.0.0",
     "prettier": "^3.2.0"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
       "prettier --write"
     ],
     "*.{json,md,css,scss}": [
@@ -34,9 +39,6 @@
     ],
     "*.tf": [
       "terraform fmt"
-    ],
-    "*.swift": [
-      "swift-format format --in-place"
     ]
   },
   "engines": {

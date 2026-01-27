@@ -318,14 +318,140 @@ module "monitoring" {
 
   alert_email = var.alert_email
 
+  # Resource references
   lambda_function_name = module.lambda.lead_handler_function_name
   api_gateway_id       = module.api_gateway.api_id
   dynamodb_table_name  = module.dynamodb.funnel_table_names["real-estate"]
   sqs_queue_name       = var.enable_sqs ? module.eventbridge.queue_name : ""
   sqs_dlq_name         = var.enable_sqs ? module.eventbridge.dlq_name : ""
 
-  # Create dashboard in prod
-  create_dashboard = true
+  # Alarm thresholds (strict for prod)
+  lambda_error_rate_threshold = 1  # 1% error rate threshold
+  lambda_duration_threshold   = 10 # 10 seconds
+  api_error_rate_threshold    = 1  # 1% error rate threshold
+
+  # Dashboard and advanced features
+  create_dashboard        = true # Create dashboard in prod
+  create_composite_alarms = true # Enable composite alarms in prod
+  enable_sns_encryption   = true # Encrypt SNS in prod
+
+  tags = local.common_tags
+}
+
+# =============================================================================
+# Synthetic Monitoring (Enabled by default in prod)
+# =============================================================================
+module "synthetics" {
+  count  = var.enable_synthetics ? 1 : 0
+  source = "../../modules/synthetics"
+
+  project_name = var.project_name
+  environment  = var.environment
+
+  # API Health Check Canary
+  enable_api_canary   = true
+  api_health_endpoint = "https://api.${var.root_domain}/health"
+  api_canary_schedule = "rate(5 minutes)" # More frequent in prod
+
+  # Website Availability Canary
+  enable_website_canary   = true
+  website_url             = "https://${var.root_domain}"
+  website_canary_schedule = "rate(5 minutes)" # More frequent in prod
+
+  # Alerting
+  sns_topic_arn = var.enable_alarms ? module.monitoring[0].sns_topic_arn : ""
+
+  # Canary configuration
+  enable_xray_tracing     = var.enable_xray
+  artifact_retention_days = 30 # Longer retention in prod
+
+  tags = local.common_tags
+}
+
+# =============================================================================
+# CloudTrail (Recommended for production - AWS API audit logging)
+# =============================================================================
+# IMPORTANT: CloudTrail should be enabled in production for security compliance
+# and audit logging of all AWS API calls.
+# =============================================================================
+module "cloudtrail" {
+  count  = var.enable_cloudtrail ? 1 : 0
+  source = "../../modules/cloudtrail"
+
+  project_name = var.project_name
+  environment  = var.environment
+
+  is_multi_region_trail     = true  # Multi-region for comprehensive coverage
+  enable_cloudwatch_logs    = true  # Real-time monitoring
+  enable_access_logging     = true  # S3 access logging for the trail bucket
+  enable_s3_data_events     = false # Can be enabled for compliance (increases costs)
+  enable_lambda_data_events = false # Can be enabled for compliance (increases costs)
+
+  log_retention_days            = 365 # 1 year retention for compliance
+  cloudwatch_log_retention_days = 90
+
+  tags = local.common_tags
+}
+
+# =============================================================================
+# Admin Console (Optional - DISABLED by default)
+# =============================================================================
+# IMPORTANT: Admin console is feature-flagged and OFF by default.
+# Must be explicitly enabled via enable_admin_console = true
+# Production has stricter security: MFA required, IP allowlist recommended
+# =============================================================================
+module "admin" {
+  count  = var.enable_admin_console ? 1 : 0
+  source = "../../modules/admin"
+
+  project_name = var.project_name
+  environment  = var.environment
+  aws_region   = var.aws_region
+
+  # Feature flags
+  enable_admin_console      = var.enable_admin_console
+  enable_admin_ip_allowlist = var.enable_admin_ip_allowlist
+  enable_cloudtrail         = false # Use standalone cloudtrail module instead
+
+  # Admin access control (stricter in prod)
+  admin_allowed_emails = var.admin_allowed_emails
+  admin_allowed_cidrs  = var.admin_allowed_cidrs
+
+  # Cognito configuration
+  cognito_domain_prefix      = var.admin_cognito_domain_prefix
+  mfa_configuration          = "ON"  # Always require MFA in production
+  enable_localhost_callbacks = false # NO localhost in production
+
+  # Production callback URLs only - NO localhost
+  admin_console_callback_urls = [
+    "https://${var.root_domain}/admin/callback",
+    "https://www.${var.root_domain}/admin/callback",
+  ]
+  admin_console_logout_urls = [
+    "https://${var.root_domain}/admin",
+    "https://www.${var.root_domain}/admin",
+  ]
+
+  # Exports configuration (longer retention in prod)
+  exports_bucket_name      = var.admin_exports_bucket_name
+  exports_retention_days   = 30
+  enable_bucket_versioning = true
+  enable_access_logging    = true
+
+  # Lambda configuration
+  lambda_zip_path    = var.admin_lambda_zip_path
+  lambda_zip_hash    = var.admin_lambda_zip_hash != "" ? var.admin_lambda_zip_hash : filebase64sha256(var.admin_lambda_zip_path)
+  log_retention_days = 30
+  xray_enabled       = var.enable_xray
+
+  # API Gateway integration
+  api_gateway_id            = module.api_gateway.api_id
+  api_gateway_execution_arn = module.api_gateway.api_execution_arn
+
+  # Production data protection
+  audit_log_retention_days   = 365 # 1 year retention for compliance
+  enable_audit_pitr          = true
+  enable_deletion_protection = true
 
   tags = local.common_tags
 }

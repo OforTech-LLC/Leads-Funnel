@@ -1,6 +1,7 @@
 # Static Site Module
 
-Creates S3 bucket and CloudFront distribution for hosting static site content with modern security best practices.
+Creates S3 bucket and CloudFront distribution for hosting static site content with modern security
+best practices.
 
 ## Resources Created
 
@@ -15,18 +16,21 @@ Creates S3 bucket and CloudFront distribution for hosting static site content wi
 ## Security Features
 
 ### S3 Bucket
+
 - All public access blocked
 - Server-side encryption (AES256)
 - Versioning enabled
 - No static website hosting (CloudFront handles this)
 
 ### CloudFront
+
 - Origin Access Control (OAC) - modern replacement for OAI
 - HTTPS only (HTTP redirects to HTTPS)
 - TLS 1.2+ minimum
 - Compression enabled (gzip + brotli)
 
 ### Security Headers
+
 - `Strict-Transport-Security`: HSTS with preload
 - `X-Content-Type-Options`: nosniff
 - `X-Frame-Options`: DENY
@@ -62,8 +66,8 @@ module "static_site" {
 
 ## SPA Support
 
-Custom error responses are configured to return `/index.html` for 403/404 errors,
-enabling client-side routing for single-page applications.
+Custom error responses are configured to return `/index.html` for 403/404 errors, enabling
+client-side routing for single-page applications.
 
 ## Cache Invalidation
 
@@ -77,22 +81,22 @@ aws cloudfront create-invalidation \
 
 ## Inputs
 
-| Name | Description | Type | Default |
-|------|-------------|------|---------|
-| project_name | Project name | string | - |
-| environment | Environment (dev/prod) | string | - |
-| domain_aliases | CloudFront domain aliases | list(string) | - |
-| acm_certificate_arn | ACM certificate ARN | string | - |
-| waf_web_acl_arn | WAF Web ACL ARN | string | null |
-| price_class | CloudFront price class | string | PriceClass_100 |
-| enable_logging | Enable access logging | bool | false |
-| content_security_policy | CSP header value | string | (default) |
+| Name                    | Description               | Type         | Default        |
+| ----------------------- | ------------------------- | ------------ | -------------- |
+| project_name            | Project name              | string       | -              |
+| environment             | Environment (dev/prod)    | string       | -              |
+| domain_aliases          | CloudFront domain aliases | list(string) | -              |
+| acm_certificate_arn     | ACM certificate ARN       | string       | -              |
+| waf_web_acl_arn         | WAF Web ACL ARN           | string       | null           |
+| price_class             | CloudFront price class    | string       | PriceClass_100 |
+| enable_logging          | Enable access logging     | bool         | false          |
+| content_security_policy | CSP header value          | string       | (default)      |
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| bucket_name | S3 bucket name |
+| Name            | Description                |
+| --------------- | -------------------------- |
+| bucket_name     | S3 bucket name             |
 | distribution_id | CloudFront distribution ID |
-| domain_name | CloudFront domain name |
-| hosted_zone_id | CloudFront hosted zone ID |
+| domain_name     | CloudFront domain name     |
+| hosted_zone_id  | CloudFront hosted zone ID  |

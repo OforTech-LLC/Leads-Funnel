@@ -18,6 +18,7 @@
 ## Above-Fold Patterns
 
 ### Headline Formulas
+
 - **Benefit-focused**: "Come Home to a Clean House"
 - **Time-saving**: "Your Time Back. Your Home Clean."
 - **Trust-focused**: "Professional Cleaning You Can Trust"
@@ -26,6 +27,7 @@
 - **Action-focused**: "Book Your Cleaning in 60 Seconds"
 
 ### Hero Section Elements
+
 1. **ZIP code entry** for instant availability check
 2. **Service type selector** (one-time, recurring, deep clean)
 3. **Booking/quote CTA** prominently displayed
@@ -34,6 +36,7 @@
 6. **Pricing preview** ("Starting at $XX/cleaning")
 
 ### Visual Patterns
+
 - Bright, clean color schemes (white, light blue, green)
 - Before/after cleaning images
 - Professional cleaners in branded uniforms
@@ -45,6 +48,7 @@
 ## CTA Patterns
 
 ### Primary CTA Text
+
 - "Get a Free Quote"
 - "Book Now"
 - "Get Instant Pricing"
@@ -53,6 +57,7 @@
 - "See My Price"
 
 ### CTA Design Patterns
+
 - **Bright, action-oriented colors** (green, blue, orange)
 - **Instant gratification** ("Book in 60 Seconds")
 - **No-commitment messaging** ("Free estimate, no obligation")
@@ -60,6 +65,7 @@
 - **Sticky booking bar** on scroll
 
 ### Secondary CTAs
+
 - "See Services"
 - "View Pricing"
 - "Learn More"
@@ -72,6 +78,7 @@
 ### Quick Quote Form (4-6 fields)
 
 **Essential Fields**
+
 - ZIP code
 - Service type (one-time, weekly, bi-weekly, monthly)
 - Home size (bedrooms + bathrooms OR square footage)
@@ -81,27 +88,32 @@
 ### Detailed Booking Form (Multi-Step)
 
 **Step 1: Service Details**
+
 - ZIP code
 - Service frequency (one-time, weekly, bi-weekly, monthly)
 - Service type (standard, deep clean, move-in/out)
 
 **Step 2: Home Details**
+
 - Number of bedrooms
 - Number of bathrooms
 - Pets (Yes/No)
 - Add-ons (laundry, dishes, fridge, oven)
 
 **Step 3: Scheduling**
+
 - Preferred date (calendar picker)
 - Preferred time window
 - Access instructions (optional)
 
 **Step 4: Contact & Payment**
+
 - Name, email, phone
 - Address
 - Payment method (for booking)
 
 ### Form Best Practices
+
 - **Instant price display** as form is filled
 - **Clear add-on pricing** (no surprises)
 - **Flexible scheduling** options
@@ -114,6 +126,7 @@
 ## Trust Signals
 
 ### Industry-Specific Badges
+
 - Bonded & Insured badge
 - Background-checked employees
 - Satisfaction guarantee badge
@@ -121,6 +134,7 @@
 - COVID-19 safety protocols
 
 ### Social Proof Elements
+
 - "X,000+ Homes Cleaned"
 - "4.8/5 Star Rating"
 - Years in business
@@ -129,6 +143,7 @@
 - Before/after photos
 
 ### Guarantees
+
 - 100% Satisfaction Guarantee
 - Re-clean guarantee
 - "If You're Not Happy, We'll Come Back"
@@ -136,6 +151,7 @@
 - Secure payment badges
 
 ### Associations & Certifications
+
 - ISSA (International Sanitary Supply Association)
 - BBB accreditation
 - Local chamber of commerce
@@ -211,17 +227,18 @@
 
 ### Common Objections & Responses
 
-| Objection | Landing Page Response |
-|-----------|----------------------|
-| "I can clean my own house" | Emphasize time savings, professional results, "spend time on what matters" |
-| "It's too expensive" | Show value proposition, compare to hourly wage, discount for recurring |
-| "I don't want strangers in my home" | Background checks, bonded & insured, employee photos, reviews |
-| "What if I'm not satisfied?" | 100% satisfaction guarantee, re-clean promise |
-| "I have pets/allergies/special needs" | Customize service, pet-friendly options, green products |
-| "Will they damage my things?" | Insurance coverage, trained professionals, damage policy |
-| "How do I know they'll do a good job?" | Checklist provided, before/after photos, reviews |
+| Objection                              | Landing Page Response                                                      |
+| -------------------------------------- | -------------------------------------------------------------------------- |
+| "I can clean my own house"             | Emphasize time savings, professional results, "spend time on what matters" |
+| "It's too expensive"                   | Show value proposition, compare to hourly wage, discount for recurring     |
+| "I don't want strangers in my home"    | Background checks, bonded & insured, employee photos, reviews              |
+| "What if I'm not satisfied?"           | 100% satisfaction guarantee, re-clean promise                              |
+| "I have pets/allergies/special needs"  | Customize service, pet-friendly options, green products                    |
+| "Will they damage my things?"          | Insurance coverage, trained professionals, damage policy                   |
+| "How do I know they'll do a good job?" | Checklist provided, before/after photos, reviews                           |
 
 ### FAQ Questions to Include
+
 1. What's included in a standard cleaning?
 2. How much does house cleaning cost?
 3. Are your cleaners background-checked?
@@ -302,12 +319,14 @@
 ```
 
 ### Key Metrics to Target
+
 - **Conversion rate**: 10-15% for bookings
 - **Average booking value**: Track upsells/add-ons
 - **Customer lifetime value**: Recurring booking rate
 - **Time to book**: Under 2 minutes
 
 ### A/B Testing Priorities
+
 1. Pricing display (visible vs. quote form)
 2. Service type emphasis (one-time vs. recurring first)
 3. Hero imagery (clean home vs. cleaner at work)
@@ -319,24 +338,28 @@
 ## Industry-Specific Insights
 
 ### What Makes Cleaning Different
+
 - **Recurring revenue opportunity** - Emphasize subscription/recurring services
 - **Trust is paramount** - Strangers entering homes
 - **Price sensitivity** - Common comparison shopping
 - **Visual proof important** - Before/after images powerful
 
 ### Upsell Opportunities
+
 - Deep cleaning vs. standard
 - Add-on services (laundry, dishes, fridge, oven)
 - Frequency upgrades (monthly to bi-weekly)
 - First-clean discounts for recurring commitment
 
 ### Seasonal Marketing
+
 - Spring cleaning campaigns
 - Holiday prep cleaning
 - Move-in/move-out (summer peaks)
 - Post-party cleanup services
 
 ### Local SEO Focus
+
 - "House cleaning [city]"
 - "Maid service near me"
 - Location-specific landing pages

@@ -18,6 +18,7 @@
 ## Above-Fold Patterns
 
 ### Headline Formulas
+
 - **Savings-focused**: "Cut Energy Bills with New Windows"
 - **Quality-focused**: "Premium Windows & Doors, Expertly Installed"
 - **Problem-solving**: "Drafty Windows? We Can Help."
@@ -26,6 +27,7 @@
 - **Transformation**: "Beautiful Windows That Transform Your Home"
 
 ### Hero Section Elements
+
 1. **Current promotion** prominently displayed
 2. **Free consultation CTA** above fold
 3. **Energy savings calculator** or preview
@@ -35,6 +37,7 @@
 7. **Before/after imagery** or beautiful window shots
 
 ### Visual Patterns
+
 - Beautiful home exteriors with new windows
 - Interior shots showing natural light
 - Window/door product close-ups
@@ -46,6 +49,7 @@
 ## CTA Patterns
 
 ### Primary CTA Text
+
 - "Get a Free Quote"
 - "Schedule Your Free Consultation"
 - "Request Free Estimate"
@@ -54,6 +58,7 @@
 - "See Your Savings"
 
 ### CTA Design Patterns
+
 - **Promotion-driven** (discount offers prominent)
 - **Phone number as co-equal CTA**
 - **"Free, no-obligation" messaging**
@@ -61,6 +66,7 @@
 - **Dual CTAs** (online form + phone)
 
 ### Secondary CTAs
+
 - "View Products"
 - "See Windows"
 - "Explore Styles"
@@ -73,6 +79,7 @@
 ### Free Quote Form (5-6 fields)
 
 **Essential Fields**
+
 - Name
 - Phone number
 - Email address
@@ -83,26 +90,31 @@
 ### Detailed Consultation Form
 
 **Step 1: Project Scope**
+
 - What are you replacing? (Windows, Entry Door, Patio Door, Sliding Door)
 - Number of windows to replace
 - Number of doors to replace
 
 **Step 2: Home Details**
+
 - Home type (Single family, Townhome, Condo)
 - Home age (for energy savings calculation)
 - Current window type/age
 
 **Step 3: Preferences**
+
 - Timeline (ASAP, 1-3 months, 3-6 months, just getting info)
 - Style preferences (if known)
 - Energy efficiency priority
 
 **Step 4: Contact & Scheduling**
+
 - Name, phone, email
 - Address
 - Preferred appointment time
 
 ### Form Best Practices
+
 - **Project scope first** (windows, doors, both)
 - **Number of units** helps qualification
 - **Energy savings messaging** throughout
@@ -114,6 +126,7 @@
 ## Trust Signals
 
 ### Industry Credentials
+
 - Licensed and Insured badge
 - ENERGY STAR Partner
 - AAMA (American Architectural Manufacturers Association)
@@ -121,12 +134,14 @@
 - Better Business Bureau rating
 
 ### Product Certifications
+
 - ENERGY STAR certified products
 - NFRC (National Fenestration Rating Council) ratings
 - Product performance ratings displayed
 - Material certifications (Fibrex, Ultrex, etc.)
 
 ### Social Proof Elements
+
 - Years in business ("Since 1903")
 - Number of installations ("1 Million+ Windows Installed")
 - Customer review ratings
@@ -135,6 +150,7 @@
 - Consumer Reports ratings
 
 ### Warranties & Guarantees
+
 - Product warranties (20-year, lifetime)
 - Installation warranty
 - Transferable warranty messaging
@@ -220,17 +236,18 @@
 
 ### Common Objections & Responses
 
-| Objection | Landing Page Response |
-|-----------|----------------------|
-| "New windows are too expensive" | Energy savings calculator, financing options, ROI messaging |
-| "I can wait" | Urgency (energy costs rising, limited-time offers), comfort benefits |
-| "I'm worried about installation quality" | Certified installers, warranty, reviews, process transparency |
-| "How do I know which windows to choose?" | Free expert consultation, style guide, product comparison |
-| "It will be disruptive" | Installation timeline (1-day for many projects), professional process |
-| "I've heard bad things about window companies" | BBB rating, reviews, warranty, local reputation |
-| "Will new windows really save money?" | Energy savings calculator, ENERGY STAR data, customer testimonials |
+| Objection                                      | Landing Page Response                                                 |
+| ---------------------------------------------- | --------------------------------------------------------------------- |
+| "New windows are too expensive"                | Energy savings calculator, financing options, ROI messaging           |
+| "I can wait"                                   | Urgency (energy costs rising, limited-time offers), comfort benefits  |
+| "I'm worried about installation quality"       | Certified installers, warranty, reviews, process transparency         |
+| "How do I know which windows to choose?"       | Free expert consultation, style guide, product comparison             |
+| "It will be disruptive"                        | Installation timeline (1-day for many projects), professional process |
+| "I've heard bad things about window companies" | BBB rating, reviews, warranty, local reputation                       |
+| "Will new windows really save money?"          | Energy savings calculator, ENERGY STAR data, customer testimonials    |
 
 ### FAQ Questions to Include
+
 1. How much do replacement windows cost?
 2. How long does window installation take?
 3. What's the best type of window for my home?
@@ -320,12 +337,14 @@
 ```
 
 ### Key Metrics to Target
+
 - **Conversion rate**: 5-10% for consultation requests
 - **Appointment show rate**: Critical to track
 - **Quote-to-close rate**: Monitor sales effectiveness
 - **Average order value**: Track for lead quality
 
 ### A/B Testing Priorities
+
 1. Promotion headlines (% off vs. $ off vs. free installation)
 2. Energy savings calculator placement
 3. Form length (short vs. detailed)
@@ -337,6 +356,7 @@
 ## Industry-Specific Insights
 
 ### What Makes Windows/Doors Different
+
 - **High-ticket purchase** - Significant investment
 - **Long sales cycle** - In-home consultations standard
 - **Energy savings hook** - Major selling point
@@ -344,6 +364,7 @@
 - **Promotional pricing** - Industry standard
 
 ### Pricing Psychology
+
 - Show promotional pricing prominently
 - "Starting at $X per window" messaging
 - Monthly payment options
@@ -351,18 +372,21 @@
 - Compare to utility costs
 
 ### Seasonal Considerations
+
 - Spring: Pre-summer cooling preparation
 - Fall: Pre-winter heating preparation
 - Winter: Energy bill pain point messaging
 - Year-round: Comfort and curb appeal
 
 ### Lead Quality Factors
+
 - Number of windows (higher = higher value)
 - Home age (older = more urgency)
 - Timeline (ASAP = hot lead)
 - Financing needs (pre-qualification)
 
 ### Competition Positioning
+
 - Renewal by Andersen: Premium, full-service
 - Window World: Value-focused
 - Pella/Marvin: Design-forward

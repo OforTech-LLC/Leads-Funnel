@@ -65,23 +65,45 @@
       "benefits": {
         "title": "Why Choose Our Real Estate Services?",
         "items": [
-          { "title": "Local Market Expertise", "description": "Our agents know your neighborhood inside and out, ensuring you get the best deals and insights." },
-          { "title": "Personalized Search", "description": "We match you with properties that fit your exact criteria, budget, and lifestyle preferences." },
-          { "title": "Seamless Transactions", "description": "From offer to closing, we handle all the details so you can focus on your exciting move." }
+          {
+            "title": "Local Market Expertise",
+            "description": "Our agents know your neighborhood inside and out, ensuring you get the best deals and insights."
+          },
+          {
+            "title": "Personalized Search",
+            "description": "We match you with properties that fit your exact criteria, budget, and lifestyle preferences."
+          },
+          {
+            "title": "Seamless Transactions",
+            "description": "From offer to closing, we handle all the details so you can focus on your exciting move."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "How long does the home buying process take?", "answer": "Typically 30-60 days from offer acceptance to closing, though this can vary based on financing and inspection requirements." },
-          { "question": "Do I need to get pre-approved before house hunting?", "answer": "Yes, getting pre-approved helps you understand your budget and makes your offers more competitive in today's market." },
-          { "question": "What fees are involved in buying or selling a home?", "answer": "Costs include closing costs (2-5% of purchase price), inspections, appraisals, and agent commissions. We'll provide a detailed breakdown." }
+          {
+            "question": "How long does the home buying process take?",
+            "answer": "Typically 30-60 days from offer acceptance to closing, though this can vary based on financing and inspection requirements."
+          },
+          {
+            "question": "Do I need to get pre-approved before house hunting?",
+            "answer": "Yes, getting pre-approved helps you understand your budget and makes your offers more competitive in today's market."
+          },
+          {
+            "question": "What fees are involved in buying or selling a home?",
+            "answer": "Costs include closing costs (2-5% of purchase price), inspections, appraisals, and agent commissions. We'll provide a detailed breakdown."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Michael Johnson", "text": "Found our dream home in just two weeks! The team made everything so easy and stress-free.", "location": "Austin, TX" }
+          {
+            "name": "Michael Johnson",
+            "text": "Found our dream home in just two weeks! The team made everything so easy and stress-free.",
+            "location": "Austin, TX"
+          }
         ]
       },
       "cta": {
@@ -111,23 +133,45 @@
       "benefits": {
         "title": "Why Choose Our Life Insurance Services?",
         "items": [
-          { "title": "Multiple Carrier Options", "description": "Compare quotes from dozens of A-rated insurance companies to find the best coverage at the lowest price." },
-          { "title": "Personalized Coverage", "description": "Get recommendations based on your family's unique needs, whether term, whole, or universal life insurance." },
-          { "title": "Expert Guidance", "description": "Licensed agents help you understand your options and choose the right policy without pressure." }
+          {
+            "title": "Multiple Carrier Options",
+            "description": "Compare quotes from dozens of A-rated insurance companies to find the best coverage at the lowest price."
+          },
+          {
+            "title": "Personalized Coverage",
+            "description": "Get recommendations based on your family's unique needs, whether term, whole, or universal life insurance."
+          },
+          {
+            "title": "Expert Guidance",
+            "description": "Licensed agents help you understand your options and choose the right policy without pressure."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "How much life insurance do I need?", "answer": "A general rule is 10-12 times your annual income, but factors like debts, dependents, and future goals should be considered." },
-          { "question": "What's the difference between term and whole life?", "answer": "Term life covers a specific period and is more affordable. Whole life provides lifetime coverage with a cash value component." },
-          { "question": "Can I get coverage if I have health issues?", "answer": "Yes, many carriers offer coverage for various health conditions. We'll help you find the right fit for your situation." }
+          {
+            "question": "How much life insurance do I need?",
+            "answer": "A general rule is 10-12 times your annual income, but factors like debts, dependents, and future goals should be considered."
+          },
+          {
+            "question": "What's the difference between term and whole life?",
+            "answer": "Term life covers a specific period and is more affordable. Whole life provides lifetime coverage with a cash value component."
+          },
+          {
+            "question": "Can I get coverage if I have health issues?",
+            "answer": "Yes, many carriers offer coverage for various health conditions. We'll help you find the right fit for your situation."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Sarah Williams", "text": "They helped me find a policy that fit my budget and gave my family peace of mind. Highly recommend!", "location": "Denver, CO" }
+          {
+            "name": "Sarah Williams",
+            "text": "They helped me find a policy that fit my budget and gave my family peace of mind. Highly recommend!",
+            "location": "Denver, CO"
+          }
         ]
       },
       "cta": {
@@ -157,23 +201,45 @@
       "benefits": {
         "title": "Why Choose Our Construction Services?",
         "items": [
-          { "title": "Licensed & Insured", "description": "All our contractors are fully licensed, bonded, and insured for your complete protection and peace of mind." },
-          { "title": "Quality Craftsmanship", "description": "We use premium materials and skilled tradespeople to ensure lasting results that exceed expectations." },
-          { "title": "Transparent Pricing", "description": "Detailed estimates with no hidden fees. Know exactly what you're paying for before work begins." }
+          {
+            "title": "Licensed & Insured",
+            "description": "All our contractors are fully licensed, bonded, and insured for your complete protection and peace of mind."
+          },
+          {
+            "title": "Quality Craftsmanship",
+            "description": "We use premium materials and skilled tradespeople to ensure lasting results that exceed expectations."
+          },
+          {
+            "title": "Transparent Pricing",
+            "description": "Detailed estimates with no hidden fees. Know exactly what you're paying for before work begins."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "How long will my construction project take?", "answer": "Timelines vary by project scope. Small renovations may take weeks, while new builds typically require 6-12 months." },
-          { "question": "Do you handle permits and inspections?", "answer": "Yes, we manage all permitting and coordinate inspections to ensure your project meets all local building codes." },
-          { "question": "What warranty do you offer on your work?", "answer": "We provide a comprehensive warranty on all workmanship, typically 1-5 years depending on the project type." }
+          {
+            "question": "How long will my construction project take?",
+            "answer": "Timelines vary by project scope. Small renovations may take weeks, while new builds typically require 6-12 months."
+          },
+          {
+            "question": "Do you handle permits and inspections?",
+            "answer": "Yes, we manage all permitting and coordinate inspections to ensure your project meets all local building codes."
+          },
+          {
+            "question": "What warranty do you offer on your work?",
+            "answer": "We provide a comprehensive warranty on all workmanship, typically 1-5 years depending on the project type."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "David Chen", "text": "They built our custom home exactly as we envisioned. Professional team from start to finish.", "location": "Phoenix, AZ" }
+          {
+            "name": "David Chen",
+            "text": "They built our custom home exactly as we envisioned. Professional team from start to finish.",
+            "location": "Phoenix, AZ"
+          }
         ]
       },
       "cta": {
@@ -203,23 +269,45 @@
       "benefits": {
         "title": "Why Choose Our Moving Services?",
         "items": [
-          { "title": "Trained Professionals", "description": "Our movers are background-checked, trained, and experienced in handling all types of items safely." },
-          { "title": "Full-Service Options", "description": "From packing and loading to unpacking and setup, we offer complete moving solutions." },
-          { "title": "Upfront Pricing", "description": "No surprise fees. Get an accurate quote based on your inventory and distance." }
+          {
+            "title": "Trained Professionals",
+            "description": "Our movers are background-checked, trained, and experienced in handling all types of items safely."
+          },
+          {
+            "title": "Full-Service Options",
+            "description": "From packing and loading to unpacking and setup, we offer complete moving solutions."
+          },
+          {
+            "title": "Upfront Pricing",
+            "description": "No surprise fees. Get an accurate quote based on your inventory and distance."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "How far in advance should I book my move?", "answer": "We recommend booking 4-8 weeks in advance, especially during peak season (May-September)." },
-          { "question": "Do you provide packing materials?", "answer": "Yes, we offer boxes, tape, bubble wrap, and specialty containers for fragile items." },
-          { "question": "What items can't you move?", "answer": "Hazardous materials, perishables, and certain valuables require special handling. We'll discuss specifics during your quote." }
+          {
+            "question": "How far in advance should I book my move?",
+            "answer": "We recommend booking 4-8 weeks in advance, especially during peak season (May-September)."
+          },
+          {
+            "question": "Do you provide packing materials?",
+            "answer": "Yes, we offer boxes, tape, bubble wrap, and specialty containers for fragile items."
+          },
+          {
+            "question": "What items can't you move?",
+            "answer": "Hazardous materials, perishables, and certain valuables require special handling. We'll discuss specifics during your quote."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Jennifer Martinez", "text": "Smoothest move ever! They were on time, careful, and even helped rearrange furniture at the new place.", "location": "Seattle, WA" }
+          {
+            "name": "Jennifer Martinez",
+            "text": "Smoothest move ever! They were on time, careful, and even helped rearrange furniture at the new place.",
+            "location": "Seattle, WA"
+          }
         ]
       },
       "cta": {
@@ -249,23 +337,45 @@
       "benefits": {
         "title": "Why Choose Our Dental Practice?",
         "items": [
-          { "title": "Comprehensive Care", "description": "From preventive care to cosmetic dentistry and oral surgery, all your dental needs under one roof." },
-          { "title": "Modern Technology", "description": "Digital X-rays, laser dentistry, and comfortable treatment options for better outcomes." },
-          { "title": "Patient Comfort", "description": "Sedation options available. We specialize in helping anxious patients feel at ease." }
+          {
+            "title": "Comprehensive Care",
+            "description": "From preventive care to cosmetic dentistry and oral surgery, all your dental needs under one roof."
+          },
+          {
+            "title": "Modern Technology",
+            "description": "Digital X-rays, laser dentistry, and comfortable treatment options for better outcomes."
+          },
+          {
+            "title": "Patient Comfort",
+            "description": "Sedation options available. We specialize in helping anxious patients feel at ease."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "How often should I visit the dentist?", "answer": "Most patients benefit from checkups and cleanings every 6 months, though some may need more frequent visits." },
-          { "question": "Do you accept dental insurance?", "answer": "Yes, we work with most major dental insurance plans and offer flexible payment options." },
-          { "question": "What if I'm afraid of the dentist?", "answer": "We offer sedation dentistry and take extra time to ensure anxious patients feel comfortable and relaxed." }
+          {
+            "question": "How often should I visit the dentist?",
+            "answer": "Most patients benefit from checkups and cleanings every 6 months, though some may need more frequent visits."
+          },
+          {
+            "question": "Do you accept dental insurance?",
+            "answer": "Yes, we work with most major dental insurance plans and offer flexible payment options."
+          },
+          {
+            "question": "What if I'm afraid of the dentist?",
+            "answer": "We offer sedation dentistry and take extra time to ensure anxious patients feel comfortable and relaxed."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Robert Thompson", "text": "Best dental experience I've ever had. The staff is friendly and the office is so modern and clean.", "location": "Chicago, IL" }
+          {
+            "name": "Robert Thompson",
+            "text": "Best dental experience I've ever had. The staff is friendly and the office is so modern and clean.",
+            "location": "Chicago, IL"
+          }
         ]
       },
       "cta": {
@@ -295,23 +405,45 @@
       "benefits": {
         "title": "Why Choose Our Plastic Surgery Practice?",
         "items": [
-          { "title": "Board-Certified Surgeons", "description": "Our surgeons are certified by the American Board of Plastic Surgery with years of specialized training." },
-          { "title": "Natural Results", "description": "We focus on enhancing your features while maintaining a natural, refreshed appearance." },
-          { "title": "State-of-the-Art Facility", "description": "Accredited surgical facility with the latest technology and highest safety standards." }
+          {
+            "title": "Board-Certified Surgeons",
+            "description": "Our surgeons are certified by the American Board of Plastic Surgery with years of specialized training."
+          },
+          {
+            "title": "Natural Results",
+            "description": "We focus on enhancing your features while maintaining a natural, refreshed appearance."
+          },
+          {
+            "title": "State-of-the-Art Facility",
+            "description": "Accredited surgical facility with the latest technology and highest safety standards."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "How do I know if I'm a good candidate for surgery?", "answer": "During your consultation, we'll evaluate your health, discuss your goals, and determine the best approach for you." },
-          { "question": "What is the recovery time?", "answer": "Recovery varies by procedure. We provide detailed pre and post-operative instructions for optimal healing." },
-          { "question": "Do you offer financing options?", "answer": "Yes, we partner with several financing companies to make procedures affordable with monthly payment plans." }
+          {
+            "question": "How do I know if I'm a good candidate for surgery?",
+            "answer": "During your consultation, we'll evaluate your health, discuss your goals, and determine the best approach for you."
+          },
+          {
+            "question": "What is the recovery time?",
+            "answer": "Recovery varies by procedure. We provide detailed pre and post-operative instructions for optimal healing."
+          },
+          {
+            "question": "Do you offer financing options?",
+            "answer": "Yes, we partner with several financing companies to make procedures affordable with monthly payment plans."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Amanda Foster", "text": "The results exceeded my expectations. Dr. Smith was so attentive and made me feel completely at ease.", "location": "Miami, FL" }
+          {
+            "name": "Amanda Foster",
+            "text": "The results exceeded my expectations. Dr. Smith was so attentive and made me feel completely at ease.",
+            "location": "Miami, FL"
+          }
         ]
       },
       "cta": {
@@ -341,23 +473,45 @@
       "benefits": {
         "title": "Why Choose Our Roofing Services?",
         "items": [
-          { "title": "Free Inspections", "description": "Comprehensive roof inspections at no cost to identify issues before they become major problems." },
-          { "title": "Quality Materials", "description": "We use top-rated shingles, tiles, and metal roofing backed by manufacturer warranties." },
-          { "title": "Storm Damage Experts", "description": "We work with insurance companies to help you navigate claims and restore your roof quickly." }
+          {
+            "title": "Free Inspections",
+            "description": "Comprehensive roof inspections at no cost to identify issues before they become major problems."
+          },
+          {
+            "title": "Quality Materials",
+            "description": "We use top-rated shingles, tiles, and metal roofing backed by manufacturer warranties."
+          },
+          {
+            "title": "Storm Damage Experts",
+            "description": "We work with insurance companies to help you navigate claims and restore your roof quickly."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "How do I know if I need a new roof?", "answer": "Signs include missing shingles, leaks, sagging, granules in gutters, or a roof over 20 years old." },
-          { "question": "How long does a roof replacement take?", "answer": "Most residential roofs can be replaced in 1-3 days, depending on size and complexity." },
-          { "question": "Do you help with insurance claims?", "answer": "Yes, we document damage thoroughly and work directly with your insurance company." }
+          {
+            "question": "How do I know if I need a new roof?",
+            "answer": "Signs include missing shingles, leaks, sagging, granules in gutters, or a roof over 20 years old."
+          },
+          {
+            "question": "How long does a roof replacement take?",
+            "answer": "Most residential roofs can be replaced in 1-3 days, depending on size and complexity."
+          },
+          {
+            "question": "Do you help with insurance claims?",
+            "answer": "Yes, we document damage thoroughly and work directly with your insurance company."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Tom Bradley", "text": "After a bad hailstorm, they handled everything with my insurance. New roof looks amazing!", "location": "Dallas, TX" }
+          {
+            "name": "Tom Bradley",
+            "text": "After a bad hailstorm, they handled everything with my insurance. New roof looks amazing!",
+            "location": "Dallas, TX"
+          }
         ]
       },
       "cta": {
@@ -387,23 +541,45 @@
       "benefits": {
         "title": "Why Choose Our Cleaning Services?",
         "items": [
-          { "title": "Vetted Professionals", "description": "All cleaners are background-checked, trained, and insured for your peace of mind." },
-          { "title": "Eco-Friendly Products", "description": "We use safe, environmentally responsible cleaning products that are tough on dirt, gentle on your space." },
-          { "title": "Flexible Scheduling", "description": "One-time deep cleans or recurring services - we work around your schedule." }
+          {
+            "title": "Vetted Professionals",
+            "description": "All cleaners are background-checked, trained, and insured for your peace of mind."
+          },
+          {
+            "title": "Eco-Friendly Products",
+            "description": "We use safe, environmentally responsible cleaning products that are tough on dirt, gentle on your space."
+          },
+          {
+            "title": "Flexible Scheduling",
+            "description": "One-time deep cleans or recurring services - we work around your schedule."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "Do I need to be home during cleaning?", "answer": "No, many clients provide access while they're away. We're fully insured and trustworthy." },
-          { "question": "Do you bring your own supplies?", "answer": "Yes, we bring all cleaning supplies and equipment. Let us know if you have product preferences." },
-          { "question": "How do you handle pets?", "answer": "We're pet-friendly! Just let us know about your furry friends so our team can be prepared." }
+          {
+            "question": "Do I need to be home during cleaning?",
+            "answer": "No, many clients provide access while they're away. We're fully insured and trustworthy."
+          },
+          {
+            "question": "Do you bring your own supplies?",
+            "answer": "Yes, we bring all cleaning supplies and equipment. Let us know if you have product preferences."
+          },
+          {
+            "question": "How do you handle pets?",
+            "answer": "We're pet-friendly! Just let us know about your furry friends so our team can be prepared."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Lisa Anderson", "text": "They've been cleaning my home weekly for a year. Consistent, thorough, and always friendly!", "location": "San Diego, CA" }
+          {
+            "name": "Lisa Anderson",
+            "text": "They've been cleaning my home weekly for a year. Consistent, thorough, and always friendly!",
+            "location": "San Diego, CA"
+          }
         ]
       },
       "cta": {
@@ -433,23 +609,45 @@
       "benefits": {
         "title": "Why Choose Our HVAC Services?",
         "items": [
-          { "title": "Certified Technicians", "description": "NATE-certified technicians with expertise in all major HVAC brands and systems." },
-          { "title": "24/7 Emergency Service", "description": "Heating or cooling emergency? We're available around the clock to restore your comfort." },
-          { "title": "Energy Efficiency", "description": "We help you save on energy bills with high-efficiency systems and tune-ups." }
+          {
+            "title": "Certified Technicians",
+            "description": "NATE-certified technicians with expertise in all major HVAC brands and systems."
+          },
+          {
+            "title": "24/7 Emergency Service",
+            "description": "Heating or cooling emergency? We're available around the clock to restore your comfort."
+          },
+          {
+            "title": "Energy Efficiency",
+            "description": "We help you save on energy bills with high-efficiency systems and tune-ups."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "How often should I service my HVAC system?", "answer": "We recommend professional maintenance twice a year - before summer and winter seasons." },
-          { "question": "When should I replace my AC unit?", "answer": "If your system is 10-15 years old, requires frequent repairs, or energy bills are rising, consider replacement." },
-          { "question": "Do you offer financing for new systems?", "answer": "Yes, we offer flexible financing options to make new HVAC systems affordable." }
+          {
+            "question": "How often should I service my HVAC system?",
+            "answer": "We recommend professional maintenance twice a year - before summer and winter seasons."
+          },
+          {
+            "question": "When should I replace my AC unit?",
+            "answer": "If your system is 10-15 years old, requires frequent repairs, or energy bills are rising, consider replacement."
+          },
+          {
+            "question": "Do you offer financing for new systems?",
+            "answer": "Yes, we offer flexible financing options to make new HVAC systems affordable."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Mark Wilson", "text": "AC went out on the hottest day of summer. They had a tech here within hours and fixed it same day!", "location": "Las Vegas, NV" }
+          {
+            "name": "Mark Wilson",
+            "text": "AC went out on the hottest day of summer. They had a tech here within hours and fixed it same day!",
+            "location": "Las Vegas, NV"
+          }
         ]
       },
       "cta": {
@@ -479,23 +677,45 @@
       "benefits": {
         "title": "Why Choose Our Plumbing Services?",
         "items": [
-          { "title": "24/7 Availability", "description": "Plumbing emergencies don't wait, and neither do we. Call anytime for immediate assistance." },
-          { "title": "Upfront Pricing", "description": "Know the cost before we start. No surprises, no hidden fees - just honest pricing." },
-          { "title": "Guaranteed Work", "description": "All our repairs and installations are backed by our satisfaction guarantee." }
+          {
+            "title": "24/7 Availability",
+            "description": "Plumbing emergencies don't wait, and neither do we. Call anytime for immediate assistance."
+          },
+          {
+            "title": "Upfront Pricing",
+            "description": "Know the cost before we start. No surprises, no hidden fees - just honest pricing."
+          },
+          {
+            "title": "Guaranteed Work",
+            "description": "All our repairs and installations are backed by our satisfaction guarantee."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "What plumbing services do you offer?", "answer": "We handle everything from leak repairs and drain cleaning to water heater installation and repiping." },
-          { "question": "How quickly can you respond to emergencies?", "answer": "We aim to have a plumber at your door within 1-2 hours for emergency calls." },
-          { "question": "Are your plumbers licensed?", "answer": "Yes, all our plumbers are fully licensed, insured, and undergo ongoing training." }
+          {
+            "question": "What plumbing services do you offer?",
+            "answer": "We handle everything from leak repairs and drain cleaning to water heater installation and repiping."
+          },
+          {
+            "question": "How quickly can you respond to emergencies?",
+            "answer": "We aim to have a plumber at your door within 1-2 hours for emergency calls."
+          },
+          {
+            "question": "Are your plumbers licensed?",
+            "answer": "Yes, all our plumbers are fully licensed, insured, and undergo ongoing training."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Patricia Garcia", "text": "Called at 11 PM with a burst pipe. They were here in an hour and stopped the flood. Lifesavers!", "location": "Houston, TX" }
+          {
+            "name": "Patricia Garcia",
+            "text": "Called at 11 PM with a burst pipe. They were here in an hour and stopped the flood. Lifesavers!",
+            "location": "Houston, TX"
+          }
         ]
       },
       "cta": {
@@ -525,23 +745,45 @@
       "benefits": {
         "title": "Why Choose Our Electrical Services?",
         "items": [
-          { "title": "Licensed & Certified", "description": "Our electricians are fully licensed with up-to-date certifications and ongoing safety training." },
-          { "title": "Code Compliant", "description": "All work meets or exceeds local electrical codes, ensuring safety and passing inspections." },
-          { "title": "Comprehensive Services", "description": "From outlet installation to complete rewiring, we handle residential and commercial projects." }
+          {
+            "title": "Licensed & Certified",
+            "description": "Our electricians are fully licensed with up-to-date certifications and ongoing safety training."
+          },
+          {
+            "title": "Code Compliant",
+            "description": "All work meets or exceeds local electrical codes, ensuring safety and passing inspections."
+          },
+          {
+            "title": "Comprehensive Services",
+            "description": "From outlet installation to complete rewiring, we handle residential and commercial projects."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "When do I need to call an electrician?", "answer": "Flickering lights, tripped breakers, warm outlets, or any DIY electrical work should prompt a call." },
-          { "question": "Do you offer electrical inspections?", "answer": "Yes, we provide thorough inspections for home buyers, sellers, and peace of mind." },
-          { "question": "Can you upgrade my electrical panel?", "answer": "Absolutely. Panel upgrades are one of our specialties, essential for older homes or adding circuits." }
+          {
+            "question": "When do I need to call an electrician?",
+            "answer": "Flickering lights, tripped breakers, warm outlets, or any DIY electrical work should prompt a call."
+          },
+          {
+            "question": "Do you offer electrical inspections?",
+            "answer": "Yes, we provide thorough inspections for home buyers, sellers, and peace of mind."
+          },
+          {
+            "question": "Can you upgrade my electrical panel?",
+            "answer": "Absolutely. Panel upgrades are one of our specialties, essential for older homes or adding circuits."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "James Miller", "text": "They upgraded our whole panel and added circuits for our home office. Professional and tidy work.", "location": "Portland, OR" }
+          {
+            "name": "James Miller",
+            "text": "They upgraded our whole panel and added circuits for our home office. Professional and tidy work.",
+            "location": "Portland, OR"
+          }
         ]
       },
       "cta": {
@@ -571,23 +813,45 @@
       "benefits": {
         "title": "Why Choose Our Pest Control Services?",
         "items": [
-          { "title": "Comprehensive Treatment", "description": "We don't just treat symptoms - we eliminate the source and prevent future infestations." },
-          { "title": "Safe Methods", "description": "Our treatments are effective against pests but safe for children, pets, and the environment." },
-          { "title": "Guaranteed Results", "description": "If pests return between treatments, so do we - at no additional cost." }
+          {
+            "title": "Comprehensive Treatment",
+            "description": "We don't just treat symptoms - we eliminate the source and prevent future infestations."
+          },
+          {
+            "title": "Safe Methods",
+            "description": "Our treatments are effective against pests but safe for children, pets, and the environment."
+          },
+          {
+            "title": "Guaranteed Results",
+            "description": "If pests return between treatments, so do we - at no additional cost."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "Are your treatments safe for pets and children?", "answer": "Yes, we use EPA-approved products and take precautions to ensure safety for your family and pets." },
-          { "question": "How often should I have pest control service?", "answer": "For most homes, quarterly treatments provide effective, ongoing protection against common pests." },
-          { "question": "Do you offer termite inspections?", "answer": "Yes, we provide comprehensive termite inspections and treatment plans to protect your property." }
+          {
+            "question": "Are your treatments safe for pets and children?",
+            "answer": "Yes, we use EPA-approved products and take precautions to ensure safety for your family and pets."
+          },
+          {
+            "question": "How often should I have pest control service?",
+            "answer": "For most homes, quarterly treatments provide effective, ongoing protection against common pests."
+          },
+          {
+            "question": "Do you offer termite inspections?",
+            "answer": "Yes, we provide comprehensive termite inspections and treatment plans to protect your property."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Nancy Brown", "text": "Had a terrible ant problem that no store products could fix. One treatment and they were gone!", "location": "Atlanta, GA" }
+          {
+            "name": "Nancy Brown",
+            "text": "Had a terrible ant problem that no store products could fix. One treatment and they were gone!",
+            "location": "Atlanta, GA"
+          }
         ]
       },
       "cta": {
@@ -617,23 +881,45 @@
       "benefits": {
         "title": "Why Choose Our Landscaping Services?",
         "items": [
-          { "title": "Custom Designs", "description": "Our landscape architects create personalized plans that complement your home and lifestyle." },
-          { "title": "Quality Installation", "description": "Expert crews install plants, hardscaping, irrigation, and lighting with attention to detail." },
-          { "title": "Ongoing Maintenance", "description": "Keep your landscape looking its best with our professional maintenance programs." }
+          {
+            "title": "Custom Designs",
+            "description": "Our landscape architects create personalized plans that complement your home and lifestyle."
+          },
+          {
+            "title": "Quality Installation",
+            "description": "Expert crews install plants, hardscaping, irrigation, and lighting with attention to detail."
+          },
+          {
+            "title": "Ongoing Maintenance",
+            "description": "Keep your landscape looking its best with our professional maintenance programs."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "How much does landscaping cost?", "answer": "Costs vary based on scope. We provide detailed estimates after assessing your property and discussing your vision." },
-          { "question": "Do you offer maintenance services?", "answer": "Yes, we offer weekly, bi-weekly, and monthly maintenance packages to keep your landscape pristine." },
-          { "question": "What's the best time to start a landscaping project?", "answer": "Spring and fall are ideal, but we can work year-round. Let's discuss timing based on your specific project." }
+          {
+            "question": "How much does landscaping cost?",
+            "answer": "Costs vary based on scope. We provide detailed estimates after assessing your property and discussing your vision."
+          },
+          {
+            "question": "Do you offer maintenance services?",
+            "answer": "Yes, we offer weekly, bi-weekly, and monthly maintenance packages to keep your landscape pristine."
+          },
+          {
+            "question": "What's the best time to start a landscaping project?",
+            "answer": "Spring and fall are ideal, but we can work year-round. Let's discuss timing based on your specific project."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Steven Clark", "text": "They completely transformed our backyard into an oasis. The patio and plantings are stunning!", "location": "Nashville, TN" }
+          {
+            "name": "Steven Clark",
+            "text": "They completely transformed our backyard into an oasis. The patio and plantings are stunning!",
+            "location": "Nashville, TN"
+          }
         ]
       },
       "cta": {
@@ -663,23 +949,45 @@
       "benefits": {
         "title": "Why Choose Our Pool Services?",
         "items": [
-          { "title": "Complete Maintenance", "description": "We handle chemicals, cleaning, equipment checks, and repairs so you can just enjoy your pool." },
-          { "title": "Certified Technicians", "description": "Our pool techs are trained and certified in pool chemistry, equipment, and safety." },
-          { "title": "Reliable Scheduling", "description": "Consistent, on-time service you can count on week after week." }
+          {
+            "title": "Complete Maintenance",
+            "description": "We handle chemicals, cleaning, equipment checks, and repairs so you can just enjoy your pool."
+          },
+          {
+            "title": "Certified Technicians",
+            "description": "Our pool techs are trained and certified in pool chemistry, equipment, and safety."
+          },
+          {
+            "title": "Reliable Scheduling",
+            "description": "Consistent, on-time service you can count on week after week."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "How often should my pool be serviced?", "answer": "Weekly service is recommended to maintain proper chemistry and cleanliness throughout the swimming season." },
-          { "question": "Do you service all pool types?", "answer": "Yes, we service in-ground, above-ground, saltwater, and chlorine pools of all sizes." },
-          { "question": "What's included in regular maintenance?", "answer": "Skimming, vacuuming, brushing, chemical testing and balancing, and equipment inspection." }
+          {
+            "question": "How often should my pool be serviced?",
+            "answer": "Weekly service is recommended to maintain proper chemistry and cleanliness throughout the swimming season."
+          },
+          {
+            "question": "Do you service all pool types?",
+            "answer": "Yes, we service in-ground, above-ground, saltwater, and chlorine pools of all sizes."
+          },
+          {
+            "question": "What's included in regular maintenance?",
+            "answer": "Skimming, vacuuming, brushing, chemical testing and balancing, and equipment inspection."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Karen White", "text": "Finally found a reliable pool service! They show up every week and our pool has never looked better.", "location": "Scottsdale, AZ" }
+          {
+            "name": "Karen White",
+            "text": "Finally found a reliable pool service! They show up every week and our pool has never looked better.",
+            "location": "Scottsdale, AZ"
+          }
         ]
       },
       "cta": {
@@ -709,23 +1017,45 @@
       "benefits": {
         "title": "Why Choose Our Remodeling Services?",
         "items": [
-          { "title": "Design-Build Expertise", "description": "From concept to completion, we handle design and construction under one roof." },
-          { "title": "Quality Craftsmanship", "description": "Skilled tradespeople delivering meticulous work with premium materials." },
-          { "title": "On-Time Completion", "description": "We stick to schedules and keep you informed every step of the way." }
+          {
+            "title": "Design-Build Expertise",
+            "description": "From concept to completion, we handle design and construction under one roof."
+          },
+          {
+            "title": "Quality Craftsmanship",
+            "description": "Skilled tradespeople delivering meticulous work with premium materials."
+          },
+          {
+            "title": "On-Time Completion",
+            "description": "We stick to schedules and keep you informed every step of the way."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "How long does a kitchen remodel take?", "answer": "A typical kitchen remodel takes 6-12 weeks depending on scope, with bathrooms averaging 2-4 weeks." },
-          { "question": "Can I stay in my home during renovations?", "answer": "Usually yes, though some projects may require temporary accommodations. We'll discuss this upfront." },
-          { "question": "Do you handle permits?", "answer": "Yes, we manage all necessary permits and ensure work meets local building codes." }
+          {
+            "question": "How long does a kitchen remodel take?",
+            "answer": "A typical kitchen remodel takes 6-12 weeks depending on scope, with bathrooms averaging 2-4 weeks."
+          },
+          {
+            "question": "Can I stay in my home during renovations?",
+            "answer": "Usually yes, though some projects may require temporary accommodations. We'll discuss this upfront."
+          },
+          {
+            "question": "Do you handle permits?",
+            "answer": "Yes, we manage all necessary permits and ensure work meets local building codes."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Michelle Davis", "text": "Our kitchen remodel exceeded expectations. They were professional, clean, and the result is gorgeous!", "location": "San Francisco, CA" }
+          {
+            "name": "Michelle Davis",
+            "text": "Our kitchen remodel exceeded expectations. They were professional, clean, and the result is gorgeous!",
+            "location": "San Francisco, CA"
+          }
         ]
       },
       "cta": {
@@ -755,23 +1085,45 @@
       "benefits": {
         "title": "Why Choose Our Solar Services?",
         "items": [
-          { "title": "Significant Savings", "description": "Reduce or eliminate your electricity bills while increasing your home's value." },
-          { "title": "Premium Equipment", "description": "We install top-tier solar panels and inverters backed by 25-year warranties." },
-          { "title": "Financing Options", "description": "$0 down options, loans, and leases make solar accessible for every budget." }
+          {
+            "title": "Significant Savings",
+            "description": "Reduce or eliminate your electricity bills while increasing your home's value."
+          },
+          {
+            "title": "Premium Equipment",
+            "description": "We install top-tier solar panels and inverters backed by 25-year warranties."
+          },
+          {
+            "title": "Financing Options",
+            "description": "$0 down options, loans, and leases make solar accessible for every budget."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "How much can I save with solar?", "answer": "Most homeowners save 40-70% on electricity. We'll provide a custom savings analysis for your home." },
-          { "question": "What incentives are available?", "answer": "Federal tax credits, state rebates, and utility incentives can significantly reduce your cost." },
-          { "question": "How long does installation take?", "answer": "Typical installations take 1-3 days. The entire process from contract to activation is 4-8 weeks." }
+          {
+            "question": "How much can I save with solar?",
+            "answer": "Most homeowners save 40-70% on electricity. We'll provide a custom savings analysis for your home."
+          },
+          {
+            "question": "What incentives are available?",
+            "answer": "Federal tax credits, state rebates, and utility incentives can significantly reduce your cost."
+          },
+          {
+            "question": "How long does installation take?",
+            "answer": "Typical installations take 1-3 days. The entire process from contract to activation is 4-8 weeks."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Richard Kim", "text": "Our electric bill went from $250 to $12! The installation was quick and the team was knowledgeable.", "location": "Sacramento, CA" }
+          {
+            "name": "Richard Kim",
+            "text": "Our electric bill went from $250 to $12! The installation was quick and the team was knowledgeable.",
+            "location": "Sacramento, CA"
+          }
         ]
       },
       "cta": {
@@ -801,23 +1153,45 @@
       "benefits": {
         "title": "Why Choose Our Locksmith Services?",
         "items": [
-          { "title": "24/7 Availability", "description": "Locked out at 3 AM? No problem. We're available around the clock for emergencies." },
-          { "title": "Fast Response", "description": "Our mobile locksmiths arrive within 20-30 minutes in most areas." },
-          { "title": "Full Service", "description": "Residential, automotive, and commercial locksmith services all from one trusted provider." }
+          {
+            "title": "24/7 Availability",
+            "description": "Locked out at 3 AM? No problem. We're available around the clock for emergencies."
+          },
+          {
+            "title": "Fast Response",
+            "description": "Our mobile locksmiths arrive within 20-30 minutes in most areas."
+          },
+          {
+            "title": "Full Service",
+            "description": "Residential, automotive, and commercial locksmith services all from one trusted provider."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "How quickly can you get here?", "answer": "Our average response time is 20-30 minutes for most service areas." },
-          { "question": "Can you make keys for any car?", "answer": "We can create keys for most vehicle makes and models, including transponder and smart keys." },
-          { "question": "Do you rekey locks or replace them?", "answer": "Both! Rekeying is often more economical, but we'll recommend replacement when necessary." }
+          {
+            "question": "How quickly can you get here?",
+            "answer": "Our average response time is 20-30 minutes for most service areas."
+          },
+          {
+            "question": "Can you make keys for any car?",
+            "answer": "We can create keys for most vehicle makes and models, including transponder and smart keys."
+          },
+          {
+            "question": "Do you rekey locks or replace them?",
+            "answer": "Both! Rekeying is often more economical, but we'll recommend replacement when necessary."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Daniel Lopez", "text": "Locked my keys in the car late at night. They were there in 20 minutes and got me in without damage.", "location": "Philadelphia, PA" }
+          {
+            "name": "Daniel Lopez",
+            "text": "Locked my keys in the car late at night. They were there in 20 minutes and got me in without damage.",
+            "location": "Philadelphia, PA"
+          }
         ]
       },
       "cta": {
@@ -847,23 +1221,45 @@
       "benefits": {
         "title": "Why Choose Our Pressure Washing Services?",
         "items": [
-          { "title": "Professional Equipment", "description": "Commercial-grade equipment delivers superior results without damaging surfaces." },
-          { "title": "Eco-Friendly Solutions", "description": "Biodegradable cleaning agents that are tough on grime but safe for landscaping." },
-          { "title": "Comprehensive Cleaning", "description": "Driveways, sidewalks, decks, fences, siding, roofs - we clean it all." }
+          {
+            "title": "Professional Equipment",
+            "description": "Commercial-grade equipment delivers superior results without damaging surfaces."
+          },
+          {
+            "title": "Eco-Friendly Solutions",
+            "description": "Biodegradable cleaning agents that are tough on grime but safe for landscaping."
+          },
+          {
+            "title": "Comprehensive Cleaning",
+            "description": "Driveways, sidewalks, decks, fences, siding, roofs - we clean it all."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "Will pressure washing damage my surfaces?", "answer": "Our trained technicians use appropriate pressure levels and techniques for each surface type." },
-          { "question": "How often should I pressure wash my home?", "answer": "Annual pressure washing maintains appearance and prevents buildup that can cause damage." },
-          { "question": "Do you offer soft washing?", "answer": "Yes, we use soft washing for delicate surfaces like roofs and painted siding." }
+          {
+            "question": "Will pressure washing damage my surfaces?",
+            "answer": "Our trained technicians use appropriate pressure levels and techniques for each surface type."
+          },
+          {
+            "question": "How often should I pressure wash my home?",
+            "answer": "Annual pressure washing maintains appearance and prevents buildup that can cause damage."
+          },
+          {
+            "question": "Do you offer soft washing?",
+            "answer": "Yes, we use soft washing for delicate surfaces like roofs and painted siding."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Carol Martin", "text": "My driveway and patio look brand new! Couldn't believe the difference pressure washing made.", "location": "Charlotte, NC" }
+          {
+            "name": "Carol Martin",
+            "text": "My driveway and patio look brand new! Couldn't believe the difference pressure washing made.",
+            "location": "Charlotte, NC"
+          }
         ]
       },
       "cta": {
@@ -893,23 +1289,45 @@
       "benefits": {
         "title": "Why Choose Our Restoration Services?",
         "items": [
-          { "title": "Rapid Response", "description": "Our emergency crews arrive within hours to minimize damage and start restoration." },
-          { "title": "Advanced Technology", "description": "Industrial extractors, dehumidifiers, and monitoring equipment for thorough drying." },
-          { "title": "Insurance Expertise", "description": "We work directly with insurance companies and help document your claim." }
+          {
+            "title": "Rapid Response",
+            "description": "Our emergency crews arrive within hours to minimize damage and start restoration."
+          },
+          {
+            "title": "Advanced Technology",
+            "description": "Industrial extractors, dehumidifiers, and monitoring equipment for thorough drying."
+          },
+          {
+            "title": "Insurance Expertise",
+            "description": "We work directly with insurance companies and help document your claim."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "How quickly should water damage be addressed?", "answer": "Within 24-48 hours to prevent mold growth and structural damage. Call us immediately." },
-          { "question": "Do you work with insurance companies?", "answer": "Yes, we work with all major insurers and help document damage for your claim." },
-          { "question": "How long does restoration take?", "answer": "Drying typically takes 3-5 days. Full restoration depends on damage extent." }
+          {
+            "question": "How quickly should water damage be addressed?",
+            "answer": "Within 24-48 hours to prevent mold growth and structural damage. Call us immediately."
+          },
+          {
+            "question": "Do you work with insurance companies?",
+            "answer": "Yes, we work with all major insurers and help document damage for your claim."
+          },
+          {
+            "question": "How long does restoration take?",
+            "answer": "Drying typically takes 3-5 days. Full restoration depends on damage extent."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Anthony Reed", "text": "Pipe burst at midnight. They were here by 2 AM and saved our hardwood floors. Amazing response!", "location": "Minneapolis, MN" }
+          {
+            "name": "Anthony Reed",
+            "text": "Pipe burst at midnight. They were here by 2 AM and saved our hardwood floors. Amazing response!",
+            "location": "Minneapolis, MN"
+          }
         ]
       },
       "cta": {
@@ -939,23 +1357,45 @@
       "benefits": {
         "title": "Why Choose Our Mold Remediation Services?",
         "items": [
-          { "title": "Certified Specialists", "description": "Our technicians are IICRC certified with specialized training in mold remediation." },
-          { "title": "Safe Removal", "description": "Containment protocols and HEPA filtration prevent mold spread during removal." },
-          { "title": "Source Treatment", "description": "We identify and address moisture sources to prevent mold from returning." }
+          {
+            "title": "Certified Specialists",
+            "description": "Our technicians are IICRC certified with specialized training in mold remediation."
+          },
+          {
+            "title": "Safe Removal",
+            "description": "Containment protocols and HEPA filtration prevent mold spread during removal."
+          },
+          {
+            "title": "Source Treatment",
+            "description": "We identify and address moisture sources to prevent mold from returning."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "Is mold dangerous to my health?", "answer": "Mold can cause respiratory issues, allergies, and other health problems. Professional removal is recommended." },
-          { "question": "How do you know if mold removal is complete?", "answer": "We conduct post-remediation testing to verify mold levels are back to normal." },
-          { "question": "Will my insurance cover mold removal?", "answer": "Coverage varies by policy. We can help document the damage for your insurance claim." }
+          {
+            "question": "Is mold dangerous to my health?",
+            "answer": "Mold can cause respiratory issues, allergies, and other health problems. Professional removal is recommended."
+          },
+          {
+            "question": "How do you know if mold removal is complete?",
+            "answer": "We conduct post-remediation testing to verify mold levels are back to normal."
+          },
+          {
+            "question": "Will my insurance cover mold removal?",
+            "answer": "Coverage varies by policy. We can help document the damage for your insurance claim."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Elizabeth Taylor", "text": "Found mold in our basement after flooding. They removed it completely and fixed the moisture problem.", "location": "Baltimore, MD" }
+          {
+            "name": "Elizabeth Taylor",
+            "text": "Found mold in our basement after flooding. They removed it completely and fixed the moisture problem.",
+            "location": "Baltimore, MD"
+          }
         ]
       },
       "cta": {
@@ -985,23 +1425,45 @@
       "benefits": {
         "title": "Why Choose Our Flooring Services?",
         "items": [
-          { "title": "Wide Selection", "description": "Choose from thousands of flooring options in various styles, colors, and price points." },
-          { "title": "Expert Installation", "description": "Experienced installers ensure your floors look perfect and last for years." },
-          { "title": "Free Estimates", "description": "We measure your space and provide detailed quotes with no obligation." }
+          {
+            "title": "Wide Selection",
+            "description": "Choose from thousands of flooring options in various styles, colors, and price points."
+          },
+          {
+            "title": "Expert Installation",
+            "description": "Experienced installers ensure your floors look perfect and last for years."
+          },
+          {
+            "title": "Free Estimates",
+            "description": "We measure your space and provide detailed quotes with no obligation."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "What type of flooring is best for my home?", "answer": "It depends on your lifestyle, traffic, and aesthetic preferences. We'll help you choose the right option." },
-          { "question": "How long does flooring installation take?", "answer": "Most rooms can be completed in 1-2 days. Whole-home projects typically take 3-5 days." },
-          { "question": "Do you remove old flooring?", "answer": "Yes, we handle removal and disposal of existing flooring as part of our installation service." }
+          {
+            "question": "What type of flooring is best for my home?",
+            "answer": "It depends on your lifestyle, traffic, and aesthetic preferences. We'll help you choose the right option."
+          },
+          {
+            "question": "How long does flooring installation take?",
+            "answer": "Most rooms can be completed in 1-2 days. Whole-home projects typically take 3-5 days."
+          },
+          {
+            "question": "Do you remove old flooring?",
+            "answer": "Yes, we handle removal and disposal of existing flooring as part of our installation service."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Christopher Hall", "text": "The hardwood floors they installed are absolutely stunning. Great craftsmanship and fair pricing.", "location": "Denver, CO" }
+          {
+            "name": "Christopher Hall",
+            "text": "The hardwood floors they installed are absolutely stunning. Great craftsmanship and fair pricing.",
+            "location": "Denver, CO"
+          }
         ]
       },
       "cta": {
@@ -1031,23 +1493,45 @@
       "benefits": {
         "title": "Why Choose Our Painting Services?",
         "items": [
-          { "title": "Quality Products", "description": "We use premium paints from trusted brands for lasting, beautiful finishes." },
-          { "title": "Proper Preparation", "description": "Thorough prep work ensures paint adheres properly and results last." },
-          { "title": "Clean & Respectful", "description": "We protect your furnishings and leave your space spotless." }
+          {
+            "title": "Quality Products",
+            "description": "We use premium paints from trusted brands for lasting, beautiful finishes."
+          },
+          {
+            "title": "Proper Preparation",
+            "description": "Thorough prep work ensures paint adheres properly and results last."
+          },
+          {
+            "title": "Clean & Respectful",
+            "description": "We protect your furnishings and leave your space spotless."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "How long will a paint job last?", "answer": "Quality interior paint lasts 5-10 years; exterior paint 5-7 years with proper application." },
-          { "question": "Do I need to move my furniture?", "answer": "We handle furniture moving and protection as part of our service." },
-          { "question": "How do I choose the right colors?", "answer": "We offer color consultations and can provide samples to help you decide." }
+          {
+            "question": "How long will a paint job last?",
+            "answer": "Quality interior paint lasts 5-10 years; exterior paint 5-7 years with proper application."
+          },
+          {
+            "question": "Do I need to move my furniture?",
+            "answer": "We handle furniture moving and protection as part of our service."
+          },
+          {
+            "question": "How do I choose the right colors?",
+            "answer": "We offer color consultations and can provide samples to help you decide."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Linda Wright", "text": "They painted our entire exterior beautifully. Neat, professional, and the color is perfect!", "location": "Raleigh, NC" }
+          {
+            "name": "Linda Wright",
+            "text": "They painted our entire exterior beautifully. Neat, professional, and the color is perfect!",
+            "location": "Raleigh, NC"
+          }
         ]
       },
       "cta": {
@@ -1077,23 +1561,45 @@
       "benefits": {
         "title": "Why Choose Our Window & Door Services?",
         "items": [
-          { "title": "Energy Savings", "description": "Modern windows and doors reduce heating and cooling costs significantly." },
-          { "title": "Expert Installation", "description": "Proper installation ensures optimal performance, security, and longevity." },
-          { "title": "Wide Selection", "description": "Choose from various styles, materials, and features to match your home." }
+          {
+            "title": "Energy Savings",
+            "description": "Modern windows and doors reduce heating and cooling costs significantly."
+          },
+          {
+            "title": "Expert Installation",
+            "description": "Proper installation ensures optimal performance, security, and longevity."
+          },
+          {
+            "title": "Wide Selection",
+            "description": "Choose from various styles, materials, and features to match your home."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "How much can I save on energy bills?", "answer": "Energy-efficient windows can reduce heating/cooling costs by 10-25%." },
-          { "question": "How long does installation take?", "answer": "Most window replacements take just a few hours per window. Full-home projects typically 1-3 days." },
-          { "question": "Do you offer financing?", "answer": "Yes, we have financing options to make window and door upgrades affordable." }
+          {
+            "question": "How much can I save on energy bills?",
+            "answer": "Energy-efficient windows can reduce heating/cooling costs by 10-25%."
+          },
+          {
+            "question": "How long does installation take?",
+            "answer": "Most window replacements take just a few hours per window. Full-home projects typically 1-3 days."
+          },
+          {
+            "question": "Do you offer financing?",
+            "answer": "Yes, we have financing options to make window and door upgrades affordable."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Robert Adams", "text": "Replaced all our windows and the difference in comfort and energy bills is remarkable!", "location": "Columbus, OH" }
+          {
+            "name": "Robert Adams",
+            "text": "Replaced all our windows and the difference in comfort and energy bills is remarkable!",
+            "location": "Columbus, OH"
+          }
         ]
       },
       "cta": {
@@ -1123,23 +1629,45 @@
       "benefits": {
         "title": "Why Choose Our Fencing Services?",
         "items": [
-          { "title": "Multiple Materials", "description": "Wood, vinyl, aluminum, chain link - we install all fence types to suit your needs." },
-          { "title": "Custom Solutions", "description": "From privacy fences to decorative borders, we design fencing to your specifications." },
-          { "title": "Quality Installation", "description": "Proper post setting and installation ensures your fence stands strong for years." }
+          {
+            "title": "Multiple Materials",
+            "description": "Wood, vinyl, aluminum, chain link - we install all fence types to suit your needs."
+          },
+          {
+            "title": "Custom Solutions",
+            "description": "From privacy fences to decorative borders, we design fencing to your specifications."
+          },
+          {
+            "title": "Quality Installation",
+            "description": "Proper post setting and installation ensures your fence stands strong for years."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "What type of fence is best for privacy?", "answer": "Wood and vinyl privacy fences with no gaps provide the best seclusion." },
-          { "question": "Do I need a permit for a fence?", "answer": "Permit requirements vary by location. We handle permits when required." },
-          { "question": "How long does fence installation take?", "answer": "Most residential fences are completed in 1-3 days depending on linear footage." }
+          {
+            "question": "What type of fence is best for privacy?",
+            "answer": "Wood and vinyl privacy fences with no gaps provide the best seclusion."
+          },
+          {
+            "question": "Do I need a permit for a fence?",
+            "answer": "Permit requirements vary by location. We handle permits when required."
+          },
+          {
+            "question": "How long does fence installation take?",
+            "answer": "Most residential fences are completed in 1-3 days depending on linear footage."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "George Nelson", "text": "Beautiful cedar fence installed in just two days. Looks great and gives us the privacy we wanted.", "location": "St. Louis, MO" }
+          {
+            "name": "George Nelson",
+            "text": "Beautiful cedar fence installed in just two days. Looks great and gives us the privacy we wanted.",
+            "location": "St. Louis, MO"
+          }
         ]
       },
       "cta": {
@@ -1169,23 +1697,45 @@
       "benefits": {
         "title": "Why Choose Our Concrete Services?",
         "items": [
-          { "title": "Expert Craftsmanship", "description": "Experienced concrete professionals delivering smooth, level, crack-resistant surfaces." },
-          { "title": "Decorative Options", "description": "Stamped, stained, and exposed aggregate finishes for stunning aesthetics." },
-          { "title": "Proper Preparation", "description": "Thorough site prep and correct mix ensures durable, long-lasting results." }
+          {
+            "title": "Expert Craftsmanship",
+            "description": "Experienced concrete professionals delivering smooth, level, crack-resistant surfaces."
+          },
+          {
+            "title": "Decorative Options",
+            "description": "Stamped, stained, and exposed aggregate finishes for stunning aesthetics."
+          },
+          {
+            "title": "Proper Preparation",
+            "description": "Thorough site prep and correct mix ensures durable, long-lasting results."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "How long does concrete take to cure?", "answer": "You can walk on concrete in 24-48 hours, but full curing takes about 28 days." },
-          { "question": "Can you repair cracked concrete?", "answer": "Yes, we offer repair services for cracks, spalling, and settling issues." },
-          { "question": "What decorative options are available?", "answer": "Stamped patterns, acid staining, exposed aggregate, and colored concrete are all available." }
+          {
+            "question": "How long does concrete take to cure?",
+            "answer": "You can walk on concrete in 24-48 hours, but full curing takes about 28 days."
+          },
+          {
+            "question": "Can you repair cracked concrete?",
+            "answer": "Yes, we offer repair services for cracks, spalling, and settling issues."
+          },
+          {
+            "question": "What decorative options are available?",
+            "answer": "Stamped patterns, acid staining, exposed aggregate, and colored concrete are all available."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Frank Peterson", "text": "Our stamped concrete patio is gorgeous! Looks like expensive stone but much more affordable.", "location": "Indianapolis, IN" }
+          {
+            "name": "Frank Peterson",
+            "text": "Our stamped concrete patio is gorgeous! Looks like expensive stone but much more affordable.",
+            "location": "Indianapolis, IN"
+          }
         ]
       },
       "cta": {
@@ -1215,23 +1765,45 @@
       "benefits": {
         "title": "Why Choose Our Junk Removal Services?",
         "items": [
-          { "title": "Same-Day Service", "description": "Need it gone today? We offer same-day junk removal in most areas." },
-          { "title": "All-Inclusive Pricing", "description": "Our quote includes labor, hauling, and disposal. No hidden fees." },
-          { "title": "Eco-Friendly Disposal", "description": "We donate usable items and recycle materials whenever possible." }
+          {
+            "title": "Same-Day Service",
+            "description": "Need it gone today? We offer same-day junk removal in most areas."
+          },
+          {
+            "title": "All-Inclusive Pricing",
+            "description": "Our quote includes labor, hauling, and disposal. No hidden fees."
+          },
+          {
+            "title": "Eco-Friendly Disposal",
+            "description": "We donate usable items and recycle materials whenever possible."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "What items do you take?", "answer": "Furniture, appliances, electronics, yard waste, construction debris, and most household junk." },
-          { "question": "Do I need to prepare anything?", "answer": "Just point to what goes! We handle all lifting, loading, and cleanup." },
-          { "question": "How is pricing determined?", "answer": "Pricing is based on the volume of items being removed, starting with a minimum load." }
+          {
+            "question": "What items do you take?",
+            "answer": "Furniture, appliances, electronics, yard waste, construction debris, and most household junk."
+          },
+          {
+            "question": "Do I need to prepare anything?",
+            "answer": "Just point to what goes! We handle all lifting, loading, and cleanup."
+          },
+          {
+            "question": "How is pricing determined?",
+            "answer": "Pricing is based on the volume of items being removed, starting with a minimum load."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Dorothy Hill", "text": "Cleared out my entire garage in under an hour. Great price and very professional team!", "location": "Tampa, FL" }
+          {
+            "name": "Dorothy Hill",
+            "text": "Cleared out my entire garage in under an hour. Great price and very professional team!",
+            "location": "Tampa, FL"
+          }
         ]
       },
       "cta": {
@@ -1261,23 +1833,45 @@
       "benefits": {
         "title": "Why Choose Our Appliance Repair Services?",
         "items": [
-          { "title": "All Major Brands", "description": "We repair Samsung, LG, Whirlpool, GE, Maytag, and all other major brands." },
-          { "title": "Quality Parts", "description": "We use OEM and quality aftermarket parts backed by our repair warranty." },
-          { "title": "Upfront Pricing", "description": "Know the repair cost before we start. No surprises on your bill." }
+          {
+            "title": "All Major Brands",
+            "description": "We repair Samsung, LG, Whirlpool, GE, Maytag, and all other major brands."
+          },
+          {
+            "title": "Quality Parts",
+            "description": "We use OEM and quality aftermarket parts backed by our repair warranty."
+          },
+          {
+            "title": "Upfront Pricing",
+            "description": "Know the repair cost before we start. No surprises on your bill."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "Is it worth repairing my old appliance?", "answer": "Often yes! We'll give you an honest assessment of repair vs. replacement value." },
-          { "question": "How quickly can you come out?", "answer": "We offer same-day and next-day appointments in most areas." },
-          { "question": "Do you guarantee your repairs?", "answer": "Yes, all repairs come with a parts and labor warranty for your protection." }
+          {
+            "question": "Is it worth repairing my old appliance?",
+            "answer": "Often yes! We'll give you an honest assessment of repair vs. replacement value."
+          },
+          {
+            "question": "How quickly can you come out?",
+            "answer": "We offer same-day and next-day appointments in most areas."
+          },
+          {
+            "question": "Do you guarantee your repairs?",
+            "answer": "Yes, all repairs come with a parts and labor warranty for your protection."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Melissa Turner", "text": "Fixed my refrigerator same day for a fraction of what a new one would cost. Highly recommend!", "location": "Kansas City, MO" }
+          {
+            "name": "Melissa Turner",
+            "text": "Fixed my refrigerator same day for a fraction of what a new one would cost. Highly recommend!",
+            "location": "Kansas City, MO"
+          }
         ]
       },
       "cta": {
@@ -1307,23 +1901,45 @@
       "benefits": {
         "title": "Why Choose Our Orthodontic Practice?",
         "items": [
-          { "title": "Multiple Options", "description": "Metal braces, ceramic braces, Invisalign, and lingual braces - find your perfect fit." },
-          { "title": "Advanced Technology", "description": "Digital scanning, 3D treatment planning, and accelerated treatment options." },
-          { "title": "All Ages Welcome", "description": "From early intervention for kids to adult orthodontics, we treat patients of all ages." }
+          {
+            "title": "Multiple Options",
+            "description": "Metal braces, ceramic braces, Invisalign, and lingual braces - find your perfect fit."
+          },
+          {
+            "title": "Advanced Technology",
+            "description": "Digital scanning, 3D treatment planning, and accelerated treatment options."
+          },
+          {
+            "title": "All Ages Welcome",
+            "description": "From early intervention for kids to adult orthodontics, we treat patients of all ages."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "How long does orthodontic treatment take?", "answer": "Treatment typically takes 12-24 months depending on the complexity of your case." },
-          { "question": "Is Invisalign as effective as braces?", "answer": "For many cases, yes! We'll recommend the best option based on your specific needs." },
-          { "question": "Do you offer payment plans?", "answer": "Yes, we offer flexible payment plans and work with most dental insurance." }
+          {
+            "question": "How long does orthodontic treatment take?",
+            "answer": "Treatment typically takes 12-24 months depending on the complexity of your case."
+          },
+          {
+            "question": "Is Invisalign as effective as braces?",
+            "answer": "For many cases, yes! We'll recommend the best option based on your specific needs."
+          },
+          {
+            "question": "Do you offer payment plans?",
+            "answer": "Yes, we offer flexible payment plans and work with most dental insurance."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Jessica Roberts", "text": "Got Invisalign as an adult and love my new smile! The process was easier than I expected.", "location": "San Jose, CA" }
+          {
+            "name": "Jessica Roberts",
+            "text": "Got Invisalign as an adult and love my new smile! The process was easier than I expected.",
+            "location": "San Jose, CA"
+          }
         ]
       },
       "cta": {
@@ -1353,23 +1969,45 @@
       "benefits": {
         "title": "Why Choose Our Dermatology Practice?",
         "items": [
-          { "title": "Board-Certified Dermatologists", "description": "Our physicians have specialized training in all aspects of skin health." },
-          { "title": "Comprehensive Care", "description": "Medical dermatology, cosmetic procedures, and surgical treatments all in one practice." },
-          { "title": "Latest Treatments", "description": "Access cutting-edge therapies and technologies for optimal outcomes." }
+          {
+            "title": "Board-Certified Dermatologists",
+            "description": "Our physicians have specialized training in all aspects of skin health."
+          },
+          {
+            "title": "Comprehensive Care",
+            "description": "Medical dermatology, cosmetic procedures, and surgical treatments all in one practice."
+          },
+          {
+            "title": "Latest Treatments",
+            "description": "Access cutting-edge therapies and technologies for optimal outcomes."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "How often should I have a skin check?", "answer": "Annual skin cancer screenings are recommended, especially if you have risk factors." },
-          { "question": "What treatments do you offer for acne?", "answer": "We offer topical treatments, oral medications, chemical peels, and laser therapy." },
-          { "question": "Do you perform cosmetic procedures?", "answer": "Yes, including Botox, fillers, laser treatments, and other skin rejuvenation procedures." }
+          {
+            "question": "How often should I have a skin check?",
+            "answer": "Annual skin cancer screenings are recommended, especially if you have risk factors."
+          },
+          {
+            "question": "What treatments do you offer for acne?",
+            "answer": "We offer topical treatments, oral medications, chemical peels, and laser therapy."
+          },
+          {
+            "question": "Do you perform cosmetic procedures?",
+            "answer": "Yes, including Botox, fillers, laser treatments, and other skin rejuvenation procedures."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Samantha Lee", "text": "Finally found a treatment that cleared my adult acne. The doctors here really listen.", "location": "New York, NY" }
+          {
+            "name": "Samantha Lee",
+            "text": "Finally found a treatment that cleared my adult acne. The doctors here really listen.",
+            "location": "New York, NY"
+          }
         ]
       },
       "cta": {
@@ -1399,23 +2037,45 @@
       "benefits": {
         "title": "Why Choose Our Med Spa?",
         "items": [
-          { "title": "Medical Expertise", "description": "Treatments performed by licensed medical professionals under physician supervision." },
-          { "title": "Customized Plans", "description": "Personalized treatment plans designed to achieve your aesthetic goals." },
-          { "title": "Premium Products", "description": "We use only FDA-approved products and state-of-the-art equipment." }
+          {
+            "title": "Medical Expertise",
+            "description": "Treatments performed by licensed medical professionals under physician supervision."
+          },
+          {
+            "title": "Customized Plans",
+            "description": "Personalized treatment plans designed to achieve your aesthetic goals."
+          },
+          {
+            "title": "Premium Products",
+            "description": "We use only FDA-approved products and state-of-the-art equipment."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "How long do Botox results last?", "answer": "Typically 3-4 months. Regular treatments may extend duration over time." },
-          { "question": "Is there downtime after treatments?", "answer": "Most treatments have minimal to no downtime. We'll discuss expectations during consultation." },
-          { "question": "Are med spa treatments safe?", "answer": "Yes, when performed by trained medical professionals using approved products." }
+          {
+            "question": "How long do Botox results last?",
+            "answer": "Typically 3-4 months. Regular treatments may extend duration over time."
+          },
+          {
+            "question": "Is there downtime after treatments?",
+            "answer": "Most treatments have minimal to no downtime. We'll discuss expectations during consultation."
+          },
+          {
+            "question": "Are med spa treatments safe?",
+            "answer": "Yes, when performed by trained medical professionals using approved products."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Victoria James", "text": "The results are so natural - I look refreshed, not overdone. Love this place!", "location": "Los Angeles, CA" }
+          {
+            "name": "Victoria James",
+            "text": "The results are so natural - I look refreshed, not overdone. Love this place!",
+            "location": "Los Angeles, CA"
+          }
         ]
       },
       "cta": {
@@ -1445,23 +2105,45 @@
       "benefits": {
         "title": "Why Choose Our Chiropractic Care?",
         "items": [
-          { "title": "Comprehensive Approach", "description": "We address the whole body, not just symptoms, for lasting results." },
-          { "title": "Multiple Techniques", "description": "Various adjustment techniques to suit your comfort and condition." },
-          { "title": "Wellness Focus", "description": "Beyond pain relief, we help you achieve optimal health and prevent future issues." }
+          {
+            "title": "Comprehensive Approach",
+            "description": "We address the whole body, not just symptoms, for lasting results."
+          },
+          {
+            "title": "Multiple Techniques",
+            "description": "Various adjustment techniques to suit your comfort and condition."
+          },
+          {
+            "title": "Wellness Focus",
+            "description": "Beyond pain relief, we help you achieve optimal health and prevent future issues."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "What conditions do chiropractors treat?", "answer": "Back pain, neck pain, headaches, sciatica, joint pain, and many musculoskeletal issues." },
-          { "question": "Is chiropractic treatment safe?", "answer": "Yes, chiropractic care is safe and effective when performed by a licensed chiropractor." },
-          { "question": "How many sessions will I need?", "answer": "Treatment plans vary by condition. We'll create a personalized plan after your evaluation." }
+          {
+            "question": "What conditions do chiropractors treat?",
+            "answer": "Back pain, neck pain, headaches, sciatica, joint pain, and many musculoskeletal issues."
+          },
+          {
+            "question": "Is chiropractic treatment safe?",
+            "answer": "Yes, chiropractic care is safe and effective when performed by a licensed chiropractor."
+          },
+          {
+            "question": "How many sessions will I need?",
+            "answer": "Treatment plans vary by condition. We'll create a personalized plan after your evaluation."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Brian Collins", "text": "Years of back pain resolved after just a few visits. Wish I'd come sooner!", "location": "Cleveland, OH" }
+          {
+            "name": "Brian Collins",
+            "text": "Years of back pain resolved after just a few visits. Wish I'd come sooner!",
+            "location": "Cleveland, OH"
+          }
         ]
       },
       "cta": {
@@ -1491,23 +2173,45 @@
       "benefits": {
         "title": "Why Choose Our Physical Therapy?",
         "items": [
-          { "title": "Personalized Treatment", "description": "Customized therapy plans tailored to your specific condition and goals." },
-          { "title": "Experienced Therapists", "description": "Licensed physical therapists with specialized training and expertise." },
-          { "title": "Advanced Modalities", "description": "Manual therapy, therapeutic exercise, and modern treatment techniques." }
+          {
+            "title": "Personalized Treatment",
+            "description": "Customized therapy plans tailored to your specific condition and goals."
+          },
+          {
+            "title": "Experienced Therapists",
+            "description": "Licensed physical therapists with specialized training and expertise."
+          },
+          {
+            "title": "Advanced Modalities",
+            "description": "Manual therapy, therapeutic exercise, and modern treatment techniques."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "Do I need a referral for physical therapy?", "answer": "In most states, you can see a PT directly. We'll verify your insurance requirements." },
-          { "question": "How long are physical therapy sessions?", "answer": "Sessions typically last 45-60 minutes, depending on your treatment plan." },
-          { "question": "Will physical therapy be painful?", "answer": "Therapy may involve some discomfort, but we always work within your tolerance levels." }
+          {
+            "question": "Do I need a referral for physical therapy?",
+            "answer": "In most states, you can see a PT directly. We'll verify your insurance requirements."
+          },
+          {
+            "question": "How long are physical therapy sessions?",
+            "answer": "Sessions typically last 45-60 minutes, depending on your treatment plan."
+          },
+          {
+            "question": "Will physical therapy be painful?",
+            "answer": "Therapy may involve some discomfort, but we always work within your tolerance levels."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Angela Morgan", "text": "After my knee surgery, they got me back to running in just 3 months. Excellent care!", "location": "Boston, MA" }
+          {
+            "name": "Angela Morgan",
+            "text": "After my knee surgery, they got me back to running in just 3 months. Excellent care!",
+            "location": "Boston, MA"
+          }
         ]
       },
       "cta": {
@@ -1537,23 +2241,45 @@
       "benefits": {
         "title": "Why Choose Our Hair Restoration Services?",
         "items": [
-          { "title": "Natural Results", "description": "Artistic hairline design and precise graft placement for undetectable results." },
-          { "title": "Advanced Techniques", "description": "FUE, FUT, and robotic-assisted transplants using the latest technology." },
-          { "title": "Comprehensive Care", "description": "From consultation through recovery, we guide you every step of the way." }
+          {
+            "title": "Natural Results",
+            "description": "Artistic hairline design and precise graft placement for undetectable results."
+          },
+          {
+            "title": "Advanced Techniques",
+            "description": "FUE, FUT, and robotic-assisted transplants using the latest technology."
+          },
+          {
+            "title": "Comprehensive Care",
+            "description": "From consultation through recovery, we guide you every step of the way."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "Is hair transplant surgery permanent?", "answer": "Yes, transplanted hair is permanent and grows naturally for life." },
-          { "question": "How long is recovery?", "answer": "Most patients return to work within a week. Full results visible in 9-12 months." },
-          { "question": "Am I a good candidate?", "answer": "Candidates need sufficient donor hair. We assess this during your consultation." }
+          {
+            "question": "Is hair transplant surgery permanent?",
+            "answer": "Yes, transplanted hair is permanent and grows naturally for life."
+          },
+          {
+            "question": "How long is recovery?",
+            "answer": "Most patients return to work within a week. Full results visible in 9-12 months."
+          },
+          {
+            "question": "Am I a good candidate?",
+            "answer": "Candidates need sufficient donor hair. We assess this during your consultation."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Kevin Murphy", "text": "Best decision I ever made. My hairline looks completely natural. Nobody can tell!", "location": "Chicago, IL" }
+          {
+            "name": "Kevin Murphy",
+            "text": "Best decision I ever made. My hairline looks completely natural. Nobody can tell!",
+            "location": "Chicago, IL"
+          }
         ]
       },
       "cta": {
@@ -1583,23 +2309,45 @@
       "benefits": {
         "title": "Why Choose Our Cosmetic Dentistry?",
         "items": [
-          { "title": "Artistic Approach", "description": "We design smiles that complement your facial features and personality." },
-          { "title": "Advanced Materials", "description": "Premium porcelain and composite materials for natural, lasting results." },
-          { "title": "Comprehensive Options", "description": "From simple whitening to full smile makeovers, we offer complete solutions." }
+          {
+            "title": "Artistic Approach",
+            "description": "We design smiles that complement your facial features and personality."
+          },
+          {
+            "title": "Advanced Materials",
+            "description": "Premium porcelain and composite materials for natural, lasting results."
+          },
+          {
+            "title": "Comprehensive Options",
+            "description": "From simple whitening to full smile makeovers, we offer complete solutions."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "How long do veneers last?", "answer": "With proper care, porcelain veneers can last 10-15 years or longer." },
-          { "question": "Is teeth whitening safe?", "answer": "Yes, professional whitening is safe and more effective than over-the-counter products." },
-          { "question": "Can cosmetic dentistry fix crooked teeth?", "answer": "Yes, veneers and bonding can create the appearance of straighter teeth without braces." }
+          {
+            "question": "How long do veneers last?",
+            "answer": "With proper care, porcelain veneers can last 10-15 years or longer."
+          },
+          {
+            "question": "Is teeth whitening safe?",
+            "answer": "Yes, professional whitening is safe and more effective than over-the-counter products."
+          },
+          {
+            "question": "Can cosmetic dentistry fix crooked teeth?",
+            "answer": "Yes, veneers and bonding can create the appearance of straighter teeth without braces."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Diana Ross", "text": "My veneers are absolutely beautiful. I can't stop smiling! Life-changing experience.", "location": "Beverly Hills, CA" }
+          {
+            "name": "Diana Ross",
+            "text": "My veneers are absolutely beautiful. I can't stop smiling! Life-changing experience.",
+            "location": "Beverly Hills, CA"
+          }
         ]
       },
       "cta": {
@@ -1629,23 +2377,45 @@
       "benefits": {
         "title": "Why Choose Our Personal Injury Firm?",
         "items": [
-          { "title": "No Fee Unless We Win", "description": "We work on contingency. You pay nothing unless we recover compensation for you." },
-          { "title": "Proven Results", "description": "Millions recovered for our clients in settlements and verdicts." },
-          { "title": "Personal Attention", "description": "Your case matters. We provide dedicated, responsive representation." }
+          {
+            "title": "No Fee Unless We Win",
+            "description": "We work on contingency. You pay nothing unless we recover compensation for you."
+          },
+          {
+            "title": "Proven Results",
+            "description": "Millions recovered for our clients in settlements and verdicts."
+          },
+          {
+            "title": "Personal Attention",
+            "description": "Your case matters. We provide dedicated, responsive representation."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "How much is my case worth?", "answer": "Every case is unique. We'll evaluate your damages and provide an honest assessment." },
-          { "question": "How long do personal injury cases take?", "answer": "Most settle within 6-18 months. Complex cases may take longer if litigation is required." },
-          { "question": "Should I talk to the insurance company?", "answer": "No, contact us first. Insurance companies try to minimize your claim." }
+          {
+            "question": "How much is my case worth?",
+            "answer": "Every case is unique. We'll evaluate your damages and provide an honest assessment."
+          },
+          {
+            "question": "How long do personal injury cases take?",
+            "answer": "Most settle within 6-18 months. Complex cases may take longer if litigation is required."
+          },
+          {
+            "question": "Should I talk to the insurance company?",
+            "answer": "No, contact us first. Insurance companies try to minimize your claim."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Maria Rodriguez", "text": "They got me 3x what the insurance company initially offered. Couldn't have done it without them.", "location": "Orlando, FL" }
+          {
+            "name": "Maria Rodriguez",
+            "text": "They got me 3x what the insurance company initially offered. Couldn't have done it without them.",
+            "location": "Orlando, FL"
+          }
         ]
       },
       "cta": {
@@ -1675,23 +2445,45 @@
       "benefits": {
         "title": "Why Choose Our Immigration Practice?",
         "items": [
-          { "title": "Comprehensive Services", "description": "Family immigration, employment visas, asylum, naturalization, and more." },
-          { "title": "Multilingual Team", "description": "We speak your language and understand your cultural background." },
-          { "title": "Personalized Strategy", "description": "Every case is unique. We develop custom strategies for your situation." }
+          {
+            "title": "Comprehensive Services",
+            "description": "Family immigration, employment visas, asylum, naturalization, and more."
+          },
+          {
+            "title": "Multilingual Team",
+            "description": "We speak your language and understand your cultural background."
+          },
+          {
+            "title": "Personalized Strategy",
+            "description": "Every case is unique. We develop custom strategies for your situation."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "How long does the green card process take?", "answer": "Processing times vary by category, from several months to several years." },
-          { "question": "Can you help if I'm facing deportation?", "answer": "Yes, we provide aggressive deportation defense and explore all relief options." },
-          { "question": "Do I need an attorney for a visa application?", "answer": "While not required, an attorney helps avoid costly mistakes and delays." }
+          {
+            "question": "How long does the green card process take?",
+            "answer": "Processing times vary by category, from several months to several years."
+          },
+          {
+            "question": "Can you help if I'm facing deportation?",
+            "answer": "Yes, we provide aggressive deportation defense and explore all relief options."
+          },
+          {
+            "question": "Do I need an attorney for a visa application?",
+            "answer": "While not required, an attorney helps avoid costly mistakes and delays."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Carlos Mendez", "text": "They helped my whole family get green cards. Professional, caring, and always kept us informed.", "location": "Houston, TX" }
+          {
+            "name": "Carlos Mendez",
+            "text": "They helped my whole family get green cards. Professional, caring, and always kept us informed.",
+            "location": "Houston, TX"
+          }
         ]
       },
       "cta": {
@@ -1721,23 +2513,45 @@
       "benefits": {
         "title": "Why Choose Our Criminal Defense Firm?",
         "items": [
-          { "title": "24/7 Availability", "description": "Arrests don't wait for business hours. We're available around the clock." },
-          { "title": "Former Prosecutors", "description": "Our attorneys know how the other side thinks and builds cases." },
-          { "title": "Aggressive Representation", "description": "We fight tenaciously to protect your rights and freedom." }
+          {
+            "title": "24/7 Availability",
+            "description": "Arrests don't wait for business hours. We're available around the clock."
+          },
+          {
+            "title": "Former Prosecutors",
+            "description": "Our attorneys know how the other side thinks and builds cases."
+          },
+          {
+            "title": "Aggressive Representation",
+            "description": "We fight tenaciously to protect your rights and freedom."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "What should I do if I'm arrested?", "answer": "Stay calm, exercise your right to remain silent, and call us immediately." },
-          { "question": "Can you get charges dropped?", "answer": "We explore all options including dismissal, reduction, and alternative programs." },
-          { "question": "Will I have to go to trial?", "answer": "Many cases resolve through negotiation, but we're fully prepared for trial if needed." }
+          {
+            "question": "What should I do if I'm arrested?",
+            "answer": "Stay calm, exercise your right to remain silent, and call us immediately."
+          },
+          {
+            "question": "Can you get charges dropped?",
+            "answer": "We explore all options including dismissal, reduction, and alternative programs."
+          },
+          {
+            "question": "Will I have to go to trial?",
+            "answer": "Many cases resolve through negotiation, but we're fully prepared for trial if needed."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "James Walker", "text": "They got my DUI charges reduced. My license was saved and I avoided jail time.", "location": "Phoenix, AZ" }
+          {
+            "name": "James Walker",
+            "text": "They got my DUI charges reduced. My license was saved and I avoided jail time.",
+            "location": "Phoenix, AZ"
+          }
         ]
       },
       "cta": {
@@ -1767,23 +2581,45 @@
       "benefits": {
         "title": "Why Choose Our Tax & Accounting Services?",
         "items": [
-          { "title": "Certified Professionals", "description": "Licensed CPAs with extensive experience in tax law and accounting." },
-          { "title": "Year-Round Support", "description": "Tax planning and accounting help whenever you need it, not just during tax season." },
-          { "title": "Audit Protection", "description": "We stand behind our work and provide representation if you're audited." }
+          {
+            "title": "Certified Professionals",
+            "description": "Licensed CPAs with extensive experience in tax law and accounting."
+          },
+          {
+            "title": "Year-Round Support",
+            "description": "Tax planning and accounting help whenever you need it, not just during tax season."
+          },
+          {
+            "title": "Audit Protection",
+            "description": "We stand behind our work and provide representation if you're audited."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "Should I hire a CPA or use tax software?", "answer": "For complex situations, a CPA can find deductions and strategies software misses." },
-          { "question": "What documents do I need for tax preparation?", "answer": "W-2s, 1099s, receipts for deductions, and prior year returns. We'll provide a complete list." },
-          { "question": "Can you help with IRS problems?", "answer": "Yes, we handle audits, back taxes, payment plans, and other IRS issues." }
+          {
+            "question": "Should I hire a CPA or use tax software?",
+            "answer": "For complex situations, a CPA can find deductions and strategies software misses."
+          },
+          {
+            "question": "What documents do I need for tax preparation?",
+            "answer": "W-2s, 1099s, receipts for deductions, and prior year returns. We'll provide a complete list."
+          },
+          {
+            "question": "Can you help with IRS problems?",
+            "answer": "Yes, we handle audits, back taxes, payment plans, and other IRS issues."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Susan Chang", "text": "They found deductions my previous preparer missed and got me a larger refund. Very thorough!", "location": "Seattle, WA" }
+          {
+            "name": "Susan Chang",
+            "text": "They found deductions my previous preparer missed and got me a larger refund. Very thorough!",
+            "location": "Seattle, WA"
+          }
         ]
       },
       "cta": {
@@ -1813,23 +2649,45 @@
       "benefits": {
         "title": "Why Choose Our Business Consulting?",
         "items": [
-          { "title": "Experienced Advisors", "description": "Consultants with real-world business success and industry expertise." },
-          { "title": "Data-Driven Strategies", "description": "We analyze your business and market to develop actionable growth plans." },
-          { "title": "Measurable Results", "description": "Clear KPIs and accountability to ensure your investment delivers returns." }
+          {
+            "title": "Experienced Advisors",
+            "description": "Consultants with real-world business success and industry expertise."
+          },
+          {
+            "title": "Data-Driven Strategies",
+            "description": "We analyze your business and market to develop actionable growth plans."
+          },
+          {
+            "title": "Measurable Results",
+            "description": "Clear KPIs and accountability to ensure your investment delivers returns."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "What types of businesses do you work with?", "answer": "We work with startups, small businesses, and mid-market companies across industries." },
-          { "question": "How is consulting different from coaching?", "answer": "Consulting provides expert advice and implementation support; coaching focuses on developing your skills." },
-          { "question": "What results can I expect?", "answer": "Results vary, but clients typically see improved efficiency, revenue growth, and profitability." }
+          {
+            "question": "What types of businesses do you work with?",
+            "answer": "We work with startups, small businesses, and mid-market companies across industries."
+          },
+          {
+            "question": "How is consulting different from coaching?",
+            "answer": "Consulting provides expert advice and implementation support; coaching focuses on developing your skills."
+          },
+          {
+            "question": "What results can I expect?",
+            "answer": "Results vary, but clients typically see improved efficiency, revenue growth, and profitability."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Michael Torres", "text": "They helped us restructure operations and revenue grew 40% in one year. Invaluable partnership.", "location": "Dallas, TX" }
+          {
+            "name": "Michael Torres",
+            "text": "They helped us restructure operations and revenue grew 40% in one year. Invaluable partnership.",
+            "location": "Dallas, TX"
+          }
         ]
       },
       "cta": {
@@ -1859,23 +2717,45 @@
       "benefits": {
         "title": "Why Choose Our Commercial Cleaning?",
         "items": [
-          { "title": "Customized Programs", "description": "Cleaning schedules and services tailored to your facility's unique needs." },
-          { "title": "Trained Staff", "description": "Background-checked, insured cleaners trained in commercial cleaning protocols." },
-          { "title": "Quality Guaranteed", "description": "Regular inspections and responsive management ensure consistent quality." }
+          {
+            "title": "Customized Programs",
+            "description": "Cleaning schedules and services tailored to your facility's unique needs."
+          },
+          {
+            "title": "Trained Staff",
+            "description": "Background-checked, insured cleaners trained in commercial cleaning protocols."
+          },
+          {
+            "title": "Quality Guaranteed",
+            "description": "Regular inspections and responsive management ensure consistent quality."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "What industries do you serve?", "answer": "Offices, medical facilities, retail, schools, warehouses, and more." },
-          { "question": "Can you clean outside of business hours?", "answer": "Yes, we offer evening, overnight, and weekend cleaning to minimize disruption." },
-          { "question": "Are your products safe for employees?", "answer": "We use commercial-grade, EPA-approved products safe for occupied spaces." }
+          {
+            "question": "What industries do you serve?",
+            "answer": "Offices, medical facilities, retail, schools, warehouses, and more."
+          },
+          {
+            "question": "Can you clean outside of business hours?",
+            "answer": "Yes, we offer evening, overnight, and weekend cleaning to minimize disruption."
+          },
+          {
+            "question": "Are your products safe for employees?",
+            "answer": "We use commercial-grade, EPA-approved products safe for occupied spaces."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Jennifer Blake", "text": "Our office has never been cleaner. They're reliable and do excellent work every night.", "location": "Washington, DC" }
+          {
+            "name": "Jennifer Blake",
+            "text": "Our office has never been cleaner. They're reliable and do excellent work every night.",
+            "location": "Washington, DC"
+          }
         ]
       },
       "cta": {
@@ -1905,23 +2785,45 @@
       "benefits": {
         "title": "Why Choose Our Security Systems?",
         "items": [
-          { "title": "Customized Solutions", "description": "Security systems designed specifically for your property and concerns." },
-          { "title": "Professional Installation", "description": "Expert installation ensures optimal camera placement and system reliability." },
-          { "title": "24/7 Monitoring", "description": "Round-the-clock monitoring with immediate emergency response." }
+          {
+            "title": "Customized Solutions",
+            "description": "Security systems designed specifically for your property and concerns."
+          },
+          {
+            "title": "Professional Installation",
+            "description": "Expert installation ensures optimal camera placement and system reliability."
+          },
+          {
+            "title": "24/7 Monitoring",
+            "description": "Round-the-clock monitoring with immediate emergency response."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "Do I need professional monitoring?", "answer": "While self-monitoring is an option, professional monitoring ensures response even when you can't." },
-          { "question": "Can I view cameras from my phone?", "answer": "Yes, our systems include mobile apps for remote viewing and control." },
-          { "question": "Do security systems deter crime?", "answer": "Studies show homes with security systems are significantly less likely to be burglarized." }
+          {
+            "question": "Do I need professional monitoring?",
+            "answer": "While self-monitoring is an option, professional monitoring ensures response even when you can't."
+          },
+          {
+            "question": "Can I view cameras from my phone?",
+            "answer": "Yes, our systems include mobile apps for remote viewing and control."
+          },
+          {
+            "question": "Do security systems deter crime?",
+            "answer": "Studies show homes with security systems are significantly less likely to be burglarized."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Paul Richards", "text": "Peace of mind knowing my family and home are protected. Great system and excellent service.", "location": "Atlanta, GA" }
+          {
+            "name": "Paul Richards",
+            "text": "Peace of mind knowing my family and home are protected. Great system and excellent service.",
+            "location": "Atlanta, GA"
+          }
         ]
       },
       "cta": {
@@ -1951,23 +2853,45 @@
       "benefits": {
         "title": "Why Choose Our IT Services?",
         "items": [
-          { "title": "Proactive Management", "description": "We prevent problems before they impact your business with 24/7 monitoring." },
-          { "title": "Cybersecurity Focus", "description": "Protect your data and systems with enterprise-grade security measures." },
-          { "title": "Scalable Solutions", "description": "IT infrastructure that grows with your business needs." }
+          {
+            "title": "Proactive Management",
+            "description": "We prevent problems before they impact your business with 24/7 monitoring."
+          },
+          {
+            "title": "Cybersecurity Focus",
+            "description": "Protect your data and systems with enterprise-grade security measures."
+          },
+          {
+            "title": "Scalable Solutions",
+            "description": "IT infrastructure that grows with your business needs."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "What does managed IT include?", "answer": "Network monitoring, help desk support, security, backups, and strategic planning." },
-          { "question": "Do you support remote workers?", "answer": "Yes, we specialize in secure remote work solutions and support." },
-          { "question": "How quickly do you respond to issues?", "answer": "Critical issues are addressed immediately; routine requests within 2-4 hours." }
+          {
+            "question": "What does managed IT include?",
+            "answer": "Network monitoring, help desk support, security, backups, and strategic planning."
+          },
+          {
+            "question": "Do you support remote workers?",
+            "answer": "Yes, we specialize in secure remote work solutions and support."
+          },
+          {
+            "question": "How quickly do you respond to issues?",
+            "answer": "Critical issues are addressed immediately; routine requests within 2-4 hours."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "David Sterling", "text": "Since switching to their managed services, we've had zero downtime. Worth every penny.", "location": "Boston, MA" }
+          {
+            "name": "David Sterling",
+            "text": "Since switching to their managed services, we've had zero downtime. Worth every penny.",
+            "location": "Boston, MA"
+          }
         ]
       },
       "cta": {
@@ -1997,23 +2921,45 @@
       "benefits": {
         "title": "Why Choose Our Marketing Agency?",
         "items": [
-          { "title": "Data-Driven Strategy", "description": "We analyze data to develop and optimize marketing strategies that work." },
-          { "title": "Full-Service Capabilities", "description": "SEO, paid ads, social media, content, email, and web design - all under one roof." },
-          { "title": "Transparent Reporting", "description": "Regular reports showing exactly how your marketing investment is performing." }
+          {
+            "title": "Data-Driven Strategy",
+            "description": "We analyze data to develop and optimize marketing strategies that work."
+          },
+          {
+            "title": "Full-Service Capabilities",
+            "description": "SEO, paid ads, social media, content, email, and web design - all under one roof."
+          },
+          {
+            "title": "Transparent Reporting",
+            "description": "Regular reports showing exactly how your marketing investment is performing."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "How long until I see results?", "answer": "PPC can show immediate results. SEO typically takes 3-6 months for significant improvement." },
-          { "question": "What's the minimum marketing budget?", "answer": "We work with businesses of all sizes and customize strategies to fit your budget." },
-          { "question": "Do you require long-term contracts?", "answer": "We offer flexible terms. Our results keep clients, not contracts." }
+          {
+            "question": "How long until I see results?",
+            "answer": "PPC can show immediate results. SEO typically takes 3-6 months for significant improvement."
+          },
+          {
+            "question": "What's the minimum marketing budget?",
+            "answer": "We work with businesses of all sizes and customize strategies to fit your budget."
+          },
+          {
+            "question": "Do you require long-term contracts?",
+            "answer": "We offer flexible terms. Our results keep clients, not contracts."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Rachel Adams", "text": "Our organic traffic tripled in 6 months. They truly understand digital marketing.", "location": "San Francisco, CA" }
+          {
+            "name": "Rachel Adams",
+            "text": "Our organic traffic tripled in 6 months. They truly understand digital marketing.",
+            "location": "San Francisco, CA"
+          }
         ]
       },
       "cta": {
@@ -2043,23 +2989,45 @@
       "benefits": {
         "title": "Why Choose Our Auto Repair Shop?",
         "items": [
-          { "title": "ASE Certified", "description": "Our mechanics are ASE certified with expertise on all makes and models." },
-          { "title": "Honest Pricing", "description": "Upfront estimates with no surprise charges. We explain repairs before doing them." },
-          { "title": "Quality Parts", "description": "We use OEM and quality aftermarket parts backed by our warranty." }
+          {
+            "title": "ASE Certified",
+            "description": "Our mechanics are ASE certified with expertise on all makes and models."
+          },
+          {
+            "title": "Honest Pricing",
+            "description": "Upfront estimates with no surprise charges. We explain repairs before doing them."
+          },
+          {
+            "title": "Quality Parts",
+            "description": "We use OEM and quality aftermarket parts backed by our warranty."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "Do you work on all vehicle makes?", "answer": "Yes, we service domestic, import, and European vehicles of all years." },
-          { "question": "How long will my repair take?", "answer": "Most repairs are completed same-day. We'll give you an accurate time estimate upfront." },
-          { "question": "Do you offer a warranty?", "answer": "Yes, we warranty parts and labor. Specific terms depend on the repair." }
+          {
+            "question": "Do you work on all vehicle makes?",
+            "answer": "Yes, we service domestic, import, and European vehicles of all years."
+          },
+          {
+            "question": "How long will my repair take?",
+            "answer": "Most repairs are completed same-day. We'll give you an accurate time estimate upfront."
+          },
+          {
+            "question": "Do you offer a warranty?",
+            "answer": "Yes, we warranty parts and labor. Specific terms depend on the repair."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Thomas Green", "text": "Finally found an honest mechanic! Fair prices and they only fix what actually needs fixing.", "location": "Detroit, MI" }
+          {
+            "name": "Thomas Green",
+            "text": "Finally found an honest mechanic! Fair prices and they only fix what actually needs fixing.",
+            "location": "Detroit, MI"
+          }
         ]
       },
       "cta": {
@@ -2089,23 +3057,45 @@
       "benefits": {
         "title": "Why Choose Our Auto Detailing?",
         "items": [
-          { "title": "Meticulous Attention", "description": "We detail every surface, crack, and crevice for a truly comprehensive clean." },
-          { "title": "Premium Products", "description": "Professional-grade cleaners, polishes, and protection products for lasting results." },
-          { "title": "Mobile Service", "description": "We come to you! Home or office detailing at your convenience." }
+          {
+            "title": "Meticulous Attention",
+            "description": "We detail every surface, crack, and crevice for a truly comprehensive clean."
+          },
+          {
+            "title": "Premium Products",
+            "description": "Professional-grade cleaners, polishes, and protection products for lasting results."
+          },
+          {
+            "title": "Mobile Service",
+            "description": "We come to you! Home or office detailing at your convenience."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "How long does detailing take?", "answer": "Basic details take 2-3 hours; full details 4-6 hours depending on vehicle condition." },
-          { "question": "What's included in a full detail?", "answer": "Interior deep clean, exterior wash, clay bar, polish, wax, and trim restoration." },
-          { "question": "Is ceramic coating worth it?", "answer": "Yes, ceramic coating provides years of protection and makes maintenance easier." }
+          {
+            "question": "How long does detailing take?",
+            "answer": "Basic details take 2-3 hours; full details 4-6 hours depending on vehicle condition."
+          },
+          {
+            "question": "What's included in a full detail?",
+            "answer": "Interior deep clean, exterior wash, clay bar, polish, wax, and trim restoration."
+          },
+          {
+            "question": "Is ceramic coating worth it?",
+            "answer": "Yes, ceramic coating provides years of protection and makes maintenance easier."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Nicole Parker", "text": "My 5-year-old car looks better than when I bought it! Incredible attention to detail.", "location": "Miami, FL" }
+          {
+            "name": "Nicole Parker",
+            "text": "My 5-year-old car looks better than when I bought it! Incredible attention to detail.",
+            "location": "Miami, FL"
+          }
         ]
       },
       "cta": {
@@ -2135,23 +3125,45 @@
       "benefits": {
         "title": "Why Choose Our Towing Services?",
         "items": [
-          { "title": "24/7 Availability", "description": "Breakdowns don't keep business hours. We're available day and night." },
-          { "title": "Fast Response", "description": "Average arrival time of 20-30 minutes to get you help quickly." },
-          { "title": "All Vehicle Types", "description": "Cars, trucks, motorcycles, and even heavy-duty vehicles - we tow them all." }
+          {
+            "title": "24/7 Availability",
+            "description": "Breakdowns don't keep business hours. We're available day and night."
+          },
+          {
+            "title": "Fast Response",
+            "description": "Average arrival time of 20-30 minutes to get you help quickly."
+          },
+          {
+            "title": "All Vehicle Types",
+            "description": "Cars, trucks, motorcycles, and even heavy-duty vehicles - we tow them all."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "How quickly can you get to me?", "answer": "We typically arrive within 20-30 minutes depending on your location." },
-          { "question": "Do you offer roadside assistance?", "answer": "Yes - jump starts, tire changes, lockouts, and fuel delivery." },
-          { "question": "How much does towing cost?", "answer": "Pricing depends on distance and vehicle type. We provide quotes before service." }
+          {
+            "question": "How quickly can you get to me?",
+            "answer": "We typically arrive within 20-30 minutes depending on your location."
+          },
+          {
+            "question": "Do you offer roadside assistance?",
+            "answer": "Yes - jump starts, tire changes, lockouts, and fuel delivery."
+          },
+          {
+            "question": "How much does towing cost?",
+            "answer": "Pricing depends on distance and vehicle type. We provide quotes before service."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Eric Johnson", "text": "Broke down at midnight on the highway. They were there in 25 minutes. Lifesaver!", "location": "Las Vegas, NV" }
+          {
+            "name": "Eric Johnson",
+            "text": "Broke down at midnight on the highway. They were there in 25 minutes. Lifesaver!",
+            "location": "Las Vegas, NV"
+          }
         ]
       },
       "cta": {
@@ -2181,23 +3193,45 @@
       "benefits": {
         "title": "Why Choose Our Auto Glass Services?",
         "items": [
-          { "title": "Mobile Service", "description": "We come to your home or office for convenient repairs and replacements." },
-          { "title": "Insurance Specialists", "description": "We work with all insurance companies and handle claims for you." },
-          { "title": "Quality Glass", "description": "OEM and OEM-equivalent glass that meets or exceeds safety standards." }
+          {
+            "title": "Mobile Service",
+            "description": "We come to your home or office for convenient repairs and replacements."
+          },
+          {
+            "title": "Insurance Specialists",
+            "description": "We work with all insurance companies and handle claims for you."
+          },
+          {
+            "title": "Quality Glass",
+            "description": "OEM and OEM-equivalent glass that meets or exceeds safety standards."
+          }
         ]
       },
       "faq": {
         "title": "Frequently Asked Questions",
         "items": [
-          { "question": "Can my chip be repaired or does the windshield need replacing?", "answer": "Chips smaller than a quarter can usually be repaired. Larger damage requires replacement." },
-          { "question": "Will insurance cover my windshield?", "answer": "Most comprehensive policies cover glass with no deductible. We verify coverage for you." },
-          { "question": "How long does replacement take?", "answer": "Replacement takes about an hour. We recommend waiting before driving for adhesive to cure." }
+          {
+            "question": "Can my chip be repaired or does the windshield need replacing?",
+            "answer": "Chips smaller than a quarter can usually be repaired. Larger damage requires replacement."
+          },
+          {
+            "question": "Will insurance cover my windshield?",
+            "answer": "Most comprehensive policies cover glass with no deductible. We verify coverage for you."
+          },
+          {
+            "question": "How long does replacement take?",
+            "answer": "Replacement takes about an hour. We recommend waiting before driving for adhesive to cure."
+          }
         ]
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "items": [
-          { "name": "Amy Wilson", "text": "They came to my office, replaced my windshield during lunch, and handled my insurance. So easy!", "location": "Denver, CO" }
+          {
+            "name": "Amy Wilson",
+            "text": "They came to my office, replaced my windshield during lunch, and handled my insurance. So easy!",
+            "location": "Denver, CO"
+          }
         ]
       },
       "cta": {

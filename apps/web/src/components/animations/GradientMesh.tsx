@@ -3,6 +3,7 @@
 /**
  * Gradient Mesh Background Component
  * Animated gradient background with subtle movement
+ * Performance optimized with extracted styles
  */
 
 import { useEffect, useRef } from 'react';
@@ -98,19 +99,16 @@ export function GradientMesh({
     };
   }, [colors, speed]);
 
-  return (
-    <canvas
-      ref={canvasRef}
-      className={className}
-      style={{
-        position: 'absolute',
-        inset: 0,
-        width: '100%',
-        height: '100%',
-        pointerEvents: 'none',
-      }}
-    />
-  );
+  return <canvas ref={canvasRef} className={className} style={canvasStyles} />;
 }
+
+// Extracted style object (prevents new object creation on each render)
+const canvasStyles: React.CSSProperties = {
+  position: 'absolute',
+  inset: 0,
+  width: '100%',
+  height: '100%',
+  pointerEvents: 'none',
+};
 
 export default GradientMesh;

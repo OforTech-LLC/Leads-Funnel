@@ -3,8 +3,10 @@
 ## Research Sources
 
 ### Landing Page Examples & Templates
+
 1. **Boundless Immigration** - https://www.boundless.com/ - Modern tech-forward approach
-2. **ILRC (Immigrant Legal Resource Center)** - https://www.ilrc.org/ - Resource-heavy educational approach
+2. **ILRC (Immigrant Legal Resource Center)** - https://www.ilrc.org/ - Resource-heavy educational
+   approach
 3. **Curiel & Runion** - Immigration specialists with service-focused landing pages
 4. **Fragomen** - https://www.fragomen.com/ - Global corporate immigration focus
 5. **Berry Appleman & Leiden** - https://www.bal.com/ - Enterprise B2B immigration
@@ -13,6 +15,7 @@
 8. **Immiza Template** - Elementor-based modern immigration design
 
 ### Industry Resources
+
 - [Clio - Best Website Design for Immigration Lawyers](https://www.clio.com/blog/website-design-for-immigration-lawyers/)
 - [VIP Marketing - Immigration Law Firm Websites](https://vipmarketing.com/blog/immigration-law-firm-websites-what-works-best-in-2025)
 - [Docketwise - Immigration Law Firm Marketing](https://www.docketwise.com/blog/how-to-market-an-immigration-law-firm/)
@@ -24,15 +27,17 @@
 ## Above-Fold Patterns
 
 ### Headline Formulas
-| Pattern | Example | Why It Works |
-|---------|---------|--------------|
-| **Dream + Help** | "Your American Dream Starts Here" | Aspirational, emotional connection |
-| **Problem + Solution** | "Facing Deportation? We Can Help." | Urgency-driven for crisis clients |
-| **Service + Outcome** | "Get Your Green Card. Reunite Your Family." | Clear benefit statement |
-| **Trust + Action** | "Trusted Immigration Attorneys. Free Consultation." | Authority + low barrier |
-| **Multilingual Hook** | "Hablamos Espanol | We Speak Your Language" | Immediate cultural connection |
+
+| Pattern                | Example                                             | Why It Works                       |
+| ---------------------- | --------------------------------------------------- | ---------------------------------- | ----------------------------- |
+| **Dream + Help**       | "Your American Dream Starts Here"                   | Aspirational, emotional connection |
+| **Problem + Solution** | "Facing Deportation? We Can Help."                  | Urgency-driven for crisis clients  |
+| **Service + Outcome**  | "Get Your Green Card. Reunite Your Family."         | Clear benefit statement            |
+| **Trust + Action**     | "Trusted Immigration Attorneys. Free Consultation." | Authority + low barrier            |
+| **Multilingual Hook**  | "Hablamos Espanol                                   | We Speak Your Language"            | Immediate cultural connection |
 
 ### Hero Image Patterns
+
 - **Diverse Family Imagery**: Multicultural families representing client base
 - **Statue of Liberty/American Dream Icons**: Aspirational symbolism
 - **Attorney with Client**: Trust-building personal interaction
@@ -40,6 +45,7 @@
 - **American Flag Elements**: Subtle patriotic integration
 
 ### Value Proposition Elements (Above Fold)
+
 1. **Language Accessibility**: "Services in English, Spanish, Mandarin, Hindi"
 2. **Experience Credential**: "15+ Years | 5,000+ Cases Approved"
 3. **Free Consultation**: "Confidential Case Evaluation - No Obligation"
@@ -51,15 +57,17 @@
 ## CTA Patterns
 
 ### Primary CTA Button Text
-| High-Converting | Avoid |
-|-----------------|-------|
-| "Start Your Case Evaluation" | "Submit" |
-| "Schedule Free Consultation" | "Contact Us" |
-| "Check My Eligibility" | "Learn More" |
-| "Get Immigration Help Now" | "Send" |
-| "Speak With an Attorney Today" | "Inquire" |
+
+| High-Converting                | Avoid        |
+| ------------------------------ | ------------ |
+| "Start Your Case Evaluation"   | "Submit"     |
+| "Schedule Free Consultation"   | "Contact Us" |
+| "Check My Eligibility"         | "Learn More" |
+| "Get Immigration Help Now"     | "Send"       |
+| "Speak With an Attorney Today" | "Inquire"    |
 
 ### CTA Placement Strategy
+
 1. **Hero Section**: Primary consultation CTA
 2. **Service Cards**: "Learn More" on each visa type
 3. **Sticky Mobile Bar**: Phone + WhatsApp icons
@@ -67,6 +75,7 @@
 5. **Exit Intent**: Free resource download offer
 
 ### Urgency Elements
+
 - "Processing times are increasing - start now"
 - "Visa quotas filling up for FY2026"
 - "USCIS deadlines approaching"
@@ -78,6 +87,7 @@
 ## Form Field Patterns
 
 ### Minimal Form (Highest Conversion)
+
 ```
 - Full Name (required)
 - Email (required)
@@ -86,6 +96,7 @@
 ```
 
 ### Standard Form
+
 ```
 - Full Name (required)
 - Phone Number (required)
@@ -96,6 +107,7 @@
 ```
 
 ### Visa-Specific Qualification Form
+
 ```
 - Full Name
 - Email
@@ -107,6 +119,7 @@
 ```
 
 ### Form Best Practices
+
 - Offer language preference early
 - Use country dropdown (helps with qualification)
 - Keep initial forms to 4-5 fields
@@ -119,15 +132,17 @@
 ## Trust Signals
 
 ### Credential Badges
-| Badge Type | Examples |
-|------------|----------|
-| **Professional Associations** | AILA Member, State Bar Association |
-| **Ratings** | Avvo, Super Lawyers, Best Lawyers |
-| **Certifications** | Board Certified Immigration Specialist |
-| **Experience** | "15+ Years Experience" |
-| **Success Metrics** | "5,000+ Cases Approved" |
+
+| Badge Type                    | Examples                               |
+| ----------------------------- | -------------------------------------- |
+| **Professional Associations** | AILA Member, State Bar Association     |
+| **Ratings**                   | Avvo, Super Lawyers, Best Lawyers      |
+| **Certifications**            | Board Certified Immigration Specialist |
+| **Experience**                | "15+ Years Experience"                 |
+| **Success Metrics**           | "5,000+ Cases Approved"                |
 
 ### Language/Cultural Trust
+
 - Flag icons for languages spoken
 - "Se Habla Espanol" prominently displayed
 - Attorney photos showing diversity
@@ -135,6 +150,7 @@
 - Country-specific case study mentions
 
 ### Review Integration
+
 - Google Reviews in native languages
 - Video testimonials from clients
 - Case success stories by visa type
@@ -142,6 +158,7 @@
 - Immigration forum recommendations
 
 ### AILA Membership Benefits (Trust)
+
 - Licensed to practice law in US states/territories
 - Member in good standing with State Bar
 - Minimum 9 hours CLE credits annually
@@ -153,6 +170,7 @@
 ## Section Structure
 
 ### Recommended Page Flow
+
 ```
 1. HERO SECTION
    - Aspirational/problem-solving headline
@@ -231,17 +249,18 @@
 
 ### Common Objections & Responses
 
-| Objection | Landing Page Response |
-|-----------|----------------------|
-| "I don't speak English well" | "Services available in Spanish, Mandarin, Hindi, and more" |
-| "Immigration law is too complicated" | "We guide you through every step of the process" |
-| "I'm worried about my case being denied" | "97% approval rate on family-based petitions" |
-| "I can't afford an immigration lawyer" | "Flexible payment plans available. Free initial consultation." |
-| "Can I trust an attorney I found online?" | AILA membership badge + reviews + success stories |
-| "Will my information be kept private?" | "Attorney-client privilege. 100% confidential." |
-| "I've been denied before" | "We specialize in appeals and complex cases" |
+| Objection                                 | Landing Page Response                                          |
+| ----------------------------------------- | -------------------------------------------------------------- |
+| "I don't speak English well"              | "Services available in Spanish, Mandarin, Hindi, and more"     |
+| "Immigration law is too complicated"      | "We guide you through every step of the process"               |
+| "I'm worried about my case being denied"  | "97% approval rate on family-based petitions"                  |
+| "I can't afford an immigration lawyer"    | "Flexible payment plans available. Free initial consultation." |
+| "Can I trust an attorney I found online?" | AILA membership badge + reviews + success stories              |
+| "Will my information be kept private?"    | "Attorney-client privilege. 100% confidential."                |
+| "I've been denied before"                 | "We specialize in appeals and complex cases"                   |
 
 ### FAQ Section Topics
+
 1. How long does the immigration process take?
 2. What documents do I need to prepare?
 3. How much does an immigration attorney cost?
@@ -256,6 +275,7 @@
 ## Conversion Blueprint
 
 ### Page Architecture
+
 ```
 [STICKY HEADER: Logo | Language Selector | Phone | "Free Consultation" CTA]
 
@@ -325,6 +345,7 @@
 ```
 
 ### Multilingual Optimization
+
 - Separate URLs per language (/es/, /zh/, /ar/)
 - Implement hreflang tags for SEO
 - Professional translations (not machine)
@@ -332,6 +353,7 @@
 - Native-speaker video testimonials
 
 ### Mobile Optimization
+
 - Tap-to-call prominent
 - WhatsApp link (international clients)
 - Language selector accessible
@@ -339,6 +361,7 @@
 - Thumb-friendly form inputs
 
 ### Key Metrics to Track
+
 - Form completion rate by language
 - Service category click-through
 - Consultation booking rate
@@ -347,6 +370,7 @@
 - Return visitor rate
 
 ### A/B Testing Priorities
+
 1. Hero headline (aspirational vs. practical)
 2. Form length (4 vs 6 fields)
 3. Language selector placement
@@ -358,6 +382,7 @@
 ## Design Best Practices
 
 ### Color Psychology
+
 - **Navy Blue**: Trust, stability, professionalism
 - **White**: Clarity, cleanliness
 - **Green**: Growth, approval, success
@@ -365,12 +390,14 @@
 - **American flag colors**: Subtle patriotic elements
 
 ### Typography
+
 - Clean, readable fonts essential
 - Consider multilingual font support
 - Strong hierarchy for scannability
 - Adequate line spacing for readability
 
 ### Imagery Guidelines
+
 - Diverse representation essential
 - Avoid cliche stock photos
 - Real client photos (with permission) preferred
@@ -378,6 +405,7 @@
 - American landmarks as subtle backgrounds
 
 ### Accessibility
+
 - High contrast for older demographics
 - Screen reader compatibility
 - Keyboard navigation
@@ -385,6 +413,7 @@
 - WCAG 2.1 compliance
 
 ### Page Speed
+
 - Critical for international visitors
 - Optimize images heavily
 - Consider CDN for global access

@@ -19,6 +19,67 @@ const messages: Record<Locale, typeof enMessages> = {
 };
 
 // =============================================================================
+// Translation Types
+// =============================================================================
+
+/** Represents a translated benefit item */
+interface TranslatedBenefitItem {
+  title: string;
+  description: string;
+}
+
+/** Represents a translated testimonial item */
+interface TranslatedTestimonialItem {
+  text: string;
+  name: string;
+  location: string;
+}
+
+/** Represents a translated FAQ item */
+interface TranslatedFAQItem {
+  question: string;
+  answer: string;
+}
+
+/** Represents the structure of funnel-specific translations */
+interface FunnelTranslations {
+  meta?: {
+    title?: string;
+    description?: string;
+  };
+  hero?: {
+    headline?: string;
+    subheadline?: string;
+  };
+  benefits?: {
+    title?: string;
+    items?: TranslatedBenefitItem[];
+  };
+  testimonials?: {
+    title?: string;
+    items?: TranslatedTestimonialItem[];
+  };
+  faq?: {
+    title?: string;
+    items?: TranslatedFAQItem[];
+  };
+  cta?: {
+    title?: string;
+    subtitle?: string;
+    button?: string;
+  };
+  form?: {
+    title?: string;
+    subtitle?: string;
+  };
+  trust?: {
+    secure?: string;
+    fast?: string;
+    free?: string;
+  };
+}
+
+// =============================================================================
 // Service Base Configs (non-translatable: colors, icons, layout)
 // =============================================================================
 
@@ -38,35 +99,35 @@ const serviceBaseConfigs: Record<string, ServiceBaseConfig> = {
     testimonialsVariant: 'featured',
     benefitIcons: ['Home', 'Search', 'FileCheck'],
   },
-  'solar': {
+  solar: {
     gradient: 'linear-gradient(135deg, #F59E0B, #FBBF24)',
     accentColor: '#F59E0B',
     processVariant: 'horizontal',
     testimonialsVariant: 'grid',
     benefitIcons: ['Sun', 'DollarSign', 'Leaf'],
   },
-  'hvac': {
+  hvac: {
     gradient: 'linear-gradient(135deg, #06B6D4, #22D3EE)',
     accentColor: '#06B6D4',
     processVariant: 'horizontal',
     testimonialsVariant: 'grid',
     benefitIcons: ['Wind', 'Thermometer', 'Shield'],
   },
-  'plumbing': {
+  plumbing: {
     gradient: 'linear-gradient(135deg, #0EA5E9, #38BDF8)',
     accentColor: '#0EA5E9',
     processVariant: 'timeline',
     testimonialsVariant: 'grid',
     benefitIcons: ['Droplets', 'Wrench', 'Clock'],
   },
-  'roofing': {
+  roofing: {
     gradient: 'linear-gradient(135deg, #DC2626, #EF4444)',
     accentColor: '#DC2626',
     processVariant: 'horizontal',
     testimonialsVariant: 'featured',
     benefitIcons: ['Home', 'Shield', 'Award'],
   },
-  'electrician': {
+  electrician: {
     gradient: 'linear-gradient(135deg, #EAB308, #FACC15)',
     accentColor: '#EAB308',
     processVariant: 'horizontal',
@@ -80,7 +141,7 @@ const serviceBaseConfigs: Record<string, ServiceBaseConfig> = {
     testimonialsVariant: 'grid',
     benefitIcons: ['Bug', 'Shield', 'Home'],
   },
-  'dentist': {
+  dentist: {
     gradient: 'linear-gradient(135deg, #14B8A6, #2DD4BF)',
     accentColor: '#14B8A6',
     processVariant: 'horizontal',
@@ -108,7 +169,7 @@ const serviceBaseConfigs: Record<string, ServiceBaseConfig> = {
     testimonialsVariant: 'featured',
     benefitIcons: ['Shield', 'Heart', 'Users'],
   },
-  'construction': {
+  construction: {
     gradient: 'linear-gradient(135deg, #D97706, #F59E0B)',
     accentColor: '#D97706',
     processVariant: 'timeline',
@@ -133,10 +194,34 @@ const defaultBaseConfig: ServiceBaseConfig = {
 function getBaseFormFields(locale: Locale) {
   const t = messages[locale].form;
   return [
-    { name: 'name', label: t.name.label, type: 'text' as const, required: true, placeholder: t.name.placeholder },
-    { name: 'email', label: t.email.label, type: 'email' as const, required: true, placeholder: t.email.placeholder },
-    { name: 'phone', label: t.phone.label, type: 'tel' as const, required: false, placeholder: t.phone.placeholder },
-    { name: 'message', label: t.message.label, type: 'textarea' as const, required: false, placeholder: t.message.placeholder },
+    {
+      name: 'name',
+      label: t.name.label,
+      type: 'text' as const,
+      required: true,
+      placeholder: t.name.placeholder,
+    },
+    {
+      name: 'email',
+      label: t.email.label,
+      type: 'email' as const,
+      required: true,
+      placeholder: t.email.placeholder,
+    },
+    {
+      name: 'phone',
+      label: t.phone.label,
+      type: 'tel' as const,
+      required: false,
+      placeholder: t.phone.placeholder,
+    },
+    {
+      name: 'message',
+      label: t.message.label,
+      type: 'textarea' as const,
+      required: false,
+      placeholder: t.message.placeholder,
+    },
   ];
 }
 
@@ -144,12 +229,19 @@ function getBaseFormFields(locale: Locale) {
 // Get Localized Config
 // =============================================================================
 
+/**
+ * Retrieves a localized landing page configuration for a specific service.
+ *
+ * @param serviceId - The unique identifier for the service (e.g., 'real-estate', 'solar')
+ * @param locale - The locale code ('en' or 'es')
+ * @returns The complete landing page configuration with translated content, or null if no translations exist
+ */
 export function getLocalizedLandingPageConfig(
   serviceId: string,
   locale: Locale
 ): LandingPageConfig | null {
   const t = messages[locale];
-  const funnelTranslations = (t.funnels as Record<string, any>)?.[serviceId];
+  const funnelTranslations = (t.funnels as Record<string, FunnelTranslations>)?.[serviceId];
 
   if (!funnelTranslations) {
     console.warn(`No translations found for service: ${serviceId}, locale: ${locale}`);
@@ -171,7 +263,8 @@ export function getLocalizedLandingPageConfig(
       accentColor: baseConfig.accentColor,
     },
     hero: {
-      badge: funnelTranslations.trust?.fast || (locale === 'es' ? 'Respuesta Rápida' : 'Fast Response'),
+      badge:
+        funnelTranslations.trust?.fast || (locale === 'es' ? 'Respuesta Rápida' : 'Fast Response'),
       headline: funnelTranslations.hero?.headline || '',
       subheadline: funnelTranslations.hero?.subheadline || '',
       description: funnelTranslations.meta?.description || '',
@@ -184,39 +277,77 @@ export function getLocalizedLandingPageConfig(
       ],
     },
     benefits: {
-      title: funnelTranslations.benefits?.title || (locale === 'es' ? '¿Por Qué Elegirnos?' : 'Why Choose Us?'),
-      subtitle: locale === 'es' ? 'Descubre los beneficios de trabajar con nosotros' : 'Discover the benefits of working with us',
-      items: (funnelTranslations.benefits?.items || []).map((item: any, index: number) => ({
-        icon: baseConfig.benefitIcons[index] || 'Star',
-        title: item.title || '',
-        description: item.description || '',
-      })),
+      title:
+        funnelTranslations.benefits?.title ||
+        (locale === 'es' ? '¿Por Qué Elegirnos?' : 'Why Choose Us?'),
+      subtitle:
+        locale === 'es'
+          ? 'Descubre los beneficios de trabajar con nosotros'
+          : 'Discover the benefits of working with us',
+      items: (funnelTranslations.benefits?.items || []).map(
+        (item: TranslatedBenefitItem, index: number) => ({
+          icon: baseConfig.benefitIcons[index] || 'Star',
+          title: item.title || '',
+          description: item.description || '',
+        })
+      ),
     },
     process: {
       title: locale === 'es' ? '¿Cómo Funciona?' : 'How It Works',
-      subtitle: locale === 'es' ? 'Simple y fácil en solo unos pasos' : 'Simple and easy in just a few steps',
+      subtitle:
+        locale === 'es'
+          ? 'Simple y fácil en solo unos pasos'
+          : 'Simple and easy in just a few steps',
       steps: [
-        { number: 1, title: locale === 'es' ? 'Contáctanos' : 'Contact Us', description: locale === 'es' ? 'Completa el formulario o llámanos' : 'Fill out the form or give us a call' },
-        { number: 2, title: locale === 'es' ? 'Consulta Gratis' : 'Free Consultation', description: locale === 'es' ? 'Discutimos tus necesidades' : 'We discuss your needs' },
-        { number: 3, title: locale === 'es' ? 'Obtén Resultados' : 'Get Results', description: locale === 'es' ? 'Comenzamos a trabajar para ti' : 'We start working for you' },
+        {
+          number: 1,
+          title: locale === 'es' ? 'Contáctanos' : 'Contact Us',
+          description:
+            locale === 'es'
+              ? 'Completa el formulario o llámanos'
+              : 'Fill out the form or give us a call',
+        },
+        {
+          number: 2,
+          title: locale === 'es' ? 'Consulta Gratis' : 'Free Consultation',
+          description: locale === 'es' ? 'Discutimos tus necesidades' : 'We discuss your needs',
+        },
+        {
+          number: 3,
+          title: locale === 'es' ? 'Obtén Resultados' : 'Get Results',
+          description:
+            locale === 'es' ? 'Comenzamos a trabajar para ti' : 'We start working for you',
+        },
       ],
       variant: baseConfig.processVariant,
     },
     testimonials: {
-      title: funnelTranslations.testimonials?.title || (locale === 'es' ? 'Lo Que Dicen Nuestros Clientes' : 'What Our Clients Say'),
-      subtitle: locale === 'es' ? 'Historias reales de clientes satisfechos' : 'Real stories from satisfied clients',
-      items: (funnelTranslations.testimonials?.items || []).map((item: any) => ({
-        quote: item.text || '',
-        author: item.name || '',
-        role: item.location || '',
-        rating: 5,
-      })),
+      title:
+        funnelTranslations.testimonials?.title ||
+        (locale === 'es' ? 'Lo Que Dicen Nuestros Clientes' : 'What Our Clients Say'),
+      subtitle:
+        locale === 'es'
+          ? 'Historias reales de clientes satisfechos'
+          : 'Real stories from satisfied clients',
+      items: (funnelTranslations.testimonials?.items || []).map(
+        (item: TranslatedTestimonialItem) => ({
+          quote: item.text || '',
+          author: item.name || '',
+          role: item.location || '',
+          rating: 5,
+        })
+      ),
       variant: baseConfig.testimonialsVariant,
     },
     faq: {
-      title: funnelTranslations.faq?.title || (locale === 'es' ? 'Preguntas Frecuentes' : 'Frequently Asked Questions'),
-      subtitle: locale === 'es' ? 'Encuentra respuestas a preguntas comunes' : 'Find answers to common questions',
-      items: (funnelTranslations.faq?.items || []).map((item: any) => ({
+      title:
+        funnelTranslations.faq?.title ||
+        (locale === 'es' ? 'Preguntas Frecuentes' : 'Frequently Asked Questions'),
+      subtitle:
+        locale === 'es'
+          ? 'Encuentra respuestas a preguntas comunes'
+          : 'Find answers to common questions',
+      items: (funnelTranslations.faq?.items || []).map((item: TranslatedFAQItem) => ({
         question: item.question || '',
         answer: item.answer || '',
       })),
@@ -238,7 +369,9 @@ export function getLocalizedLandingPageConfig(
 }
 
 /**
- * Get list of all available service IDs
+ * Returns a list of all available service IDs from the translation files.
+ *
+ * @returns Array of service ID strings that have funnel translations defined
  */
 export function getAvailableServiceIds(): string[] {
   // Get all funnel keys from English translations

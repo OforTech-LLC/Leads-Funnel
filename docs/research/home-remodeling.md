@@ -18,6 +18,7 @@
 ## Above-Fold Patterns
 
 ### Headline Formulas
+
 - **Transformation-focused**: "Transform Your Home. Transform Your Life."
 - **Dream-focused**: "Bring Your Dream Home to Life"
 - **Service-focused**: "Kitchen, Bathroom & Whole Home Remodeling"
@@ -26,6 +27,7 @@
 - **Question-based**: "Ready to Love Your Home Again?"
 
 ### Hero Section Elements
+
 1. **Stunning project imagery** (before/after or completed remodels)
 2. **Service type navigation** (kitchen, bathroom, addition, whole home)
 3. **Free consultation CTA** prominently displayed
@@ -34,6 +36,7 @@
 6. **Portfolio preview** or slider
 
 ### Visual Patterns
+
 - High-quality before/after sliders
 - Professional photography of completed projects
 - Design-forward aesthetic
@@ -45,6 +48,7 @@
 ## CTA Patterns
 
 ### Primary CTA Text
+
 - "Schedule Your Free Consultation"
 - "Get a Free Design Consultation"
 - "Start Your Project"
@@ -53,6 +57,7 @@
 - "Let's Talk About Your Project"
 
 ### CTA Design Patterns
+
 - **Consultation-focused** (remodeling is high-touch)
 - **Phone number as co-equal CTA**
 - **Project-specific CTAs** ("Design My Kitchen")
@@ -60,6 +65,7 @@
 - **Sticky header** with CTA button
 
 ### Secondary CTAs
+
 - "View Our Portfolio"
 - "See Kitchen Projects"
 - "Take the Quiz" (project budget/style quiz)
@@ -72,6 +78,7 @@
 ### Consultation Request Form (5-7 fields)
 
 **Essential Fields**
+
 - Name
 - Phone number
 - Email address
@@ -83,20 +90,24 @@
 ### Multi-Step Project Inquiry
 
 **Step 1: Project Type**
+
 - What are you looking to remodel? (checkboxes)
 - Kitchen | Bathroom | Basement | Addition | Whole Home
 
 **Step 2: Project Details**
+
 - Approximate timeline (ASAP, 3-6 months, 6-12 months, just planning)
 - Budget range (dropdown)
 - Brief description of vision
 
 **Step 3: Contact Info**
+
 - Name, email, phone
 - Best time to call
 - Preferred contact method
 
 ### Form Best Practices
+
 - **Project type selection** critical for qualifying leads
 - **Budget range optional** but helpful for pre-qualification
 - **Timeline question** indicates lead temperature
@@ -108,6 +119,7 @@
 ## Trust Signals
 
 ### Industry Credentials
+
 - NARI (National Association of the Remodeling Industry)
 - NKBA (National Kitchen & Bath Association)
 - EPA Lead-Safe Certified
@@ -115,6 +127,7 @@
 - State contractor license displayed
 
 ### Awards & Recognition
+
 - Houzz Design Awards
 - Best of Houzz badges
 - Remodeling Magazine Big50
@@ -122,6 +135,7 @@
 - Better Business Bureau rating
 
 ### Social Proof Elements
+
 - "X+ Projects Completed"
 - "XX Years of Experience"
 - Customer reviews (Google, Houzz, Yelp)
@@ -130,6 +144,7 @@
 - Manufacturer partnerships (Sub-Zero, Wolf, etc.)
 
 ### Design Expertise
+
 - Certified Kitchen Designers (CKD)
 - Certified Bath Designers (CBD)
 - ASID membership
@@ -206,17 +221,18 @@
 
 ### Common Objections & Responses
 
-| Objection | Landing Page Response |
-|-----------|----------------------|
-| "Remodeling is too expensive" | Budget range options, financing, phased approaches, ROI messaging |
-| "I've heard horror stories" | Testimonials, process transparency, contract clarity, warranties |
-| "It will take forever" | Timeline transparency, project management approach, past project timelines |
-| "I don't know what I want" | Design consultation value, inspiration galleries, design expertise |
-| "Will it disrupt our lives?" | Living-in-place strategies, timeline communication, dust containment |
-| "How do I find a good contractor?" | Awards, certifications, reviews, established reputation |
-| "What if we go over budget?" | Fixed-price options, change order policies, detailed planning |
+| Objection                          | Landing Page Response                                                      |
+| ---------------------------------- | -------------------------------------------------------------------------- |
+| "Remodeling is too expensive"      | Budget range options, financing, phased approaches, ROI messaging          |
+| "I've heard horror stories"        | Testimonials, process transparency, contract clarity, warranties           |
+| "It will take forever"             | Timeline transparency, project management approach, past project timelines |
+| "I don't know what I want"         | Design consultation value, inspiration galleries, design expertise         |
+| "Will it disrupt our lives?"       | Living-in-place strategies, timeline communication, dust containment       |
+| "How do I find a good contractor?" | Awards, certifications, reviews, established reputation                    |
+| "What if we go over budget?"       | Fixed-price options, change order policies, detailed planning              |
 
 ### FAQ Questions to Include
+
 1. How long does a kitchen remodel take?
 2. How much should I budget for my project?
 3. Do you handle permits?
@@ -296,12 +312,14 @@
 ```
 
 ### Key Metrics to Target
+
 - **Conversion rate**: 5-10% for consultation requests
 - **Consultation-to-project rate**: Track lead quality
 - **Average project value**: Monitor for high-value leads
 - **Time on page**: 4-6 minutes (portfolio browsing)
 
 ### A/B Testing Priorities
+
 1. Before/after vs. after-only imagery
 2. Service category prominence
 3. Form fields (with/without budget question)
@@ -313,6 +331,7 @@
 ## Industry-Specific Insights
 
 ### What Makes Remodeling Different
+
 - **High-value, high-consideration** - Long decision cycle
 - **Design-driven** - Visual portfolio critical
 - **Emotional purchase** - Dream home, lifestyle upgrade
@@ -320,6 +339,7 @@
 - **Trust paramount** - Inviting contractors into home
 
 ### Content That Converts
+
 - Detailed case studies with budgets
 - Design inspiration galleries
 - Educational content (guides, checklists)
@@ -327,18 +347,21 @@
 - Process transparency
 
 ### Houzz Integration
+
 - Embed Houzz reviews
 - Display Houzz badges prominently
 - Link to Houzz profile
 - 72% of users interact with video testimonials
 
 ### Lead Magnet Ideas
+
 - Kitchen Renovation Budget Calculator
 - Stress-Free Remodeling Checklist
 - Design Inspiration Lookbook
 - "What to Ask Before Hiring a Contractor" Guide
 
 ### SEO Focus Areas
+
 - "[City] kitchen remodeling"
 - "[City] bathroom contractors"
 - "Home addition contractors near me"

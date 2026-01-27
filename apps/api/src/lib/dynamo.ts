@@ -48,10 +48,7 @@ function getDocClient(region: string): DynamoDBDocumentClient {
  * Check and increment rate limit for an IP hash
  * Uses atomic counter increment with TTL
  */
-export async function checkRateLimit(
-  config: EnvConfig,
-  ipHash: string
-): Promise<RateLimitResult> {
+export async function checkRateLimit(config: EnvConfig, ipHash: string): Promise<RateLimitResult> {
   const client = getDocClient(config.awsRegion);
   const windowBucket = getWindowBucket(config.rateLimitWindowMin);
   const ttl = getRateLimitTtl(config.rateLimitWindowMin);
@@ -146,6 +143,11 @@ export async function checkIdempotency(
         new GetCommand({
           TableName: config.ddbTableName,
           Key: { pk, sk },
+          // Only fetch needed attributes
+          ProjectionExpression: 'leadId, #status',
+          ExpressionAttributeNames: {
+            '#status': 'status',
+          },
         })
       );
 

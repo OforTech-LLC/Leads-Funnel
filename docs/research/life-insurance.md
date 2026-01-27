@@ -18,6 +18,7 @@
 ## Above-Fold Patterns
 
 ### Headline Formulas
+
 - **Speed-focused**: "Get Life Insurance in 10 Minutes"
 - **Simplicity-focused**: "Life Insurance Made Simple"
 - **Price-focused**: "Term Life Insurance Starting at $X/month"
@@ -25,6 +26,7 @@
 - **No-exam hook**: "No Medical Exam Required"
 
 ### Hero Section Elements
+
 1. **Clean, modern design** with ample white space
 2. **Trust indicators** immediately visible (backed by major insurers, ratings)
 3. **Quick quote form** or "Get My Quote" button above fold
@@ -33,6 +35,7 @@
 6. **No-obligation messaging** ("Free quote, no commitment")
 
 ### Visual Patterns
+
 - Lifestyle imagery (families, protection themes)
 - Minimal, tech-forward aesthetic
 - Brand colors that convey trust (blues, greens)
@@ -44,6 +47,7 @@
 ## CTA Patterns
 
 ### Primary CTA Text
+
 - "Get My Free Quote"
 - "Check My Price"
 - "See My Rate"
@@ -52,6 +56,7 @@
 - "Calculate My Rate"
 
 ### CTA Design Patterns
+
 - **Contrasting button color** from page background
 - **Action-oriented language** with first-person possessive ("My")
 - **Benefit reinforcement** near button ("No credit check required")
@@ -59,6 +64,7 @@
 - **Sticky/floating CTA** on mobile for constant visibility
 
 ### Secondary CTAs
+
 - "Learn More About Coverage"
 - "Compare Plans"
 - "Speak With an Advisor"
@@ -71,22 +77,26 @@
 ### Multi-Step Form Structure (Breadcrumb Technique)
 
 **Step 1 - Basic Info (3-4 fields)**
+
 - Date of birth
 - Gender
 - State/ZIP code
 - Tobacco use (Yes/No)
 
 **Step 2 - Coverage Details (2-3 fields)**
+
 - Coverage amount desired ($100K - $3M slider)
 - Term length (10, 15, 20, 30 years)
 - Health category (general health rating)
 
 **Step 3 - Contact Info (3 fields)**
+
 - Full name
 - Email address
 - Phone number
 
 ### Form Best Practices
+
 - **Progress indicator** showing completion percentage
 - **Instant quote preview** updates as fields are completed
 - **Field validation** with helpful error messages
@@ -95,6 +105,7 @@
 - **2-minute time commitment** messaging (reduces abandonment)
 
 ### Pre-Qualification Questions (Optional)
+
 - Height/weight
 - Prescription medications
 - Family health history
@@ -105,18 +116,21 @@
 ## Trust Signals
 
 ### Insurance-Specific Trust Badges
+
 - A.M. Best ratings (A+ rated carriers)
 - State insurance department licensing
 - BBB accreditation
 - "Backed by [Major Insurer]" messaging
 
 ### Security Indicators
+
 - SSL certificate badges
 - Data encryption messaging
 - Privacy policy links
 - HIPAA compliance (when applicable)
 
 ### Social Proof Elements
+
 - Number of policies issued ("500,000+ families protected")
 - Customer review ratings (4.8/5 stars)
 - Media mentions (Forbes, WSJ, etc.)
@@ -124,6 +138,7 @@
 - Trustpilot/Google review widgets
 
 ### Partner/Backer Logos
+
 - Reinsurance company logos
 - "Underwritten by [Carrier Name]"
 - Technology partner badges
@@ -179,17 +194,18 @@
 
 ### Common Objections & Responses
 
-| Objection | Landing Page Response |
-|-----------|----------------------|
-| "It's too expensive" | Show low monthly rates prominently; price comparisons; "Less than your daily coffee" |
-| "I'm healthy, I don't need it" | Emphasize family protection; "Lock in low rates while you're young and healthy" |
-| "The process is too complicated" | Highlight simplicity ("10-minute application"); no medical exam messaging |
-| "I don't trust online insurance" | Display carrier backing; financial strength ratings; security badges |
-| "I need to think about it" | Create urgency ("Rates increase with age"); offer saved quote functionality |
-| "I'm not sure how much I need" | Include coverage calculator; educational content links |
-| "What if I change my mind?" | Highlight free-look period (usually 30 days); cancellation policy |
+| Objection                        | Landing Page Response                                                                |
+| -------------------------------- | ------------------------------------------------------------------------------------ |
+| "It's too expensive"             | Show low monthly rates prominently; price comparisons; "Less than your daily coffee" |
+| "I'm healthy, I don't need it"   | Emphasize family protection; "Lock in low rates while you're young and healthy"      |
+| "The process is too complicated" | Highlight simplicity ("10-minute application"); no medical exam messaging            |
+| "I don't trust online insurance" | Display carrier backing; financial strength ratings; security badges                 |
+| "I need to think about it"       | Create urgency ("Rates increase with age"); offer saved quote functionality          |
+| "I'm not sure how much I need"   | Include coverage calculator; educational content links                               |
+| "What if I change my mind?"      | Highlight free-look period (usually 30 days); cancellation policy                    |
 
 ### FAQ Questions to Include
+
 1. How much life insurance do I need?
 2. What's the difference between term and whole life?
 3. Do I need a medical exam?
@@ -251,12 +267,14 @@
 ```
 
 ### Key Metrics to Target
+
 - **Conversion rate**: 8-15% for lead generation
 - **Form completion rate**: 60-70%
 - **Time on page**: 2-4 minutes
 - **Bounce rate**: Under 50%
 
 ### A/B Testing Priorities
+
 1. Headline variations (speed vs. price vs. simplicity)
 2. Form length (single page vs. multi-step)
 3. CTA button text and color
@@ -268,18 +286,21 @@
 ## Industry-Specific Insights
 
 ### What Makes Life Insurance Different
+
 - **High consideration purchase** - Requires trust-building throughout
 - **Price sensitivity** - Show monthly (not annual) rates
 - **Comparison shopping** - Visitors often check multiple sites
 - **Spouse involvement** - Decision often involves partner
 
 ### Mobile Optimization Critical
+
 - 68%+ of traffic is mobile
 - Click-to-call functionality essential
 - Thumb-friendly form inputs
 - Fast load times (under 3 seconds)
 
 ### Compliance Considerations
+
 - State licensing disclosures
 - Carrier identification requirements
 - Rate accuracy disclaimers

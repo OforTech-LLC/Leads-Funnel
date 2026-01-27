@@ -316,13 +316,134 @@ module "monitoring" {
 
   alert_email = var.alert_email
 
+  # Resource references
   lambda_function_name = module.lambda.lead_handler_function_name
   api_gateway_id       = module.api_gateway.api_id
-  dynamodb_table_name  = module.dynamodb.funnel_table_names["real-estate"] # Use first table for monitoring
+  dynamodb_table_name  = module.dynamodb.funnel_table_names["real-estate"]
   sqs_queue_name       = var.enable_sqs ? module.eventbridge.queue_name : ""
   sqs_dlq_name         = var.enable_sqs ? module.eventbridge.dlq_name : ""
 
-  create_dashboard = false # No dashboard in dev
+  # Alarm thresholds (relaxed for dev)
+  lambda_error_rate_threshold = 5  # 5% error rate threshold
+  lambda_duration_threshold   = 15 # 15 seconds
+  api_error_rate_threshold    = 5  # 5% error rate threshold
+
+  # Dashboard and advanced features
+  create_dashboard        = false # No dashboard in dev
+  create_composite_alarms = false
+
+  tags = local.common_tags
+}
+
+# =============================================================================
+# Synthetic Monitoring (Optional - disabled by default in dev)
+# =============================================================================
+module "synthetics" {
+  count  = var.enable_synthetics ? 1 : 0
+  source = "../../modules/synthetics"
+
+  project_name = var.project_name
+  environment  = var.environment
+
+  # API Health Check Canary
+  enable_api_canary   = true
+  api_health_endpoint = "https://api-dev.${var.root_domain}/health"
+  api_canary_schedule = "rate(10 minutes)" # Less frequent in dev
+
+  # Website Availability Canary
+  enable_website_canary   = true
+  website_url             = "https://dev.${var.root_domain}"
+  website_canary_schedule = "rate(10 minutes)" # Less frequent in dev
+
+  # Alerting
+  sns_topic_arn = var.enable_alarms ? module.monitoring[0].sns_topic_arn : ""
+
+  # Canary configuration
+  enable_xray_tracing     = var.enable_xray
+  artifact_retention_days = 7
+
+  tags = local.common_tags
+}
+
+# =============================================================================
+# CloudTrail (Optional - for AWS API audit logging)
+# =============================================================================
+# Can be enabled independently of admin console for security auditing
+# =============================================================================
+module "cloudtrail" {
+  count  = var.enable_cloudtrail ? 1 : 0
+  source = "../../modules/cloudtrail"
+
+  project_name = var.project_name
+  environment  = var.environment
+
+  is_multi_region_trail     = false # Single region for dev to save costs
+  enable_cloudwatch_logs    = true
+  enable_access_logging     = true
+  enable_s3_data_events     = false # Disabled in dev to save costs
+  enable_lambda_data_events = false
+
+  log_retention_days            = 90 # Shorter retention in dev
+  cloudwatch_log_retention_days = 14
+
+  tags = local.common_tags
+}
+
+# =============================================================================
+# Admin Console (Optional - DISABLED by default)
+# =============================================================================
+# IMPORTANT: Admin console is feature-flagged and OFF by default.
+# Must be explicitly enabled via enable_admin_console = true
+# =============================================================================
+module "admin" {
+  count  = var.enable_admin_console ? 1 : 0
+  source = "../../modules/admin"
+
+  project_name = var.project_name
+  environment  = var.environment
+  aws_region   = var.aws_region
+
+  # Feature flags
+  enable_admin_console      = var.enable_admin_console
+  enable_admin_ip_allowlist = var.enable_admin_ip_allowlist
+  enable_cloudtrail         = false # Use standalone cloudtrail module instead
+
+  # Admin access control
+  admin_allowed_emails = var.admin_allowed_emails
+  admin_allowed_cidrs  = var.admin_allowed_cidrs
+
+  # Cognito configuration
+  cognito_domain_prefix      = var.admin_cognito_domain_prefix
+  mfa_configuration          = "ON" # Require MFA for all admin users
+  enable_localhost_callbacks = true # Allow localhost in dev
+
+  admin_console_callback_urls = [
+    "https://dev.${var.root_domain}/admin/callback",
+  ]
+  admin_console_logout_urls = [
+    "https://dev.${var.root_domain}/admin",
+  ]
+
+  # Exports configuration
+  exports_bucket_name      = var.admin_exports_bucket_name
+  exports_retention_days   = 7 # Short retention in dev
+  enable_bucket_versioning = false
+  enable_access_logging    = true
+
+  # Lambda configuration
+  lambda_zip_path    = var.admin_lambda_zip_path
+  lambda_zip_hash    = var.admin_lambda_zip_hash != "" ? var.admin_lambda_zip_hash : filebase64sha256(var.admin_lambda_zip_path)
+  log_retention_days = 7
+  xray_enabled       = var.enable_xray
+
+  # API Gateway integration
+  api_gateway_id            = module.api_gateway.api_id
+  api_gateway_execution_arn = module.api_gateway.api_execution_arn
+
+  # Data protection (relaxed for dev)
+  audit_log_retention_days   = 30
+  enable_audit_pitr          = false
+  enable_deletion_protection = false
 
   tags = local.common_tags
 }

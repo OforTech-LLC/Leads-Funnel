@@ -13,6 +13,14 @@ import { checkRateLimit, checkIdempotency, storeLead } from './lib/dynamo.js';
 import { publishLeadCreatedEvent } from './lib/events.js';
 import { getElapsedMs } from './lib/time.js';
 import * as http from './lib/http.js';
+import { v4 as uuidv4 } from 'uuid';
+
+// =============================================================================
+// Security Constants
+// =============================================================================
+
+// Maximum payload size (10KB) - prevents DoS via large payloads
+const MAX_PAYLOAD_SIZE = 10 * 1024; // 10KB in bytes
 
 // =============================================================================
 // Environment Configuration
@@ -35,13 +43,76 @@ function loadConfig(): EnvConfig {
 // Structured Logging
 // =============================================================================
 
-function log(entry: Omit<LogEntry, 'timestamp'>): void {
+interface LogParams {
+  requestId: string;
+  level: LogEntry['level'];
+  message: string;
+  leadId?: string;
+  status?: string;
+  suspicious?: boolean;
+  reasons?: string[];
+  latencyMs?: number;
+  emailHash?: string;
+  ipHash?: string;
+  errorCode?: string;
+}
+
+function log(entry: LogParams): void {
   const fullEntry: LogEntry = {
-    ...entry,
     timestamp: new Date().toISOString(),
+    requestId: entry.requestId,
+    level: entry.level,
+    message: entry.message,
+    leadId: entry.leadId,
+    status: entry.status,
+    suspicious: entry.suspicious,
+    reasons: entry.reasons,
+    latencyMs: entry.latencyMs,
+    emailHash: entry.emailHash,
+    ipHash: entry.ipHash,
+    errorCode: entry.errorCode,
   };
   // Structured JSON logging - never log PII (email, phone, IP)
   console.log(JSON.stringify(fullEntry));
+}
+
+// =============================================================================
+// Payload Size Validation
+// =============================================================================
+
+function checkPayloadSize(body: string | undefined): { valid: boolean; size: number } {
+  if (!body) {
+    return { valid: true, size: 0 };
+  }
+
+  // Calculate byte size (handles UTF-8 characters correctly)
+  const size = Buffer.byteLength(body, 'utf8');
+
+  return {
+    valid: size <= MAX_PAYLOAD_SIZE,
+    size,
+  };
+}
+
+// =============================================================================
+// Response Helpers with Request ID
+// =============================================================================
+
+function addRequestIdHeader(
+  response: APIGatewayProxyResultV2,
+  requestId: string
+): APIGatewayProxyResultV2 {
+  if (typeof response === 'string') {
+    return response;
+  }
+  const headers = response.headers || {};
+  return {
+    ...response,
+    headers: {
+      ...headers,
+      'X-Request-Id': requestId,
+    },
+  };
 }
 
 // =============================================================================
@@ -53,11 +124,12 @@ export async function handler(
   context: Context
 ): Promise<APIGatewayProxyResultV2> {
   const startTime = Date.now();
-  const requestId = context.awsRequestId || 'local';
+  // Generate correlation/request ID
+  const requestId = context.awsRequestId || uuidv4();
 
   // Handle OPTIONS preflight
   if (event.requestContext.http.method === 'OPTIONS') {
-    return http.noContent();
+    return addRequestIdHeader(http.noContent(), requestId);
   }
 
   // Only allow POST
@@ -68,7 +140,19 @@ export async function handler(
       message: 'Method not allowed',
       errorCode: 'METHOD_NOT_ALLOWED',
     });
-    return http.methodNotAllowed();
+    return addRequestIdHeader(http.methodNotAllowed(), requestId);
+  }
+
+  // Check payload size before processing (DoS protection)
+  const payloadCheck = checkPayloadSize(event.body);
+  if (!payloadCheck.valid) {
+    log({
+      requestId,
+      level: 'warn',
+      message: 'Payload too large',
+      errorCode: 'PAYLOAD_TOO_LARGE',
+    });
+    return addRequestIdHeader(http.payloadTooLarge(MAX_PAYLOAD_SIZE), requestId);
   }
 
   const config = loadConfig();
@@ -81,7 +165,7 @@ export async function handler(
       message: 'DDB_TABLE_NAME not configured',
       errorCode: 'CONFIG_ERROR',
     });
-    return http.internalError();
+    return addRequestIdHeader(http.internalError(), requestId);
   }
 
   try {
@@ -94,7 +178,7 @@ export async function handler(
         message: 'Invalid JSON body',
         errorCode: 'INVALID_JSON',
       });
-      return http.invalidJson(parseError);
+      return addRequestIdHeader(http.invalidJson(parseError), requestId);
     }
 
     // Validate payload
@@ -106,7 +190,7 @@ export async function handler(
         message: 'Validation failed',
         errorCode: 'VALIDATION_ERROR',
       });
-      return http.validationError(validation.errors);
+      return addRequestIdHeader(http.validationError(validation.errors), requestId);
     }
 
     const payload = data as LeadRequestPayload;
@@ -139,7 +223,7 @@ export async function handler(
           errorCode: 'RATE_LIMITED',
           latencyMs: getElapsedMs(startTime),
         });
-        return http.rateLimited();
+        return addRequestIdHeader(http.rateLimited(), requestId);
       }
     } catch (error) {
       // Fail-closed: reject on rate limit errors for security
@@ -149,21 +233,15 @@ export async function handler(
         message: 'Rate limit check failed',
         errorCode: 'RATE_LIMIT_ERROR',
       });
-      return http.internalError();
+      return addRequestIdHeader(http.internalError(), requestId);
     }
 
     // Generate lead ID for idempotency
-    const { v4: uuidv4 } = await import('uuid');
     const leadId = uuidv4();
     const status = security.suspicious ? 'quarantined' : 'accepted';
 
     // Idempotency check
-    const idempotency = await checkIdempotency(
-      config,
-      security.idempotencyKey,
-      leadId,
-      status
-    );
+    const idempotency = await checkIdempotency(config, security.idempotencyKey, leadId, status);
 
     if (idempotency.isDuplicate) {
       // Return existing lead info for duplicate request
@@ -177,9 +255,9 @@ export async function handler(
         ipHash: security.ipHash,
         latencyMs: getElapsedMs(startTime),
       });
-      return http.ok(
-        idempotency.existingLeadId!,
-        idempotency.existingStatus!
+      return addRequestIdHeader(
+        http.ok(idempotency.existingLeadId!, idempotency.existingStatus!),
+        requestId
       );
     }
 
@@ -214,7 +292,7 @@ export async function handler(
       latencyMs: getElapsedMs(startTime),
     });
 
-    return http.created(lead.leadId, lead.status);
+    return addRequestIdHeader(http.created(lead.leadId, lead.status), requestId);
   } catch (error) {
     // Catch-all error handler - never expose stack traces
     log({
@@ -224,6 +302,6 @@ export async function handler(
       errorCode: 'INTERNAL_ERROR',
       latencyMs: getElapsedMs(startTime),
     });
-    return http.internalError();
+    return addRequestIdHeader(http.internalError(), requestId);
   }
 }

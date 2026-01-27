@@ -3,6 +3,7 @@
 ## Research Sources & Real Landing Page URLs
 
 ### Major Brand Examples
+
 1. **Chemical Guys / Detail Garage** - https://www.chemicalguys.com
 2. **Meguiar's** - https://www.meguiars.com
 3. **Ceramic Pro** - https://www.ceramicpro.com
@@ -10,6 +11,7 @@
 5. **3M Automotive** - https://www.3m.com/automotive
 
 ### Detailing Shop Examples
+
 6. **California Detail Shop** - Professional showcase example
 7. **Classique Auto Spa** - Luxury positioning example
 8. **Pro Detailers VA** - https://www.prodetailersva.com
@@ -17,6 +19,7 @@
 10. **Attn2Detail Chicago** - https://www.attn2detail.info
 
 ### Landing Page Resources
+
 - https://www.zarla.com/guides/auto-detailing-website-examples
 - https://shoppositionertutorials.com/auto-detail-landing-page-templates/
 - https://www.detailersroadmap.com/landing-pages
@@ -58,6 +61,7 @@
    - Service type indicators (icons)
 
 ### Visual Design Patterns
+
 - Dark/black backgrounds (common for premium feel)
 - High-contrast imagery showing gloss/shine
 - Minimalist, clean aesthetic
@@ -71,15 +75,16 @@
 
 ### Primary CTAs by Service Type
 
-| Service Type | CTA Examples |
-|--------------|--------------|
-| General Detailing | "Book Your Detail" |
-| Ceramic Coating | "Get Coating Quote" |
+| Service Type           | CTA Examples              |
+| ---------------------- | ------------------------- |
+| General Detailing      | "Book Your Detail"        |
+| Ceramic Coating        | "Get Coating Quote"       |
 | PPF (Paint Protection) | "Protect Your Investment" |
-| Interior Detailing | "Refresh Your Interior" |
-| Mobile Detailing | "Schedule Mobile Service" |
+| Interior Detailing     | "Refresh Your Interior"   |
+| Mobile Detailing       | "Schedule Mobile Service" |
 
 ### CTA Placement Strategy
+
 1. **Hero section** - Primary booking CTA
 2. **Service cards** - Individual service CTAs
 3. **Pricing tables** - "Select Package" buttons
@@ -87,6 +92,7 @@
 5. **Sticky mobile bar** - Always-visible booking
 
 ### High-Converting CTA Text
+
 - "Get Your Free Quote"
 - "Book My Detail"
 - "Schedule Now"
@@ -99,6 +105,7 @@
 ## Form Field Patterns
 
 ### Quick Quote Form (Highest Conversion)
+
 ```
 - Name *
 - Phone *
@@ -107,6 +114,7 @@
 ```
 
 ### Detailed Booking Form
+
 ```
 - First Name *
 - Last Name
@@ -125,6 +133,7 @@
 ### Service-Specific Forms
 
 **Ceramic Coating Quote**
+
 ```
 - Contact Info
 - Vehicle Info (Year/Make/Model)
@@ -135,6 +144,7 @@
 ```
 
 **PPF Quote**
+
 ```
 - Contact Info
 - Vehicle Info
@@ -144,6 +154,7 @@
 ```
 
 ### Form Best Practices
+
 - Mobile-friendly dropdowns
 - Vehicle year/make/model auto-complete
 - Service package visual selector
@@ -156,6 +167,7 @@
 ## Trust Signals
 
 ### Certification & Training Badges
+
 - Ceramic Pro Certified Installer
 - XPEL Certified Installer
 - IDA (International Detailing Association) Member
@@ -164,6 +176,7 @@
 - SunTek Certified
 
 ### Visual Proof Elements
+
 1. **Before/After Gallery**
    - Interactive sliders (40% conversion increase reported)
    - Categorized by service type
@@ -183,6 +196,7 @@
    - Video testimonials
 
 ### Social Proof Numbers
+
 - "500+ Vehicles Detailed"
 - "10+ Years Experience"
 - "4.9 Star Rating"
@@ -265,31 +279,34 @@
 
 ### Common Objections & Responses
 
-| Objection | Landing Page Solution |
-|-----------|----------------------|
-| "Too expensive" | Value comparison (DIY vs Pro), package options, financing |
-| "Is it worth it?" | Before/after proof, longevity data, cost-per-year breakdown |
-| "Will it damage my paint?" | Process explanation, product safety info, insurance mention |
-| "How long does it last?" | Warranty terms, maintenance program, durability data |
-| "I can do it myself" | Professional vs DIY comparison, time savings, equipment cost |
-| "Never heard of ceramic coating" | Educational content, benefits section, FAQ |
-| "Can I trust you with my car?" | Reviews, certifications, insurance info, facility tour |
+| Objection                        | Landing Page Solution                                        |
+| -------------------------------- | ------------------------------------------------------------ |
+| "Too expensive"                  | Value comparison (DIY vs Pro), package options, financing    |
+| "Is it worth it?"                | Before/after proof, longevity data, cost-per-year breakdown  |
+| "Will it damage my paint?"       | Process explanation, product safety info, insurance mention  |
+| "How long does it last?"         | Warranty terms, maintenance program, durability data         |
+| "I can do it myself"             | Professional vs DIY comparison, time savings, equipment cost |
+| "Never heard of ceramic coating" | Educational content, benefits section, FAQ                   |
+| "Can I trust you with my car?"   | Reviews, certifications, insurance info, facility tour       |
 
 ### Objection-Handling Content Blocks
 
 **Value Justification**
+
 - "Cost per mile/year" calculator
 - Comparison to dealership pricing
 - Resale value protection stats
 - Time savings calculation
 
 **Quality Assurance**
+
 - Product brand partnerships
 - Training certifications
 - Warranty documentation
 - Insurance coverage mention
 
 **Education Section**
+
 - "What is Ceramic Coating?" explainer
 - "PPF vs Ceramic Coating" comparison
 - Maintenance guide preview
@@ -359,6 +376,7 @@
 ```
 
 ### Key Conversion Metrics
+
 - Landing page conversion rate: 5-10%
 - Before/after slider engagement: 60%+
 - Pricing page to booking: 15-20%
@@ -366,6 +384,7 @@
 - Average order value increase with upsells: 30%
 
 ### A/B Testing Priorities
+
 1. Hero image/video (static vs video)
 2. Pricing display (show vs hide until quote)
 3. Before/after slider placement
@@ -378,6 +397,7 @@
 ## Mobile-Specific Patterns
 
 ### Critical Mobile Elements
+
 - Sticky "Book Now" button at bottom
 - Click-to-call always visible
 - Swipeable before/after galleries
@@ -387,6 +407,7 @@
 - SMS booking option
 
 ### Mobile Navigation
+
 - Hamburger menu with quick links
 - Floating action button (FAB) for booking
 - Service selector carousel
@@ -397,6 +418,7 @@
 ## Service-Specific Landing Pages
 
 ### Recommended Dedicated Pages
+
 1. **Ceramic Coating** - Education-heavy, premium positioning
 2. **Paint Protection Film (PPF)** - Coverage options, pricing calculator
 3. **Interior Detailing** - Before/after interiors, odor removal
@@ -405,6 +427,7 @@
 6. **Maintenance Packages** - Subscription model, member benefits
 
 ### Multi-Location Strategy
+
 - Location-specific landing pages
 - Local reviews per location
 - Area-specific service offerings

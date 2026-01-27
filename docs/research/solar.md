@@ -2,22 +2,30 @@
 
 ## Reference Landing Page Examples
 
-1. **Leadpages Solar Panels Template** - https://www.leadpages.com/templates/landing-page-template/solar-panels-quote
-2. **TemplateMonster Solar Energy Templates** - https://www.templatemonster.com/category/solar-energy-landing-page-templates/
-3. **220 Marketing Solar Landing Pages** - https://www.220marketing.com/designs/landing-page-designs/solar-energy-landing-pages/
-4. **Instapage Solar Companies Template** - https://instapage.com/en/template/landing-page-template-for-solar-companies
-5. **Greentech Renewables Guide** - https://www.greentechrenewables.com/article/solar-leads-mastering-landing-page
+1. **Leadpages Solar Panels Template** -
+   https://www.leadpages.com/templates/landing-page-template/solar-panels-quote
+2. **TemplateMonster Solar Energy Templates** -
+   https://www.templatemonster.com/category/solar-energy-landing-page-templates/
+3. **220 Marketing Solar Landing Pages** -
+   https://www.220marketing.com/designs/landing-page-designs/solar-energy-landing-pages/
+4. **Instapage Solar Companies Template** -
+   https://instapage.com/en/template/landing-page-template-for-solar-companies
+5. **Greentech Renewables Guide** -
+   https://www.greentechrenewables.com/article/solar-leads-mastering-landing-page
 6. **Apexure Solar Case Study** - https://www.apexure.com/case-study/solar-landing-page-case-study/
 7. **Indylogix Solar Landing Page Guide** - https://indylogix.com/effective-solar-landing-page/
-8. **Solar Exclusive Guide** - https://solarexclusive.com/how-to-create-landing-pages-that-capture-solar-leads/
+8. **Solar Exclusive Guide** -
+   https://solarexclusive.com/how-to-create-landing-pages-that-capture-solar-leads/
 9. **SolSmart 2025 Template** - https://solsmart.org/resource/2025-ce-1-solar-landing-page-template
-10. **Figma Solar UI Design** - https://www.figma.com/community/file/1359170156714531259/landing-page-ui-solar-energy-website-design
+10. **Figma Solar UI Design** -
+    https://www.figma.com/community/file/1359170156714531259/landing-page-ui-solar-energy-website-design
 
 ---
 
 ## Above-Fold Patterns
 
 ### Headlines
+
 - **Savings-Focused**: "Switch to Solar and Save Big!"
 - **Energy Independence**: "Harness the Power of the Sun for Your Home"
 - **Local Authority**: "#1 Solar Experts in [State/City]"
@@ -25,6 +33,7 @@
 - **Eco-Conscious**: "Go Green and Save Green with Solar"
 
 ### Subheadlines
+
 - "See how much you can save with a free solar quote"
 - "Join 10,000+ homeowners who've made the switch"
 - "Zero down, immediate savings"
@@ -32,6 +41,7 @@
 - "Custom solar systems designed for your home"
 
 ### Hero Images
+
 - Beautiful home with solar panels on roof
 - Before/after showing energy savings
 - Family enjoying their solar-powered home
@@ -39,6 +49,7 @@
 - Solar panel close-up with sun reflection
 
 ### Value Props (Above Fold)
+
 - Free quote/consultation
 - Federal tax credit (30%)
 - Zero down financing options
@@ -51,6 +62,7 @@
 ## CTA Patterns
 
 ### Primary CTA Text
+
 - "Get Your Free Solar Quote"
 - "See How Much You Can Save"
 - "Calculate My Savings"
@@ -58,12 +70,14 @@
 - "Request Your Free Estimate"
 
 ### Secondary CTA Options
+
 - "Call to Speak with an Expert"
 - "Use Our Savings Calculator"
 - "View Our Projects"
 - "Learn About Financing"
 
 ### CTA Placement
+
 1. **Hero section** - Primary CTA prominent above fold
 2. **After savings calculator** - When value is demonstrated
 3. **After testimonials** - When trust is built
@@ -72,6 +86,7 @@
 6. **Bottom of page** - Final conversion opportunity
 
 ### Urgency Triggers
+
 - "Federal Tax Credit Ends 2032 - Act Now"
 - "Electricity Rates Rising - Lock in Savings"
 - "Limited Installation Slots This Month"
@@ -79,6 +94,7 @@
 - "Get Ahead of Summer Energy Costs"
 
 ### CTA Button Design
+
 - Green (eco-friendly) or bright orange/yellow (sun-themed)
 - Large, prominent buttons
 - Action-oriented text
@@ -89,11 +105,13 @@
 ## Form Field Patterns
 
 ### Minimal Form (Highest Conversion)
+
 1. Name
 2. Phone Number
 3. Zip Code
 
 ### Standard Form
+
 1. Name
 2. Phone Number
 3. Email
@@ -101,20 +119,25 @@
 5. Average Monthly Electric Bill (dropdown range)
 
 ### Progressive Form (Higher Quality Leads)
+
 **Step 1:**
+
 - Zip Code
 - Homeowner? (Yes/No)
 
 **Step 2:**
+
 - Average Monthly Electric Bill
 - Roof Type (dropdown)
 
 **Step 3:**
+
 - Name
 - Phone
 - Email
 
 ### Detailed Quote Form
+
 1. Name
 2. Phone
 3. Email
@@ -126,6 +149,7 @@
 9. Best Time to Call
 
 ### Form Best Practices
+
 - Shortening forms from 11 to 4 fields = 120% conversion increase
 - Progressive/multi-step forms work well for solar
 - "Homeowner?" question qualifies leads early
@@ -137,6 +161,7 @@
 ## Trust Signals
 
 ### Certifications & Licenses
+
 - NABCEP Certified Installer
 - State Electrical/Solar Contractor License
 - Licensed, Bonded, and Insured
@@ -145,12 +170,14 @@
 - EnergyStar Partner
 
 ### Financial Credentials
+
 - Financing partner logos
 - "Zero Down" badges
 - PACE financing certified
 - Solar loan provider partnerships
 
 ### Guarantees
+
 - Production Guarantee (panel output)
 - Workmanship Warranty (10-25 years)
 - Equipment Warranty (manufacturer warranties)
@@ -159,6 +186,7 @@
 - Price Match Guarantee
 
 ### Social Proof
+
 - Number of installations completed
 - Total kW/MW installed
 - Customer testimonials with photos
@@ -168,6 +196,7 @@
 - "Homes Powered" counter
 
 ### Industry Partnerships
+
 - Panel manufacturer badges (LG, SunPower, Panasonic, etc.)
 - Inverter manufacturer badges (Enphase, SolarEdge)
 - Battery partner logos (Tesla Powerwall, etc.)
@@ -241,18 +270,19 @@
 
 ### Common Objections & Responses
 
-| Objection | How Pages Address It |
-|-----------|---------------------|
-| "Solar is too expensive" | Zero down financing, tax credits, monthly savings > payment |
-| "My roof isn't right for solar" | Free roof assessment, multiple mounting options |
-| "What about cloudy days?" | How net metering works, battery storage options |
-| "It'll hurt my roof" | Roof penetration warranty, certified installation |
-| "What happens if I move?" | Homes with solar sell 4.1% higher (Zillow data) |
-| "How long until I break even?" | ROI calculator, typical 8-10 year payback |
-| "Technology keeps improving" | Current incentives won't last, opportunity cost |
-| "What about maintenance?" | Minimal maintenance required, warranty coverage |
+| Objection                       | How Pages Address It                                        |
+| ------------------------------- | ----------------------------------------------------------- |
+| "Solar is too expensive"        | Zero down financing, tax credits, monthly savings > payment |
+| "My roof isn't right for solar" | Free roof assessment, multiple mounting options             |
+| "What about cloudy days?"       | How net metering works, battery storage options             |
+| "It'll hurt my roof"            | Roof penetration warranty, certified installation           |
+| "What happens if I move?"       | Homes with solar sell 4.1% higher (Zillow data)             |
+| "How long until I break even?"  | ROI calculator, typical 8-10 year payback                   |
+| "Technology keeps improving"    | Current incentives won't last, opportunity cost             |
+| "What about maintenance?"       | Minimal maintenance required, warranty coverage             |
 
 ### FAQ Section Topics
+
 - How much does solar cost?
 - How much can I save?
 - What incentives are available?
@@ -269,16 +299,19 @@
 ## Conversion Blueprint
 
 ### Recommended Headline Formula
+
 ```
 [Action] Solar and [Primary Benefit] - [Supporting Benefit/Credibility]
 ```
 
 **Examples:**
+
 - "Switch to Solar and Save $XXX/Month - Free Quote, Zero Down"
 - "Go Solar and Cut Your Electric Bill by 70% - [City]'s Top-Rated Installer"
 - "Harness the Sun and Start Saving - See Your Custom Quote in 2 Minutes"
 
 ### Recommended Section Order
+
 1. Hero (Headline, CTA, Trust Bar)
 2. Savings Calculator (interactive)
 3. How Solar Works (educational)
@@ -292,17 +325,20 @@
 11. Footer
 
 ### Recommended Form Fields
+
 1. Name (required)
 2. Phone (required)
 3. Zip Code (required)
 4. Monthly Electric Bill (dropdown - helps with savings estimate)
 
 ### Recommended CTA Wording
+
 - **Primary**: "Get My Free Solar Quote"
 - **Secondary**: "Calculate My Savings"
 - **Phone**: "Call to Speak with an Expert"
 
 ### Key Conversion Triggers
+
 1. **Savings**: Specific dollar amounts, calculator results
 2. **Incentives**: Tax credit prominently displayed
 3. **Trust**: Installation count, certifications, reviews
@@ -314,41 +350,49 @@
 ## Industry-Specific Tips
 
 ### Phone Calls Critical
+
 - ~70% of solar leads come via phone call
 - Phone number must be prominent (top of page on desktop, top on mobile)
 - Click-to-call for mobile essential
 
 ### Savings Calculator
+
 - Interactive calculators significantly boost engagement
 - Key inputs: Monthly bill, zip code
 - Show estimated: Monthly savings, 25-year savings, payback period
 - CTA immediately after calculation
 
 ### ROI/Savings Data
+
 Common calculations to include:
+
 - Payback period: Total Cost / Annual Savings (typically 8-10 years)
 - 25-year savings (panels last 25-30 years)
 - Home value increase (4.1% per Zillow)
 - Environmental impact (3-4 tons CO2 reduced annually)
 
 ### Progressive Forms
+
 - Multi-step forms work well for solar
 - Qualify early (homeowner? zip code?)
 - Reduces friction
 - Track where users drop off
 
 ### A/B Testing Recommendations
+
 - Test one element at a time
 - Headlines: 27-104% conversion lift potential
 - Form length: 120% lift from 11 to 4 fields
 - CTA text variations
 
 ### Conversion Benchmarks
+
 - Well-designed solar landing pages: 8.36%+ conversion rate
 - Significantly higher than industry average
 - Mobile optimization essential
 
 ### Local Landing Pages
+
 - Create pages for each service area
 - "#1 Solar Experts in [City/State]"
 - Local incentives vary significantly

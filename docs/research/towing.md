@@ -3,6 +3,7 @@
 ## Research Sources & Real Landing Page URLs
 
 ### Major Brand Examples
+
 1. **AAA Roadside Assistance** - https://roadside.aaa.com
 2. **Urgently** - https://www.geturgently.com
 3. **Agero** - https://www.agero.com/roadside-assistance
@@ -10,11 +11,13 @@
 5. **Curbside SOS** - https://www.curbsidesos.com
 
 ### Regional/Local Examples
+
 6. **Interstate Emergency Services** - https://iestowing.com
 7. **Raleigh Roadside Assistance** - https://raleighroadsideassistance.com
 8. **Local towing companies** (various markets)
 
 ### Landing Page Resources
+
 - https://webflow.com/templates/html/auto-towing-website-template
 - https://www.templatemonster.com/category/auto-towing-landing-page-templates/
 - https://instapage.com/en/template/landing-page-template-for-tow-truck-operators
@@ -56,6 +59,7 @@
    - Response time estimate
 
 ### Visual Design Patterns
+
 - High-contrast (often yellow/black or red/white)
 - Emergency/alert color psychology
 - Clean, uncluttered (user is stressed)
@@ -69,21 +73,23 @@
 
 ### Primary CTAs (Emergency Focus)
 
-| CTA Text | Purpose |
-|----------|---------|
-| "CALL NOW" | Immediate phone contact |
-| "Get Help Now" | Request form |
-| "Request Tow" | Service request |
-| "Track My Service" | Existing customer |
-| "Text for Help" | SMS option |
+| CTA Text           | Purpose                 |
+| ------------------ | ----------------------- |
+| "CALL NOW"         | Immediate phone contact |
+| "Get Help Now"     | Request form            |
+| "Request Tow"      | Service request         |
+| "Track My Service" | Existing customer       |
+| "Text for Help"    | SMS option              |
 
 ### CTA Hierarchy
+
 1. **Phone Number** - Primary (most prominent)
 2. **Click-to-Call Button** - Secondary
 3. **Request Form** - Tertiary
 4. **Text/Chat Option** - Alternative
 
 ### Emergency CTA Design
+
 - Bright, contrasting colors (red, orange, yellow)
 - Large tap targets (minimum 48px)
 - Pulsing/animated buttons
@@ -95,6 +101,7 @@
 ## Form Field Patterns
 
 ### Emergency Quick Form (Minimal)
+
 ```
 - Name *
 - Phone Number * (auto-detect)
@@ -103,6 +110,7 @@
 ```
 
 ### Standard Service Request
+
 ```
 - Name *
 - Phone Number *
@@ -120,6 +128,7 @@
 ```
 
 ### GPS-Enabled Features
+
 - "Use My Location" button (prominent)
 - Address auto-complete
 - Map pin drop option
@@ -127,6 +136,7 @@
 - Cross-street detection
 
 ### Form Best Practices
+
 - GPS location pre-fill on mobile
 - Minimal required fields (name, phone, location)
 - Service type quick-select icons
@@ -170,6 +180,7 @@
    - Customer count
 
 ### Review/Rating Display
+
 - Google Reviews (star rating prominent)
 - "98% of customers recommend us"
 - Real-time review feed
@@ -261,20 +272,21 @@
 
 ### Common Objections & Responses
 
-| Objection | Landing Page Solution |
-|-----------|----------------------|
-| "How quickly can you get here?" | Response time guarantee, live tracking |
-| "How much will it cost?" | Transparent pricing, "no hidden fees" |
-| "Are you available now?" | 24/7 indicator, "Available Now" status |
-| "Will you damage my car?" | Equipment showcase, insurance mention |
-| "Do you take my insurance?" | Insurance partner list, claim assistance |
-| "Are your drivers trustworthy?" | Background check mention, reviews |
-| "Do you service my area?" | Service area map, zip code checker |
-| "Can you tow my [vehicle type]?" | Fleet showcase, specialty towing |
+| Objection                        | Landing Page Solution                    |
+| -------------------------------- | ---------------------------------------- |
+| "How quickly can you get here?"  | Response time guarantee, live tracking   |
+| "How much will it cost?"         | Transparent pricing, "no hidden fees"    |
+| "Are you available now?"         | 24/7 indicator, "Available Now" status   |
+| "Will you damage my car?"        | Equipment showcase, insurance mention    |
+| "Do you take my insurance?"      | Insurance partner list, claim assistance |
+| "Are your drivers trustworthy?"  | Background check mention, reviews        |
+| "Do you service my area?"        | Service area map, zip code checker       |
+| "Can you tow my [vehicle type]?" | Fleet showcase, specialty towing         |
 
 ### Objection-Handling Content
 
 **Pricing Transparency**
+
 - Starting rate display
 - "Free quote" offer
 - Insurance claim assistance highlight
@@ -282,12 +294,14 @@
 - Payment method icons
 
 **Safety Assurance**
+
 - Driver certification details
 - Insurance documentation
 - Safety protocol explanation
 - Customer waiting tips
 
 **Speed Guarantee**
+
 - Average response time
 - Real-time tracking mention
 - Dispatcher availability
@@ -348,6 +362,7 @@
 ```
 
 ### Key Conversion Metrics
+
 - Phone call rate: 60%+ (primary goal)
 - Form submission rate: 15-20%
 - Click-to-call: 70%+ on mobile
@@ -355,6 +370,7 @@
 - Mobile traffic: 85-95%
 
 ### A/B Testing Priorities
+
 1. Phone number size/placement
 2. CTA button color (red vs green vs orange)
 3. Response time display format
@@ -367,6 +383,7 @@
 ## Mobile-Specific Patterns
 
 ### Critical Mobile Elements
+
 - **Click-to-call: PRIMARY feature**
 - Sticky phone bar at top
 - GPS location auto-detect
@@ -375,6 +392,7 @@
 - Fast loading (2 seconds max)
 
 ### Mobile Navigation
+
 - Minimal menu items
 - Emergency call as main action
 - Quick service type selection
@@ -382,6 +400,7 @@
 - "Save Contact" integration
 
 ### Mobile Form Optimization
+
 - GPS auto-fill for location
 - Phone number auto-format
 - Service type quick-select (icons)
@@ -393,6 +412,7 @@
 ## Special Considerations
 
 ### Emergency UX Principles
+
 1. **Reduce cognitive load** - User is stressed
 2. **One clear action** - Call or request help
 3. **Reassurance throughout** - Help is coming
@@ -400,12 +420,14 @@
 5. **Accessibility** - High contrast, large text
 
 ### Insurance/Fleet Partnerships
+
 - Display insurance partner logos
 - "We work with all insurance companies"
 - Fleet account signup option
 - Motor club affiliations
 
 ### Multi-Service Pricing Strategy
+
 - Display starting rates
 - "Final price depends on location"
 - Free estimate mention

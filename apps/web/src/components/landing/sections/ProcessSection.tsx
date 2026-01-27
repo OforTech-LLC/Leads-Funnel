@@ -61,7 +61,11 @@ export const ProcessSection: React.FC<ProcessSectionProps> = ({
       }}
     >
       {steps.map((step, index) => (
-        <motion.div key={index} variants={itemVariants} style={{ position: 'relative' }}>
+        <motion.div
+          key={`step-${step.number}-${step.title}`}
+          variants={itemVariants}
+          style={{ position: 'relative' }}
+        >
           {/* Connector line */}
           {index < steps.length - 1 && (
             <div
@@ -129,7 +133,7 @@ export const ProcessSection: React.FC<ProcessSectionProps> = ({
     <div style={{ maxWidth: '700px', margin: '0 auto' }}>
       {steps.map((step, index) => (
         <motion.div
-          key={index}
+          key={`timeline-${step.number}-${step.title}`}
           variants={itemVariants}
           style={{
             display: 'flex',
@@ -203,13 +207,12 @@ export const ProcessSection: React.FC<ProcessSectionProps> = ({
   );
 
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
+    <motion.div variants={containerVariants} initial="hidden" animate="visible">
       {/* Section Header */}
-      <motion.div variants={itemVariants} style={{ textAlign: 'center', marginBottom: tokens.spacing[12] }}>
+      <motion.div
+        variants={itemVariants}
+        style={{ textAlign: 'center', marginBottom: tokens.spacing[12] }}
+      >
         <h2
           style={{
             fontSize: 'clamp(2rem, 5vw, 3rem)',

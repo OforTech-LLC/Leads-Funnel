@@ -18,6 +18,7 @@
 ## Above-Fold Patterns
 
 ### Headline Formulas
+
 - **Stress-free promise**: "Moving Made Easy"
 - **Speed-focused**: "Fast, Reliable Moving Services"
 - **Trust-focused**: "America's Most Trusted Movers"
@@ -26,6 +27,7 @@
 - **Guarantee-focused**: "On-Time Delivery. Guaranteed."
 
 ### Hero Section Elements
+
 1. **Quote form** prominently displayed above fold
 2. **Moving type selector** (local, long-distance, international)
 3. **Service area indicator** or ZIP code entry
@@ -34,6 +36,7 @@
 6. **Moving imagery** (trucks, professionals, happy customers)
 
 ### Visual Patterns
+
 - Clean, organized imagery reflecting their service
 - Branded trucks/uniforms visible
 - Happy families/customers in new homes
@@ -45,6 +48,7 @@
 ## CTA Patterns
 
 ### Primary CTA Text
+
 - "Get a Free Quote"
 - "Get Your Moving Estimate"
 - "Book Your Move"
@@ -53,6 +57,7 @@
 - "Request Free Estimate"
 
 ### CTA Design Patterns
+
 - **Bright, contrasting colors** (orange, green common)
 - **Instant quote promise** ("Get Your Quote in 60 Seconds")
 - **Multiple entry points** (form, phone, chat)
@@ -60,6 +65,7 @@
 - **Sticky quote button** on mobile
 
 ### Secondary CTAs
+
 - "Calculate Moving Costs"
 - "See Services"
 - "Find Location Near You"
@@ -72,6 +78,7 @@
 ### Quick Quote Form (Initial Capture)
 
 **Essential Fields (5-6)**
+
 - Moving from (ZIP/City)
 - Moving to (ZIP/City)
 - Move date (date picker or flexible)
@@ -82,24 +89,28 @@
 ### Detailed Quote Form (Multi-Step)
 
 **Step 1: Move Details**
+
 - Origin ZIP/address
 - Destination ZIP/address
 - Approximate move date
 - Flexibility on date (Yes/No)
 
 **Step 2: Home Size & Inventory**
+
 - Home/apartment size
 - Number of bedrooms
 - Special items (piano, pool table, hot tub)
 - Storage needs
 
 **Step 3: Contact Information**
+
 - Full name
 - Email address
 - Phone number
 - Preferred contact method
 
 ### Form Best Practices
+
 - **ZIP code auto-fills** city/state
 - **Date picker** with flexible option
 - **Home size dropdown** simplifies estimation
@@ -112,6 +123,7 @@
 ## Trust Signals
 
 ### Industry Certifications
+
 - AMSA (American Moving & Storage Association) member
 - ProMover certification
 - BBB accreditation with rating
@@ -120,12 +132,14 @@
 - State licensing
 
 ### Insurance & Protection
+
 - Full value protection options
 - Released value protection
 - Liability coverage amounts
 - "Licensed, Bonded & Insured" badges
 
 ### Social Proof Elements
+
 - Number of moves completed ("1 Million+ Moves")
 - Customer review ratings (4.5+ stars)
 - Years in business
@@ -134,6 +148,7 @@
 - Video testimonials
 
 ### Guarantees
+
 - On-time delivery guarantee
 - Price lock guarantee
 - Damage protection guarantee
@@ -202,17 +217,18 @@
 
 ### Common Objections & Responses
 
-| Objection | Landing Page Response |
-|-----------|----------------------|
-| "Moving companies are too expensive" | Show price transparency, price calculator, "starting at" pricing |
+| Objection                                    | Landing Page Response                                                     |
+| -------------------------------------------- | ------------------------------------------------------------------------- |
+| "Moving companies are too expensive"         | Show price transparency, price calculator, "starting at" pricing          |
 | "I'm worried about my stuff getting damaged" | Highlight insurance options, full-value protection, damage claims process |
-| "I don't trust movers with my belongings" | Display reviews, background-checked employees, years of experience |
-| "Hidden fees concern me" | Emphasize binding quotes, no hidden fees policy, price lock guarantee |
-| "I can just rent a truck and do it myself" | Compare total costs, time savings, stress reduction, safety |
-| "What if they're late?" | On-time delivery guarantee, tracking capabilities |
-| "What about my fragile/valuable items?" | Specialty item handling, custom crating, white glove service |
+| "I don't trust movers with my belongings"    | Display reviews, background-checked employees, years of experience        |
+| "Hidden fees concern me"                     | Emphasize binding quotes, no hidden fees policy, price lock guarantee     |
+| "I can just rent a truck and do it myself"   | Compare total costs, time savings, stress reduction, safety               |
+| "What if they're late?"                      | On-time delivery guarantee, tracking capabilities                         |
+| "What about my fragile/valuable items?"      | Specialty item handling, custom crating, white glove service              |
 
 ### FAQ Questions to Include
+
 1. How much does a move cost?
 2. How far in advance should I book?
 3. Do you provide packing materials?
@@ -287,12 +303,14 @@
 ```
 
 ### Key Metrics to Target
+
 - **Conversion rate**: 8-12% for quote requests
 - **Form completion rate**: 65-75%
 - **Phone call rate**: Track click-to-call
 - **Time on page**: 2-3 minutes
 
 ### A/B Testing Priorities
+
 1. Quote form length (quick vs. detailed)
 2. Hero imagery (truck, team, happy family)
 3. CTA text ("Get Quote" vs. "Get Pricing" vs. "Book Now")
@@ -304,23 +322,27 @@
 ## Industry-Specific Insights
 
 ### What Makes Moving Different
+
 - **Time-sensitive purchases** - Often tied to closing dates
 - **Stressful life event** - Emphasize ease and reliability
 - **Price comparison common** - Multiple quotes expected
 - **Local vs. long-distance** - Very different services and pricing
 
 ### Seasonal Considerations
+
 - Peak season: May-September
 - Booking windows vary by season
 - Pricing may fluctuate (show flexibility)
 
 ### Mobile Optimization Critical
+
 - 70%+ searches on mobile
 - Click-to-call essential
 - Quick quote forms must work perfectly
 - Location services for "near me" queries
 
 ### Key Differentiators to Highlight
+
 - Full-service vs. DIY hybrid options
 - Corporate relocation capabilities
 - International moving expertise

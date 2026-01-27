@@ -73,31 +73,33 @@ module "eventing" {
 When `enable_sqs = true`:
 
 ### Main Queue
+
 - Visibility timeout: 60 seconds
 - Message retention: 4 days
 - Long polling: 20 seconds
 - SSE encryption enabled
 
 ### Dead-Letter Queue
+
 - Message retention: 14 days
 - Max receive count: 3 (before moving to DLQ)
 
 ## Inputs
 
-| Name | Description | Type | Default |
-|------|-------------|------|---------|
-| project_name | Project name | string | - |
-| environment | Environment (dev/prod) | string | - |
-| enable_sqs | Enable SQS queue | bool | false |
+| Name         | Description            | Type   | Default |
+| ------------ | ---------------------- | ------ | ------- |
+| project_name | Project name           | string | -       |
+| environment  | Environment (dev/prod) | string | -       |
+| enable_sqs   | Enable SQS queue       | bool   | false   |
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| event_bus_name | EventBridge bus name |
-| event_bus_arn | EventBridge bus ARN |
-| event_rule_name | EventBridge rule name |
-| queue_url | SQS queue URL (if enabled) |
-| queue_arn | SQS queue ARN (if enabled) |
-| dlq_url | DLQ URL (if enabled) |
-| dlq_arn | DLQ ARN (if enabled) |
+| Name            | Description                |
+| --------------- | -------------------------- |
+| event_bus_name  | EventBridge bus name       |
+| event_bus_arn   | EventBridge bus ARN        |
+| event_rule_name | EventBridge rule name      |
+| queue_url       | SQS queue URL (if enabled) |
+| queue_arn       | SQS queue ARN (if enabled) |
+| dlq_url         | DLQ URL (if enabled)       |
+| dlq_arn         | DLQ ARN (if enabled)       |

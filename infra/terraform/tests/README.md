@@ -5,6 +5,7 @@ This directory contains test scripts for validating the Terraform infrastructure
 ## Overview
 
 The test suite validates:
+
 - Terraform syntax and formatting
 - Resource configurations
 - Security best practices
@@ -33,6 +34,7 @@ The main test script that runs all validations.
 ```
 
 **What it checks:**
+
 - Terraform installation
 - Module syntax validation
 - Environment configuration validation
@@ -44,6 +46,7 @@ The main test script that runs all validations.
 Detailed tests for resource configurations. This file is sourced by `validate_all.sh`.
 
 **Tests included:**
+
 - DynamoDB configuration (keys, GSI, TTL, encryption)
 - EventBridge/SQS configuration (event patterns, DLQ)
 - API Gateway configuration (CORS, routes, TLS)
@@ -75,6 +78,7 @@ Creates a Terraform plan and validates the planned resources.
 **Requires:** `jq` for JSON parsing (optional but recommended)
 
 **What it checks:**
+
 - Plan creation success
 - Required resources are present
 - Resource configuration values
@@ -93,6 +97,7 @@ Focused security validation script.
 ```
 
 **What it checks:**
+
 - Hardcoded secrets detection
 - Encryption at rest (DynamoDB, S3, SQS)
 - Encryption in transit (TLS configuration)
@@ -107,10 +112,13 @@ Focused security validation script.
 ## Prerequisites
 
 ### Required
+
 - **Terraform** >= 1.0.0
 
 ### Recommended
+
 - **jq** - For JSON parsing in plan validation
+
   ```bash
   # macOS
   brew install jq
@@ -171,10 +179,12 @@ repos:
 ## Test Results
 
 Tests use exit codes:
+
 - `0` - All tests passed
 - `1` - One or more tests failed
 
 Color-coded output:
+
 - **GREEN** [PASS] - Test passed
 - **RED** [FAIL] - Test failed
 - **YELLOW** [WARNING] - Warning (non-blocking)
@@ -186,20 +196,20 @@ The tests verify that Terraform configurations match what the backend applicatio
 
 ### DynamoDB Schema Alignment
 
-| Backend Expectation | Terraform Configuration |
-|---------------------|------------------------|
-| Primary Key: `PK` (String) | `hash_key = "PK"`, `type = "S"` |
-| Sort Key: `SK` (String) | `range_key = "SK"`, `type = "S"` |
-| GSI Name: `GSI1` | `name = "GSI1"` |
-| GSI Hash Key: `GSI1PK` | `hash_key = "GSI1PK"` |
-| GSI Range Key: `GSI1SK` | `range_key = "GSI1SK"` |
-| TTL Attribute: `ttl` | `attribute_name = "ttl"` |
+| Backend Expectation        | Terraform Configuration          |
+| -------------------------- | -------------------------------- |
+| Primary Key: `PK` (String) | `hash_key = "PK"`, `type = "S"`  |
+| Sort Key: `SK` (String)    | `range_key = "SK"`, `type = "S"` |
+| GSI Name: `GSI1`           | `name = "GSI1"`                  |
+| GSI Hash Key: `GSI1PK`     | `hash_key = "GSI1PK"`            |
+| GSI Range Key: `GSI1SK`    | `range_key = "GSI1SK"`           |
+| TTL Attribute: `ttl`       | `attribute_name = "ttl"`         |
 
 ### EventBridge Event Pattern
 
-| Backend Expectation | Terraform Configuration |
-|---------------------|------------------------|
-| Source: `kanjona.leads` | `source = ["kanjona.leads"]` |
+| Backend Expectation         | Terraform Configuration          |
+| --------------------------- | -------------------------------- |
+| Source: `kanjona.leads`     | `source = ["kanjona.leads"]`     |
 | Detail Type: `lead.created` | `detail-type = ["lead.created"]` |
 
 ## Adding New Tests
@@ -228,6 +238,7 @@ test_my_new_check
 ### To security_checks.sh
 
 Follow the existing pattern with severity levels:
+
 - `print_critical` - Security issue, blocks deployment
 - `print_warning` - Potential issue, review recommended
 - `print_pass` - Check passed
@@ -235,40 +246,47 @@ Follow the existing pattern with severity levels:
 ## Troubleshooting
 
 ### "Terraform is not installed"
+
 Install Terraform: https://www.terraform.io/downloads
 
 ### "jq is not installed"
+
 Install jq for plan validation (optional):
+
 ```bash
 brew install jq  # macOS
 apt-get install jq  # Linux
 ```
 
 ### Formatting failures
+
 Run `terraform fmt -recursive` in the terraform directory:
+
 ```bash
 terraform fmt -recursive infra/terraform/
 ```
 
 ### Init failures
+
 Ensure you have valid AWS credentials or use `-backend=false`:
+
 ```bash
 terraform init -backend=false
 ```
 
 ## Module Coverage
 
-| Module | validate_all | test_configs | security_checks |
-|--------|-------------|--------------|-----------------|
-| acm | X | - | - |
-| api | X | X | X |
-| dns | X | - | - |
-| dynamodb | X | X | X |
-| eventing | X | X | X |
-| monitoring | X | X | X |
-| ses | X | X | X |
-| static_site | X | X | X |
-| waf | X | X | X |
+| Module      | validate_all | test_configs | security_checks |
+| ----------- | ------------ | ------------ | --------------- |
+| acm         | X            | -            | -               |
+| api         | X            | X            | X               |
+| dns         | X            | -            | -               |
+| dynamodb    | X            | X            | X               |
+| eventing    | X            | X            | X               |
+| monitoring  | X            | X            | X               |
+| ses         | X            | X            | X               |
+| static_site | X            | X            | X               |
+| waf         | X            | X            | X               |
 
 ## License
 

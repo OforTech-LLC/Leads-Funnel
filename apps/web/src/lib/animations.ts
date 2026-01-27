@@ -1,25 +1,92 @@
 /**
  * Animation Utilities
- * GSAP and scroll animation hooks
+ * GSAP and scroll animation hooks with proper cleanup and singleton pattern
  */
 
 'use client';
 
 import { useEffect, useRef, RefObject } from 'react';
 
-/**
- * Lazy load GSAP and plugins
- */
-export async function loadGsap() {
-  const gsap = (await import('gsap')).default;
-  const ScrollTrigger = (await import('gsap/ScrollTrigger')).default;
-  gsap.registerPlugin(ScrollTrigger);
-  return { gsap, ScrollTrigger };
+// ============================================================================
+// GSAP Singleton Pattern - Prevents re-registering plugins on every import
+// ============================================================================
+
+type GSAPInstance = typeof import('gsap').default;
+type ScrollTriggerInstance = typeof import('gsap/ScrollTrigger').default;
+
+interface GSAPCache {
+  gsap: GSAPInstance | null;
+  ScrollTrigger: ScrollTriggerInstance | null;
+  initialized: boolean;
+  initPromise: Promise<{ gsap: GSAPInstance; ScrollTrigger: ScrollTriggerInstance }> | null;
 }
+
+// Global cache for GSAP instance
+const gsapCache: GSAPCache = {
+  gsap: null,
+  ScrollTrigger: null,
+  initialized: false,
+  initPromise: null,
+};
+
+/**
+ * Lazy load GSAP and plugins with singleton pattern
+ * Caches the instance globally to prevent re-registration
+ */
+export async function loadGsap(): Promise<{
+  gsap: GSAPInstance;
+  ScrollTrigger: ScrollTriggerInstance;
+}> {
+  // Return cached instance if already initialized
+  if (gsapCache.initialized && gsapCache.gsap && gsapCache.ScrollTrigger) {
+    return { gsap: gsapCache.gsap, ScrollTrigger: gsapCache.ScrollTrigger };
+  }
+
+  // Return existing promise if initialization is in progress
+  if (gsapCache.initPromise) {
+    return gsapCache.initPromise;
+  }
+
+  // Create new initialization promise
+  gsapCache.initPromise = (async () => {
+    const gsap = (await import('gsap')).default;
+    const ScrollTrigger = (await import('gsap/ScrollTrigger')).default;
+
+    // Only register plugin once
+    if (!gsapCache.initialized) {
+      gsap.registerPlugin(ScrollTrigger);
+      gsapCache.gsap = gsap;
+      gsapCache.ScrollTrigger = ScrollTrigger;
+      gsapCache.initialized = true;
+    }
+
+    return { gsap: gsapCache.gsap!, ScrollTrigger: gsapCache.ScrollTrigger! };
+  })();
+
+  return gsapCache.initPromise;
+}
+
+/**
+ * Get cached GSAP instance synchronously (returns null if not loaded)
+ */
+export function getCachedGsap(): {
+  gsap: GSAPInstance;
+  ScrollTrigger: ScrollTriggerInstance;
+} | null {
+  if (gsapCache.initialized && gsapCache.gsap && gsapCache.ScrollTrigger) {
+    return { gsap: gsapCache.gsap, ScrollTrigger: gsapCache.ScrollTrigger };
+  }
+  return null;
+}
+
+// ============================================================================
+// Animation Hooks with Proper Cleanup
+// ============================================================================
 
 /**
  * Split text animation hook
  * Animates text characters with stagger effect
+ * Uses safe DOM methods instead of innerHTML to prevent XSS
  */
 export function useSplitTextAnimation(
   selector: string,
@@ -31,6 +98,7 @@ export function useSplitTextAnimation(
   }
 ) {
   const hasAnimated = useRef(false);
+  const tweenRef = useRef<gsap.core.Tween | null>(null);
 
   useEffect(() => {
     if (hasAnimated.current) return;
@@ -43,14 +111,38 @@ export function useSplitTextAnimation(
       const text = element.textContent || '';
       const words = text.split(' ');
 
-      element.innerHTML = words
-        .map(
-          (word) =>
-            `<span class="word" style="display: inline-block; overflow: hidden;"><span class="word-inner" style="display: inline-block;">${word}</span></span>`
-        )
-        .join('<span style="display: inline-block;">&nbsp;</span>');
+      // Clear existing content safely
+      while (element.firstChild) {
+        element.removeChild(element.firstChild);
+      }
 
-      gsap.from(`${selector} .word-inner`, {
+      // Build DOM elements safely (no innerHTML - prevents XSS)
+      words.forEach((word, index) => {
+        // Create word wrapper
+        const wordWrapper = document.createElement('span');
+        wordWrapper.className = 'word';
+        wordWrapper.style.display = 'inline-block';
+        wordWrapper.style.overflow = 'hidden';
+
+        // Create inner word span
+        const wordInner = document.createElement('span');
+        wordInner.className = 'word-inner';
+        wordInner.style.display = 'inline-block';
+        wordInner.textContent = word; // Safe: textContent escapes HTML
+
+        wordWrapper.appendChild(wordInner);
+        element.appendChild(wordWrapper);
+
+        // Add space between words (except after last word)
+        if (index < words.length - 1) {
+          const space = document.createElement('span');
+          space.style.display = 'inline-block';
+          space.textContent = '\u00A0'; // Non-breaking space (safe)
+          element.appendChild(space);
+        }
+      });
+
+      tweenRef.current = gsap.from(`${selector} .word-inner`, {
         y: '110%',
         opacity: 0,
         duration: options?.duration ?? 0.8,
@@ -64,232 +156,233 @@ export function useSplitTextAnimation(
 
     // Delay to ensure DOM is ready
     const timer = setTimeout(animate, 100);
-    return () => clearTimeout(timer);
-  }, [selector, options]);
-}
-
-/**
- * Scroll-triggered fade up animation
- */
-export function useScrollFadeUp(
-  selector: string,
-  options?: {
-    y?: number;
-    duration?: number;
-    start?: string;
-    ease?: string;
-  }
-) {
-  useEffect(() => {
-    const animate = async () => {
-      const { gsap } = await loadGsap();
-
-      const elements = document.querySelectorAll(selector);
-      if (elements.length === 0) return;
-
-      elements.forEach((element) => {
-        gsap.from(element, {
-          y: options?.y ?? 60,
-          opacity: 0,
-          duration: options?.duration ?? 0.7,
-          ease: options?.ease ?? 'power3.out',
-          scrollTrigger: {
-            trigger: element,
-            start: options?.start ?? 'top 85%',
-            toggleActions: 'play none none none',
-          },
-        });
-      });
-    };
-
-    animate();
 
     return () => {
-      loadGsap().then(({ ScrollTrigger }) => {
-        ScrollTrigger.getAll().forEach((t) => t.kill());
-      });
+      clearTimeout(timer);
+      // Kill the tween on cleanup
+      if (tweenRef.current) {
+        tweenRef.current.kill();
+        tweenRef.current = null;
+      }
     };
-  }, [selector, options]);
+  }, [selector, options?.delay, options?.stagger, options?.duration, options?.ease]);
 }
 
 /**
- * Stagger reveal animation for multiple elements
+ * Scroll-triggered fade up animation with proper cleanup
  */
-export function useStaggerReveal(
-  containerSelector: string,
-  childSelector: string,
+export function useScrollFadeUp(
+  ref: RefObject<HTMLElement>,
   options?: {
-    y?: number;
-    stagger?: number;
-    duration?: number;
     start?: string;
+    end?: string;
+    duration?: number;
+    delay?: number;
+    y?: number;
+    markers?: boolean;
   }
 ) {
+  const tweenRef = useRef<gsap.core.Tween | null>(null);
+  const triggerRef = useRef<ScrollTrigger | null>(null);
+
   useEffect(() => {
-    const animate = async () => {
-      const { gsap } = await loadGsap();
+    if (!ref.current) return;
 
-      const container = document.querySelector(containerSelector);
-      if (!container) return;
+    const setup = async () => {
+      const { gsap, ScrollTrigger } = await loadGsap();
 
-      gsap.from(`${containerSelector} ${childSelector}`, {
-        y: options?.y ?? 80,
+      if (!ref.current) return;
+
+      tweenRef.current = gsap.from(ref.current, {
+        y: options?.y ?? 50,
         opacity: 0,
-        duration: options?.duration ?? 0.8,
-        stagger: options?.stagger ?? 0.15,
-        ease: 'power3.out',
+        duration: options?.duration ?? 1,
+        delay: options?.delay ?? 0,
         scrollTrigger: {
-          trigger: container,
+          trigger: ref.current,
           start: options?.start ?? 'top 80%',
+          end: options?.end ?? 'bottom 20%',
+          markers: options?.markers ?? false,
+          toggleActions: 'play none none reverse',
+          onEnter: () => {
+            const trigger = ScrollTrigger.getById(ref.current?.dataset.triggerId || '');
+            triggerRef.current = trigger ?? null;
+          },
         },
       });
     };
 
-    animate();
+    setup();
 
-    return () => {
-      loadGsap().then(({ ScrollTrigger }) => {
-        ScrollTrigger.getAll().forEach((t) => t.kill());
-      });
+    const cleanup = () => {
+      if (tweenRef.current) {
+        tweenRef.current.kill();
+        tweenRef.current = null;
+      }
+      if (triggerRef.current) {
+        triggerRef.current.kill();
+        triggerRef.current = null;
+      }
     };
-  }, [containerSelector, childSelector, options]);
+
+    return cleanup;
+  }, [
+    ref,
+    options?.start,
+    options?.end,
+    options?.duration,
+    options?.delay,
+    options?.y,
+    options?.markers,
+  ]);
 }
 
 /**
- * Counter animation hook
- * Animates a number counting up
- */
-export function useCountUp(
-  targetValue: number,
-  duration: number = 2000,
-  options?: {
-    prefix?: string;
-    suffix?: string;
-    locale?: string;
-    decimals?: number;
-  }
-): RefObject<HTMLSpanElement | null> {
-  const ref = useRef<HTMLSpanElement>(null);
-  const hasAnimated = useRef(false);
-
-  useEffect(() => {
-    const element = ref.current;
-    if (!element || hasAnimated.current) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && !hasAnimated.current) {
-            hasAnimated.current = true;
-            animateCount();
-            observer.disconnect();
-          }
-        });
-      },
-      { threshold: 0.5 }
-    );
-
-    observer.observe(element);
-
-    const animateCount = () => {
-      const startTime = performance.now();
-      const startValue = 0;
-
-      const update = (currentTime: number) => {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-
-        // Ease out cubic for natural deceleration
-        const easeProgress = 1 - Math.pow(1 - progress, 3);
-        const currentValue = startValue + (targetValue - startValue) * easeProgress;
-
-        const formattedValue =
-          options?.decimals !== undefined
-            ? new Intl.NumberFormat(options?.locale ?? 'en-US', {
-                minimumFractionDigits: options.decimals,
-                maximumFractionDigits: options.decimals,
-              }).format(currentValue)
-            : new Intl.NumberFormat(options?.locale ?? 'en-US').format(
-                Math.floor(currentValue)
-              );
-
-        if (element) {
-          element.textContent = `${options?.prefix ?? ''}${formattedValue}${options?.suffix ?? ''}`;
-        }
-
-        if (progress < 1) {
-          requestAnimationFrame(update);
-        }
-      };
-
-      requestAnimationFrame(update);
-    };
-
-    return () => observer.disconnect();
-  }, [targetValue, duration, options]);
-
-  return ref;
-}
-
-/**
- * Parallax scroll effect hook
+ * Parallax scroll effect hook with cleanup
  */
 export function useParallax(
   ref: RefObject<HTMLElement>,
-  speed: number = 0.3
+  speed: number = 0.5,
+  options?: {
+    start?: string;
+    end?: string;
+  }
 ) {
+  const tweenRef = useRef<gsap.core.Tween | null>(null);
+  const triggerRef = useRef<ScrollTrigger | null>(null);
+
   useEffect(() => {
-    const element = ref.current;
-    if (!element) return;
+    if (!ref.current) return;
 
-    const animate = async () => {
-      const { gsap } = await loadGsap();
+    const setup = async () => {
+      const { gsap, ScrollTrigger } = await loadGsap();
 
-      gsap.to(element, {
-        y: () => window.innerHeight * speed,
+      if (!ref.current) return;
+
+      tweenRef.current = gsap.to(ref.current, {
+        y: `${speed * 100}%`,
         ease: 'none',
         scrollTrigger: {
-          trigger: element,
-          start: 'top bottom',
-          end: 'bottom top',
+          trigger: ref.current,
+          start: options?.start ?? 'top bottom',
+          end: options?.end ?? 'bottom top',
           scrub: true,
+          onEnter: () => {
+            const trigger = ScrollTrigger.getById(ref.current?.dataset.triggerId || '');
+            triggerRef.current = trigger ?? null;
+          },
         },
       });
     };
 
-    animate();
+    setup();
 
-    return () => {
-      loadGsap().then(({ ScrollTrigger }) => {
-        ScrollTrigger.getAll().forEach((t) => t.kill());
-      });
+    const cleanup = () => {
+      if (tweenRef.current) {
+        tweenRef.current.kill();
+        tweenRef.current = null;
+      }
+      if (triggerRef.current) {
+        triggerRef.current.kill();
+        triggerRef.current = null;
+      }
     };
-  }, [ref, speed]);
+
+    return cleanup;
+  }, [ref, speed, options?.start, options?.end]);
 }
 
 /**
- * Scroll progress indicator hook
+ * Stagger animation for lists of elements with cleanup
  */
-export function useScrollProgress(): RefObject<HTMLDivElement | null> {
-  const ref = useRef<HTMLDivElement>(null);
+export function useStaggerAnimation(
+  containerRef: RefObject<HTMLElement>,
+  childSelector: string,
+  options?: {
+    delay?: number;
+    stagger?: number;
+    duration?: number;
+    y?: number;
+    start?: string;
+  }
+) {
+  const timelineRef = useRef<gsap.core.Timeline | null>(null);
+  const triggerRef = useRef<ScrollTrigger | null>(null);
 
   useEffect(() => {
-    const element = ref.current;
-    if (!element) return;
+    if (!containerRef.current) return;
 
-    const updateProgress = () => {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    const setup = async () => {
+      const { gsap, ScrollTrigger } = await loadGsap();
 
-      element.style.width = `${progress}%`;
+      if (!containerRef.current) return;
+
+      const children = containerRef.current.querySelectorAll(childSelector);
+      if (children.length === 0) return;
+
+      timelineRef.current = gsap.timeline({
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: options?.start ?? 'top 80%',
+          toggleActions: 'play none none reverse',
+          onEnter: () => {
+            const trigger = ScrollTrigger.getById(containerRef.current?.dataset.triggerId || '');
+            triggerRef.current = trigger ?? null;
+          },
+        },
+      });
+
+      timelineRef.current.from(children, {
+        y: options?.y ?? 30,
+        opacity: 0,
+        duration: options?.duration ?? 0.6,
+        stagger: options?.stagger ?? 0.1,
+        delay: options?.delay ?? 0,
+      });
     };
 
-    window.addEventListener('scroll', updateProgress, { passive: true });
-    updateProgress();
+    setup();
 
-    return () => window.removeEventListener('scroll', updateProgress);
-  }, []);
+    const cleanup = () => {
+      if (timelineRef.current) {
+        timelineRef.current.kill();
+        timelineRef.current = null;
+      }
+      if (triggerRef.current) {
+        triggerRef.current.kill();
+        triggerRef.current = null;
+      }
+    };
 
-  return ref;
+    return cleanup;
+  }, [
+    containerRef,
+    childSelector,
+    options?.delay,
+    options?.stagger,
+    options?.duration,
+    options?.y,
+    options?.start,
+  ]);
+}
+
+/**
+ * Global ScrollTrigger refresh utility
+ * Call this when layout changes (e.g., after images load)
+ */
+export async function refreshScrollTrigger(): Promise<void> {
+  const cached = getCachedGsap();
+  if (cached) {
+    cached.ScrollTrigger.refresh();
+  }
+}
+
+/**
+ * Kill all ScrollTriggers - useful for page transitions
+ */
+export async function killAllScrollTriggers(): Promise<void> {
+  const cached = getCachedGsap();
+  if (cached) {
+    cached.ScrollTrigger.getAll().forEach((trigger: ScrollTrigger) => trigger.kill());
+  }
 }

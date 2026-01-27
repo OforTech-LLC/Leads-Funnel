@@ -3,7 +3,8 @@
 ## Reference Landing Page Examples
 
 1. **ConvertFlow Plumbing Templates** - https://www.convertflow.com/campaigns/plumbing-landing-pages
-2. **Instapage Plumbing Template** - https://instapage.com/en/template/landing-page-template-for-plumbers
+2. **Instapage Plumbing Template** -
+   https://instapage.com/en/template/landing-page-template-for-plumbers
 3. **Plumbing Webmasters Examples** - https://www.plumbingwebmasters.com/landing-page-optimization/
 4. **DigiStack Marketing Examples** - https://digistackmarketing.com/blogs/plumbing-landing-pages/
 5. **Pro-Plumbing Works LLC** - Real-world example cited for trust-building design
@@ -18,6 +19,7 @@
 ## Above-Fold Patterns
 
 ### Headlines
+
 - **Problem-Focused**: "Clogged Drain? Get Same-Day Service Today"
 - **Trust-Based**: "Industry Leading Plumbers Since [Year]"
 - **Availability-Focused**: "Fast, Reliable Plumbing Services in [City] - Call Now!"
@@ -25,12 +27,15 @@
 - **Value-Based**: "Reliable Services for All Your Needs - Get Started!"
 
 ### Subheadlines
-- "We're available 24/7 to fix leaks, clogs, and more. Trusted by thousands of homeowners across [City]"
+
+- "We're available 24/7 to fix leaks, clogs, and more. Trusted by thousands of homeowners across
+  [City]"
 - "Licensed plumbers available 24/7 in [Your Area]"
 - "No hidden fees. Upfront pricing on every job."
 - "Fast response. Expert repairs. Guaranteed satisfaction."
 
 ### Hero Images
+
 - Original images of team at work (not stock photos)
 - Plumber in uniform working on pipes
 - Before/after of repaired plumbing
@@ -38,6 +43,7 @@
 - Team photo with professional appearance
 
 ### Value Props (Above Fold)
+
 - 24/7 emergency availability
 - Same-day service
 - Free estimates
@@ -50,6 +56,7 @@
 ## CTA Patterns
 
 ### Primary CTA Text
+
 - "Get a Free Quote Today!"
 - "Call Now for Emergency Service!"
 - "Schedule Your Service Now!"
@@ -58,12 +65,14 @@
 - "Get Started Now"
 
 ### Secondary CTA Options
+
 - Click-to-call phone number
 - "Text Us Now"
 - "Chat with Us"
 - "View Our Services"
 
 ### CTA Placement
+
 1. **Hero section** - Prominent button next to headline
 2. **Sticky mobile bar** - Phone and quote buttons always visible
 3. **After service descriptions** - Contextual CTAs
@@ -71,12 +80,14 @@
 5. **Bottom of page** - Final conversion section
 
 ### Urgency Triggers
+
 - "10% off your first service"
 - "Free plumbing inspection with every repair"
 - "Book Today - Limited Availability"
 - "Emergency? We respond in 30 minutes or less"
 
 ### CTA Design Best Practices
+
 - Contrasting button color (often red or orange for urgency)
 - Large, tappable buttons on mobile
 - Phone icon next to click-to-call
@@ -87,11 +98,13 @@
 ## Form Field Patterns
 
 ### Minimal Form (Best Conversion)
+
 1. Name
 2. Phone Number
 3. Service Type (dropdown)
 
 ### Standard Form
+
 1. Name
 2. Phone Number
 3. Email
@@ -99,6 +112,7 @@
 5. Brief Description of Problem
 
 ### Quote Request Form
+
 1. Name
 2. Phone
 3. Email
@@ -108,6 +122,7 @@
 7. Problem Description (textarea)
 
 ### Form Best Practices
+
 - Keep to 3-5 fields maximum
 - Service type dropdown helps qualify leads
 - "Describe your problem" field optional but helps dispatch
@@ -119,6 +134,7 @@
 ## Trust Signals
 
 ### Certifications & Licenses
+
 - State Plumbing License Number (displayed prominently)
 - Master Plumber certification
 - BBB Accredited Business (with rating)
@@ -126,6 +142,7 @@
 - Local plumbing association memberships
 
 ### Guarantees
+
 - 100% Satisfaction Guarantee
 - Upfront Pricing Promise (no hidden fees)
 - "If we can't fix it, you don't pay"
@@ -133,6 +150,7 @@
 - Price match guarantee
 
 ### Social Proof
+
 - Google/Yelp star ratings with review count
 - Customer testimonials with photos
 - Video testimonials (69% of site visitors prefer short videos)
@@ -141,11 +159,13 @@
 - Media mentions or awards
 
 ### Industry Partnerships
+
 - Brand partner badges (Kohler, Moen, Rheem, etc.)
 - Water heater manufacturer certifications
 - Drain cleaning equipment certifications
 
 ### Insurance & Safety
+
 - Fully Licensed & Insured
 - Workers Compensation coverage
 - Background-checked technicians
@@ -214,17 +234,18 @@
 
 ### Common Objections & Responses
 
-| Objection | How Pages Address It |
-|-----------|---------------------|
-| "How much will this cost?" | "Free estimates," "Upfront pricing," "No hidden fees," price ranges for common services |
-| "Will they overcharge me?" | Price transparency messaging, itemized quotes promised, BBB accreditation |
-| "Can I trust them in my home?" | Background-checked technicians, insurance displayed, local ownership emphasized |
-| "How fast can they come?" | Response time guarantees, 24/7 availability, same-day service |
-| "Are they qualified?" | License numbers displayed, years of experience, certifications listed |
-| "What if the problem comes back?" | Workmanship warranty, satisfaction guarantee, callback policies |
-| "Do they serve my area?" | Service area maps, neighborhood-specific pages |
+| Objection                         | How Pages Address It                                                                    |
+| --------------------------------- | --------------------------------------------------------------------------------------- |
+| "How much will this cost?"        | "Free estimates," "Upfront pricing," "No hidden fees," price ranges for common services |
+| "Will they overcharge me?"        | Price transparency messaging, itemized quotes promised, BBB accreditation               |
+| "Can I trust them in my home?"    | Background-checked technicians, insurance displayed, local ownership emphasized         |
+| "How fast can they come?"         | Response time guarantees, 24/7 availability, same-day service                           |
+| "Are they qualified?"             | License numbers displayed, years of experience, certifications listed                   |
+| "What if the problem comes back?" | Workmanship warranty, satisfaction guarantee, callback policies                         |
+| "Do they serve my area?"          | Service area maps, neighborhood-specific pages                                          |
 
 ### FAQ Section Topics
+
 - How much does plumbing service cost?
 - Do you offer emergency plumbing?
 - How quickly can you arrive?
@@ -239,16 +260,19 @@
 ## Conversion Blueprint
 
 ### Recommended Headline Formula
+
 ```
 [Specific Problem]? Get [Speed/Benefit] from [City]'s Trusted Plumbers
 ```
 
 **Examples:**
+
 - "Clogged Drain? Get Same-Day Service from Phoenix's Most Trusted Plumbers"
 - "Leaky Pipes? Get 24/7 Emergency Repair - No Hidden Fees"
 - "Water Heater Problems? Get Fast, Reliable Service in [City]"
 
 ### Recommended Section Order
+
 1. Hero (Headline, CTA, Trust Bar)
 2. Emergency Banner (if applicable)
 3. Services Grid
@@ -260,17 +284,20 @@
 9. Footer
 
 ### Recommended Form Fields
+
 1. Name (required)
 2. Phone (required)
 3. Service Needed (dropdown - required)
 4. Describe Your Problem (optional textarea)
 
 ### Recommended CTA Wording
+
 - **Primary**: "Get Your Free Estimate"
 - **Secondary**: "Call Now: [Phone Number]"
 - **Emergency**: "Need Help Now? Call [Phone]"
 
 ### Key Conversion Triggers
+
 1. **Urgency**: Emergency availability, fast response times
 2. **Trust**: License displayed, insurance mentioned, reviews shown
 3. **Transparency**: Upfront pricing, no hidden fees messaging
@@ -282,17 +309,21 @@
 ## Industry-Specific Tips
 
 ### Emergency Services Emphasis
+
 - 24/7 phone number should be highly visible
 - Consider sticky mobile CTA for emergency calls
 - Response time guarantees are powerful converters
 - Separate landing pages for emergency vs. scheduled service
 
 ### Video Content
+
 - 69% of site visitors prefer short videos for learning about services
 - Consider adding a 30-60 second intro video
 - Video testimonials outperform text testimonials
 
 ### Service-Specific Pages
-- Create separate pages for: Drain cleaning, Water heaters, Leak repair, Sewer line, Fixture installation
+
+- Create separate pages for: Drain cleaning, Water heaters, Leak repair, Sewer line, Fixture
+  installation
 - Each page should have its own targeted headline and CTA
 - Helps with SEO and ad relevance

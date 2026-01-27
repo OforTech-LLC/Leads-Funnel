@@ -5,6 +5,7 @@
 # - Route 53 hosted zone for the root domain
 # - DNS records for root, www, and api subdomains
 # - ACM validation records (passed in from ACM module)
+# - Health checks for API endpoint monitoring
 # =============================================================================
 
 # -----------------------------------------------------------------------------
@@ -158,4 +159,109 @@ resource "aws_route53_record" "acm_validation" {
 
   # Prevent recreation on every apply
   allow_overwrite = true
+}
+
+# =============================================================================
+# Route 53 Health Checks
+# =============================================================================
+# Health checks monitor the API endpoint and can be used for:
+# - CloudWatch alarms and notifications
+# - DNS failover routing (if failover is configured)
+# - Monitoring API availability from multiple global locations
+# =============================================================================
+
+# API Health Check - monitors the /health endpoint
+resource "aws_route53_health_check" "api" {
+  count = var.enable_health_check ? 1 : 0
+
+  fqdn              = local.api_subdomain
+  port              = 443
+  type              = "HTTPS"
+  resource_path     = var.health_check_path
+  failure_threshold = var.health_check_failure_threshold
+  request_interval  = var.health_check_interval
+
+  # Regions to check from (multiple regions for accurate health status)
+  regions = var.health_check_regions
+
+  # Enable SNI for HTTPS checks
+  enable_sni = true
+
+  # Check for specific string in response (optional)
+  search_string = var.health_check_search_string != "" ? var.health_check_search_string : null
+
+  tags = merge(var.tags, {
+    Name = "${var.project_name}-${var.environment}-api-health-check"
+  })
+}
+
+# CloudWatch Alarm for Health Check
+resource "aws_cloudwatch_metric_alarm" "api_health" {
+  count = var.enable_health_check && var.enable_health_check_alarm ? 1 : 0
+
+  alarm_name          = "${var.project_name}-${var.environment}-api-health"
+  comparison_operator = "LessThanThreshold"
+  evaluation_periods  = 2
+  metric_name         = "HealthCheckStatus"
+  namespace           = "AWS/Route53"
+  period              = 60
+  statistic           = "Minimum"
+  threshold           = 1
+  alarm_description   = "API health check failed - endpoint may be unavailable"
+  treat_missing_data  = "breaching"
+
+  dimensions = {
+    HealthCheckId = aws_route53_health_check.api[0].id
+  }
+
+  # SNS topic for notifications (if provided)
+  alarm_actions = var.alarm_sns_topic_arn != "" ? [var.alarm_sns_topic_arn] : []
+  ok_actions    = var.alarm_sns_topic_arn != "" ? [var.alarm_sns_topic_arn] : []
+
+  tags = var.tags
+}
+
+# Website Health Check (optional - for static site)
+resource "aws_route53_health_check" "website" {
+  count = var.enable_website_health_check && var.create_root_records ? 1 : 0
+
+  fqdn              = var.root_domain
+  port              = 443
+  type              = "HTTPS"
+  resource_path     = "/"
+  failure_threshold = var.health_check_failure_threshold
+  request_interval  = var.health_check_interval
+
+  regions = var.health_check_regions
+
+  enable_sni = true
+
+  tags = merge(var.tags, {
+    Name = "${var.project_name}-${var.environment}-website-health-check"
+  })
+}
+
+# CloudWatch Alarm for Website Health Check
+resource "aws_cloudwatch_metric_alarm" "website_health" {
+  count = var.enable_website_health_check && var.enable_health_check_alarm && var.create_root_records ? 1 : 0
+
+  alarm_name          = "${var.project_name}-${var.environment}-website-health"
+  comparison_operator = "LessThanThreshold"
+  evaluation_periods  = 2
+  metric_name         = "HealthCheckStatus"
+  namespace           = "AWS/Route53"
+  period              = 60
+  statistic           = "Minimum"
+  threshold           = 1
+  alarm_description   = "Website health check failed - site may be unavailable"
+  treat_missing_data  = "breaching"
+
+  dimensions = {
+    HealthCheckId = aws_route53_health_check.website[0].id
+  }
+
+  alarm_actions = var.alarm_sns_topic_arn != "" ? [var.alarm_sns_topic_arn] : []
+  ok_actions    = var.alarm_sns_topic_arn != "" ? [var.alarm_sns_topic_arn] : []
+
+  tags = var.tags
 }
