@@ -5,7 +5,7 @@
 # Feature flags control which optional components are created.
 #
 # Project: kanjona
-# 47-funnel lead generation platform
+# 47-funnel lead generation platform + 3-sided marketplace
 # =============================================================================
 
 # -----------------------------------------------------------------------------
@@ -23,12 +23,25 @@ locals {
   funnel_ids      = var.funnel_ids
   funnel_metadata = var.funnel_metadata
 
+  # Resource prefix
+  prefix = "${var.project_name}-${var.environment}"
+
   # CORS origins - dev only uses subdomain
   cors_origins = concat(
     [
       "https://dev.${var.root_domain}",
     ],
     var.additional_cors_origins
+  )
+
+  # Platform CORS origins
+  admin_cors_origins = concat(
+    ["https://admin-dev.${var.root_domain}"],
+    var.enable_platform ? ["http://localhost:3001"] : []
+  )
+  portal_cors_origins = concat(
+    ["https://portal-dev.${var.root_domain}"],
+    var.enable_platform ? ["http://localhost:3002"] : []
   )
 }
 
@@ -65,6 +78,679 @@ module "dynamodb" {
   enable_deletion_protection = false # Allow deletion in dev
 
   tags = local.common_tags
+}
+
+# =============================================================================
+# Platform DynamoDB Tables (3-sided marketplace)
+# =============================================================================
+# These tables support the multi-tenant, 3-sided platform features.
+# Controlled by enable_platform feature flag.
+# =============================================================================
+
+# --- Organizations Table ---
+module "dynamodb_orgs" {
+  count  = var.enable_platform ? 1 : 0
+  source = "../../modules/dynamodb-table"
+
+  table_name = "${local.prefix}-orgs"
+  hash_key   = "orgId"
+  range_key  = "sk"
+
+  attributes = [
+    { name = "orgId", type = "S" },
+    { name = "sk", type = "S" },
+    { name = "gsi1pk", type = "S" },
+    { name = "gsi1sk", type = "S" },
+    { name = "gsi2pk", type = "S" },
+    { name = "gsi2sk", type = "S" },
+  ]
+
+  global_secondary_indexes = [
+    {
+      name      = "GSI1"
+      hash_key  = "gsi1pk"
+      range_key = "gsi1sk"
+    },
+    {
+      name      = "GSI2"
+      hash_key  = "gsi2pk"
+      range_key = "gsi2sk"
+    },
+  ]
+
+  enable_pitr                = false
+  enable_deletion_protection = false
+
+  tags = merge(local.common_tags, { Type = "platform-orgs" })
+}
+
+# --- Users Table ---
+module "dynamodb_users" {
+  count  = var.enable_platform ? 1 : 0
+  source = "../../modules/dynamodb-table"
+
+  table_name = "${local.prefix}-users"
+  hash_key   = "pk"
+  range_key  = "sk"
+
+  attributes = [
+    { name = "pk", type = "S" },
+    { name = "sk", type = "S" },
+    { name = "gsi1pk", type = "S" },
+    { name = "gsi1sk", type = "S" },
+    { name = "gsi2pk", type = "S" },
+    { name = "gsi2sk", type = "S" },
+  ]
+
+  global_secondary_indexes = [
+    {
+      name      = "GSI1"
+      hash_key  = "gsi1pk"
+      range_key = "gsi1sk"
+    },
+    {
+      name      = "GSI2"
+      hash_key  = "gsi2pk"
+      range_key = "gsi2sk"
+    },
+  ]
+
+  enable_pitr                = false
+  enable_deletion_protection = false
+
+  tags = merge(local.common_tags, { Type = "platform-users" })
+}
+
+# --- Memberships Table ---
+module "dynamodb_memberships" {
+  count  = var.enable_platform ? 1 : 0
+  source = "../../modules/dynamodb-table"
+
+  table_name = "${local.prefix}-memberships"
+  hash_key   = "pk"
+  range_key  = "sk"
+
+  attributes = [
+    { name = "pk", type = "S" },
+    { name = "sk", type = "S" },
+    { name = "gsi1pk", type = "S" },
+    { name = "gsi1sk", type = "S" },
+    { name = "gsi2pk", type = "S" },
+    { name = "gsi2sk", type = "S" },
+    { name = "gsi3pk", type = "S" },
+    { name = "gsi3sk", type = "S" },
+  ]
+
+  global_secondary_indexes = [
+    {
+      name      = "GSI1"
+      hash_key  = "gsi1pk"
+      range_key = "gsi1sk"
+    },
+    {
+      name      = "GSI2"
+      hash_key  = "gsi2pk"
+      range_key = "gsi2sk"
+    },
+    {
+      name      = "GSI3"
+      hash_key  = "gsi3pk"
+      range_key = "gsi3sk"
+    },
+  ]
+
+  enable_pitr                = false
+  enable_deletion_protection = false
+
+  tags = merge(local.common_tags, { Type = "platform-memberships" })
+}
+
+# --- Assignment Rules Table ---
+module "dynamodb_assignment_rules" {
+  count  = var.enable_platform ? 1 : 0
+  source = "../../modules/dynamodb-table"
+
+  table_name = "${local.prefix}-assignment-rules"
+  hash_key   = "pk"
+  range_key  = "sk"
+
+  attributes = [
+    { name = "pk", type = "S" },
+    { name = "sk", type = "S" },
+    { name = "gsi1pk", type = "S" },
+    { name = "gsi1sk", type = "S" },
+    { name = "gsi2pk", type = "S" },
+    { name = "gsi2sk", type = "S" },
+  ]
+
+  global_secondary_indexes = [
+    {
+      name      = "GSI1"
+      hash_key  = "gsi1pk"
+      range_key = "gsi1sk"
+    },
+    {
+      name      = "GSI2"
+      hash_key  = "gsi2pk"
+      range_key = "gsi2sk"
+    },
+  ]
+
+  enable_pitr                = false
+  enable_deletion_protection = false
+
+  tags = merge(local.common_tags, { Type = "platform-assignment-rules" })
+}
+
+# --- Unassigned Leads Table (with TTL) ---
+module "dynamodb_unassigned" {
+  count  = var.enable_platform ? 1 : 0
+  source = "../../modules/dynamodb-table"
+
+  table_name    = "${local.prefix}-unassigned"
+  hash_key      = "pk"
+  range_key     = "sk"
+  ttl_attribute = "ttl"
+
+  attributes = [
+    { name = "pk", type = "S" },
+    { name = "sk", type = "S" },
+  ]
+
+  enable_pitr                = false
+  enable_deletion_protection = false
+
+  tags = merge(local.common_tags, { Type = "platform-unassigned" })
+}
+
+# --- Notifications Table (with TTL) ---
+module "dynamodb_notifications" {
+  count  = var.enable_platform ? 1 : 0
+  source = "../../modules/dynamodb-table"
+
+  table_name    = "${local.prefix}-notifications"
+  hash_key      = "pk"
+  range_key     = "sk"
+  ttl_attribute = "ttl"
+
+  attributes = [
+    { name = "pk", type = "S" },
+    { name = "sk", type = "S" },
+  ]
+
+  enable_pitr                = false
+  enable_deletion_protection = false
+
+  tags = merge(local.common_tags, { Type = "platform-notifications" })
+}
+
+# --- Admin Audit Table (with TTL) ---
+module "dynamodb_admin_audit" {
+  count  = var.enable_platform ? 1 : 0
+  source = "../../modules/dynamodb-table"
+
+  table_name    = "${local.prefix}-admin-audit"
+  hash_key      = "pk"
+  range_key     = "sk"
+  ttl_attribute = "ttl"
+
+  attributes = [
+    { name = "pk", type = "S" },
+    { name = "sk", type = "S" },
+  ]
+
+  enable_pitr                = false
+  enable_deletion_protection = false
+
+  tags = merge(local.common_tags, { Type = "platform-admin-audit" })
+}
+
+# --- Exports Table (with TTL) ---
+module "dynamodb_exports" {
+  count  = var.enable_platform ? 1 : 0
+  source = "../../modules/dynamodb-table"
+
+  table_name    = "${local.prefix}-exports"
+  hash_key      = "pk"
+  range_key     = "sk"
+  ttl_attribute = "ttl"
+
+  attributes = [
+    { name = "pk", type = "S" },
+    { name = "sk", type = "S" },
+  ]
+
+  enable_pitr                = false
+  enable_deletion_protection = false
+
+  tags = merge(local.common_tags, { Type = "platform-exports" })
+}
+
+# =============================================================================
+# Platform SQS Queues (Assignment + Notification)
+# =============================================================================
+
+# --- Assignment Queue ---
+module "assignment_queue" {
+  count  = var.enable_platform ? 1 : 0
+  source = "../../modules/sqs-queue"
+
+  queue_name                 = "${local.prefix}-assignment-queue"
+  visibility_timeout_seconds = 60
+  max_receive_count          = 3
+
+  enable_dlq_alarm = false # Disable alarm in dev
+
+  tags = merge(local.common_tags, { Type = "platform-assignment-queue" })
+}
+
+# --- Notification Queue ---
+module "notification_queue" {
+  count  = var.enable_platform ? 1 : 0
+  source = "../../modules/sqs-queue"
+
+  queue_name                 = "${local.prefix}-notification-queue"
+  visibility_timeout_seconds = 60
+  max_receive_count          = 3
+
+  enable_dlq_alarm = false # Disable alarm in dev
+
+  tags = merge(local.common_tags, { Type = "platform-notification-queue" })
+}
+
+# =============================================================================
+# Platform Cognito User Pools (Admin + Portal)
+# =============================================================================
+
+# --- Admin User Pool ---
+module "cognito_admin" {
+  count  = var.enable_platform ? 1 : 0
+  source = "../../modules/cognito-userpool"
+
+  pool_name     = "${local.prefix}-admin-userpool"
+  domain_prefix = var.platform_admin_cognito_domain
+
+  mfa_configuration            = "OPTIONAL"
+  advanced_security_mode       = "AUDIT"
+  allow_admin_create_user_only = true
+  challenge_on_new_device      = true
+
+  custom_attributes = [
+    {
+      name                = "role"
+      attribute_data_type = "String"
+      min_length          = 1
+      max_length          = 50
+    },
+    {
+      name                = "orgId"
+      attribute_data_type = "String"
+      min_length          = 1
+      max_length          = 100
+    },
+  ]
+
+  callback_urls = concat(
+    ["https://admin-dev.${var.root_domain}/auth/callback"],
+    ["http://localhost:3001/auth/callback"]
+  )
+  logout_urls = concat(
+    ["https://admin-dev.${var.root_domain}"],
+    ["http://localhost:3001"]
+  )
+
+  read_attributes  = ["email", "email_verified", "custom:role", "custom:orgId"]
+  write_attributes = ["email", "custom:role", "custom:orgId"]
+
+  # Token validity (relaxed for dev)
+  access_token_validity  = 4
+  id_token_validity      = 4
+  refresh_token_validity = 30
+
+  user_groups = [
+    { name = "SuperAdmin", description = "Platform super administrator", precedence = 1 },
+    { name = "OrgAdmin", description = "Organization administrator", precedence = 2 },
+    { name = "OrgViewer", description = "Organization read-only viewer", precedence = 3 },
+  ]
+
+  # Pre-token generation trigger
+  pre_token_generation_lambda_arn  = var.enable_platform ? module.pre_token_admin[0].function_arn : null
+  pre_token_generation_lambda_name = var.enable_platform ? module.pre_token_admin[0].function_name : null
+
+  invite_email_subject = "Kanjona Admin - Your Account"
+  invite_email_message = "Your admin account has been created. Username: {username}, Temporary password: {####}. Please log in and change your password."
+
+  tags = merge(local.common_tags, { Type = "platform-admin-cognito" })
+}
+
+# --- Portal User Pool ---
+module "cognito_portal" {
+  count  = var.enable_platform ? 1 : 0
+  source = "../../modules/cognito-userpool"
+
+  pool_name     = "${local.prefix}-portal-userpool"
+  domain_prefix = var.platform_portal_cognito_domain
+
+  mfa_configuration            = "OPTIONAL"
+  advanced_security_mode       = "AUDIT"
+  allow_admin_create_user_only = false # Allow self-registration for portal
+  challenge_on_new_device      = true
+
+  custom_attributes = [
+    {
+      name                = "orgId"
+      attribute_data_type = "String"
+      min_length          = 1
+      max_length          = 100
+    },
+    {
+      name                = "membershipRole"
+      attribute_data_type = "String"
+      min_length          = 1
+      max_length          = 50
+    },
+  ]
+
+  callback_urls = concat(
+    ["https://portal-dev.${var.root_domain}/auth/callback"],
+    ["http://localhost:3002/auth/callback"]
+  )
+  logout_urls = concat(
+    ["https://portal-dev.${var.root_domain}"],
+    ["http://localhost:3002"]
+  )
+
+  read_attributes  = ["email", "email_verified", "custom:orgId", "custom:membershipRole"]
+  write_attributes = ["email", "custom:orgId", "custom:membershipRole"]
+
+  # Token validity (relaxed for dev)
+  access_token_validity  = 4
+  id_token_validity      = 4
+  refresh_token_validity = 30
+
+  user_groups = [
+    { name = "OrgOwner", description = "Organization owner", precedence = 1 },
+    { name = "OrgMember", description = "Organization member", precedence = 2 },
+  ]
+
+  # Pre-token generation trigger
+  pre_token_generation_lambda_arn  = var.enable_platform ? module.pre_token_portal[0].function_arn : null
+  pre_token_generation_lambda_name = var.enable_platform ? module.pre_token_portal[0].function_name : null
+
+  invite_email_subject = "Kanjona Portal - Your Account"
+  invite_email_message = "Your portal account has been created. Username: {username}, Temporary password: {####}. Please log in and change your password."
+
+  tags = merge(local.common_tags, { Type = "platform-portal-cognito" })
+}
+
+# =============================================================================
+# Platform Worker Lambdas
+# =============================================================================
+
+# --- Assignment Worker ---
+module "assignment_worker" {
+  count  = var.enable_platform ? 1 : 0
+  source = "../../modules/lambda-worker"
+
+  function_name   = "${local.prefix}-assignment-worker"
+  description     = "Processes lead assignment based on rules"
+  memory_mb       = 256
+  timeout_seconds = 60
+
+  sqs_queue_arn  = module.assignment_queue[0].queue_arn
+  sqs_batch_size = 5
+
+  dynamodb_table_arns = [
+    module.dynamodb_orgs[0].table_arn,
+    module.dynamodb_users[0].table_arn,
+    module.dynamodb_memberships[0].table_arn,
+    module.dynamodb_assignment_rules[0].table_arn,
+    module.dynamodb_unassigned[0].table_arn,
+  ]
+
+  ssm_parameter_arns = concat(
+    module.ssm.all_parameter_arns,
+    var.enable_platform ? module.platform_ssm[0].all_parameter_arns : [],
+  )
+
+  event_bus_arn = module.eventbridge.event_bus_arn
+
+  environment_variables = {
+    ENVIRONMENT            = var.environment
+    PROJECT_NAME           = var.project_name
+    LOG_LEVEL              = "DEBUG"
+    ORGS_TABLE_NAME        = module.dynamodb_orgs[0].table_name
+    USERS_TABLE_NAME       = module.dynamodb_users[0].table_name
+    MEMBERSHIPS_TABLE_NAME = module.dynamodb_memberships[0].table_name
+    ASSIGNMENT_RULES_TABLE = module.dynamodb_assignment_rules[0].table_name
+    UNASSIGNED_TABLE_NAME  = module.dynamodb_unassigned[0].table_name
+    EVENT_BUS_NAME         = module.eventbridge.event_bus_name
+    NOTIFICATION_QUEUE_URL = module.notification_queue[0].queue_url
+  }
+
+  sqs_send_queue_arns = [module.notification_queue[0].queue_arn]
+
+  enable_xray        = var.enable_xray
+  log_retention_days = 7
+
+  tags = merge(local.common_tags, { Type = "platform-assignment-worker" })
+}
+
+# --- Notification Worker ---
+module "notification_worker" {
+  count  = var.enable_platform ? 1 : 0
+  source = "../../modules/lambda-worker"
+
+  function_name   = "${local.prefix}-notification-worker"
+  description     = "Sends email/SMS notifications for lead events"
+  memory_mb       = 256
+  timeout_seconds = 60
+
+  sqs_queue_arn  = module.notification_queue[0].queue_arn
+  sqs_batch_size = 5
+
+  dynamodb_table_arns = [
+    module.dynamodb_users[0].table_arn,
+    module.dynamodb_memberships[0].table_arn,
+    module.dynamodb_notifications[0].table_arn,
+  ]
+
+  ssm_parameter_arns = concat(
+    module.ssm.all_parameter_arns,
+    var.enable_platform ? module.platform_ssm[0].all_parameter_arns : [],
+  )
+
+  enable_ses = var.enable_ses
+  enable_sns = false # Disable SMS in dev
+
+  environment_variables = {
+    ENVIRONMENT            = var.environment
+    PROJECT_NAME           = var.project_name
+    LOG_LEVEL              = "DEBUG"
+    USERS_TABLE_NAME       = module.dynamodb_users[0].table_name
+    MEMBERSHIPS_TABLE_NAME = module.dynamodb_memberships[0].table_name
+    NOTIFICATIONS_TABLE    = module.dynamodb_notifications[0].table_name
+  }
+
+  enable_xray        = var.enable_xray
+  log_retention_days = 7
+
+  tags = merge(local.common_tags, { Type = "platform-notification-worker" })
+}
+
+# --- Pre-Token Generation (Admin) ---
+module "pre_token_admin" {
+  count  = var.enable_platform ? 1 : 0
+  source = "../../modules/lambda-worker"
+
+  function_name   = "${local.prefix}-pre-token-admin"
+  description     = "Pre-token generation trigger for admin Cognito pool"
+  memory_mb       = 128
+  timeout_seconds = 10
+
+  dynamodb_table_arns = [
+    module.dynamodb_users[0].table_arn,
+    module.dynamodb_memberships[0].table_arn,
+  ]
+
+  ssm_parameter_arns = concat(
+    module.ssm.all_parameter_arns,
+    var.enable_platform ? module.platform_ssm[0].all_parameter_arns : [],
+  )
+
+  environment_variables = {
+    ENVIRONMENT            = var.environment
+    PROJECT_NAME           = var.project_name
+    LOG_LEVEL              = "DEBUG"
+    USERS_TABLE_NAME       = module.dynamodb_users[0].table_name
+    MEMBERSHIPS_TABLE_NAME = module.dynamodb_memberships[0].table_name
+  }
+
+  enable_xray        = var.enable_xray
+  log_retention_days = 7
+
+  tags = merge(local.common_tags, { Type = "platform-pre-token-admin" })
+}
+
+# --- Pre-Token Generation (Portal) ---
+module "pre_token_portal" {
+  count  = var.enable_platform ? 1 : 0
+  source = "../../modules/lambda-worker"
+
+  function_name   = "${local.prefix}-pre-token-portal"
+  description     = "Pre-token generation trigger for portal Cognito pool"
+  memory_mb       = 128
+  timeout_seconds = 10
+
+  dynamodb_table_arns = [
+    module.dynamodb_users[0].table_arn,
+    module.dynamodb_memberships[0].table_arn,
+    module.dynamodb_orgs[0].table_arn,
+  ]
+
+  ssm_parameter_arns = concat(
+    module.ssm.all_parameter_arns,
+    var.enable_platform ? module.platform_ssm[0].all_parameter_arns : [],
+  )
+
+  environment_variables = {
+    ENVIRONMENT            = var.environment
+    PROJECT_NAME           = var.project_name
+    LOG_LEVEL              = "DEBUG"
+    USERS_TABLE_NAME       = module.dynamodb_users[0].table_name
+    MEMBERSHIPS_TABLE_NAME = module.dynamodb_memberships[0].table_name
+    ORGS_TABLE_NAME        = module.dynamodb_orgs[0].table_name
+  }
+
+  enable_xray        = var.enable_xray
+  log_retention_days = 7
+
+  tags = merge(local.common_tags, { Type = "platform-pre-token-portal" })
+}
+
+# =============================================================================
+# Platform EventBridge Rules
+# =============================================================================
+module "platform_eventbridge" {
+  count  = var.enable_platform ? 1 : 0
+  source = "../../modules/platform-eventbridge"
+
+  project_name = var.project_name
+  environment  = var.environment
+
+  event_bus_name = module.eventbridge.event_bus_name
+  event_bus_arn  = module.eventbridge.event_bus_arn
+
+  assignment_queue_arn = module.assignment_queue[0].queue_arn
+  assignment_queue_url = module.assignment_queue[0].queue_url
+
+  notification_queue_arn = module.notification_queue[0].queue_arn
+  notification_queue_url = module.notification_queue[0].queue_url
+
+  tags = local.common_tags
+}
+
+# =============================================================================
+# Platform SSM Parameters
+# =============================================================================
+module "platform_ssm" {
+  count  = var.enable_platform ? 1 : 0
+  source = "../../modules/platform-ssm"
+
+  project_name = var.project_name
+  environment  = var.environment
+
+  # Feature flags (all default false in dev)
+  enable_assignment_engine  = false
+  enable_portal             = false
+  enable_multi_tenant       = false
+  enable_auto_assignment    = false
+  enable_lead_notifications = false
+  enable_org_management     = false
+  enable_exports            = false
+  enable_audit_logging      = false
+
+  # CORS origins
+  admin_cors_origins  = local.admin_cors_origins
+  portal_cors_origins = local.portal_cors_origins
+
+  # Table name references
+  orgs_table_name             = module.dynamodb_orgs[0].table_name
+  users_table_name            = module.dynamodb_users[0].table_name
+  memberships_table_name      = module.dynamodb_memberships[0].table_name
+  assignment_rules_table_name = module.dynamodb_assignment_rules[0].table_name
+  unassigned_table_name       = module.dynamodb_unassigned[0].table_name
+  notifications_table_name    = module.dynamodb_notifications[0].table_name
+
+  # Queue references
+  assignment_queue_url   = module.assignment_queue[0].queue_url
+  notification_queue_url = module.notification_queue[0].queue_url
+
+  # Cognito references
+  admin_cognito_pool_id    = module.cognito_admin[0].pool_id
+  admin_cognito_client_id  = module.cognito_admin[0].client_id
+  portal_cognito_pool_id   = module.cognito_portal[0].pool_id
+  portal_cognito_client_id = module.cognito_portal[0].client_id
+
+  tags = local.common_tags
+}
+
+# =============================================================================
+# Platform CloudFront Apps (Admin + Portal)
+# =============================================================================
+
+# --- Admin App ---
+module "admin_app" {
+  count  = var.enable_platform ? 1 : 0
+  source = "../../modules/cloudfront-app"
+
+  app_name    = "${local.prefix}-admin-app"
+  bucket_name = "${local.prefix}-admin-app-origin"
+
+  domain_aliases      = ["admin-dev.${var.root_domain}"]
+  acm_certificate_arn = module.acm.validated_certificate_arn
+  route53_zone_id     = module.dns.zone_id
+
+  price_class = "PriceClass_100"
+
+  tags = merge(local.common_tags, { Type = "platform-admin-app" })
+}
+
+# --- Portal App ---
+module "portal_app" {
+  count  = var.enable_platform ? 1 : 0
+  source = "../../modules/cloudfront-app"
+
+  app_name    = "${local.prefix}-portal-app"
+  bucket_name = "${local.prefix}-portal-app-origin"
+
+  domain_aliases      = ["portal-dev.${var.root_domain}"]
+  acm_certificate_arn = module.acm.validated_certificate_arn
+  route53_zone_id     = module.dns.zone_id
+
+  price_class = "PriceClass_100"
+
+  tags = merge(local.common_tags, { Type = "platform-portal-app" })
 }
 
 # =============================================================================

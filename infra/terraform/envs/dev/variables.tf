@@ -2,7 +2,7 @@
 # Variables - Dev Environment
 # =============================================================================
 # Project: kanjona
-# 47-funnel lead generation platform
+# 47-funnel lead generation platform + 3-sided marketplace
 # =============================================================================
 
 # -----------------------------------------------------------------------------
@@ -202,6 +202,15 @@ variable "enable_cloudtrail" {
 }
 
 # -----------------------------------------------------------------------------
+# Platform Feature Flag (3-sided marketplace)
+# -----------------------------------------------------------------------------
+variable "enable_platform" {
+  type        = bool
+  default     = false
+  description = "Enable 3-sided platform features (orgs, users, memberships, assignment, notifications, admin/portal Cognito pools, CloudFront apps)"
+}
+
+# -----------------------------------------------------------------------------
 # Lambda Configuration
 # -----------------------------------------------------------------------------
 variable "lambda_memory_mb" {
@@ -323,4 +332,19 @@ variable "admin_lambda_zip_hash" {
   type        = string
   default     = ""
   description = "Base64-encoded SHA256 hash of admin Lambda package"
+}
+
+# -----------------------------------------------------------------------------
+# Platform Cognito Domains (3-sided marketplace)
+# -----------------------------------------------------------------------------
+variable "platform_admin_cognito_domain" {
+  type        = string
+  default     = "kanjona-platform-admin-dev"
+  description = "Cognito hosted UI domain prefix for platform admin pool"
+}
+
+variable "platform_portal_cognito_domain" {
+  type        = string
+  default     = "kanjona-platform-portal-dev"
+  description = "Cognito hosted UI domain prefix for platform portal pool"
 }

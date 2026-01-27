@@ -3,11 +3,20 @@
  *
  * Routes incoming requests to appropriate handlers based on path.
  * Provides a unified entry point for all API endpoints.
+ *
+ * Routes:
+ *   /health       -> Health check handler
+ *   /lead         -> Public lead capture handler
+ *   /admin/*      -> Admin console handler (feature-flagged)
+ *   /portal/*     -> Agent portal handler (feature-flagged)
  */
 
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Context } from 'aws-lambda';
 import { handler as leadHandler } from './handler.js';
 import { handler as healthHandler } from './health/handler.js';
+import { handler as adminHandler } from './handlers/admin.js';
+import { handler as portalHandler } from './handlers/portal.js';
+import { checkFeatureEnabled } from './lib/response.js';
 
 // =============================================================================
 // CORS Headers
@@ -15,8 +24,8 @@ import { handler as healthHandler } from './health/handler.js';
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'content-type',
-  'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
+  'Access-Control-Allow-Headers': 'content-type,authorization',
+  'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
   'Content-Type': 'application/json',
 } as const;
 
@@ -38,12 +47,23 @@ function notFound(): APIGatewayProxyResultV2 {
   };
 }
 
+function preflight(): APIGatewayProxyResultV2 {
+  return {
+    statusCode: 204,
+    headers: CORS_HEADERS,
+    body: '',
+  };
+}
+
 // =============================================================================
 // Router Handler
 // =============================================================================
 
 /**
- * Main router that dispatches requests to appropriate handlers
+ * Main router that dispatches requests to appropriate handlers.
+ *
+ * Feature-flagged routes return 404 when their flag is disabled,
+ * making the endpoints invisible to external scanners.
  */
 export async function router(
   event: APIGatewayProxyEventV2,
@@ -52,7 +72,20 @@ export async function router(
   const path = event.requestContext.http.path;
   const method = event.requestContext.http.method;
 
-  console.log(`[Router] ${method} ${path}`);
+  console.log(
+    JSON.stringify({
+      level: 'info',
+      message: 'router.request',
+      method,
+      path,
+      requestId: context.awsRequestId,
+    })
+  );
+
+  // Global OPTIONS preflight
+  if (method === 'OPTIONS') {
+    return preflight();
+  }
 
   // Route based on path
   if (path === '/health' || path.startsWith('/health/')) {
@@ -63,13 +96,34 @@ export async function router(
     return leadHandler(event, context);
   }
 
+  // Admin console routes (feature-flagged)
+  if (path.startsWith('/admin')) {
+    const gated = await checkFeatureEnabled('enable_admin_console');
+    if (gated) return gated;
+    return adminHandler(event);
+  }
+
+  // Agent portal routes (feature-flagged)
+  if (path.startsWith('/portal')) {
+    const gated = await checkFeatureEnabled('enable_agent_portal');
+    if (gated) return gated;
+    return portalHandler(event);
+  }
+
   // Fallback to lead handler for root path (backwards compatibility)
   if (path === '/' && method === 'POST') {
     return leadHandler(event, context);
   }
 
   // Not found
-  console.warn(`[Router] Unknown path: ${path}`);
+  console.log(
+    JSON.stringify({
+      level: 'warn',
+      message: 'router.notFound',
+      path,
+      method,
+    })
+  );
   return notFound();
 }
 

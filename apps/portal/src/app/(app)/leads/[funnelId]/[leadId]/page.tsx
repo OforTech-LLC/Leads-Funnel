@@ -1,0 +1,62 @@
+'use client';
+
+import { use } from 'react';
+import { useLead, useUpdateLeadStatus, useAddNote } from '@/lib/queries/leads';
+import LeadDetailModal from '@/components/LeadDetailModal';
+import { PageLoader } from '@/components/LoadingSpinner';
+
+interface LeadDetailPageProps {
+  params: Promise<{
+    funnelId: string;
+    leadId: string;
+  }>;
+}
+
+export default function LeadDetailPage({ params }: LeadDetailPageProps) {
+  const { funnelId, leadId } = use(params);
+  const { data: lead, isLoading, error } = useLead(funnelId, leadId);
+  const updateStatus = useUpdateLeadStatus();
+  const addNote = useAddNote();
+
+  if (isLoading) {
+    return <PageLoader />;
+  }
+
+  if (error || !lead) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center px-4">
+        <div className="text-center">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-red-50">
+            <svg
+              className="h-6 w-6 text-red-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={1.5}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"
+              />
+            </svg>
+          </div>
+          <h2 className="mt-4 text-lg font-semibold text-gray-900">Lead not found</h2>
+          <p className="mt-1 text-sm text-gray-500">
+            This lead may have been removed or you may not have access.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <LeadDetailModal
+      lead={lead}
+      onStatusChange={(status) => updateStatus.mutate({ funnelId, leadId, status })}
+      onAddNote={(content) => addNote.mutate({ funnelId, leadId, content })}
+      isUpdatingStatus={updateStatus.isPending}
+      isAddingNote={addNote.isPending}
+    />
+  );
+}

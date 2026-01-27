@@ -4,6 +4,64 @@
  */
 
 // =============================================================================
+// Platform Types (3-sided marketplace)
+// =============================================================================
+
+export type {
+  OrgType,
+  OrgStatus,
+  LeadVisibilityPolicy,
+  Org,
+  CreateOrgInput,
+  UpdateOrgInput,
+} from './types/org';
+
+export type { UserStatus, User, CreateUserInput, UpdateUserInput } from './types/user';
+
+export type {
+  MembershipRole,
+  Membership,
+  AddMemberInput,
+  UpdateMemberInput,
+} from './types/membership';
+
+export type {
+  TargetType,
+  AssignmentRule,
+  CreateRuleInput,
+  UpdateRuleInput,
+  RuleTestInput,
+  RuleTestResult,
+} from './types/assignment-rule';
+
+export type {
+  NotificationChannel,
+  NotificationStatus,
+  NotificationTargetType,
+  Notification,
+} from './types/notification';
+
+// Re-export new lead types with "Platform" prefix to avoid collision with
+// the original Lead interface (which represents form-submission data).
+export type {
+  PipelineStatus,
+  Lead as PlatformLead,
+  LeadNotificationInfo,
+  UpdateLeadInput,
+  ReassignLeadInput,
+} from './types/lead';
+
+export type { ExportFormat, ExportStatus, ExportJob, CreateExportInput } from './types/export';
+
+export type { AuditEntry } from './types/audit';
+
+export type { PaginationRequest, PaginationResponse, PaginatedResult } from './types/pagination';
+
+export type { ErrorCode, ApiErrorResponse, ApiSuccessResponse } from './types/api';
+
+export type { LeadCreatedEvent, LeadAssignedEvent, LeadUnassignedEvent } from './types/events';
+
+// =============================================================================
 // UTM Parameters
 // =============================================================================
 
