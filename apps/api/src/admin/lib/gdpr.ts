@@ -7,9 +7,8 @@
  * - Anonymize data instead of deleting (for analytics retention)
  */
 
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBClient, ListTablesCommand } from '@aws-sdk/client-dynamodb';
 import {
-  DynamoDBDocumentClient,
   QueryCommand,
   DeleteCommand,
   UpdateCommand,
@@ -17,10 +16,7 @@ import {
 } from '@aws-sdk/lib-dynamodb';
 import { v4 as uuidv4 } from 'uuid';
 import type { AdminConfig, Lead, AuditLogEntry } from '../types.js';
-
-const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({}), {
-  marshallOptions: { removeUndefinedValues: true },
-});
+import { getDocClient } from '../../lib/clients.js';
 
 // =============================================================================
 // Types
@@ -106,10 +102,14 @@ function generateAnonymizedId(): string {
 
 /**
  * List all funnel tables
+ *
+ * Note: ListTables requires the low-level DynamoDB client, not the
+ * Document client. We create a temporary client here since this is
+ * an infrequent admin-only operation and the ListTables API is not
+ * available on DynamoDBDocumentClient.
  */
 async function listFunnelTables(config: AdminConfig): Promise<string[]> {
-  const { DynamoDBClient: DDBClient, ListTablesCommand } = await import('@aws-sdk/client-dynamodb');
-  const client = new DDBClient({});
+  const client = new DynamoDBClient({});
   const prefix = `${config.projectName}-${config.env}-`;
 
   const funnelIds: string[] = [];
@@ -142,6 +142,7 @@ async function listFunnelTables(config: AdminConfig): Promise<string[]> {
  * Find all leads by email across a funnel table
  */
 async function findLeadsByEmail(tableName: string, email: string): Promise<Lead[]> {
+  const ddb = getDocClient();
   const leads: Lead[] = [];
   let lastKey: Record<string, unknown> | undefined;
 
@@ -169,6 +170,7 @@ async function findLeadsByEmail(tableName: string, email: string): Promise<Lead[
  * Find audit logs for a user by email
  */
 async function findAuditLogsByEmail(config: AdminConfig, email: string): Promise<AuditLogEntry[]> {
+  const ddb = getDocClient();
   const logs: AuditLogEntry[] = [];
   let lastKey: Record<string, unknown> | undefined;
 
@@ -215,6 +217,7 @@ export async function deleteLeadData(
   email: string,
   requestedBy: string
 ): Promise<GdprDeleteResult> {
+  const ddb = getDocClient();
   const timestamp = new Date().toISOString();
   const auditId = uuidv4();
   const normalizedEmail = email.toLowerCase().trim();
@@ -311,6 +314,7 @@ export async function exportUserData(
   email: string,
   requestedBy: string
 ): Promise<GdprExportResult> {
+  const ddb = getDocClient();
   const timestamp = new Date().toISOString();
   const exportId = uuidv4();
   const normalizedEmail = email.toLowerCase().trim();
@@ -420,6 +424,7 @@ export async function anonymizeLeadData(
   email: string,
   requestedBy: string
 ): Promise<GdprAnonymizeResult> {
+  const ddb = getDocClient();
   const timestamp = new Date().toISOString();
   const auditId = uuidv4();
   const normalizedEmail = email.toLowerCase().trim();
@@ -526,6 +531,7 @@ export async function getGdprHistory(
   config: AdminConfig,
   email: string
 ): Promise<Array<{ action: string; timestamp: string; details: Record<string, unknown> }>> {
+  const ddb = getDocClient();
   const normalizedEmail = email.toLowerCase().trim();
   const history: Array<{ action: string; timestamp: string; details: Record<string, unknown> }> =
     [];

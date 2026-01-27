@@ -12,7 +12,7 @@
  * 4. Return the first match or null
  */
 
-import type { AssignmentRule } from '../../workers/types.js';
+import type { AssignmentRule } from '../types/events.js';
 
 // =============================================================================
 // ZIP Pattern Matching

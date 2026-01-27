@@ -12,6 +12,11 @@ variable "project_name" {
   type        = string
   default     = "kanjona"
   description = "Project name used in resource naming"
+
+  validation {
+    condition     = can(regex("^[a-z0-9-]+$", var.project_name))
+    error_message = "Project name must contain only lowercase letters, numbers, and hyphens."
+  }
 }
 
 variable "environment" {
@@ -20,8 +25,8 @@ variable "environment" {
   description = "Environment name (dev or prod)"
 
   validation {
-    condition     = contains(["dev", "prod"], var.environment)
-    error_message = "Environment must be 'dev' or 'prod'."
+    condition     = contains(["dev", "staging", "prod"], var.environment)
+    error_message = "Environment must be 'dev', 'staging', or 'prod'."
   }
 }
 
@@ -29,6 +34,11 @@ variable "aws_region" {
   type        = string
   default     = "us-east-1"
   description = "Primary AWS region for deployment"
+
+  validation {
+    condition     = can(regex("^[a-z]{2}-[a-z]+-[0-9]+$", var.aws_region))
+    error_message = "AWS region must be a valid region identifier (e.g., us-east-1)."
+  }
 }
 
 variable "root_domain" {
@@ -38,6 +48,53 @@ variable "root_domain" {
   validation {
     condition     = can(regex("^[a-z0-9][a-z0-9-]{0,61}[a-z0-9]\\.[a-z]{2,}$", var.root_domain))
     error_message = "Root domain must be a valid domain name."
+  }
+}
+
+# -----------------------------------------------------------------------------
+# Subdomain Prefixes (parameterized to avoid hardcoding)
+# -----------------------------------------------------------------------------
+variable "env_subdomain" {
+  type        = string
+  default     = "dev"
+  description = "Subdomain prefix for this environment (e.g., 'dev' for dev.kanjona.com)"
+
+  validation {
+    condition     = can(regex("^[a-z0-9-]+$", var.env_subdomain))
+    error_message = "Subdomain must contain only lowercase letters, numbers, and hyphens."
+  }
+}
+
+variable "admin_subdomain" {
+  type        = string
+  default     = "admin-dev"
+  description = "Subdomain prefix for the admin app (e.g., 'admin-dev' for admin-dev.kanjona.com)"
+
+  validation {
+    condition     = can(regex("^[a-z0-9-]+$", var.admin_subdomain))
+    error_message = "Subdomain must contain only lowercase letters, numbers, and hyphens."
+  }
+}
+
+variable "portal_subdomain" {
+  type        = string
+  default     = "portal-dev"
+  description = "Subdomain prefix for the portal app (e.g., 'portal-dev' for portal-dev.kanjona.com)"
+
+  validation {
+    condition     = can(regex("^[a-z0-9-]+$", var.portal_subdomain))
+    error_message = "Subdomain must contain only lowercase letters, numbers, and hyphens."
+  }
+}
+
+variable "api_subdomain" {
+  type        = string
+  default     = "api-dev"
+  description = "Subdomain prefix for the API (e.g., 'api-dev' for api-dev.kanjona.com)"
+
+  validation {
+    condition     = can(regex("^[a-z0-9-]+$", var.api_subdomain))
+    error_message = "Subdomain must contain only lowercase letters, numbers, and hyphens."
   }
 }
 
@@ -60,6 +117,16 @@ variable "funnel_ids" {
     "marketing-agency", "auto-repair", "auto-detailing", "towing", "auto-glass",
     "construction"
   ]
+
+  validation {
+    condition     = length(var.funnel_ids) > 0
+    error_message = "At least one funnel ID must be provided."
+  }
+
+  validation {
+    condition     = alltrue([for id in var.funnel_ids : can(regex("^[a-z0-9-]+$", id))])
+    error_message = "Funnel IDs must contain only lowercase letters, numbers, and hyphens."
+  }
 }
 
 variable "funnel_metadata" {
@@ -217,6 +284,11 @@ variable "lambda_memory_mb" {
   type        = number
   default     = 256
   description = "Lambda memory size in MB"
+
+  validation {
+    condition     = var.lambda_memory_mb >= 128 && var.lambda_memory_mb <= 10240
+    error_message = "Lambda memory must be between 128 MB and 10240 MB."
+  }
 }
 
 variable "lambda_reserved_concurrency" {
@@ -269,16 +341,19 @@ variable "enable_basic_auth" {
 
 variable "basic_auth_username" {
   type        = string
-  default     = "admin"
-  description = "Username for basic authentication"
+  description = "Username for basic authentication. Set via TF_VAR_basic_auth_username"
   sensitive   = true
 }
 
 variable "basic_auth_password" {
   type        = string
-  default     = "admin"
-  description = "Password for basic authentication"
+  description = "Password for basic authentication. Set via TF_VAR_basic_auth_password"
   sensitive   = true
+
+  validation {
+    condition     = length(var.basic_auth_password) >= 12
+    error_message = "basic_auth_password must be at least 12 characters."
+  }
 }
 
 # -----------------------------------------------------------------------------
@@ -305,21 +380,36 @@ variable "admin_allowed_emails" {
 
 variable "admin_allowed_cidrs" {
   type        = string
-  default     = "0.0.0.0/0"
-  description = "Comma-separated list of allowed CIDR blocks for admin access"
+  default     = ""
+  description = "Comma-separated CIDR blocks for admin access. Must be explicitly configured."
   sensitive   = true
+
+  validation {
+    condition     = var.admin_allowed_cidrs != "0.0.0.0/0"
+    error_message = "admin_allowed_cidrs cannot be 0.0.0.0/0 - this provides no restriction."
+  }
 }
 
 variable "admin_cognito_domain_prefix" {
   type        = string
   default     = "kanjona-admin-dev"
   description = "Cognito hosted UI domain prefix for admin authentication"
+
+  validation {
+    condition     = can(regex("^[a-z0-9-]+$", var.admin_cognito_domain_prefix))
+    error_message = "Cognito domain prefix must contain only lowercase letters, numbers, and hyphens."
+  }
 }
 
 variable "admin_exports_bucket_name" {
   type        = string
   default     = "kanjona-admin-exports-dev"
   description = "S3 bucket name for admin exports (must be globally unique)"
+
+  validation {
+    condition     = can(regex("^[a-z0-9.-]+$", var.admin_exports_bucket_name))
+    error_message = "S3 bucket name must contain only lowercase letters, numbers, dots, and hyphens."
+  }
 }
 
 variable "admin_lambda_zip_path" {
@@ -341,10 +431,20 @@ variable "platform_admin_cognito_domain" {
   type        = string
   default     = "kanjona-platform-admin-dev"
   description = "Cognito hosted UI domain prefix for platform admin pool"
+
+  validation {
+    condition     = can(regex("^[a-z0-9-]+$", var.platform_admin_cognito_domain))
+    error_message = "Cognito domain prefix must contain only lowercase letters, numbers, and hyphens."
+  }
 }
 
 variable "platform_portal_cognito_domain" {
   type        = string
   default     = "kanjona-platform-portal-dev"
   description = "Cognito hosted UI domain prefix for platform portal pool"
+
+  validation {
+    condition     = can(regex("^[a-z0-9-]+$", var.platform_portal_cognito_domain))
+    error_message = "Cognito domain prefix must contain only lowercase letters, numbers, and hyphens."
+  }
 }

@@ -4,15 +4,25 @@
  * Login Page
  *
  * Simple login page with Cognito Hosted UI redirect.
+ * Uses an allowlist of error codes to prevent reflecting arbitrary input.
  */
 
 import { getLoginUrl } from '@/lib/auth';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 
+const ERROR_MESSAGES: Record<string, string> = {
+  auth_failed: 'Authentication failed. Please try again.',
+  invalid_state: 'Invalid session state. Please try logging in again.',
+  no_code: 'No authorization code received.',
+  token_exchange_failed: 'Token exchange failed. Please try again.',
+  unknown: 'An unexpected error occurred. Please try again.',
+};
+
 function LoginContent() {
   const searchParams = useSearchParams();
-  const error = searchParams.get('error');
+  const errorKey = searchParams.get('error');
+  const errorMessage = errorKey ? ERROR_MESSAGES[errorKey] || ERROR_MESSAGES['unknown'] : null;
   const expired = searchParams.get('expired');
 
   return (
@@ -26,9 +36,9 @@ function LoginContent() {
           </div>
 
           {/* Error messages */}
-          {error && (
+          {errorMessage && (
             <div className="mb-6 p-3 rounded-md bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-              <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+              <p className="text-sm text-red-700 dark:text-red-300">{errorMessage}</p>
             </div>
           )}
 

@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { exchangeCodeForTokens } from '@/lib/auth';
+import { exchangeCodeForTokens, verifyState } from '@/lib/auth';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
 function CallbackContent() {
@@ -12,6 +12,7 @@ function CallbackContent() {
 
   useEffect(() => {
     const code = searchParams.get('code');
+    const state = searchParams.get('state');
     const errorParam = searchParams.get('error');
 
     if (errorParam) {
@@ -24,6 +25,12 @@ function CallbackContent() {
       return;
     }
 
+    // Security: Verify OAuth state parameter to prevent CSRF
+    if (!state || !verifyState(state)) {
+      setError('Invalid session state. Please try logging in again.');
+      return;
+    }
+
     async function handleCallback() {
       const success = await exchangeCodeForTokens(code!);
 
@@ -31,7 +38,10 @@ function CallbackContent() {
         // Check for stored returnTo path
         const returnTo = sessionStorage.getItem('portal_returnTo') || '/';
         sessionStorage.removeItem('portal_returnTo');
-        router.replace(returnTo);
+        // Security: Validate returnTo is a relative path, not absolute URL or protocol-relative
+        const safeReturnTo =
+          returnTo.startsWith('/') && !returnTo.startsWith('//') ? returnTo : '/';
+        router.replace(safeReturnTo);
       } else {
         setError('Failed to complete authentication');
       }

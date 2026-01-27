@@ -37,11 +37,15 @@ export async function GET(request: NextRequest) {
       }
     );
 
-    // Also set token as a cookie for double-submit pattern
+    // Also set token as a cookie for double-submit pattern.
+    // httpOnly is false because the client reads the token from the JSON
+    // response body (not from the cookie). The cookie is only used for
+    // server-side double-submit verification -- the client sends the token
+    // via a custom header and the server compares it against this cookie.
     response.cookies.set({
       name: 'csrf_token',
       value: token,
-      httpOnly: true,
+      httpOnly: false,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       path: '/',

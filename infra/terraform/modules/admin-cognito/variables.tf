@@ -13,9 +13,9 @@ variable "environment" {
 }
 
 variable "mfa_configuration" {
-  description = "MFA configuration: OFF, ON, or OPTIONAL"
+  description = "MFA configuration for admin users. Must be ON for admin pools."
   type        = string
-  default     = "OPTIONAL"
+  default     = "ON"
 
   validation {
     condition     = contains(["OFF", "ON", "OPTIONAL"], var.mfa_configuration)

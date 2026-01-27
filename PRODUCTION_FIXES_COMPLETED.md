@@ -335,4 +335,107 @@ ALLOWED_ORIGINS=https://yourdomain.com
 
 ---
 
-_All 85+ issues from the production readiness audit have been addressed._
+---
+
+## Second-Pass Security Audit Fixes
+
+**Date:** January 27, 2026
+
+A second-pass security audit identified and resolved 23 additional findings across the backend and
+frontend.
+
+### Backend: 11 Additional Findings Fixed
+
+| Finding                    | Fix                                                                                 |
+| -------------------------- | ----------------------------------------------------------------------------------- |
+| Cursor HMAC timing attack  | `timingSafeEqual` used for all cursor HMAC verification                             |
+| Signed cursors incomplete  | HMAC-signed pagination cursors applied to all 8 database modules                    |
+| Cursor secret fail-closed  | Throws at startup if `CURSOR_SECRET` env var is missing                             |
+| Export race condition      | Atomic DynamoDB throttle prevents concurrent export abuse                           |
+| Export download auth       | Authorization check added to export download endpoint                               |
+| CORS fail-closed in prod   | Origin allowlist returns safe default when `ALLOWED_ORIGINS` is empty in production |
+| Status enum alignment      | LeadStatus enum unified between backend and `@kanjona/shared`                       |
+| Note length limits         | Note length and count limits prevent DynamoDB item-size abuse                       |
+| Audit log PII sanitization | Audit logs no longer store raw PII (emails, IPs)                                    |
+| Audit conditional write    | Notification dedup uses DynamoDB conditional write lock                             |
+| Health CORS                | Health endpoint returns proper CORS headers                                         |
+
+### Frontend: 12 Additional Findings Fixed
+
+| Finding                       | Fix                                                             |
+| ----------------------------- | --------------------------------------------------------------- |
+| SameSite cookie for OAuth     | Changed to `SameSite=lax` for OAuth redirect compatibility      |
+| Error allowlist (admin login) | Admin login error messages restricted to a safe allowlist       |
+| Token origin check            | Token exchange verifies origin matches expected issuer          |
+| Download URL validation       | Export download validates URL before `window.open`              |
+| Portal CSP                    | Content-Security-Policy headers added to the portal app         |
+| Timing-safe state comparison  | OAuth state parameter compared with timing-safe method          |
+| Admin CSP Next.js compat      | CSP directives updated for Next.js inline script compatibility  |
+| Unused returnTo removed       | Dead `returnTo` parameter removed from auth flow                |
+| CSRF cookie clarification     | CSRF double-submit cookie path and scope documented             |
+| Health info reduction         | Health endpoint returns minimal info (no version, no internals) |
+| tel/mailto encoding           | Phone and email links properly encoded in UI                    |
+| Token exchange verification   | ID token exchange includes audience and issuer verification     |
+
+---
+
+## Node.js 22 Upgrade
+
+All Lambda runtimes, CI/CD workflows, and TypeScript compilation targets have been upgraded from
+Node.js 20 to Node.js 22. This includes:
+
+- Lambda runtime set to `nodejs22.x` across all Terraform modules
+- GitHub Actions CI updated to `node-version: 22`
+- TypeScript `target` and `lib` updated to ES2023
+- `@types/node` updated to version 22
+
+---
+
+## Backend Modularity Refactor
+
+The backend API has been refactored for maintainability and security:
+
+- **Centralized AWS clients** -- Single DynamoDB, S3, SSM, and SES client instances shared across
+  modules
+- **Shared cursor module** (`apps/api/src/lib/cursor.ts`) -- HMAC-signed cursor signing/verification
+  used by all paginated endpoints
+- **Structured logging** (`apps/api/src/lib/logging.ts`) -- JSON-formatted logs with module,
+  requestId, and level for CloudWatch Logs Insights
+- **Typed error classes** (`apps/api/src/lib/errors.ts`) -- `AppError` hierarchy mapping to HTTP
+  status codes (`ValidationError`, `AuthError`, `ForbiddenError`, `NotFoundError`, `ConflictError`,
+  `RateLimitError`, `InternalError`)
+- **Handler utilities** (`apps/api/src/lib/handler-utils.ts`) -- Shared body parsing, path/query
+  parameter extraction, pagination parsing, and IP hashing
+- **S3 layer** -- Centralized S3 operations for export file management
+
+---
+
+## Frontend Coupling Fixes
+
+Frontend applications now share types and patterns consistently:
+
+- **Shared types** -- `LeadStatus` and related types unified in `@kanjona/shared` package, consumed
+  by web, portal, and admin apps
+- **Unified components** -- Common UI components (lead display, status badges) shared across apps
+- **Unified API clients** -- Consistent auth patterns, error handling, and timeout configuration
+  across all frontend API clients
+
+---
+
+## Terraform Modularity Fixes
+
+Infrastructure-as-code has been hardened for safety and correctness:
+
+- **Safe index access** -- `try()` used for all list/map index lookups to prevent Terraform crashes
+  on missing values
+- **Explicit depends_on** -- Module dependencies declared explicitly to ensure correct apply
+  ordering
+- **Variable validation** -- `validation` blocks added to critical Terraform variables (e.g.,
+  environment names, CIDR ranges)
+- **Parameterized subdomains** -- Subdomain names are now configurable via variables instead of
+  hardcoded strings
+
+---
+
+_All 85+ original issues and 23 second-pass findings have been addressed. Platform upgraded to
+Node.js 22._

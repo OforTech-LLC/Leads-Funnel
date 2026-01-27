@@ -183,7 +183,7 @@ resource "aws_cognito_user_pool_client" "admin_web" {
 
   write_attributes = [
     "email",
-    "custom:role",
+    # custom:role removed - role should only be set by admin API, not self-service
   ]
 
   generate_secret = false

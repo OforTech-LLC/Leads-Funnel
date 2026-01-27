@@ -11,8 +11,9 @@ function LoginContent() {
   const returnTo = searchParams.get('returnTo');
 
   function handleSignIn() {
-    // Store returnTo for redirect after callback
-    if (returnTo) {
+    // Security: Validate returnTo is a relative path before storing
+    // Prevents open redirect attacks via protocol-relative or absolute URLs
+    if (returnTo && returnTo.startsWith('/') && !returnTo.startsWith('//')) {
       sessionStorage.setItem('portal_returnTo', returnTo);
     }
     window.location.href = getLoginUrl();

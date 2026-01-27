@@ -15,9 +15,10 @@
  * - Email allowlists provide fine-grained user access control
  */
 
-import { SSMClient, GetParameterCommand } from '@aws-sdk/client-ssm';
+import { GetParameterCommand } from '@aws-sdk/client-ssm';
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 import type { AdminConfig, AdminRole, AdminUser, AuthResult, JwtPayload } from '../types.js';
+import { getSsmClient } from '../../lib/clients.js';
 
 // =============================================================================
 // Caching Configuration
@@ -43,9 +44,6 @@ const CACHE_TTL_MS = 5 * 60 * 1000;
  */
 let jwksCache: ReturnType<typeof createRemoteJWKSet> | null = null;
 
-/** AWS SSM client instance */
-const ssm = new SSMClient({});
-
 // =============================================================================
 // SSM Parameter Functions
 // =============================================================================
@@ -68,6 +66,7 @@ async function getParameter(path: string): Promise<string> {
     return cached.value;
   }
 
+  const ssm = getSsmClient();
   const command = new GetParameterCommand({
     Name: path,
     WithDecryption: true, // Security: Decrypt SecureString parameters

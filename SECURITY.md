@@ -96,6 +96,8 @@ Protects against abuse and denial-of-service attacks.
 - 5 requests per minute per IP address per funnel
 - Sliding window algorithm
 - Separate limits for each funnel endpoint
+- Export endpoints use atomic DynamoDB-based throttle to prevent race conditions (10 exports/hour
+  per user)
 
 **Implementation** (Swift Backend):
 
@@ -206,19 +208,23 @@ Comprehensive validation on all inputs.
 
 **Validation Rules**:
 
-| Field    | Rules                                 |
-| -------- | ------------------------------------- |
-| `email`  | Required, valid format, max 255 chars |
-| `name`   | Required, max 100 chars               |
-| `phone`  | Optional, valid format, max 20 chars  |
-| `notes`  | Optional, max 2000 chars              |
-| `source` | Optional, max 100 chars               |
+| Field    | Rules                                            |
+| -------- | ------------------------------------------------ |
+| `email`  | Required, valid format, max 255 chars            |
+| `name`   | Required, max 100 chars                          |
+| `phone`  | Optional, valid format, max 20 chars             |
+| `notes`  | Optional, max 2000 chars, count-limited per lead |
+| `source` | Optional, max 100 chars                          |
 
 **Normalization**:
 
 - Email: Lowercase, trimmed
 - Phone: Stripped to digits and +
-- Text: Trimmed, HTML-escaped
+- Text: Trimmed, HTML entity-encoded (not blocklist-based)
+
+**Sanitization Approach**: All user input is sanitized using HTML entity encoding (`&`, `<`, `>`,
+`"`, `'` replaced with their entity equivalents). This is a positive-security model that neutralizes
+injection payloads without relying on pattern matching or blocklists.
 
 ## Authentication and Authorization
 
@@ -235,10 +241,22 @@ The admin API uses AWS Cognito for authentication.
 
 **Token Validation**:
 
-- Signature verification
+- Signature verification via JWKS
 - Expiration check
 - Audience verification
 - Issuer verification
+
+**Fail-Closed Admin Auth**: If the SSM email allowlist cannot be loaded (network error, missing
+parameter), authentication denies all access rather than failing open. An empty allowlist also
+denies all access. See `apps/api/src/lib/auth/admin-auth.ts`.
+
+**OAuth State Parameter**: All three frontend apps (web, portal, admin) include a cryptographically
+random state parameter in OAuth redirects and verify it on callback using a timing-safe comparison
+to prevent CSRF during login.
+
+**HMAC-Signed Pagination Cursors**: All paginated API responses use HMAC-SHA256 signed cursors
+(`apps/api/src/lib/cursor.ts`) to prevent clients from forging or tampering with DynamoDB
+ExclusiveStartKey values. Signature verification uses `timingSafeEqual` to prevent timing attacks.
 
 ### API Key Authentication (Optional)
 
@@ -376,6 +394,11 @@ Audit logging for all AWS API calls:
 - S3 bucket with versioning
 - Log file integrity validation
 - 1-year retention
+
+### Runtime
+
+All Lambda functions run on **Node.js 22** (`nodejs22.x`). TypeScript compilation targets ES2023.
+CI/CD pipelines also use Node.js 22 for consistency.
 
 ## Security Best Practices
 

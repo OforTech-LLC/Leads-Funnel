@@ -146,6 +146,12 @@ variable "log_retention_days" {
   default     = 7
 }
 
+variable "kms_key_arn" {
+  type        = string
+  description = "KMS key ARN for CloudWatch Logs encryption (null to skip)"
+  default     = null
+}
+
 variable "tags" {
   type        = map(string)
   description = "Tags to apply to all resources"

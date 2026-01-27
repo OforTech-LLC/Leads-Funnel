@@ -2,13 +2,7 @@
  * DynamoDB operations for lead storage, rate limiting, and idempotency
  */
 
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import {
-  DynamoDBDocumentClient,
-  PutCommand,
-  GetCommand,
-  UpdateCommand,
-} from '@aws-sdk/lib-dynamodb';
+import { PutCommand, GetCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import type {
   LeadRecord,
   RateLimitRecord,
@@ -20,25 +14,8 @@ import type {
   EnvConfig,
 } from '../types.js';
 import { getIsoTimestamp, getRateLimitTtl, getIdempotencyTtl, getWindowBucket } from './time.js';
+import { getDocClient } from './clients.js';
 import { v4 as uuidv4 } from 'uuid';
-
-// =============================================================================
-// DynamoDB Client Initialization
-// =============================================================================
-
-let docClient: DynamoDBDocumentClient | null = null;
-
-function getDocClient(region: string): DynamoDBDocumentClient {
-  if (!docClient) {
-    const client = new DynamoDBClient({ region });
-    docClient = DynamoDBDocumentClient.from(client, {
-      marshallOptions: {
-        removeUndefinedValues: true,
-      },
-    });
-  }
-  return docClient;
-}
 
 // =============================================================================
 // Rate Limiting

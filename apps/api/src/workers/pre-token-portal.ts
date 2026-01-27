@@ -17,27 +17,12 @@
  */
 
 import type { PreTokenGenerationTriggerEvent } from 'aws-lambda';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, QueryCommand } from '@aws-sdk/lib-dynamodb';
+import { QueryCommand } from '@aws-sdk/lib-dynamodb';
 import type { PreTokenPortalConfig, UserRecord, MembershipRecord } from './types.js';
+import { getDocClient } from '../lib/clients.js';
+import { createLogger } from '../lib/logging.js';
 
-// =============================================================================
-// Client Initialization
-// =============================================================================
-
-let docClient: DynamoDBDocumentClient | null = null;
-
-function getDocClient(region: string): DynamoDBDocumentClient {
-  if (!docClient) {
-    const client = new DynamoDBClient({ region });
-    docClient = DynamoDBDocumentClient.from(client, {
-      marshallOptions: {
-        removeUndefinedValues: true,
-      },
-    });
-  }
-  return docClient;
-}
+const log = createLogger('pre-token-portal');
 
 // =============================================================================
 // Configuration
@@ -48,29 +33,6 @@ function loadConfig(): PreTokenPortalConfig {
     awsRegion: process.env.AWS_REGION || 'us-east-1',
     ddbTableName: process.env.DDB_TABLE_NAME || '',
   };
-}
-
-// =============================================================================
-// Structured Logging
-// =============================================================================
-
-interface LogParams {
-  level: 'info' | 'warn' | 'error';
-  message: string;
-  sub?: string;
-  userId?: string;
-  errorCode?: string;
-  [key: string]: unknown;
-}
-
-function log(entry: LogParams): void {
-  console.log(
-    JSON.stringify({
-      timestamp: new Date().toISOString(),
-      service: 'pre-token-portal',
-      ...entry,
-    })
-  );
 }
 
 // =============================================================================
@@ -111,9 +73,7 @@ async function getUserByCognitoSub(
     return result.Items[0] as UserRecord;
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    log({
-      level: 'error',
-      message: 'Failed to look up user by cognitoSub',
+    log.error('Failed to look up user by cognitoSub', {
       sub: cognitoSub,
       errorCode: 'DDB_QUERY_ERROR',
       error: errorMessage,
@@ -151,9 +111,7 @@ async function getUserMemberships(
     return (result.Items as MembershipRecord[]) || [];
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    log({
-      level: 'error',
-      message: 'Failed to look up user memberships',
+    log.error('Failed to look up user memberships', {
       userId,
       errorCode: 'DDB_QUERY_ERROR',
       error: errorMessage,
@@ -187,17 +145,11 @@ export async function handler(
 
   const cognitoSub = event.request.userAttributes.sub;
 
-  log({
-    level: 'info',
-    message: 'Pre-token generation triggered (portal)',
-    sub: cognitoSub,
-  });
+  log.info('Pre-token generation triggered (portal)', { sub: cognitoSub });
 
   // Validate configuration
   if (!config.ddbTableName) {
-    log({
-      level: 'error',
-      message: 'DDB_TABLE_NAME not configured',
+    log.error('DDB_TABLE_NAME not configured', {
       sub: cognitoSub,
       errorCode: 'CONFIG_ERROR',
     });
@@ -205,9 +157,7 @@ export async function handler(
   }
 
   if (!cognitoSub) {
-    log({
-      level: 'error',
-      message: 'No cognitoSub found in user attributes',
+    log.error('No cognitoSub found in user attributes', {
       errorCode: 'MISSING_SUB',
     });
     throw new Error('User identity could not be verified');
@@ -217,9 +167,7 @@ export async function handler(
   const user = await getUserByCognitoSub(config, cognitoSub);
 
   if (!user) {
-    log({
-      level: 'warn',
-      message: 'User not found in database',
+    log.warn('User not found in database', {
       sub: cognitoSub,
       errorCode: 'USER_NOT_FOUND',
     });
@@ -227,9 +175,7 @@ export async function handler(
   }
 
   if (user.status !== 'active') {
-    log({
-      level: 'warn',
-      message: 'User account is inactive',
+    log.warn('User account is inactive', {
       sub: cognitoSub,
       userId: user.userId,
       errorCode: 'USER_INACTIVE',
@@ -247,9 +193,7 @@ export async function handler(
   const orgIds = activeMemberships.map((m) => m.orgId);
   const primaryOrgId = orgIds.length > 0 ? orgIds[0] : '';
 
-  log({
-    level: 'info',
-    message: 'Portal token claims prepared',
+  log.info('Portal token claims prepared', {
     sub: cognitoSub,
     userId: user.userId,
     orgCount: orgIds.length,

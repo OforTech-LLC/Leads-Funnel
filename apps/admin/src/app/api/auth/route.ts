@@ -9,6 +9,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AUTH_COOKIE_NAME } from '@/lib/constants';
 
+/**
+ * Validate that a string has a basic JWT structure (three base64url segments
+ * with a parseable JSON payload).
+ */
+function isValidJwtStructure(token: string): boolean {
+  const parts = token.split('.');
+  if (parts.length !== 3) return false;
+  try {
+    JSON.parse(Buffer.from(parts[1], 'base64url').toString());
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 // ---------------------------------------------------------------------------
 // GET - Check auth status
 // ---------------------------------------------------------------------------
@@ -56,6 +71,13 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Security: Verify the request originated from this application
+    const origin = request.headers.get('origin');
+    const expectedOrigin = process.env.NEXT_PUBLIC_ADMIN_URL || request.nextUrl.origin;
+    if (origin && origin !== expectedOrigin) {
+      return NextResponse.json({ error: 'Invalid origin' }, { status: 403 });
+    }
+
     const body = await request.json();
     const { access_token, id_token, expires_in } = body;
 
@@ -64,13 +86,19 @@ export async function POST(request: NextRequest) {
     }
 
     const token = id_token || access_token;
+
+    // Security: Validate the token has a valid JWT structure before storing
+    if (!isValidJwtStructure(token)) {
+      return NextResponse.json({ error: 'Invalid token format' }, { status: 400 });
+    }
+
     const maxAge = expires_in || 3600;
 
     const response = NextResponse.json({ success: true });
     response.cookies.set(AUTH_COOKIE_NAME, token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: 'lax' as const,
       maxAge,
       path: '/',
     });
@@ -87,6 +115,12 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE() {
   const response = NextResponse.json({ success: true });
-  response.cookies.delete(AUTH_COOKIE_NAME);
+  response.cookies.set(AUTH_COOKIE_NAME, '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax' as const,
+    maxAge: 0,
+    path: '/',
+  });
   return response;
 }

@@ -19,34 +19,66 @@ const SECURITY_HEADERS = {
   'Cache-Control': 'no-store, no-cache, must-revalidate, private',
 } as const;
 
-const CORS_HEADERS = {
-  ...SECURITY_HEADERS,
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
-  'Access-Control-Allow-Headers': 'content-type,authorization',
-  'Content-Type': 'application/json',
-} as const;
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || '').split(',').filter(Boolean);
+
+/**
+ * Determine the CORS origin to return based on an origin allowlist.
+ *
+ * - If ALLOWED_ORIGINS is configured, only allows listed origins.
+ * - In production, falls back to a safe default when ALLOWED_ORIGINS is empty.
+ * - In non-production, falls back to '*' for development convenience.
+ */
+export function getCorsOrigin(requestOrigin?: string): string {
+  if (ALLOWED_ORIGINS.length === 0) {
+    // Fix 6: Fail closed in production when no origins are configured
+    const nodeEnv = process.env.NODE_ENV || '';
+    if (nodeEnv === 'production') {
+      return 'https://kanjona.com'; // safe default
+    }
+    return '*'; // fallback for dev
+  }
+  if (requestOrigin && ALLOWED_ORIGINS.includes(requestOrigin)) return requestOrigin;
+  return ALLOWED_ORIGINS[0];
+}
+
+function buildCorsHeaders(requestOrigin?: string): Record<string, string> {
+  return {
+    ...SECURITY_HEADERS,
+    'Access-Control-Allow-Origin': getCorsOrigin(requestOrigin),
+    'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
+    'Access-Control-Allow-Headers': 'content-type,authorization',
+    'Content-Type': 'application/json',
+    ...(ALLOWED_ORIGINS.length > 0 ? { Vary: 'Origin' } : {}),
+  };
+}
+
+// Default headers for responses without a known request origin
+const DEFAULT_CORS_HEADERS = buildCorsHeaders();
 
 // ---------------------------------------------------------------------------
 // Success responses
 // ---------------------------------------------------------------------------
 
-export function success<T>(data: T, statusCode = 200): APIGatewayProxyResultV2 {
+export function success<T>(
+  data: T,
+  statusCode = 200,
+  requestOrigin?: string
+): APIGatewayProxyResultV2 {
   return {
     statusCode,
-    headers: CORS_HEADERS,
+    headers: requestOrigin ? buildCorsHeaders(requestOrigin) : DEFAULT_CORS_HEADERS,
     body: JSON.stringify({ ok: true, data }),
   };
 }
 
-export function created<T>(data: T): APIGatewayProxyResultV2 {
-  return success(data, 201);
+export function created<T>(data: T, requestOrigin?: string): APIGatewayProxyResultV2 {
+  return success(data, 201, requestOrigin);
 }
 
-export function noContent(): APIGatewayProxyResultV2 {
+export function noContent(requestOrigin?: string): APIGatewayProxyResultV2 {
   return {
     statusCode: 204,
-    headers: CORS_HEADERS,
+    headers: requestOrigin ? buildCorsHeaders(requestOrigin) : DEFAULT_CORS_HEADERS,
     body: '',
   };
 }
@@ -60,10 +92,14 @@ export interface PaginationMeta {
   hasMore: boolean;
 }
 
-export function paginated<T>(items: T[], pagination: PaginationMeta): APIGatewayProxyResultV2 {
+export function paginated<T>(
+  items: T[],
+  pagination: PaginationMeta,
+  requestOrigin?: string
+): APIGatewayProxyResultV2 {
   return {
     statusCode: 200,
-    headers: CORS_HEADERS,
+    headers: requestOrigin ? buildCorsHeaders(requestOrigin) : DEFAULT_CORS_HEADERS,
     body: JSON.stringify({
       ok: true,
       data: items,
@@ -80,11 +116,12 @@ export function error(
   code: string,
   message: string,
   statusCode: number,
-  details?: Record<string, unknown>
+  details?: Record<string, unknown>,
+  requestOrigin?: string
 ): APIGatewayProxyResultV2 {
   return {
     statusCode,
-    headers: CORS_HEADERS,
+    headers: requestOrigin ? buildCorsHeaders(requestOrigin) : DEFAULT_CORS_HEADERS,
     body: JSON.stringify({
       ok: false,
       error: { code, message, ...(details ? { details } : {}) },
@@ -119,7 +156,7 @@ export function rateLimited(retryAfter = 60): APIGatewayProxyResultV2 {
   return {
     statusCode: 429,
     headers: {
-      ...CORS_HEADERS,
+      ...DEFAULT_CORS_HEADERS,
       'Retry-After': String(retryAfter),
     },
     body: JSON.stringify({

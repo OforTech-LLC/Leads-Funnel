@@ -138,6 +138,7 @@ resource "aws_cloudwatch_log_group" "waf" {
   # WAF logging requires the log group name to start with aws-waf-logs-
   name              = "aws-waf-logs-${var.project_name}-${var.environment}"
   retention_in_days = var.log_retention_days
+  kms_key_id        = var.kms_key_arn
 
   tags = merge(var.tags, {
     Name = "aws-waf-logs-${var.project_name}-${var.environment}"

@@ -7,14 +7,17 @@ const CLIENT_SECRET = process.env.COGNITO_CLIENT_SECRET || '';
 const COOKIE_NAME = 'portal_token';
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
 
+// Security: Server-side constant for redirect_uri instead of accepting from client
+const REDIRECT_URI = `${process.env.NEXT_PUBLIC_PORTAL_URL || 'http://localhost:3002'}/callback`;
+
 // ── POST: Exchange authorization code for tokens, set cookie ──
 
 export async function POST(request: NextRequest) {
   try {
-    const { code, redirectUri } = await request.json();
+    const { code } = await request.json();
 
-    if (!code || !redirectUri) {
-      return NextResponse.json({ error: 'Missing code or redirectUri' }, { status: 400 });
+    if (!code) {
+      return NextResponse.json({ error: 'Missing code' }, { status: 400 });
     }
 
     // Exchange code for tokens with Cognito
@@ -23,7 +26,7 @@ export async function POST(request: NextRequest) {
       grant_type: 'authorization_code',
       client_id: CLIENT_ID,
       code,
-      redirect_uri: redirectUri,
+      redirect_uri: REDIRECT_URI,
     });
 
     const headers: Record<string, string> = {
@@ -66,7 +69,7 @@ export async function POST(request: NextRequest) {
     response.cookies.set(COOKIE_NAME, idToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: 'lax' as const,
       path: '/',
       maxAge: COOKIE_MAX_AGE,
     });
@@ -76,7 +79,7 @@ export async function POST(request: NextRequest) {
       response.cookies.set('portal_access_token', tokens.access_token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
+        sameSite: 'lax' as const,
         path: '/',
         maxAge: COOKIE_MAX_AGE,
       });
@@ -120,7 +123,19 @@ export async function GET(request: NextRequest) {
 
 export async function DELETE() {
   const response = NextResponse.json({ success: true });
-  response.cookies.delete(COOKIE_NAME);
-  response.cookies.delete('portal_access_token');
+  response.cookies.set(COOKIE_NAME, '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax' as const,
+    maxAge: 0,
+    path: '/',
+  });
+  response.cookies.set('portal_access_token', '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax' as const,
+    maxAge: 0,
+    path: '/',
+  });
   return response;
 }

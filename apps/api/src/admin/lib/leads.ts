@@ -4,14 +4,8 @@
  * DynamoDB operations for querying and updating leads.
  */
 
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import {
-  DynamoDBDocumentClient,
-  QueryCommand,
-  UpdateCommand,
-  ScanCommand,
-  GetCommand,
-} from '@aws-sdk/lib-dynamodb';
+import { DynamoDBClient, ListTablesCommand } from '@aws-sdk/client-dynamodb';
+import { QueryCommand, UpdateCommand, ScanCommand, GetCommand } from '@aws-sdk/lib-dynamodb';
 import type {
   AdminConfig,
   Lead,
@@ -23,10 +17,10 @@ import type {
   BulkUpdateRequest,
   FunnelStats,
 } from '../types.js';
+import { getDocClient } from '../../lib/clients.js';
+import { createLogger } from '../../lib/logging.js';
 
-const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({}), {
-  marshallOptions: { removeUndefinedValues: true },
-});
+const log = createLogger('admin-leads');
 
 // Maximum number of scan iterations to prevent runaway queries
 const MAX_SCAN_ITERATIONS = 100;
@@ -48,6 +42,7 @@ export async function queryLeads(
   config: AdminConfig,
   request: QueryLeadsRequest
 ): Promise<QueryLeadsResponse> {
+  const ddb = getDocClient();
   const tableName = getTableName(config, request.funnelId);
   const pageSize = Math.min(request.pageSize || DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE);
 
@@ -163,6 +158,7 @@ export async function getLead(
   funnelId: string,
   leadId: string
 ): Promise<Lead | null> {
+  const ddb = getDocClient();
   const tableName = getTableName(config, funnelId);
 
   const result = await ddb.send(
@@ -189,6 +185,7 @@ export async function getLead(
  * Update a single lead
  */
 export async function updateLead(config: AdminConfig, request: UpdateLeadRequest): Promise<Lead> {
+  const ddb = getDocClient();
   const tableName = getTableName(config, request.funnelId);
   const timestamp = new Date().toISOString();
 
@@ -303,6 +300,7 @@ export async function bulkUpdateLeads(
  * Get funnel statistics with scan limits and pagination
  */
 export async function getFunnelStats(config: AdminConfig, funnelId: string): Promise<FunnelStats> {
+  const ddb = getDocClient();
   const tableName = getTableName(config, funnelId);
 
   // Get counts by status
@@ -342,9 +340,10 @@ export async function getFunnelStats(config: AdminConfig, funnelId: string): Pro
   do {
     // Prevent runaway scans
     if (scanIterations >= MAX_SCAN_ITERATIONS) {
-      console.warn(
-        `getFunnelStats: Reached max scan iterations (${MAX_SCAN_ITERATIONS}) for funnel ${funnelId}`
-      );
+      log.warn('Reached max scan iterations for stats', {
+        funnelId,
+        iterations: scanIterations,
+      });
       break;
     }
     scanIterations++;
@@ -403,13 +402,15 @@ export async function getFunnelStats(config: AdminConfig, funnelId: string): Pro
 
 /**
  * List available funnels (tables)
+ *
+ * Note: ListTables requires the low-level DynamoDB client, not the
+ * Document client. We create a temporary client here since this is
+ * an infrequent admin-only operation.
  */
 export async function listFunnels(config: AdminConfig): Promise<string[]> {
   // Get funnel IDs from environment or list tables
   const prefix = `${config.projectName}-${config.env}-`;
 
-  // Use DynamoDB ListTables to discover funnel tables
-  const { DynamoDBClient, ListTablesCommand } = await import('@aws-sdk/client-dynamodb');
   const client = new DynamoDBClient({});
 
   const funnelIds: string[] = [];

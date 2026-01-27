@@ -75,7 +75,7 @@ resource "aws_lambda_function" "admin" {
   function_name = "${var.project_name}-${var.environment}-admin-handler"
   role          = aws_iam_role.admin_lambda.arn
   handler       = "admin-handler.handler"
-  runtime       = "nodejs20.x"
+  runtime       = "nodejs22.x"
   timeout       = 30
   memory_size   = 512
 
@@ -164,7 +164,7 @@ resource "aws_iam_role_policy" "admin_lambda_logs" {
   })
 }
 
-# DynamoDB - Lead tables (read/write with restricted ARN pattern)
+# DynamoDB - Lead tables: Scan separated from key-restricted operations
 resource "aws_iam_role_policy" "admin_lambda_dynamodb_leads" {
   name = "${var.project_name}-${var.environment}-admin-lambda-ddb-leads"
   role = aws_iam_role.admin_lambda.id
@@ -172,12 +172,13 @@ resource "aws_iam_role_policy" "admin_lambda_dynamodb_leads" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
+      # Key-restricted operations (GetItem, Query, UpdateItem, BatchGetItem)
       {
+        Sid    = "DynamoDBKeyRestrictedOps"
         Effect = "Allow"
         Action = [
           "dynamodb:GetItem",
           "dynamodb:Query",
-          "dynamodb:Scan",
           "dynamodb:UpdateItem",
           "dynamodb:BatchGetItem"
         ]
@@ -190,6 +191,18 @@ resource "aws_iam_role_policy" "admin_lambda_dynamodb_leads" {
             "dynamodb:LeadingKeys" = ["LEAD#*"]
           }
         }
+      },
+      # Scan permission - scoped to specific table ARNs (no LeadingKeys condition, since Scan reads all keys)
+      {
+        Sid    = "DynamoDBScan"
+        Effect = "Allow"
+        Action = [
+          "dynamodb:Scan"
+        ]
+        Resource = [
+          "arn:aws:dynamodb:${var.aws_region}:${data.aws_caller_identity.current.account_id}:table/${var.project_name}-${var.environment}-*",
+          "arn:aws:dynamodb:${var.aws_region}:${data.aws_caller_identity.current.account_id}:table/${var.project_name}-${var.environment}-*/index/*"
+        ]
       }
     ]
   })
@@ -340,6 +353,22 @@ resource "aws_cloudwatch_log_group" "admin" {
 }
 
 # =====================================================
+# API Gateway JWT Authorizer (Admin Routes)
+# =====================================================
+
+resource "aws_apigatewayv2_authorizer" "admin_jwt" {
+  api_id           = var.api_gateway_id
+  authorizer_type  = "JWT"
+  name             = "${var.project_name}-${var.environment}-admin-jwt"
+  identity_sources = ["$request.header.Authorization"]
+
+  jwt_configuration {
+    audience = [var.admin_cognito_client_id != "" ? var.admin_cognito_client_id : var.cognito_client_id]
+    issuer   = "https://cognito-idp.${var.aws_region}.amazonaws.com/${var.admin_cognito_pool_id != "" ? var.admin_cognito_pool_id : var.cognito_user_pool_id}"
+  }
+}
+
+# =====================================================
 # API Gateway Integration
 # =====================================================
 
@@ -351,53 +380,69 @@ resource "aws_apigatewayv2_integration" "admin" {
   payload_format_version = "2.0"
 }
 
-# Admin routes
+# Admin routes - all protected by JWT authorizer
 resource "aws_apigatewayv2_route" "admin_funnels" {
-  api_id    = var.api_gateway_id
-  route_key = "GET /admin/funnels"
-  target    = "integrations/${aws_apigatewayv2_integration.admin.id}"
+  api_id             = var.api_gateway_id
+  route_key          = "GET /admin/funnels"
+  target             = "integrations/${aws_apigatewayv2_integration.admin.id}"
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.admin_jwt.id
 }
 
 resource "aws_apigatewayv2_route" "admin_query" {
-  api_id    = var.api_gateway_id
-  route_key = "POST /admin/query"
-  target    = "integrations/${aws_apigatewayv2_integration.admin.id}"
+  api_id             = var.api_gateway_id
+  route_key          = "POST /admin/query"
+  target             = "integrations/${aws_apigatewayv2_integration.admin.id}"
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.admin_jwt.id
 }
 
 resource "aws_apigatewayv2_route" "admin_leads_update" {
-  api_id    = var.api_gateway_id
-  route_key = "POST /admin/leads/update"
-  target    = "integrations/${aws_apigatewayv2_integration.admin.id}"
+  api_id             = var.api_gateway_id
+  route_key          = "POST /admin/leads/update"
+  target             = "integrations/${aws_apigatewayv2_integration.admin.id}"
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.admin_jwt.id
 }
 
 resource "aws_apigatewayv2_route" "admin_leads_bulk_update" {
-  api_id    = var.api_gateway_id
-  route_key = "POST /admin/leads/bulk-update"
-  target    = "integrations/${aws_apigatewayv2_integration.admin.id}"
+  api_id             = var.api_gateway_id
+  route_key          = "POST /admin/leads/bulk-update"
+  target             = "integrations/${aws_apigatewayv2_integration.admin.id}"
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.admin_jwt.id
 }
 
 resource "aws_apigatewayv2_route" "admin_exports_create" {
-  api_id    = var.api_gateway_id
-  route_key = "POST /admin/exports/create"
-  target    = "integrations/${aws_apigatewayv2_integration.admin.id}"
+  api_id             = var.api_gateway_id
+  route_key          = "POST /admin/exports/create"
+  target             = "integrations/${aws_apigatewayv2_integration.admin.id}"
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.admin_jwt.id
 }
 
 resource "aws_apigatewayv2_route" "admin_exports_status" {
-  api_id    = var.api_gateway_id
-  route_key = "GET /admin/exports/status"
-  target    = "integrations/${aws_apigatewayv2_integration.admin.id}"
+  api_id             = var.api_gateway_id
+  route_key          = "GET /admin/exports/status"
+  target             = "integrations/${aws_apigatewayv2_integration.admin.id}"
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.admin_jwt.id
 }
 
 resource "aws_apigatewayv2_route" "admin_exports_download" {
-  api_id    = var.api_gateway_id
-  route_key = "GET /admin/exports/download"
-  target    = "integrations/${aws_apigatewayv2_integration.admin.id}"
+  api_id             = var.api_gateway_id
+  route_key          = "GET /admin/exports/download"
+  target             = "integrations/${aws_apigatewayv2_integration.admin.id}"
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.admin_jwt.id
 }
 
 resource "aws_apigatewayv2_route" "admin_stats" {
-  api_id    = var.api_gateway_id
-  route_key = "GET /admin/stats"
-  target    = "integrations/${aws_apigatewayv2_integration.admin.id}"
+  api_id             = var.api_gateway_id
+  route_key          = "GET /admin/stats"
+  target             = "integrations/${aws_apigatewayv2_integration.admin.id}"
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.admin_jwt.id
 }
 
 # Lambda permission for API Gateway

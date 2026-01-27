@@ -86,12 +86,12 @@ function buildLoginUrl(request: NextRequest, locale: string | null): string {
  * Authentication Flow:
  * 1. Skip static files and API routes (handled separately)
  * 2. Check if route requires protection
- * 3. Verify admin_token cookie exists
- * 4. Redirect to login if no token present
+ * 3. Verify admin_token cookie exists and is structurally valid
+ * 4. Redirect to login if no token present or token is invalid/expired
  *
- * Security Note: This middleware only checks for cookie presence, not validity.
- * Full JWT verification happens in API routes/components to avoid JWKS calls
- * on every request. This provides defense-in-depth while keeping middleware fast.
+ * Security Note: This middleware checks cookie presence and basic JWT validity
+ * (structure + expiry). Full JWT signature verification happens in API routes
+ * to avoid JWKS calls on every request.
  */
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -124,10 +124,25 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // Token exists - allow the request
-  // Security: Full JWT signature verification happens in admin components/API routes
-  // using Cognito JWKS. Middleware provides first line of defense (presence check)
-  // while keeping edge execution fast by avoiding cryptographic operations.
+  // Security: Validate JWT structure and expiry
+  // Full JWT signature verification happens in admin components/API routes
+  // using Cognito JWKS. Middleware provides defense-in-depth by catching
+  // malformed or expired tokens early.
+  if (adminToken?.value) {
+    try {
+      const parts = adminToken.value.split('.');
+      if (parts.length !== 3) throw new Error('Invalid JWT');
+      const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString());
+      if (payload.exp && payload.exp * 1000 < Date.now()) throw new Error('Token expired');
+    } catch {
+      const locale = getLocaleFromPath(pathname);
+      const loginPath = `/${locale || 'en'}/admin/login`;
+      const response = NextResponse.redirect(new URL(loginPath, request.url));
+      response.cookies.delete('admin_token');
+      return response;
+    }
+  }
+
   return NextResponse.next();
 }
 

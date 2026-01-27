@@ -16,27 +16,28 @@ import { handler as leadHandler } from './handler.js';
 import { handler as healthHandler } from './health/handler.js';
 import { handler as adminHandler } from './handlers/admin.js';
 import { handler as portalHandler } from './handlers/portal.js';
-import { checkFeatureEnabled } from './lib/response.js';
+import { checkFeatureEnabled, getCorsOrigin } from './lib/response.js';
+import { createLogger } from './lib/logging.js';
 
-// =============================================================================
-// CORS Headers
-// =============================================================================
-
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'content-type,authorization',
-  'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
-  'Content-Type': 'application/json',
-} as const;
+const log = createLogger('router');
 
 // =============================================================================
 // Response Builders
 // =============================================================================
 
-function notFound(): APIGatewayProxyResultV2 {
+function buildCorsHeaders(requestOrigin?: string): Record<string, string> {
+  return {
+    'Access-Control-Allow-Origin': getCorsOrigin(requestOrigin),
+    'Access-Control-Allow-Headers': 'content-type,authorization',
+    'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
+    'Content-Type': 'application/json',
+  };
+}
+
+function notFound(requestOrigin?: string): APIGatewayProxyResultV2 {
   return {
     statusCode: 404,
-    headers: CORS_HEADERS,
+    headers: buildCorsHeaders(requestOrigin),
     body: JSON.stringify({
       ok: false,
       error: {
@@ -47,10 +48,10 @@ function notFound(): APIGatewayProxyResultV2 {
   };
 }
 
-function preflight(): APIGatewayProxyResultV2 {
+function preflight(requestOrigin?: string): APIGatewayProxyResultV2 {
   return {
     statusCode: 204,
-    headers: CORS_HEADERS,
+    headers: buildCorsHeaders(requestOrigin),
     body: '',
   };
 }
@@ -71,20 +72,17 @@ export async function router(
 ): Promise<APIGatewayProxyResultV2> {
   const path = event.requestContext.http.path;
   const method = event.requestContext.http.method;
+  const requestOrigin = event.headers?.['origin'] || event.headers?.['Origin'];
 
-  console.log(
-    JSON.stringify({
-      level: 'info',
-      message: 'router.request',
-      method,
-      path,
-      requestId: context.awsRequestId,
-    })
-  );
+  log.info('router.request', {
+    method,
+    path,
+    requestId: context.awsRequestId,
+  });
 
   // Global OPTIONS preflight
   if (method === 'OPTIONS') {
-    return preflight();
+    return preflight(requestOrigin);
   }
 
   // Route based on path
@@ -116,15 +114,8 @@ export async function router(
   }
 
   // Not found
-  console.log(
-    JSON.stringify({
-      level: 'warn',
-      message: 'router.notFound',
-      path,
-      method,
-    })
-  );
-  return notFound();
+  log.warn('router.notFound', { path, method });
+  return notFound(requestOrigin);
 }
 
 // Export router as the default handler

@@ -85,14 +85,14 @@ variable "enable_basic_auth" {
 
 variable "basic_auth_username" {
   type        = string
-  description = "Username for basic authentication"
-  default     = "admin"
+  description = "Username for basic authentication. Set via TF_VAR_basic_auth_username"
+  default     = ""
   sensitive   = true
 }
 
 variable "basic_auth_password" {
   type        = string
-  description = "Password for basic authentication"
-  default     = "admin"
+  description = "Password for basic authentication. Set via TF_VAR_basic_auth_password"
+  default     = ""
   sensitive   = true
 }

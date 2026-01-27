@@ -1,21 +1,28 @@
 'use client';
 
+/**
+ * Loading Spinner
+ *
+ * CSS-based loading indicator with multiple size options.
+ * Includes accessible role="status" and sr-only label.
+ */
+
 interface LoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg';
   className?: string;
 }
 
-export default function LoadingSpinner({ size = 'md', className = '' }: LoadingSpinnerProps) {
-  const sizeClasses = {
-    sm: 'h-4 w-4 border-2',
-    md: 'h-8 w-8 border-2',
-    lg: 'h-12 w-12 border-3',
-  };
+const SIZE_CLASSES = {
+  sm: 'h-4 w-4 border-2',
+  md: 'h-8 w-8 border-2',
+  lg: 'h-12 w-12 border-3',
+};
 
+export default function LoadingSpinner({ size = 'md', className = '' }: LoadingSpinnerProps) {
   return (
     <div className={`flex items-center justify-center ${className}`} role="status">
       <div
-        className={`animate-spin rounded-full border-brand-200 border-t-brand-600 ${sizeClasses[size]}`}
+        className={`animate-spin rounded-full border-brand-200 border-t-brand-600 ${SIZE_CLASSES[size]}`}
       />
       <span className="sr-only">Loading...</span>
     </div>

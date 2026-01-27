@@ -1,5 +1,11 @@
 // ──────────────────────────────────────────────
 // Cognito Hosted UI auth for Portal users
+//
+// Consistent auth patterns with apps/admin:
+// - OAuth2 authorization code flow
+// - httpOnly cookie token storage
+// - Server-side token exchange
+// - GET/POST/DELETE on /api/auth
 // ──────────────────────────────────────────────
 
 const COGNITO_DOMAIN = process.env.NEXT_PUBLIC_COGNITO_DOMAIN || '';
@@ -29,15 +35,86 @@ export interface CurrentUser {
   role: string;
 }
 
+// Session storage key for OAuth state (CSRF protection)
+const OAUTH_STATE_KEY = 'portal_oauth_state';
+
+// State expiration time (5 minutes)
+const STATE_EXPIRY_MS = 5 * 60 * 1000;
+
+interface OAuthState {
+  nonce: string;
+  timestamp: number;
+}
+
 /**
- * Build the Cognito Hosted UI login URL
+ * Generate a cryptographically secure state parameter for OAuth CSRF protection.
+ */
+export function generateState(): string {
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
+  const nonce = Array.from(array, (b) => b.toString(16).padStart(2, '0')).join('');
+
+  const state: OAuthState = {
+    nonce,
+    timestamp: Date.now(),
+  };
+
+  const encoded = btoa(JSON.stringify(state));
+  sessionStorage.setItem(OAUTH_STATE_KEY, encoded);
+  return encoded;
+}
+
+/**
+ * Verify the state parameter from the OAuth callback.
+ * Returns true if the state matches stored value and is not expired.
+ */
+export function verifyState(state: string): boolean {
+  const stored = sessionStorage.getItem(OAUTH_STATE_KEY);
+
+  // Security: Remove state immediately to prevent replay attacks
+  sessionStorage.removeItem(OAUTH_STATE_KEY);
+
+  if (!stored || stored !== state) {
+    return false;
+  }
+
+  try {
+    const decoded = JSON.parse(atob(state)) as OAuthState;
+
+    if (!decoded.nonce || !decoded.timestamp) {
+      return false;
+    }
+
+    const now = Date.now();
+    const age = now - decoded.timestamp;
+
+    // Check expiration (5 minute max)
+    if (age > STATE_EXPIRY_MS) {
+      return false;
+    }
+
+    // Reject future timestamps (with 1 minute tolerance for clock skew)
+    if (decoded.timestamp > now + 60000) {
+      return false;
+    }
+
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Build the Cognito Hosted UI login URL with state parameter
  */
 export function getLoginUrl(): string {
+  const state = generateState();
   const params = new URLSearchParams({
     response_type: 'code',
     client_id: CLIENT_ID,
     redirect_uri: REDIRECT_URI,
     scope: 'openid profile email',
+    state,
   });
   return `${COGNITO_DOMAIN}/login?${params.toString()}`;
 }
@@ -54,14 +131,17 @@ export function getLogoutUrl(): string {
 }
 
 /**
- * Exchange authorization code for tokens via our API route
+ * Exchange authorization code for tokens via our API route.
+ * The API route handles the Cognito token exchange and sets httpOnly cookies.
+ * Security: redirect_uri is now determined server-side, not sent from client.
  */
 export async function exchangeCodeForTokens(code: string): Promise<boolean> {
   try {
     const response = await fetch('/api/auth', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code, redirectUri: REDIRECT_URI }),
+      credentials: 'include',
+      body: JSON.stringify({ code }),
     });
     return response.ok;
   } catch {
@@ -72,6 +152,10 @@ export async function exchangeCodeForTokens(code: string): Promise<boolean> {
 /**
  * Parse JWT payload without verification (client-side only).
  * Verification happens server-side in middleware.
+ *
+ * SECURITY WARNING: This function does NOT verify the JWT signature.
+ * It is ONLY for client-side display purposes (e.g., showing user name in UI).
+ * All authorization decisions MUST be made server-side.
  */
 function parseJwt(token: string): TokenPayload | null {
   try {
@@ -94,7 +178,10 @@ function parseJwt(token: string): TokenPayload | null {
  */
 export async function getCurrentUser(): Promise<CurrentUser | null> {
   try {
-    const response = await fetch('/api/auth', { method: 'GET' });
+    const response = await fetch('/api/auth', {
+      method: 'GET',
+      credentials: 'include',
+    });
     if (!response.ok) return null;
     const data = await response.json();
     return data.user ?? null;
@@ -125,9 +212,17 @@ export function getUserFromToken(token: string): CurrentUser | null {
 }
 
 /**
- * Logout - clear cookies and redirect
+ * Logout - clear httpOnly cookies via API route and redirect to Cognito logout.
+ * Consistent with admin app logout pattern.
  */
 export async function logout(): Promise<void> {
-  await fetch('/api/auth', { method: 'DELETE' });
+  try {
+    await fetch('/api/auth', {
+      method: 'DELETE',
+      credentials: 'include',
+    });
+  } catch {
+    // Ignore errors - we redirect regardless
+  }
   window.location.href = getLogoutUrl();
 }

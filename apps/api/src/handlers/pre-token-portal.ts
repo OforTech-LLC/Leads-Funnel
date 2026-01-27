@@ -17,44 +17,11 @@
  */
 
 import type { PreTokenGenerationTriggerEvent } from 'aws-lambda';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, QueryCommand } from '@aws-sdk/lib-dynamodb';
+import { QueryCommand } from '@aws-sdk/lib-dynamodb';
+import { getDocClient } from '../lib/clients.js';
+import { createLogger } from '../lib/logging.js';
 
-// ---------------------------------------------------------------------------
-// Client
-// ---------------------------------------------------------------------------
-
-let _doc: DynamoDBDocumentClient | null = null;
-
-function getDocClient(): DynamoDBDocumentClient {
-  if (!_doc) {
-    const raw = new DynamoDBClient({ region: process.env.AWS_REGION || 'us-east-1' });
-    _doc = DynamoDBDocumentClient.from(raw, {
-      marshallOptions: { removeUndefinedValues: true },
-    });
-  }
-  return _doc;
-}
-
-function tableName(): string {
-  return process.env.DDB_TABLE_NAME || '';
-}
-
-// ---------------------------------------------------------------------------
-// Logging
-// ---------------------------------------------------------------------------
-
-function log(level: string, message: string, extra?: Record<string, unknown>): void {
-  console.log(
-    JSON.stringify({
-      timestamp: new Date().toISOString(),
-      service: 'pre-token-portal',
-      level,
-      message,
-      ...extra,
-    })
-  );
-}
+const log = createLogger('pre-token-portal-handler');
 
 // ---------------------------------------------------------------------------
 // Handler
@@ -64,11 +31,12 @@ export async function handler(
   event: PreTokenGenerationTriggerEvent
 ): Promise<PreTokenGenerationTriggerEvent> {
   const cognitoSub = event.request.userAttributes.sub;
+  const table = process.env.DDB_TABLE_NAME || '';
 
-  log('info', 'Pre-token generation triggered (portal)', { sub: cognitoSub });
+  log.info('Pre-token generation triggered (portal)', { sub: cognitoSub });
 
-  if (!tableName()) {
-    log('error', 'DDB_TABLE_NAME not configured');
+  if (!table) {
+    log.error('DDB_TABLE_NAME not configured');
     throw new Error('Portal authentication configuration error');
   }
 
@@ -76,7 +44,7 @@ export async function handler(
   const doc = getDocClient();
   const userResult = await doc.send(
     new QueryCommand({
-      TableName: tableName(),
+      TableName: table,
       IndexName: 'GSI2',
       KeyConditionExpression: 'gsi2pk = :pk AND gsi2sk = :sk',
       FilterExpression: 'attribute_not_exists(deletedAt)',
@@ -90,7 +58,7 @@ export async function handler(
 
   const userItems = userResult.Items || [];
   if (userItems.length === 0) {
-    log('warn', 'User not found in platform database', { sub: cognitoSub });
+    log.warn('User not found in platform database', { sub: cognitoSub });
     throw new Error('User account not found. Contact support.');
   }
 
@@ -100,7 +68,7 @@ export async function handler(
   // Look up org memberships using GSI1 (USER#<userId> -> ORG#<orgId>)
   const membResult = await doc.send(
     new QueryCommand({
-      TableName: tableName(),
+      TableName: table,
       IndexName: 'GSI1',
       KeyConditionExpression: 'gsi1pk = :pk AND begins_with(gsi1sk, :skPrefix)',
       ExpressionAttributeValues: {
@@ -114,7 +82,7 @@ export async function handler(
   const orgIds = memberships.map((m) => m.orgId);
   const primaryOrgId = orgIds[0] || '';
 
-  log('info', 'Portal claims populated', {
+  log.info('Portal claims populated', {
     userId,
     orgCount: orgIds.length,
   });

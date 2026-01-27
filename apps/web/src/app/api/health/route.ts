@@ -1,26 +1,18 @@
 /**
  * Health Check API Route
  *
- * Provides health status for the Next.js application and its dependencies.
+ * Provides health status for the Next.js application.
  * Used by load balancers and monitoring systems.
+ *
+ * Returns minimal information publicly. Detailed dependency
+ * checks are only included when the x-internal-health header is present.
  */
 
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 // =============================================================================
 // Types
 // =============================================================================
-
-interface HealthStatus {
-  status: 'healthy' | 'degraded' | 'unhealthy';
-  version: string;
-  uptime: number;
-  timestamp: string;
-  environment: string;
-  dependencies: {
-    api: DependencyStatus;
-  };
-}
 
 interface DependencyStatus {
   status: 'healthy' | 'unhealthy' | 'unknown';
@@ -32,8 +24,6 @@ interface DependencyStatus {
 // Configuration
 // =============================================================================
 
-const VERSION = process.env.npm_package_version || '1.0.0';
-const START_TIME = Date.now();
 const ENVIRONMENT = process.env.NODE_ENV || 'development';
 
 // =============================================================================
@@ -106,40 +96,50 @@ async function checkApiBackend(): Promise<DependencyStatus> {
 // Request Handler
 // =============================================================================
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     // Check dependencies
     const apiStatus = await checkApiBackend();
 
     // Determine overall status
     const allHealthy = apiStatus.status === 'healthy' || apiStatus.status === 'unknown';
-    const overallStatus: HealthStatus['status'] = allHealthy ? 'healthy' : 'degraded';
+    const overallStatus = allHealthy ? 'healthy' : 'degraded';
 
-    const healthStatus: HealthStatus = {
-      status: overallStatus,
-      version: VERSION,
-      uptime: Math.floor((Date.now() - START_TIME) / 1000),
-      timestamp: new Date().toISOString(),
-      environment: ENVIRONMENT,
-      dependencies: {
-        api: apiStatus,
+    // For public access, return minimal info only
+    const isInternalRequest = request.headers.get('x-internal-health') === 'true';
+
+    if (isInternalRequest) {
+      // Detailed health info for internal monitoring only
+      return NextResponse.json(
+        {
+          status: overallStatus,
+          timestamp: new Date().toISOString(),
+          dependencies: {
+            api: apiStatus,
+          },
+        },
+        {
+          status: 200,
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+          },
+        }
+      );
+    }
+
+    // Public response: minimal information
+    return NextResponse.json(
+      {
+        status: overallStatus,
+        timestamp: new Date().toISOString(),
       },
-    };
-
-    // Return 200 for healthy/degraded, would return 503 for fully unhealthy
-    const statusCode = overallStatus === 'healthy' ? 200 : 200; // Still return 200 for degraded
-
-    console.log('[Health] Check completed:', {
-      status: overallStatus,
-      api: apiStatus.status,
-    });
-
-    return NextResponse.json(healthStatus, {
-      status: statusCode,
-      headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-      },
-    });
+      {
+        status: 200,
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+        },
+      }
+    );
   } catch (error) {
     // Unexpected error during health check
     console.error(
@@ -147,26 +147,18 @@ export async function GET() {
       error instanceof Error ? error.message : 'Unknown error'
     );
 
-    const healthStatus: HealthStatus = {
-      status: 'unhealthy',
-      version: VERSION,
-      uptime: Math.floor((Date.now() - START_TIME) / 1000),
-      timestamp: new Date().toISOString(),
-      environment: ENVIRONMENT,
-      dependencies: {
-        api: {
-          status: 'unknown',
-          error: 'Health check failed',
+    return NextResponse.json(
+      {
+        status: 'unhealthy',
+        timestamp: new Date().toISOString(),
+      },
+      {
+        status: 503,
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
         },
-      },
-    };
-
-    return NextResponse.json(healthStatus, {
-      status: 503,
-      headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-      },
-    });
+      }
+    );
   }
 }
 

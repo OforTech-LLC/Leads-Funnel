@@ -16,6 +16,89 @@ const COGNITO_REDIRECT_URI =
 const COGNITO_LOGOUT_URI =
   process.env.NEXT_PUBLIC_COGNITO_LOGOUT_URI || 'http://localhost:3001/login';
 
+// Session storage key for OAuth state (CSRF protection)
+const OAUTH_STATE_KEY = 'admin_oauth_state';
+
+// State expiration time (5 minutes)
+const STATE_EXPIRY_MS = 5 * 60 * 1000;
+
+interface OAuthState {
+  nonce: string;
+  timestamp: number;
+}
+
+// ---------------------------------------------------------------------------
+// OAuth State Parameter (CSRF Protection)
+// ---------------------------------------------------------------------------
+
+/**
+ * Generate a cryptographically secure state parameter for OAuth CSRF protection.
+ * Also stores the state in a cookie for server-side verification in the callback route.
+ */
+export function generateState(): string {
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
+  const nonce = Array.from(array, (b) => b.toString(16).padStart(2, '0')).join('');
+
+  const state: OAuthState = {
+    nonce,
+    timestamp: Date.now(),
+  };
+
+  const encoded = btoa(JSON.stringify(state));
+  sessionStorage.setItem(OAUTH_STATE_KEY, encoded);
+
+  // Also set as a cookie for server-side callback verification
+  document.cookie = `oauth_state=${encoded}; path=/; max-age=300; SameSite=Lax${
+    window.location.protocol === 'https:' ? '; Secure' : ''
+  }`;
+
+  return encoded;
+}
+
+/**
+ * Verify the state parameter from the OAuth callback.
+ * Returns true if the state matches stored value and is not expired.
+ */
+export function verifyState(state: string): boolean {
+  const stored = sessionStorage.getItem(OAUTH_STATE_KEY);
+
+  // Security: Remove state immediately to prevent replay attacks
+  sessionStorage.removeItem(OAUTH_STATE_KEY);
+
+  // Also clear the cookie
+  document.cookie = 'oauth_state=; path=/; max-age=0';
+
+  if (!stored || stored !== state) {
+    return false;
+  }
+
+  try {
+    const decoded = JSON.parse(atob(state)) as OAuthState;
+
+    if (!decoded.nonce || !decoded.timestamp) {
+      return false;
+    }
+
+    const now = Date.now();
+    const age = now - decoded.timestamp;
+
+    // Check expiration (5 minute max)
+    if (age > STATE_EXPIRY_MS) {
+      return false;
+    }
+
+    // Reject future timestamps (with 1 minute tolerance for clock skew)
+    if (decoded.timestamp > now + 60000) {
+      return false;
+    }
+
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Login / Logout URLs
 // ---------------------------------------------------------------------------
@@ -23,13 +106,16 @@ const COGNITO_LOGOUT_URI =
 /**
  * Build the Cognito Hosted UI login URL.
  * Uses authorization code flow (response_type=code) for security.
+ * Includes state parameter for CSRF protection.
  */
 export function getLoginUrl(): string {
+  const state = generateState();
   const params = new URLSearchParams({
     client_id: COGNITO_CLIENT_ID,
     response_type: 'code',
     scope: 'openid email profile',
     redirect_uri: COGNITO_REDIRECT_URI,
+    state,
   });
   return `${COGNITO_DOMAIN}/login?${params.toString()}`;
 }

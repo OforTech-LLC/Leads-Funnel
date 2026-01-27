@@ -19,7 +19,7 @@ variable "description" {
 variable "runtime" {
   type        = string
   description = "Lambda runtime"
-  default     = "nodejs20.x"
+  default     = "nodejs22.x"
 }
 
 variable "handler" {
@@ -156,6 +156,12 @@ variable "enable_ses" {
   default     = false
 }
 
+variable "ses_identity_arns" {
+  type        = list(string)
+  default     = ["*"]
+  description = "ARNs of SES identities this worker can send from"
+}
+
 # -----------------------------------------------------------------------------
 # IAM Permissions - SNS
 # -----------------------------------------------------------------------------
@@ -163,6 +169,12 @@ variable "enable_sns" {
   type        = bool
   description = "Enable SNS publish permissions (for SMS)"
   default     = false
+}
+
+variable "sns_topic_arns" {
+  type        = list(string)
+  default     = ["*"]
+  description = "ARNs of SNS topics this worker can publish to"
 }
 
 # -----------------------------------------------------------------------------

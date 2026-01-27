@@ -131,6 +131,7 @@ const nextConfig = {
   // Image optimization settings - ENABLED for performance
   images: {
     // Allow images from these remote sources
+    // Security: Restrict amazonaws.com to specific kanjona bucket prefix
     remotePatterns: [
       {
         protocol: 'https',
@@ -139,8 +140,8 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: '*.amazonaws.com',
-        pathname: '/**',
+        hostname: '*.s3.amazonaws.com',
+        pathname: '/kanjona-*/**',
       },
       {
         protocol: 'https',

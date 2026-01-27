@@ -225,7 +225,7 @@ resource "aws_iam_role_policy" "worker" {
         Resource = var.secrets_arns
       }] : [],
 
-      # SES access (for sending emails)
+      # SES access (for sending emails) - scoped to specific identities
       var.enable_ses ? [{
         Sid    = "SESSendEmail"
         Effect = "Allow"
@@ -233,17 +233,17 @@ resource "aws_iam_role_policy" "worker" {
           "ses:SendEmail",
           "ses:SendRawEmail",
         ]
-        Resource = ["*"]
+        Resource = var.ses_identity_arns
       }] : [],
 
-      # SNS access (for sending SMS)
+      # SNS access (for sending SMS) - scoped to specific topics
       var.enable_sns ? [{
         Sid    = "SNSPublish"
         Effect = "Allow"
         Action = [
           "sns:Publish",
         ]
-        Resource = ["*"]
+        Resource = var.sns_topic_arns
       }] : [],
 
       # KMS access for CloudWatch Logs encryption

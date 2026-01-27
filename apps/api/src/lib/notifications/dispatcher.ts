@@ -13,15 +13,8 @@
  * - Errors are logged but never propagated to fail the entire worker
  */
 
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import {
-  DynamoDBDocumentClient,
-  PutCommand,
-  QueryCommand,
-  GetCommand,
-  UpdateCommand,
-} from '@aws-sdk/lib-dynamodb';
-import { SSMClient, GetParameterCommand } from '@aws-sdk/client-ssm';
+import { PutCommand, QueryCommand, GetCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
+import { GetParameterCommand } from '@aws-sdk/client-ssm';
 import { v4 as uuidv4 } from 'uuid';
 import type {
   FeatureFlags,
@@ -33,35 +26,10 @@ import type {
   LeadAssignedEventDetail,
   LeadUnassignedEventDetail,
   NotificationWorkerConfig,
-} from '../../workers/types.js';
+} from '../types/events.js';
+import { getDocClient, getSsmClient } from '../clients.js';
 import { sendEmail, buildLeadAssignedEmail, buildLeadUnassignedEmail } from './email.js';
 import { sendSms, buildLeadAssignedSms, buildLeadUnassignedSms } from './sms.js';
-
-// =============================================================================
-// Client Initialization
-// =============================================================================
-
-let docClient: DynamoDBDocumentClient | null = null;
-let ssmClient: SSMClient | null = null;
-
-function getDocClient(region: string): DynamoDBDocumentClient {
-  if (!docClient) {
-    const client = new DynamoDBClient({ region });
-    docClient = DynamoDBDocumentClient.from(client, {
-      marshallOptions: {
-        removeUndefinedValues: true,
-      },
-    });
-  }
-  return docClient;
-}
-
-function getSsmClient(region: string): SSMClient {
-  if (!ssmClient) {
-    ssmClient = new SSMClient({ region });
-  }
-  return ssmClient;
-}
 
 // =============================================================================
 // SSM Parameter Cache

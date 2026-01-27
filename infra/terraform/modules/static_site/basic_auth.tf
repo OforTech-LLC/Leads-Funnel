@@ -1,3 +1,9 @@
+# SECURITY NOTE: CloudFront Functions cannot access external secrets.
+# The basic auth credentials are embedded in the function source code.
+# Ensure credentials are strong and rotated regularly.
+# The Terraform state file also contains these credentials.
+# Consider using Lambda@Edge for production authentication.
+
 # =============================================================================
 # CloudFront Function - Basic Authentication
 # =============================================================================

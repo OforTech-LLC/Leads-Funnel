@@ -10,19 +10,25 @@ import type { LeadStatus } from '@/lib/types';
 const STATUS_COLORS: Record<LeadStatus, string> = {
   new: 'bg-blue-500',
   contacted: 'bg-yellow-500',
-  booked: 'bg-purple-500',
-  won: 'bg-green-500',
+  qualified: 'bg-purple-500',
+  converted: 'bg-green-500',
+  booked: 'bg-indigo-500',
+  won: 'bg-emerald-500',
   lost: 'bg-red-500',
   dnc: 'bg-gray-400',
+  quarantined: 'bg-orange-500',
 };
 
 const STATUS_LABELS: Record<LeadStatus, string> = {
   new: 'New',
   contacted: 'Contacted',
+  qualified: 'Qualified',
+  converted: 'Converted',
   booked: 'Booked',
   won: 'Won',
   lost: 'Lost',
   dnc: 'DNC',
+  quarantined: 'Quarantined',
 };
 
 export default function DashboardPage() {

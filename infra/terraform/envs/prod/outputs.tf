@@ -166,36 +166,36 @@ output "sqs_dlq_url" {
 }
 
 # -----------------------------------------------------------------------------
-# WAF (Conditional)
+# WAF (Conditional - safe access via try)
 # -----------------------------------------------------------------------------
 output "waf_web_acl_arn" {
   description = "WAF Web ACL ARN"
-  value       = var.enable_waf ? module.waf[0].web_acl_arn : null
+  value       = try(module.waf[0].web_acl_arn, null)
 }
 
 # -----------------------------------------------------------------------------
-# SES (Conditional)
+# SES (Conditional - safe access via try)
 # -----------------------------------------------------------------------------
 output "ses_domain_identity" {
   description = "SES domain identity"
-  value       = var.enable_ses ? module.ses[0].domain_identity : null
+  value       = try(module.ses[0].domain_identity, null)
 }
 
 # -----------------------------------------------------------------------------
-# Monitoring (Conditional)
+# Monitoring (Conditional - safe access via try)
 # -----------------------------------------------------------------------------
 output "sns_alerts_topic_arn" {
   description = "SNS topic ARN for alerts"
-  value       = var.enable_alarms ? module.monitoring[0].sns_topic_arn : null
+  value       = try(module.monitoring[0].sns_topic_arn, null)
 }
 
 output "cloudwatch_dashboard_name" {
   description = "CloudWatch dashboard name"
-  value       = var.enable_alarms ? module.monitoring[0].dashboard_name : null
+  value       = try(module.monitoring[0].dashboard_name, null)
 }
 
 # =============================================================================
-# Platform Outputs (3-sided marketplace - conditional)
+# Platform Outputs (3-sided marketplace - conditional, safe access via try)
 # =============================================================================
 
 # -----------------------------------------------------------------------------
@@ -203,42 +203,42 @@ output "cloudwatch_dashboard_name" {
 # -----------------------------------------------------------------------------
 output "platform_orgs_table" {
   description = "Organizations DynamoDB table name"
-  value       = var.enable_platform ? module.dynamodb_orgs[0].table_name : null
+  value       = try(module.dynamodb_orgs[0].table_name, null)
 }
 
 output "platform_users_table" {
   description = "Users DynamoDB table name"
-  value       = var.enable_platform ? module.dynamodb_users[0].table_name : null
+  value       = try(module.dynamodb_users[0].table_name, null)
 }
 
 output "platform_memberships_table" {
   description = "Memberships DynamoDB table name"
-  value       = var.enable_platform ? module.dynamodb_memberships[0].table_name : null
+  value       = try(module.dynamodb_memberships[0].table_name, null)
 }
 
 output "platform_assignment_rules_table" {
   description = "Assignment rules DynamoDB table name"
-  value       = var.enable_platform ? module.dynamodb_assignment_rules[0].table_name : null
+  value       = try(module.dynamodb_assignment_rules[0].table_name, null)
 }
 
 output "platform_unassigned_table" {
   description = "Unassigned leads DynamoDB table name"
-  value       = var.enable_platform ? module.dynamodb_unassigned[0].table_name : null
+  value       = try(module.dynamodb_unassigned[0].table_name, null)
 }
 
 output "platform_notifications_table" {
   description = "Notifications DynamoDB table name"
-  value       = var.enable_platform ? module.dynamodb_notifications[0].table_name : null
+  value       = try(module.dynamodb_notifications[0].table_name, null)
 }
 
 output "platform_admin_audit_table" {
   description = "Admin audit DynamoDB table name"
-  value       = var.enable_platform ? module.dynamodb_admin_audit[0].table_name : null
+  value       = try(module.dynamodb_admin_audit[0].table_name, null)
 }
 
 output "platform_exports_table" {
   description = "Exports DynamoDB table name"
-  value       = var.enable_platform ? module.dynamodb_exports[0].table_name : null
+  value       = try(module.dynamodb_exports[0].table_name, null)
 }
 
 # -----------------------------------------------------------------------------
@@ -246,12 +246,12 @@ output "platform_exports_table" {
 # -----------------------------------------------------------------------------
 output "platform_assignment_queue_url" {
   description = "Assignment SQS queue URL"
-  value       = var.enable_platform ? module.assignment_queue[0].queue_url : null
+  value       = try(module.assignment_queue[0].queue_url, null)
 }
 
 output "platform_notification_queue_url" {
   description = "Notification SQS queue URL"
-  value       = var.enable_platform ? module.notification_queue[0].queue_url : null
+  value       = try(module.notification_queue[0].queue_url, null)
 }
 
 # -----------------------------------------------------------------------------
@@ -259,32 +259,32 @@ output "platform_notification_queue_url" {
 # -----------------------------------------------------------------------------
 output "platform_admin_cognito_pool_id" {
   description = "Admin Cognito User Pool ID"
-  value       = var.enable_platform ? module.cognito_admin[0].pool_id : null
+  value       = try(module.cognito_admin[0].pool_id, null)
 }
 
 output "platform_admin_cognito_client_id" {
   description = "Admin Cognito App Client ID"
-  value       = var.enable_platform ? module.cognito_admin[0].client_id : null
+  value       = try(module.cognito_admin[0].client_id, null)
 }
 
 output "platform_admin_cognito_domain" {
   description = "Admin Cognito hosted UI domain URL"
-  value       = var.enable_platform ? module.cognito_admin[0].domain_url : null
+  value       = try(module.cognito_admin[0].domain_url, null)
 }
 
 output "platform_portal_cognito_pool_id" {
   description = "Portal Cognito User Pool ID"
-  value       = var.enable_platform ? module.cognito_portal[0].pool_id : null
+  value       = try(module.cognito_portal[0].pool_id, null)
 }
 
 output "platform_portal_cognito_client_id" {
   description = "Portal Cognito App Client ID"
-  value       = var.enable_platform ? module.cognito_portal[0].client_id : null
+  value       = try(module.cognito_portal[0].client_id, null)
 }
 
 output "platform_portal_cognito_domain" {
   description = "Portal Cognito hosted UI domain URL"
-  value       = var.enable_platform ? module.cognito_portal[0].domain_url : null
+  value       = try(module.cognito_portal[0].domain_url, null)
 }
 
 # -----------------------------------------------------------------------------
@@ -292,12 +292,12 @@ output "platform_portal_cognito_domain" {
 # -----------------------------------------------------------------------------
 output "platform_assignment_worker" {
   description = "Assignment worker Lambda function name"
-  value       = var.enable_platform ? module.assignment_worker[0].function_name : null
+  value       = try(module.assignment_worker[0].function_name, null)
 }
 
 output "platform_notification_worker" {
   description = "Notification worker Lambda function name"
-  value       = var.enable_platform ? module.notification_worker[0].function_name : null
+  value       = try(module.notification_worker[0].function_name, null)
 }
 
 # -----------------------------------------------------------------------------
@@ -305,22 +305,22 @@ output "platform_notification_worker" {
 # -----------------------------------------------------------------------------
 output "platform_admin_app_distribution_id" {
   description = "Admin app CloudFront distribution ID"
-  value       = var.enable_platform ? module.admin_app[0].distribution_id : null
+  value       = try(module.admin_app[0].distribution_id, null)
 }
 
 output "platform_admin_app_bucket" {
   description = "Admin app S3 bucket name"
-  value       = var.enable_platform ? module.admin_app[0].bucket_name : null
+  value       = try(module.admin_app[0].bucket_name, null)
 }
 
 output "platform_portal_app_distribution_id" {
   description = "Portal app CloudFront distribution ID"
-  value       = var.enable_platform ? module.portal_app[0].distribution_id : null
+  value       = try(module.portal_app[0].distribution_id, null)
 }
 
 output "platform_portal_app_bucket" {
   description = "Portal app S3 bucket name"
-  value       = var.enable_platform ? module.portal_app[0].bucket_name : null
+  value       = try(module.portal_app[0].bucket_name, null)
 }
 
 # -----------------------------------------------------------------------------

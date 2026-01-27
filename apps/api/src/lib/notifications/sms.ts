@@ -15,7 +15,7 @@
 
 import { SNSClient, PublishCommand } from '@aws-sdk/client-sns';
 import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
-import type { LeadRecord, FeatureFlags } from '../../workers/types.js';
+import type { LeadRecord, FeatureFlags } from '../types/events.js';
 
 // =============================================================================
 // Client Initialization (reused across invocations)

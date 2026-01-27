@@ -1,8 +1,19 @@
 // ──────────────────────────────────────────────
-// Base API client with auth headers, error handling, retry
+// Base API client with auth headers, error handling, retry, and timeout
+//
+// Consistent patterns with apps/web and apps/admin API clients:
+// - Request timeouts (30s)
+// - Exponential backoff with jitter
+// - 401 redirect to /login
+// - httpOnly cookie auth via credentials: 'include'
 // ──────────────────────────────────────────────
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
+
+// Configuration - aligned across all 3 apps
+const REQUEST_TIMEOUT_MS = 30000; // 30 seconds
+const MAX_RETRIES = 3;
+const INITIAL_RETRY_DELAY_MS = 1000;
 
 export class ApiError extends Error {
   status: number;
@@ -19,18 +30,30 @@ export class ApiError extends Error {
 interface RequestOptions extends Omit<RequestInit, 'body'> {
   body?: unknown;
   retries?: number;
-  retryDelay?: number;
 }
 
-async function sleep(ms: number): Promise<void> {
+/**
+ * Delay helper for exponential backoff
+ */
+function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /**
- * Make an authenticated API request with automatic retry and error handling.
+ * Calculate delay with exponential backoff and jitter
+ */
+function getRetryDelay(attempt: number): number {
+  const exponentialDelay = INITIAL_RETRY_DELAY_MS * Math.pow(2, attempt);
+  // Add jitter (0-25% of delay)
+  const jitter = exponentialDelay * 0.25 * Math.random();
+  return exponentialDelay + jitter;
+}
+
+/**
+ * Make an authenticated API request with automatic retry, timeout, and error handling.
  */
 async function request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
-  const { body, retries = 2, retryDelay = 1000, ...init } = options;
+  const { body, retries = MAX_RETRIES, ...init } = options;
 
   const url = `${API_BASE_URL}${endpoint}`;
   const headers: Record<string, string> = {
@@ -39,18 +62,24 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
     ...(init.headers as Record<string, string>),
   };
 
-  const config: RequestInit = {
-    ...init,
-    headers,
-    credentials: 'include',
-    body: body ? JSON.stringify(body) : undefined,
-  };
-
   let lastError: Error | null = null;
 
   for (let attempt = 0; attempt <= retries; attempt++) {
+    // Create AbortController for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+    const config: RequestInit = {
+      ...init,
+      headers,
+      credentials: 'include', // httpOnly cookie auth
+      body: body ? JSON.stringify(body) : undefined,
+      signal: controller.signal,
+    };
+
     try {
       const response = await fetch(url, config);
+      clearTimeout(timeoutId);
 
       // If unauthorized, redirect to login
       if (response.status === 401) {
@@ -60,13 +89,38 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
         throw new ApiError('Unauthorized', 401);
       }
 
+      // Handle rate limiting
+      if (response.status === 429) {
+        const retryAfter = response.headers.get('Retry-After');
+        const waitTime = retryAfter ? parseInt(retryAfter, 10) * 1000 : getRetryDelay(attempt);
+
+        if (attempt < retries) {
+          await delay(waitTime);
+          continue;
+        }
+        throw new ApiError('Rate limit exceeded. Please try again later.', 429);
+      }
+
       if (!response.ok) {
         const errorBody = await response.json().catch(() => null);
-        throw new ApiError(
+        const apiError = new ApiError(
           errorBody?.message || `Request failed with status ${response.status}`,
           response.status,
           errorBody
         );
+
+        // Don't retry client errors (4xx) except 429 (already handled above)
+        if (response.status >= 400 && response.status < 500) {
+          throw apiError;
+        }
+
+        // Retry on server errors (5xx)
+        lastError = apiError;
+        if (attempt < retries) {
+          await delay(getRetryDelay(attempt));
+          continue;
+        }
+        throw apiError;
       }
 
       // Handle 204 No Content
@@ -76,21 +130,28 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
 
       return (await response.json()) as T;
     } catch (error) {
-      lastError = error as Error;
+      clearTimeout(timeoutId);
 
-      // Don't retry client errors (4xx) except 429
-      if (
-        error instanceof ApiError &&
-        error.status >= 400 &&
-        error.status < 500 &&
-        error.status !== 429
-      ) {
+      // Handle timeout abort
+      if (error instanceof Error && error.name === 'AbortError') {
+        lastError = new ApiError('Request timed out. Please try again.', 0);
+        if (attempt < retries) {
+          await delay(getRetryDelay(attempt));
+          continue;
+        }
+        throw lastError;
+      }
+
+      // Don't retry client errors
+      if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
         throw error;
       }
 
-      // Retry on network errors and 5xx/429
+      lastError = error as Error;
+
+      // Retry on network errors
       if (attempt < retries) {
-        await sleep(retryDelay * Math.pow(2, attempt));
+        await delay(getRetryDelay(attempt));
         continue;
       }
     }

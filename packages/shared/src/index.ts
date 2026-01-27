@@ -62,6 +62,62 @@ export type { ErrorCode, ApiErrorResponse, ApiSuccessResponse } from './types/ap
 export type { LeadCreatedEvent, LeadAssignedEvent, LeadUnassignedEvent } from './types/events';
 
 // =============================================================================
+// Unified Lead Status
+// =============================================================================
+
+/**
+ * All possible lead statuses across the platform.
+ *
+ * Used by admin, portal, and web apps. Individual apps may only display
+ * a subset of these statuses depending on their context.
+ *
+ * - new:         Lead just submitted
+ * - contacted:   Outreach made
+ * - qualified:   Lead vetted and viable
+ * - converted:   Lead became a customer
+ * - lost:        Lead did not convert
+ * - dnc:         Do not contact
+ * - quarantined: Flagged for review (spam, duplicate, etc.)
+ * - booked:      Appointment or meeting booked
+ * - won:         Deal closed successfully
+ */
+export const LEAD_STATUSES = [
+  'new',
+  'contacted',
+  'qualified',
+  'converted',
+  'lost',
+  'dnc',
+  'quarantined',
+  'booked',
+  'won',
+] as const;
+
+export type LeadStatus = (typeof LEAD_STATUSES)[number];
+
+/**
+ * Admin pipeline stages (separate from lead status).
+ * These represent internal workflow steps.
+ */
+export const ADMIN_PIPELINE_STATUSES = [
+  'none',
+  'nurturing',
+  'negotiating',
+  'closing',
+  'closed_won',
+  'closed_lost',
+] as const;
+
+export type AdminPipelineStatus = (typeof ADMIN_PIPELINE_STATUSES)[number];
+
+/**
+ * Supported export file formats.
+ */
+export const EXPORT_FORMATS = ['csv', 'xlsx', 'pdf', 'docx', 'json'] as const;
+
+export type ExportFormatValue = (typeof EXPORT_FORMATS)[number];
+
+// =============================================================================
 // UTM Parameters
 // =============================================================================
 
@@ -192,11 +248,6 @@ export interface Lead {
   /** History of consent updates for audit trail */
   consentHistory?: ConsentUpdate[];
 }
-
-/**
- * Lead status enum
- */
-export type LeadStatus = 'new' | 'contacted' | 'qualified' | 'converted' | 'lost';
 
 // =============================================================================
 // API Response Types

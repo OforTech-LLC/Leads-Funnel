@@ -24,34 +24,21 @@ import * as orgsDb from '../lib/db/orgs.js';
 import * as membershipsDb from '../lib/db/memberships.js';
 import * as leadsDb from '../lib/db/leads.js';
 import * as resp from '../lib/response.js';
-import { sha256 } from '../lib/hash.js';
+import { parseBody, pathParam, queryParam, getIpHash } from '../lib/handler-utils.js';
+import { createLogger } from '../lib/logging.js';
+
+const log = createLogger('portal-handler');
+
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+
+const MAX_NOTE_LENGTH = 2000;
+const MAX_NOTES_PER_LEAD = 100;
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-
-function parseBody(event: APIGatewayProxyEventV2): Record<string, unknown> {
-  if (!event.body) return {};
-  try {
-    return JSON.parse(event.body);
-  } catch {
-    return {};
-  }
-}
-
-function pathParam(event: APIGatewayProxyEventV2, position: number): string {
-  const parts = (event.requestContext.http.path || '').split('/').filter(Boolean);
-  return parts[position] || '';
-}
-
-function qp(event: APIGatewayProxyEventV2, key: string): string | undefined {
-  return event.queryStringParameters?.[key];
-}
-
-function ipHash(event: APIGatewayProxyEventV2): string {
-  const ip = event.requestContext?.http?.sourceIp || '';
-  return sha256(ip);
-}
 
 /**
  * Get the user's membership role in a specific org.
@@ -118,7 +105,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
 
     // ---- ORG ----
     if (subpath === '/org' && method === 'GET') {
-      const orgId = qp(event, 'orgId') || identity.primaryOrgId;
+      const orgId = queryParam(event, 'orgId') || identity.primaryOrgId;
       if (!orgId) return resp.badRequest('No org context');
       if (!identity.orgIds.includes(orgId)) return resp.forbidden('Not a member of this org');
 
@@ -149,7 +136,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
 
     // ---- LEADS LIST ----
     if (subpath === '/leads' && method === 'GET') {
-      const orgId = qp(event, 'orgId') || identity.primaryOrgId;
+      const orgId = queryParam(event, 'orgId') || identity.primaryOrgId;
       if (!orgId) return resp.badRequest('No org context');
       if (!identity.orgIds.includes(orgId)) return resp.forbidden('Not a member of this org');
 
@@ -159,24 +146,25 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       // Agents can only see their own assigned leads
       const isFullView = canPortalViewAllOrgLeads(memberRole);
 
-      const result = await leadsDb.queryLeads({
+      // Build query params - filter at DB level for agents
+      const queryParams: leadsDb.QueryLeadsInput = {
         orgId,
-        funnelId: qp(event, 'funnelId'),
-        status: qp(event, 'status') as leadsDb.LeadStatus | undefined,
-        startDate: qp(event, 'startDate'),
-        endDate: qp(event, 'endDate'),
-        cursor: qp(event, 'cursor'),
-        limit: Number(qp(event, 'limit')) || 25,
-      });
+        funnelId: queryParam(event, 'funnelId'),
+        status: queryParam(event, 'status') as leadsDb.LeadStatus | undefined,
+        startDate: queryParam(event, 'startDate'),
+        endDate: queryParam(event, 'endDate'),
+        cursor: queryParam(event, 'cursor'),
+        limit: Number(queryParam(event, 'limit')) || 25,
+      };
 
-      let items = result.items;
-
-      // Filter for agents: only show leads assigned to them
+      // Pass assignedUserId filter to DB query for agents
       if (!isFullView) {
-        items = items.filter((lead) => lead.assignedUserId === identity.userId);
+        queryParams.assignedUserId = identity.userId;
       }
 
-      return resp.paginated(items, {
+      const result = await leadsDb.queryLeads(queryParams);
+
+      return resp.paginated(result.items, {
         nextCursor: result.nextCursor,
         hasMore: !!result.nextCursor,
       });
@@ -202,6 +190,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       const funnelId = pathParam(event, 2);
       const leadId = pathParam(event, 3);
       const body = parseBody(event);
+      if (body === null) return resp.badRequest('Invalid JSON in request body');
       const newStatus = body.status as string | undefined;
 
       if (!newStatus) return resp.badRequest('status is required');
@@ -246,7 +235,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
         resourceType: 'lead',
         resourceId: `${funnelId}:${leadId}`,
         details: { status: newStatus },
-        ipHash: ipHash(event),
+        ipHash: getIpHash(event),
       });
 
       return resp.success(updated);
@@ -257,10 +246,16 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       const funnelId = pathParam(event, 2);
       const leadId = pathParam(event, 3);
       const body = parseBody(event);
+      if (body === null) return resp.badRequest('Invalid JSON in request body');
       const note = body.note as string | undefined;
 
       if (!note || typeof note !== 'string' || note.trim().length === 0) {
         return resp.badRequest('note is required and must be non-empty');
+      }
+
+      // Fix 8: Enforce note length limit
+      if (note.length > MAX_NOTE_LENGTH) {
+        return resp.badRequest(`Note must be ${MAX_NOTE_LENGTH} characters or less`);
       }
 
       // Load lead and check access
@@ -276,10 +271,15 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
         return resp.forbidden('Insufficient permissions');
       }
 
+      // Fix 8: Enforce max notes count per lead
+      const existingNotes = lead.notes || [];
+      if (existingNotes.length >= MAX_NOTES_PER_LEAD) {
+        return resp.badRequest(`Maximum of ${MAX_NOTES_PER_LEAD} notes per lead reached`);
+      }
+
       // Append note with timestamp and author
       const now = new Date().toISOString();
       const noteEntry = `[${now}] ${identity.email}: ${note.trim()}`;
-      const existingNotes = lead.notes || [];
       const updatedNotes = [...existingNotes, noteEntry];
 
       const updated = await leadsDb.updateLead({
@@ -295,7 +295,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
         resourceType: 'lead',
         resourceId: `${funnelId}:${leadId}`,
         details: { addedNote: true },
-        ipHash: ipHash(event),
+        ipHash: getIpHash(event),
       });
 
       return resp.success(updated);
@@ -304,6 +304,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     // ---- UPDATE SETTINGS ----
     if (subpath === '/settings' && method === 'PUT') {
       const body = parseBody(event);
+      if (body === null) return resp.badRequest('Invalid JSON in request body');
 
       // Update user preferences
       if (body.preferences) {
@@ -335,7 +336,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
         resourceType: 'user',
         resourceId: identity.userId,
         details: { keys: Object.keys(body) },
-        ipHash: ipHash(event),
+        ipHash: getIpHash(event),
       });
 
       return resp.success({ updated: true });
@@ -344,16 +345,12 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     return resp.notFound('Portal endpoint not found');
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Unknown error';
-    console.log(
-      JSON.stringify({
-        level: 'error',
-        message: 'portal.handler.error',
-        error: msg,
-        path,
-        method,
-        userId: identity.userId,
-      })
-    );
+    log.error('portal.handler.error', {
+      error: msg,
+      path,
+      method,
+      userId: identity.userId,
+    });
 
     if (
       err &&

@@ -22,7 +22,6 @@ import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda
 import { authenticateAdmin, AuthError } from '../lib/auth/admin-auth.js';
 import { canAdminWrite } from '../lib/auth/permissions.js';
 import { recordAudit } from '../lib/db/audit.js';
-import { sha256 } from '../lib/hash.js';
 import * as orgsDb from '../lib/db/orgs.js';
 import * as usersDb from '../lib/db/users.js';
 import * as membershipsDb from '../lib/db/memberships.js';
@@ -32,34 +31,32 @@ import * as notificationsDb from '../lib/db/notifications.js';
 import * as exportsDb from '../lib/db/exports.js';
 import * as resp from '../lib/response.js';
 import { matchLeadToRule } from '../lib/assignment/matcher.js';
+import { getPresignedDownloadUrl } from '../lib/storage/s3.js';
+import { parseBody, pathParam, queryParam, getIpHash } from '../lib/handler-utils.js';
+import { createLogger } from '../lib/logging.js';
+import { PutCommand } from '@aws-sdk/lib-dynamodb';
+import { getDocClient, tableName } from '../lib/db/client.js';
+
+const log = createLogger('admin-handler');
 
 // ---------------------------------------------------------------------------
-// Helpers
+// Validation constants
 // ---------------------------------------------------------------------------
 
-function parseBody(event: APIGatewayProxyEventV2): Record<string, unknown> {
-  if (!event.body) return {};
-  try {
-    return JSON.parse(event.body);
-  } catch {
-    return {};
-  }
-}
+const VALID_MEMBERSHIP_ROLES = ['ORG_OWNER', 'MANAGER', 'AGENT', 'VIEWER'];
 
-function pathParam(event: APIGatewayProxyEventV2, position: number): string {
-  // path looks like /admin/orgs/abc123
-  const parts = (event.requestContext.http.path || '').split('/').filter(Boolean);
-  return parts[position] || '';
-}
-
-function qp(event: APIGatewayProxyEventV2, key: string): string | undefined {
-  return event.queryStringParameters?.[key];
-}
-
-function getIpHash(event: APIGatewayProxyEventV2): string {
-  const ip = event.requestContext?.http?.sourceIp || '';
-  return sha256(ip);
-}
+// Fix 7: Align with LeadStatus type from leads.ts
+const VALID_LEAD_STATUSES: leadsDb.LeadStatus[] = [
+  'new',
+  'assigned',
+  'contacted',
+  'qualified',
+  'converted',
+  'lost',
+  'dnc',
+  'quarantined',
+  'unassigned',
+];
 
 // ---------------------------------------------------------------------------
 // Main Handler
@@ -92,6 +89,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     if (subpath === '/orgs' && method === 'POST') {
       if (!canAdminWrite(admin.role)) return resp.forbidden();
       const body = parseBody(event);
+      if (body === null) return resp.badRequest('Invalid JSON in request body');
       if (!body.name || !body.slug || !body.contactEmail) {
         return resp.badRequest('name, slug, and contactEmail are required');
       }
@@ -117,7 +115,10 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     }
 
     if (subpath === '/orgs' && method === 'GET') {
-      const result = await orgsDb.listOrgs(qp(event, 'cursor'), Number(qp(event, 'limit')) || 25);
+      const result = await orgsDb.listOrgs(
+        queryParam(event, 'cursor'),
+        Number(queryParam(event, 'limit')) || 25
+      );
       return resp.paginated(result.items, {
         nextCursor: result.nextCursor,
         hasMore: !!result.nextCursor,
@@ -135,6 +136,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       if (!canAdminWrite(admin.role)) return resp.forbidden();
       const orgId = pathParam(event, 2);
       const body = parseBody(event);
+      if (body === null) return resp.badRequest('Invalid JSON in request body');
       const updated = await orgsDb.updateOrg({
         orgId,
         name: body.name as string | undefined,
@@ -146,13 +148,14 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
         notifySms: body.notifySms as string[] | undefined,
         settings: body.settings as Record<string, unknown> | undefined,
       });
+      // Fix 9: Sanitize audit log - only log field names, not raw body values
       await recordAudit({
         actorId: admin.emailHash,
         actorType: 'admin',
         action: 'org.update',
         resourceType: 'org',
         resourceId: orgId,
-        details: body,
+        details: { updatedFields: Object.keys(body) },
         ipHash: getIpHash(event),
       });
       return resp.success(updated);
@@ -177,6 +180,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     if (subpath === '/users' && method === 'POST') {
       if (!canAdminWrite(admin.role)) return resp.forbidden();
       const body = parseBody(event);
+      if (body === null) return resp.badRequest('Invalid JSON in request body');
       if (!body.email || !body.name) {
         return resp.badRequest('email and name are required');
       }
@@ -200,7 +204,10 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     }
 
     if (subpath === '/users' && method === 'GET') {
-      const result = await usersDb.listUsers(qp(event, 'cursor'), Number(qp(event, 'limit')) || 25);
+      const result = await usersDb.listUsers(
+        queryParam(event, 'cursor'),
+        Number(queryParam(event, 'limit')) || 25
+      );
       return resp.paginated(result.items, {
         nextCursor: result.nextCursor,
         hasMore: !!result.nextCursor,
@@ -218,6 +225,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       if (!canAdminWrite(admin.role)) return resp.forbidden();
       const userId = pathParam(event, 2);
       const body = parseBody(event);
+      if (body === null) return resp.badRequest('Invalid JSON in request body');
       const updated = await usersDb.updateUser({
         userId,
         email: body.email as string | undefined,
@@ -227,13 +235,14 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
         avatarUrl: body.avatarUrl as string | undefined,
         preferences: body.preferences as Record<string, unknown> | undefined,
       });
+      // Fix 9: Sanitize audit log - only log field names, not raw body values
       await recordAudit({
         actorId: admin.emailHash,
         actorType: 'admin',
         action: 'user.update',
         resourceType: 'user',
         resourceId: userId,
-        details: body,
+        details: { updatedFields: Object.keys(body) },
         ipHash: getIpHash(event),
       });
       return resp.success(updated);
@@ -259,8 +268,15 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       if (!canAdminWrite(admin.role)) return resp.forbidden();
       const orgId = pathParam(event, 2);
       const body = parseBody(event);
+      if (body === null) return resp.badRequest('Invalid JSON in request body');
       if (!body.userId || !body.role) {
         return resp.badRequest('userId and role are required');
+      }
+      // Validate membership role
+      if (!VALID_MEMBERSHIP_ROLES.includes(body.role as string)) {
+        return resp.badRequest(
+          `Invalid role. Must be one of: ${VALID_MEMBERSHIP_ROLES.join(', ')}`
+        );
       }
       const membership = await membershipsDb.addMember({
         orgId,
@@ -284,8 +300,8 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       const orgId = pathParam(event, 2);
       const result = await membershipsDb.listOrgMembers(
         orgId,
-        qp(event, 'cursor'),
-        Number(qp(event, 'limit')) || 50
+        queryParam(event, 'cursor'),
+        Number(queryParam(event, 'limit')) || 50
       );
       return resp.paginated(result.items, {
         nextCursor: result.nextCursor,
@@ -298,6 +314,13 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       const orgId = pathParam(event, 2);
       const userId = pathParam(event, 4); // admin/orgs/<orgId>/members/<userId>
       const body = parseBody(event);
+      if (body === null) return resp.badRequest('Invalid JSON in request body');
+      // Validate membership role if provided
+      if (body.role && !VALID_MEMBERSHIP_ROLES.includes(body.role as string)) {
+        return resp.badRequest(
+          `Invalid role. Must be one of: ${VALID_MEMBERSHIP_ROLES.join(', ')}`
+        );
+      }
       const updated = await membershipsDb.updateMember({
         orgId,
         userId,
@@ -305,13 +328,14 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
         notifyEmail: body.notifyEmail as boolean | undefined,
         notifySms: body.notifySms as boolean | undefined,
       });
+      // Fix 9: Sanitize audit log - only log field names, not raw body values
       await recordAudit({
         actorId: admin.emailHash,
         actorType: 'admin',
         action: 'member.update',
         resourceType: 'membership',
         resourceId: `${orgId}:${userId}`,
-        details: body,
+        details: { updatedFields: Object.keys(body) },
         ipHash: getIpHash(event),
       });
       return resp.success(updated);
@@ -337,6 +361,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     if (subpath === '/rules' && method === 'POST') {
       if (!canAdminWrite(admin.role)) return resp.forbidden();
       const body = parseBody(event);
+      if (body === null) return resp.badRequest('Invalid JSON in request body');
       if (!body.funnelId || !body.orgId || !body.name || body.priority === undefined) {
         return resp.badRequest('funnelId, orgId, name, priority, and zipPatterns are required');
       }
@@ -361,11 +386,11 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     }
 
     if (subpath === '/rules' && method === 'GET') {
-      const funnelId = qp(event, 'funnelId');
+      const funnelId = queryParam(event, 'funnelId');
       const result = await rulesDb.listRules(
         funnelId,
-        qp(event, 'cursor'),
-        Number(qp(event, 'limit')) || 50
+        queryParam(event, 'cursor'),
+        Number(queryParam(event, 'limit')) || 50
       );
       return resp.paginated(result.items, {
         nextCursor: result.nextCursor,
@@ -375,11 +400,12 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
 
     if (/^\/rules\/test$/.test(subpath) && method === 'POST') {
       const body = parseBody(event);
+      if (body === null) return resp.badRequest('Invalid JSON in request body');
       const funnelId = body.funnelId as string;
       const zipCode = body.zipCode as string;
       if (!funnelId) return resp.badRequest('funnelId is required');
       const rules = await rulesDb.getRulesByFunnel(funnelId);
-      // Adapt to the matcher's expected AssignmentRule type from workers/types
+      // Adapt to the matcher's expected AssignmentRule type from lib/types/events
       const adapted = rules.map((r) => ({
         ruleId: r.ruleId,
         funnelId: r.funnelId,
@@ -412,6 +438,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       if (!canAdminWrite(admin.role)) return resp.forbidden();
       const ruleId = pathParam(event, 2);
       const body = parseBody(event);
+      if (body === null) return resp.badRequest('Invalid JSON in request body');
       const updated = await rulesDb.updateRule({
         ruleId,
         name: body.name as string | undefined,
@@ -420,13 +447,14 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
         dailyCap: body.dailyCap as number | undefined,
         isActive: body.isActive as boolean | undefined,
       });
+      // Fix 9: Sanitize audit log - only log field names, not raw body values
       await recordAudit({
         actorId: admin.emailHash,
         actorType: 'admin',
         action: 'rule.update',
         resourceType: 'rule',
         resourceId: ruleId,
-        details: body,
+        details: { updatedFields: Object.keys(body) },
         ipHash: getIpHash(event),
       });
       return resp.success(updated);
@@ -450,6 +478,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     // ---- LEADS ----
     if (subpath === '/leads/query' && method === 'POST') {
       const body = parseBody(event);
+      if (body === null) return resp.badRequest('Invalid JSON in request body');
       const result = await leadsDb.queryLeads({
         funnelId: body.funnelId as string | undefined,
         orgId: body.orgId as string | undefined,
@@ -478,6 +507,11 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       const funnelId = pathParam(event, 2);
       const leadId = pathParam(event, 3);
       const body = parseBody(event);
+      if (body === null) return resp.badRequest('Invalid JSON in request body');
+      // Fix 7: Validate lead status against the actual LeadStatus type
+      if (body.status && !VALID_LEAD_STATUSES.includes(body.status as leadsDb.LeadStatus)) {
+        return resp.badRequest(`Invalid status. Must be one of: ${VALID_LEAD_STATUSES.join(', ')}`);
+      }
       const updated = await leadsDb.updateLead({
         funnelId,
         leadId,
@@ -488,13 +522,14 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
         notes: body.notes as string[] | undefined,
         tags: body.tags as string[] | undefined,
       });
+      // Fix 9: Sanitize audit log - only log field names, not raw body values
       await recordAudit({
         actorId: admin.emailHash,
         actorType: 'admin',
         action: 'lead.update',
         resourceType: 'lead',
         resourceId: `${funnelId}:${leadId}`,
-        details: body,
+        details: { updatedFields: Object.keys(body) },
         ipHash: getIpHash(event),
       });
       return resp.success(updated);
@@ -505,6 +540,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       const funnelId = pathParam(event, 2);
       const leadId = pathParam(event, 3);
       const body = parseBody(event);
+      if (body === null) return resp.badRequest('Invalid JSON in request body');
       if (!body.orgId) return resp.badRequest('orgId is required');
       const updated = await leadsDb.reassignLead(
         funnelId,
@@ -527,10 +563,10 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     // ---- NOTIFICATIONS ----
     if (subpath === '/notifications' && method === 'GET') {
       const result = await notificationsDb.listNotifications(
-        qp(event, 'cursor'),
-        Number(qp(event, 'limit')) || 50,
-        qp(event, 'startDate'),
-        qp(event, 'endDate')
+        queryParam(event, 'cursor'),
+        Number(queryParam(event, 'limit')) || 50,
+        queryParam(event, 'startDate'),
+        queryParam(event, 'endDate')
       );
       return resp.paginated(result.items, {
         nextCursor: result.nextCursor,
@@ -542,7 +578,50 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     if (subpath === '/exports' && method === 'POST') {
       if (!canAdminWrite(admin.role)) return resp.forbidden();
       const body = parseBody(event);
+      if (body === null) return resp.badRequest('Invalid JSON in request body');
       if (!body.format) return resp.badRequest('format is required (csv, xlsx, json)');
+
+      // Rate limit: check for pending exports by this admin
+      const pendingExports = await exportsDb.listExports();
+      const myPending = pendingExports.items.filter(
+        (e) => e.requestedBy === admin.emailHash && e.status === 'pending'
+      );
+      if (myPending.length >= 3) {
+        return resp.error(
+          'RATE_LIMITED',
+          'Too many pending exports. Please wait for current exports to complete.',
+          429
+        );
+      }
+
+      // Fix 4: Atomic throttle to prevent TOCTOU race condition
+      const doc = getDocClient();
+      const throttleKey = `EXPORT_THROTTLE#${admin.emailHash}`;
+      try {
+        await doc.send(
+          new PutCommand({
+            TableName: tableName(),
+            Item: {
+              pk: throttleKey,
+              sk: 'THROTTLE',
+              createdAt: new Date().toISOString(),
+              ttl: Math.floor(Date.now() / 1000) + 10, // 10 second cooldown
+            },
+            ConditionExpression: 'attribute_not_exists(pk)',
+          })
+        );
+      } catch (err: unknown) {
+        if (
+          err &&
+          typeof err === 'object' &&
+          'name' in err &&
+          err.name === 'ConditionalCheckFailedException'
+        ) {
+          return resp.error('RATE_LIMITED', 'Please wait before creating another export', 429);
+        }
+        throw err;
+      }
+
       const job = await exportsDb.createExport({
         requestedBy: admin.emailHash,
         funnelId: body.funnelId as string | undefined,
@@ -563,8 +642,8 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
 
     if (subpath === '/exports' && method === 'GET') {
       const result = await exportsDb.listExports(
-        qp(event, 'cursor'),
-        Number(qp(event, 'limit')) || 25
+        queryParam(event, 'cursor'),
+        Number(queryParam(event, 'limit')) || 25
       );
       return resp.paginated(result.items, {
         nextCursor: result.nextCursor,
@@ -579,14 +658,13 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       if (job.status !== 'completed' || !job.s3Key) {
         return resp.badRequest('Export not ready for download');
       }
-      // Generate presigned URL
-      const { S3Client, GetObjectCommand } = await import('@aws-sdk/client-s3');
-      const { getSignedUrl } = await import('@aws-sdk/s3-request-presigner');
-      const s3 = new S3Client({});
+      // Fix 5: Verify the requesting admin owns this export or has write permissions
+      if (job.requestedBy !== admin.emailHash && !canAdminWrite(admin.role)) {
+        return resp.forbidden('You can only download your own exports');
+      }
+      // Generate presigned URL via centralized S3 storage module
       const bucket = process.env.EXPORTS_BUCKET || '';
-      const url = await getSignedUrl(s3, new GetObjectCommand({ Bucket: bucket, Key: job.s3Key }), {
-        expiresIn: 3600,
-      });
+      const url = await getPresignedDownloadUrl(bucket, job.s3Key, 3600);
       await recordAudit({
         actorId: admin.emailHash,
         actorType: 'admin',
@@ -601,9 +679,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     return resp.notFound('Admin endpoint not found');
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Unknown error';
-    console.log(
-      JSON.stringify({ level: 'error', message: 'admin.handler.error', error: msg, path, method })
-    );
+    log.error('admin.handler.error', { error: msg, path, method });
 
     // Handle DynamoDB conditional check failures as 409
     if (

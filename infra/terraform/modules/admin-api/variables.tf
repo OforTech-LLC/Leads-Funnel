@@ -94,6 +94,18 @@ variable "xray_enabled" {
   default     = false
 }
 
+variable "admin_cognito_client_id" {
+  description = "Cognito App Client ID for admin JWT authorizer"
+  type        = string
+  default     = ""
+}
+
+variable "admin_cognito_pool_id" {
+  description = "Cognito User Pool ID for admin JWT authorizer"
+  type        = string
+  default     = ""
+}
+
 variable "tags" {
   description = "Resource tags"
   type        = map(string)

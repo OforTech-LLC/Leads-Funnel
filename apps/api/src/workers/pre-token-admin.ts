@@ -15,21 +15,12 @@
  */
 
 import type { PreTokenGenerationTriggerEvent } from 'aws-lambda';
-import { SSMClient, GetParameterCommand } from '@aws-sdk/client-ssm';
+import { GetParameterCommand } from '@aws-sdk/client-ssm';
 import type { PreTokenAdminConfig } from './types.js';
+import { getSsmClient } from '../lib/clients.js';
+import { createLogger } from '../lib/logging.js';
 
-// =============================================================================
-// Client Initialization
-// =============================================================================
-
-let ssmClient: SSMClient | null = null;
-
-function getSsmClient(region: string): SSMClient {
-  if (!ssmClient) {
-    ssmClient = new SSMClient({ region });
-  }
-  return ssmClient;
-}
+const log = createLogger('pre-token-admin');
 
 // =============================================================================
 // Configuration
@@ -40,28 +31,6 @@ function loadConfig(): PreTokenAdminConfig {
     awsRegion: process.env.AWS_REGION || 'us-east-1',
     allowedEmailsSsmPath: process.env.ALLOWED_EMAILS_SSM_PATH || '',
   };
-}
-
-// =============================================================================
-// Structured Logging
-// =============================================================================
-
-interface LogParams {
-  level: 'info' | 'warn' | 'error';
-  message: string;
-  sub?: string;
-  errorCode?: string;
-  [key: string]: unknown;
-}
-
-function log(entry: LogParams): void {
-  console.log(
-    JSON.stringify({
-      timestamp: new Date().toISOString(),
-      service: 'pre-token-admin',
-      ...entry,
-    })
-  );
 }
 
 // =============================================================================
@@ -86,9 +55,7 @@ async function loadAllowedEmails(config: PreTokenAdminConfig): Promise<Set<strin
   }
 
   if (!config.allowedEmailsSsmPath) {
-    log({
-      level: 'error',
-      message: 'Allowed emails SSM path not configured',
+    log.error('Allowed emails SSM path not configured', {
       errorCode: 'CONFIG_ERROR',
     });
     return new Set();
@@ -104,10 +71,7 @@ async function loadAllowedEmails(config: PreTokenAdminConfig): Promise<Set<strin
     );
 
     if (!result.Parameter?.Value) {
-      log({
-        level: 'warn',
-        message: 'Allowed emails parameter is empty',
-      });
+      log.warn('Allowed emails parameter is empty');
       return new Set();
     }
 
@@ -119,18 +83,12 @@ async function loadAllowedEmails(config: PreTokenAdminConfig): Promise<Set<strin
     cachedAllowedEmails = emailSet;
     allowedEmailsCacheExpiry = now + CACHE_TTL_MS;
 
-    log({
-      level: 'info',
-      message: 'Admin allowed emails loaded',
-      count: emailSet.size,
-    });
+    log.info('Admin allowed emails loaded', { count: emailSet.size });
 
     return emailSet;
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    log({
-      level: 'error',
-      message: 'Failed to load allowed emails from SSM',
+    log.error('Failed to load allowed emails from SSM', {
       errorCode: 'SSM_LOAD_ERROR',
       error: errorMessage,
     });
@@ -168,16 +126,10 @@ export async function handler(
   const cognitoSub = event.request.userAttributes.sub;
   const email = (event.request.userAttributes.email || '').toLowerCase().trim();
 
-  log({
-    level: 'info',
-    message: 'Pre-token generation triggered (admin)',
-    sub: cognitoSub,
-  });
+  log.info('Pre-token generation triggered (admin)', { sub: cognitoSub });
 
   if (!email) {
-    log({
-      level: 'error',
-      message: 'No email found in user attributes',
+    log.error('No email found in user attributes', {
       sub: cognitoSub,
       errorCode: 'MISSING_EMAIL',
     });
@@ -188,9 +140,7 @@ export async function handler(
   const allowedEmails = await loadAllowedEmails(config);
 
   if (allowedEmails.size === 0) {
-    log({
-      level: 'error',
-      message: 'No allowed emails configured - denying all access',
+    log.error('No allowed emails configured - denying all access', {
       sub: cognitoSub,
       errorCode: 'NO_ALLOWLIST',
     });
@@ -199,9 +149,7 @@ export async function handler(
 
   // Check if user is in the allowlist
   if (!allowedEmails.has(email)) {
-    log({
-      level: 'warn',
-      message: 'User not in admin allowlist - access denied',
+    log.warn('User not in admin allowlist - access denied', {
       sub: cognitoSub,
       errorCode: 'NOT_ALLOWLISTED',
     });
@@ -209,11 +157,7 @@ export async function handler(
   }
 
   // User is allowlisted - add custom claims
-  log({
-    level: 'info',
-    message: 'Admin access granted',
-    sub: cognitoSub,
-  });
+  log.info('Admin access granted', { sub: cognitoSub });
 
   // Add custom:role claim to the token
   event.response = {

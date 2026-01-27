@@ -20,8 +20,12 @@ const TOKEN_LENGTH = 32; // 32 bytes = 256 bits
 const TOKEN_EXPIRY_MS = 60 * 60 * 1000; // 1 hour
 
 // Environment-based secret for signing tokens
-// Security: Must be set in production - default value is for development only
-const CSRF_SECRET = process.env.CSRF_SECRET || 'default-csrf-secret-change-in-production';
+// Security: Must be set in production - fail loudly if missing
+const CSRF_SECRET = process.env.CSRF_SECRET;
+if (!CSRF_SECRET && process.env.NODE_ENV === 'production') {
+  throw new Error('CSRF_SECRET environment variable must be set in production');
+}
+const SECRET = CSRF_SECRET || 'dev-only-csrf-secret';
 
 /**
  * CSRF Token payload structure
@@ -52,7 +56,7 @@ function generateRandomToken(): string {
  * The signature includes token, timestamp, and secret to bind all values.
  */
 function signToken(token: string, timestamp: number): string {
-  const data = `${token}:${timestamp}:${CSRF_SECRET}`;
+  const data = `${token}:${timestamp}:${SECRET}`;
   return createHash('sha256').update(data).digest('hex');
 }
 

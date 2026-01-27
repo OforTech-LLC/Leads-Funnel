@@ -2,10 +2,19 @@
  * Admin API Client
  *
  * Type-safe API client for admin operations with timeouts and retry logic.
+ *
+ * LeadStatus and AdminPipelineStatus are imported from @kanjona/shared
+ * to maintain a single source of truth across all apps.
  */
 
 import { getAdminConfig } from './config';
 import { getAccessToken, redirectToLogin } from './auth';
+import type { LeadStatus, AdminPipelineStatus, ExportFormatValue } from '@kanjona/shared';
+
+// Re-export shared types for convenience
+export type { LeadStatus };
+export type PipelineStatus = AdminPipelineStatus;
+export type ExportFormat = ExportFormatValue;
 
 // Configuration
 const REQUEST_TIMEOUT_MS = 30000; // 30 seconds
@@ -13,23 +22,6 @@ const MAX_RETRIES = 3;
 const INITIAL_RETRY_DELAY_MS = 1000;
 
 // Types
-export type LeadStatus =
-  | 'new'
-  | 'contacted'
-  | 'qualified'
-  | 'converted'
-  | 'lost'
-  | 'dnc'
-  | 'quarantined';
-export type PipelineStatus =
-  | 'none'
-  | 'nurturing'
-  | 'negotiating'
-  | 'closing'
-  | 'closed_won'
-  | 'closed_lost';
-export type ExportFormat = 'csv' | 'xlsx' | 'pdf' | 'docx' | 'json';
-
 export interface Lead {
   leadId: string;
   funnelId: string;

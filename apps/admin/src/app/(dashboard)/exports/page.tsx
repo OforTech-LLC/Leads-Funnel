@@ -24,6 +24,21 @@ import { EXPORT_FORMATS, LEAD_STATUSES } from '@/lib/constants';
 import type { ExportFormat, LeadStatus } from '@/lib/constants';
 import { formatDateTime } from '@/lib/utils';
 
+/**
+ * Validate that a download URL points to an allowed origin.
+ */
+function isValidDownloadUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return (
+      parsed.protocol === 'https:' &&
+      (parsed.hostname.endsWith('.amazonaws.com') || parsed.hostname.endsWith('.kanjona.com'))
+    );
+  } catch {
+    return false;
+  }
+}
+
 export default function ExportsPage() {
   const [page, setPage] = useState(1);
   const [pageSize] = useState(25);
@@ -64,7 +79,11 @@ export default function ExportsPage() {
     async (jobId: string) => {
       try {
         const result = await getDownloadUrl(jobId).unwrap();
-        window.open(result.downloadUrl, '_blank');
+        if (result.downloadUrl && isValidDownloadUrl(result.downloadUrl)) {
+          window.open(result.downloadUrl, '_blank', 'noopener,noreferrer');
+        } else {
+          console.error('Invalid download URL received');
+        }
       } catch {
         // Error handled silently
       }

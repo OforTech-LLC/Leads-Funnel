@@ -9,6 +9,7 @@
 import { PutCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
 import { getDocClient, tableName } from './client.js';
 import { ulid } from '../../lib/id.js';
+import { signCursor, verifyCursor } from '../cursor.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -97,6 +98,7 @@ export async function recordAudit(input: RecordAuditInput): Promise<AuditEntry> 
     new PutCommand({
       TableName: tableName(),
       Item: entry,
+      ConditionExpression: 'attribute_not_exists(pk)',
     })
   );
 
@@ -120,11 +122,11 @@ export async function listAuditByActor(
 
   let exclusiveStartKey: Record<string, unknown> | undefined;
   if (cursor) {
-    try {
-      exclusiveStartKey = JSON.parse(Buffer.from(cursor, 'base64url').toString());
-    } catch {
-      // invalid
+    const verified = verifyCursor(cursor);
+    if (verified) {
+      exclusiveStartKey = verified;
     }
+    // If verifyCursor returns null (invalid/tampered), skip setting ExclusiveStartKey
   }
 
   const result = await doc.send(
@@ -141,7 +143,7 @@ export async function listAuditByActor(
   const items = (result.Items || []) as AuditEntry[];
   let nextCursor: string | undefined;
   if (result.LastEvaluatedKey) {
-    nextCursor = Buffer.from(JSON.stringify(result.LastEvaluatedKey)).toString('base64url');
+    nextCursor = signCursor(result.LastEvaluatedKey as Record<string, unknown>);
   }
 
   return { items, nextCursor };
@@ -160,11 +162,11 @@ export async function listAudit(
 
   let exclusiveStartKey: Record<string, unknown> | undefined;
   if (cursor) {
-    try {
-      exclusiveStartKey = JSON.parse(Buffer.from(cursor, 'base64url').toString());
-    } catch {
-      // invalid
+    const verified = verifyCursor(cursor);
+    if (verified) {
+      exclusiveStartKey = verified;
     }
+    // If verifyCursor returns null (invalid/tampered), skip setting ExclusiveStartKey
   }
 
   let keyCondition = 'gsi1pk = :pk';
@@ -191,7 +193,7 @@ export async function listAudit(
   const items = (result.Items || []) as AuditEntry[];
   let nextCursor: string | undefined;
   if (result.LastEvaluatedKey) {
-    nextCursor = Buffer.from(JSON.stringify(result.LastEvaluatedKey)).toString('base64url');
+    nextCursor = signCursor(result.LastEvaluatedKey as Record<string, unknown>);
   }
 
   return { items, nextCursor };

@@ -90,17 +90,15 @@ const URL_REGEX = /https?:\/\/[^\s]+/gi;
  *
  * Warning: Changing the salt will invalidate all existing email hashes,
  * breaking deduplication against historical data.
+ *
+ * @throws Error if EMAIL_HASH_SALT is not configured
  */
 function getEmailHashSalt(): string {
   const salt = process.env.EMAIL_HASH_SALT;
-
-  if (!salt && process.env.NODE_ENV === 'production') {
-    console.warn(
-      '[Security] EMAIL_HASH_SALT not set in production. Using default salt is a security risk.'
-    );
+  if (!salt) {
+    throw new Error('EMAIL_HASH_SALT environment variable must be set');
   }
-
-  return salt || 'default-email-salt-change-in-production';
+  return salt;
 }
 
 // =============================================================================

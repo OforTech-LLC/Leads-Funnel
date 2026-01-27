@@ -1,8 +1,13 @@
 // ──────────────────────────────────────────────
 // Domain types for the Portal app
+//
+// LeadStatus is imported from @kanjona/shared to
+// maintain a single source of truth across all apps.
 // ──────────────────────────────────────────────
 
-export type LeadStatus = 'new' | 'contacted' | 'booked' | 'won' | 'lost' | 'dnc';
+import type { LeadStatus } from '@kanjona/shared';
+
+export type { LeadStatus };
 
 export interface Lead {
   id: string;

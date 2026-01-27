@@ -324,5 +324,11 @@ resource "aws_dynamodb_table" "export_jobs" {
     enabled        = true
   }
 
+  point_in_time_recovery {
+    enabled = var.environment == "prod"
+  }
+
+  deletion_protection_enabled = var.environment == "prod"
+
   tags = var.tags
 }

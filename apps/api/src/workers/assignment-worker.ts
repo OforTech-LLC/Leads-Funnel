@@ -22,14 +22,8 @@
  */
 
 import type { SQSEvent, SQSBatchResponse, SQSBatchItemFailure } from 'aws-lambda';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import {
-  DynamoDBDocumentClient,
-  GetCommand,
-  UpdateCommand,
-  PutCommand,
-} from '@aws-sdk/lib-dynamodb';
-import { SSMClient, GetParameterCommand } from '@aws-sdk/client-ssm';
+import { GetCommand, UpdateCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
+import { GetParameterCommand } from '@aws-sdk/client-ssm';
 import type {
   AssignmentWorkerConfig,
   FeatureFlags,
@@ -39,35 +33,13 @@ import type {
   LeadAssignedEventDetail,
   UnassignedLeadRecord,
 } from './types.js';
+import { getDocClient, getSsmClient } from '../lib/clients.js';
+import { createLogger } from '../lib/logging.js';
 import { matchLeadToRule } from '../lib/assignment/matcher.js';
 import { checkAndIncrementCap } from '../lib/assignment/caps.js';
 import { emitLeadAssigned, emitLeadUnassigned } from '../lib/events.js';
 
-// =============================================================================
-// Client Initialization (reused across invocations)
-// =============================================================================
-
-let docClient: DynamoDBDocumentClient | null = null;
-let ssmClient: SSMClient | null = null;
-
-function getDocClient(region: string): DynamoDBDocumentClient {
-  if (!docClient) {
-    const client = new DynamoDBClient({ region });
-    docClient = DynamoDBDocumentClient.from(client, {
-      marshallOptions: {
-        removeUndefinedValues: true,
-      },
-    });
-  }
-  return docClient;
-}
-
-function getSsmClient(region: string): SSMClient {
-  if (!ssmClient) {
-    ssmClient = new SSMClient({ region });
-  }
-  return ssmClient;
-}
+const log = createLogger('assignment-worker');
 
 // =============================================================================
 // Configuration
@@ -82,31 +54,6 @@ function loadConfig(): AssignmentWorkerConfig {
     featureFlagSsmPath: process.env.FEATURE_FLAG_SSM_PATH || '',
     assignmentRulesSsmPath: process.env.ASSIGNMENT_RULES_SSM_PATH || '',
   };
-}
-
-// =============================================================================
-// Structured Logging
-// =============================================================================
-
-interface LogParams {
-  level: 'info' | 'warn' | 'error';
-  message: string;
-  leadId?: string;
-  funnelId?: string;
-  ruleId?: string;
-  orgId?: string;
-  errorCode?: string;
-  [key: string]: unknown;
-}
-
-function log(entry: LogParams): void {
-  console.log(
-    JSON.stringify({
-      timestamp: new Date().toISOString(),
-      service: 'assignment-worker',
-      ...entry,
-    })
-  );
 }
 
 // =============================================================================
@@ -139,10 +86,7 @@ async function loadFeatureFlags(config: AssignmentWorkerConfig): Promise<Feature
   }
 
   if (!config.featureFlagSsmPath) {
-    log({
-      level: 'warn',
-      message: 'Feature flag SSM path not configured, using defaults',
-    });
+    log.warn('Feature flag SSM path not configured, using defaults');
     return {
       enable_assignment_service: false,
       enable_notification_service: false,
@@ -173,9 +117,7 @@ async function loadFeatureFlags(config: AssignmentWorkerConfig): Promise<Feature
     return flags;
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    log({
-      level: 'error',
-      message: 'Failed to load feature flags',
+    log.error('Failed to load feature flags', {
       errorCode: 'SSM_LOAD_ERROR',
       error: errorMessage,
     });
@@ -224,10 +166,7 @@ async function loadAssignmentRules(config: AssignmentWorkerConfig): Promise<Assi
   }
 
   if (!config.assignmentRulesSsmPath) {
-    log({
-      level: 'warn',
-      message: 'Assignment rules SSM path not configured',
-    });
+    log.warn('Assignment rules SSM path not configured');
     return [];
   }
 
@@ -248,18 +187,12 @@ async function loadAssignmentRules(config: AssignmentWorkerConfig): Promise<Assi
     cachedAssignmentRules = rules;
     rulesCacheExpiry = now + CACHE_TTL_MS;
 
-    log({
-      level: 'info',
-      message: 'Assignment rules loaded',
-      ruleCount: rules.length,
-    });
+    log.info('Assignment rules loaded', { ruleCount: rules.length });
 
     return rules;
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    log({
-      level: 'error',
-      message: 'Failed to load assignment rules',
+    log.error('Failed to load assignment rules', {
       errorCode: 'SSM_LOAD_ERROR',
       error: errorMessage,
     });
@@ -301,9 +234,7 @@ async function getLead(
     return (result.Item as LeadRecord) || null;
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    log({
-      level: 'error',
-      message: 'Failed to get lead',
+    log.error('Failed to get lead', {
       leadId,
       funnelId,
       errorCode: 'DDB_GET_ERROR',
@@ -384,12 +315,7 @@ async function assignLead(
       error.name === 'ConditionalCheckFailedException'
     ) {
       // Lead was already assigned - idempotent success
-      log({
-        level: 'info',
-        message: 'Lead already assigned (idempotent)',
-        leadId,
-        funnelId,
-      });
+      log.info('Lead already assigned (idempotent)', { leadId, funnelId });
       return false;
     }
     throw error;
@@ -449,9 +375,7 @@ async function isTargetActive(
     return true;
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    log({
-      level: 'error',
-      message: 'Failed to check target status',
+    log.error('Failed to check target status', {
       ruleId: rule.ruleId,
       orgId: rule.orgId,
       errorCode: 'DDB_GET_ERROR',
@@ -498,9 +422,7 @@ async function writeUnassignedRecord(
     );
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    log({
-      level: 'error',
-      message: 'Failed to write unassigned record',
+    log.error('Failed to write unassigned record', {
       leadId,
       funnelId,
       errorCode: 'DDB_PUT_ERROR',
@@ -535,11 +457,7 @@ async function processRecord(config: AssignmentWorkerConfig, messageBody: string
     // EventBridge wraps the detail in a "detail" field
     eventDetail = (envelope.detail || envelope) as LeadCreatedEventDetail;
   } catch {
-    log({
-      level: 'error',
-      message: 'Failed to parse SQS message body',
-      errorCode: 'PARSE_ERROR',
-    });
+    log.error('Failed to parse SQS message body', { errorCode: 'PARSE_ERROR' });
     // Do not retry malformed messages
     return;
   }
@@ -547,39 +465,23 @@ async function processRecord(config: AssignmentWorkerConfig, messageBody: string
   const { leadId, funnelId } = eventDetail;
 
   if (!leadId || !funnelId) {
-    log({
-      level: 'error',
-      message: 'Missing leadId or funnelId in event',
-      errorCode: 'INVALID_EVENT',
-    });
+    log.error('Missing leadId or funnelId in event', { errorCode: 'INVALID_EVENT' });
     return;
   }
 
-  log({
-    level: 'info',
-    message: 'Processing lead for assignment',
-    leadId,
-    funnelId,
-  });
+  log.info('Processing lead for assignment', { leadId, funnelId });
 
   // Load the lead from DynamoDB
   const lead = await getLead(config, leadId, funnelId);
 
   if (!lead) {
-    log({
-      level: 'warn',
-      message: 'Lead not found in DynamoDB',
-      leadId,
-      funnelId,
-    });
+    log.warn('Lead not found in DynamoDB', { leadId, funnelId });
     return;
   }
 
   // Skip already assigned leads (idempotency)
   if (lead.assignedOrgId) {
-    log({
-      level: 'info',
-      message: 'Lead already assigned, skipping',
+    log.info('Lead already assigned, skipping', {
       leadId,
       funnelId,
       orgId: lead.assignedOrgId,
@@ -591,12 +493,7 @@ async function processRecord(config: AssignmentWorkerConfig, messageBody: string
   const rules = await loadAssignmentRules(config);
 
   if (rules.length === 0) {
-    log({
-      level: 'warn',
-      message: 'No assignment rules configured',
-      leadId,
-      funnelId,
-    });
+    log.warn('No assignment rules configured', { leadId, funnelId });
 
     await writeUnassignedRecord(config, leadId, funnelId, lead.zipCode, 'no_rules_configured');
     await emitLeadUnassigned(
@@ -614,9 +511,7 @@ async function processRecord(config: AssignmentWorkerConfig, messageBody: string
   const matchedRule = matchLeadToRule(funnelId, lead.zipCode || '', rules);
 
   if (!matchedRule) {
-    log({
-      level: 'info',
-      message: 'No matching rule found for lead',
+    log.info('No matching rule found for lead', {
       leadId,
       funnelId,
       zipCode: lead.zipCode ? `${lead.zipCode.slice(0, 3)}***` : 'none',
@@ -649,9 +544,7 @@ async function processRecord(config: AssignmentWorkerConfig, messageBody: string
     const targetActive = await isTargetActive(config, rule);
 
     if (!targetActive) {
-      log({
-        level: 'info',
-        message: 'Target inactive, trying next rule',
+      log.info('Target inactive, trying next rule', {
         leadId,
         ruleId: rule.ruleId,
         orgId: rule.orgId,
@@ -669,9 +562,7 @@ async function processRecord(config: AssignmentWorkerConfig, messageBody: string
     );
 
     if (!capResult.allowed) {
-      log({
-        level: 'info',
-        message: 'Cap exceeded, trying next rule',
+      log.info('Cap exceeded, trying next rule', {
         leadId,
         ruleId: rule.ruleId,
         reason: capResult.reason,
@@ -683,9 +574,7 @@ async function processRecord(config: AssignmentWorkerConfig, messageBody: string
     const wasAssigned = await assignLead(config, leadId, funnelId, rule);
 
     if (wasAssigned) {
-      log({
-        level: 'info',
-        message: 'Lead assigned successfully',
+      log.info('Lead assigned successfully', {
         leadId,
         funnelId,
         ruleId: rule.ruleId,
@@ -707,9 +596,7 @@ async function processRecord(config: AssignmentWorkerConfig, messageBody: string
         await emitLeadAssigned(config.awsRegion, config.eventBusName, assignedDetail);
       } catch (eventError: unknown) {
         const errorMessage = eventError instanceof Error ? eventError.message : 'Unknown error';
-        log({
-          level: 'error',
-          message: 'Failed to emit lead.assigned event',
+        log.error('Failed to emit lead.assigned event', {
           leadId,
           errorCode: 'EVENT_EMIT_ERROR',
           error: errorMessage,
@@ -727,12 +614,7 @@ async function processRecord(config: AssignmentWorkerConfig, messageBody: string
   }
 
   if (!assigned) {
-    log({
-      level: 'info',
-      message: 'All rules exhausted, lead unassigned',
-      leadId,
-      funnelId,
-    });
+    log.info('All rules exhausted, lead unassigned', { leadId, funnelId });
 
     await writeUnassignedRecord(config, leadId, funnelId, lead.zipCode, 'all_rules_exhausted');
     await emitLeadUnassigned(
@@ -763,20 +645,13 @@ async function processRecord(config: AssignmentWorkerConfig, messageBody: string
 export async function handler(event: SQSEvent): Promise<SQSBatchResponse> {
   const config = loadConfig();
 
-  log({
-    level: 'info',
-    message: 'Assignment worker invoked',
-    recordCount: event.Records.length,
-  });
+  log.info('Assignment worker invoked', { recordCount: event.Records.length });
 
   // Check feature flag
   const featureFlags = await loadFeatureFlags(config);
 
   if (!featureFlags.enable_assignment_service) {
-    log({
-      level: 'info',
-      message: 'Assignment service disabled via feature flag',
-    });
+    log.info('Assignment service disabled via feature flag');
 
     // Return success for all records (no-op)
     return { batchItemFailures: [] };
@@ -784,11 +659,7 @@ export async function handler(event: SQSEvent): Promise<SQSBatchResponse> {
 
   // Validate configuration
   if (!config.ddbTableName) {
-    log({
-      level: 'error',
-      message: 'DDB_TABLE_NAME not configured',
-      errorCode: 'CONFIG_ERROR',
-    });
+    log.error('DDB_TABLE_NAME not configured', { errorCode: 'CONFIG_ERROR' });
 
     // Fail all records so they are retried after config fix
     return {
@@ -806,9 +677,7 @@ export async function handler(event: SQSEvent): Promise<SQSBatchResponse> {
       await processRecord(config, record.body);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      log({
-        level: 'error',
-        message: 'Failed to process assignment record',
+      log.error('Failed to process assignment record', {
         messageId: record.messageId,
         errorCode: 'PROCESSING_ERROR',
         error: errorMessage,
@@ -820,9 +689,7 @@ export async function handler(event: SQSEvent): Promise<SQSBatchResponse> {
     }
   }
 
-  log({
-    level: 'info',
-    message: 'Assignment worker completed',
+  log.info('Assignment worker completed', {
     totalRecords: event.Records.length,
     failedRecords: batchItemFailures.length,
   });

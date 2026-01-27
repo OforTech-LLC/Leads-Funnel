@@ -1,5 +1,12 @@
 'use client';
 
+/**
+ * Colored Status Badge
+ *
+ * Displays a lead status in a pill-shaped badge with color coding
+ * and a dot indicator.
+ */
+
 import type { LeadStatus } from '@/lib/types';
 
 const STATUS_CONFIG: Record<
@@ -18,17 +25,29 @@ const STATUS_CONFIG: Record<
     textClass: 'text-yellow-700',
     dotClass: 'bg-yellow-500',
   },
-  booked: {
-    label: 'Booked',
+  qualified: {
+    label: 'Qualified',
     bgClass: 'bg-purple-50',
     textClass: 'text-purple-700',
     dotClass: 'bg-purple-500',
   },
-  won: {
-    label: 'Won',
+  converted: {
+    label: 'Converted',
     bgClass: 'bg-green-50',
     textClass: 'text-green-700',
     dotClass: 'bg-green-500',
+  },
+  booked: {
+    label: 'Booked',
+    bgClass: 'bg-indigo-50',
+    textClass: 'text-indigo-700',
+    dotClass: 'bg-indigo-500',
+  },
+  won: {
+    label: 'Won',
+    bgClass: 'bg-emerald-50',
+    textClass: 'text-emerald-700',
+    dotClass: 'bg-emerald-500',
   },
   lost: {
     label: 'Lost',
@@ -41,6 +60,12 @@ const STATUS_CONFIG: Record<
     bgClass: 'bg-gray-100',
     textClass: 'text-gray-600',
     dotClass: 'bg-gray-400',
+  },
+  quarantined: {
+    label: 'Quarantined',
+    bgClass: 'bg-orange-50',
+    textClass: 'text-orange-700',
+    dotClass: 'bg-orange-500',
   },
 };
 

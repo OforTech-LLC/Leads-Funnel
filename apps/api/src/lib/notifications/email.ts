@@ -12,7 +12,7 @@
  */
 
 import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
-import type { LeadRecord } from '../../workers/types.js';
+import type { LeadRecord } from '../types/events.js';
 
 // =============================================================================
 // SES Client (reused across invocations)

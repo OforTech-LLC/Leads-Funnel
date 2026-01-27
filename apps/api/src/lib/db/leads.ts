@@ -8,8 +8,9 @@
  *   GSI3PK = STATUS#<funnelId>#<s>  GSI3SK = CREATED#<iso>  (leads by status)
  */
 
-import { GetCommand, UpdateCommand, QueryCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
+import { GetCommand, UpdateCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
 import { getDocClient, tableName } from './client.js';
+import { signCursor, verifyCursor } from '../cursor.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -80,6 +81,7 @@ export interface QueryLeadsInput {
   endDate?: string;
   cursor?: string;
   limit?: number;
+  assignedUserId?: string;
 }
 
 export interface PaginatedLeads {
@@ -316,11 +318,22 @@ export async function queryLeads(input: QueryLeadsInput): Promise<PaginatedLeads
 
   let exclusiveStartKey: Record<string, unknown> | undefined;
   if (input.cursor) {
-    try {
-      exclusiveStartKey = JSON.parse(Buffer.from(input.cursor, 'base64url').toString());
-    } catch {
-      // invalid cursor
+    const verified = verifyCursor(input.cursor);
+    if (!verified) {
+      // Invalid or tampered cursor - return empty result
+      return { items: [] };
     }
+    exclusiveStartKey = verified;
+  }
+
+  // Build optional FilterExpression for assignedUserId
+  let filterExpression: string | undefined;
+  let filterExprNames: Record<string, string> | undefined;
+  let filterExprValues: Record<string, unknown> | undefined;
+  if (input.assignedUserId) {
+    filterExpression = '#assignedUserId = :assignedUserId';
+    filterExprNames = { '#assignedUserId': 'assignedUserId' };
+    filterExprValues = { ':assignedUserId': input.assignedUserId };
   }
 
   // Choose the best access pattern
@@ -335,12 +348,18 @@ export async function queryLeads(input: QueryLeadsInput): Promise<PaginatedLeads
       exprValues[':end'] = `CREATED#${input.endDate}`;
     }
 
+    if (filterExprValues) {
+      Object.assign(exprValues, filterExprValues);
+    }
+
     const result = await doc.send(
       new QueryCommand({
         TableName: tableName(),
         IndexName: 'GSI2',
         KeyConditionExpression: keyCondition,
         ExpressionAttributeValues: exprValues,
+        ...(filterExpression ? { FilterExpression: filterExpression } : {}),
+        ...(filterExprNames ? { ExpressionAttributeNames: filterExprNames } : {}),
         Limit: limit,
         ScanIndexForward: false,
         ExclusiveStartKey: exclusiveStartKey,
@@ -363,12 +382,18 @@ export async function queryLeads(input: QueryLeadsInput): Promise<PaginatedLeads
       exprValues[':end'] = `CREATED#${input.endDate}`;
     }
 
+    if (filterExprValues) {
+      Object.assign(exprValues, filterExprValues);
+    }
+
     const result = await doc.send(
       new QueryCommand({
         TableName: tableName(),
         IndexName: 'GSI3',
         KeyConditionExpression: keyCondition,
         ExpressionAttributeValues: exprValues,
+        ...(filterExpression ? { FilterExpression: filterExpression } : {}),
+        ...(filterExprNames ? { ExpressionAttributeNames: filterExprNames } : {}),
         Limit: limit,
         ScanIndexForward: false,
         ExclusiveStartKey: exclusiveStartKey,
@@ -389,12 +414,18 @@ export async function queryLeads(input: QueryLeadsInput): Promise<PaginatedLeads
       exprValues[':end'] = `CREATED#${input.endDate}`;
     }
 
+    if (filterExprValues) {
+      Object.assign(exprValues, filterExprValues);
+    }
+
     const result = await doc.send(
       new QueryCommand({
         TableName: tableName(),
         IndexName: 'GSI1',
         KeyConditionExpression: keyCondition,
         ExpressionAttributeValues: exprValues,
+        ...(filterExpression ? { FilterExpression: filterExpression } : {}),
+        ...(filterExprNames ? { ExpressionAttributeNames: filterExprNames } : {}),
         Limit: limit,
         ScanIndexForward: false,
         ExclusiveStartKey: exclusiveStartKey,
@@ -404,18 +435,8 @@ export async function queryLeads(input: QueryLeadsInput): Promise<PaginatedLeads
     return buildPaginatedResult(result);
   }
 
-  // Fallback: scan (should be avoided in production)
-  const result = await doc.send(
-    new ScanCommand({
-      TableName: tableName(),
-      FilterExpression: 'begins_with(pk, :prefix) AND sk = :meta',
-      ExpressionAttributeValues: { ':prefix': 'LEAD#', ':meta': 'META' },
-      Limit: limit,
-      ExclusiveStartKey: exclusiveStartKey,
-    })
-  );
-
-  return buildPaginatedResult(result);
+  // No filter provided - reject unbounded scans
+  throw new Error('At least one filter (funnelId, orgId, or status) is required for lead queries');
 }
 
 // ---------------------------------------------------------------------------
@@ -429,7 +450,7 @@ function buildPaginatedResult(result: {
   const items = (result.Items || []) as unknown as PlatformLead[];
   let nextCursor: string | undefined;
   if (result.LastEvaluatedKey) {
-    nextCursor = Buffer.from(JSON.stringify(result.LastEvaluatedKey)).toString('base64url');
+    nextCursor = signCursor(result.LastEvaluatedKey);
   }
   return { items, nextCursor };
 }

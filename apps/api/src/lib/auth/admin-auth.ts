@@ -82,9 +82,12 @@ export async function authenticateAdmin(event: APIGatewayProxyEventV2): Promise<
     throw new AuthError('Token missing email claim', 401);
   }
 
-  // Check email allowlist
+  // Check email allowlist (fail-closed: empty allowlist denies all access)
   const allowlist = await loadAdminAllowlist();
-  if (allowlist.length > 0 && !allowlist.includes(email)) {
+  if (allowlist.length === 0) {
+    throw new AuthError('Admin access not configured - allowlist is empty', 500);
+  }
+  if (!allowlist.includes(email)) {
     throw new AuthError('Access denied', 403);
   }
 
@@ -114,8 +117,7 @@ async function loadAdminAllowlist(): Promise<string[]> {
 
   const path = process.env.ALLOWED_EMAILS_SSM_PATH;
   if (!path) {
-    _allowlistCache = { emails: [], expiresAt: Date.now() + ALLOWLIST_CACHE_MS };
-    return [];
+    throw new AuthError('ALLOWED_EMAILS_SSM_PATH not configured', 500);
   }
 
   try {
@@ -126,10 +128,24 @@ async function loadAdminAllowlist(): Promise<string[]> {
       .filter(Boolean);
 
     _allowlistCache = { emails, expiresAt: Date.now() + ALLOWLIST_CACHE_MS };
+    console.log(
+      JSON.stringify({
+        level: 'info',
+        message: 'Admin allowlist loaded successfully',
+        emailCount: emails.length,
+      })
+    );
     return emails;
-  } catch {
-    console.log(JSON.stringify({ level: 'warn', message: 'Failed to load admin email allowlist' }));
-    return [];
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Unknown error';
+    console.log(
+      JSON.stringify({
+        level: 'error',
+        message: 'Failed to load admin email allowlist from SSM',
+        error: message,
+      })
+    );
+    throw new AuthError('Failed to load admin allowlist', 500);
   }
 }
 

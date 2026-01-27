@@ -14,27 +14,9 @@
  * TTL is set so expired counters are automatically cleaned up.
  */
 
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, UpdateCommand } from '@aws-sdk/lib-dynamodb';
-import type { CapCheckResult } from '../../workers/types.js';
-
-// =============================================================================
-// DynamoDB Client (reused across invocations)
-// =============================================================================
-
-let docClient: DynamoDBDocumentClient | null = null;
-
-function getDocClient(region: string): DynamoDBDocumentClient {
-  if (!docClient) {
-    const client = new DynamoDBClient({ region });
-    docClient = DynamoDBDocumentClient.from(client, {
-      marshallOptions: {
-        removeUndefinedValues: true,
-      },
-    });
-  }
-  return docClient;
-}
+import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
+import { getDocClient } from '../clients.js';
+import type { CapCheckResult } from '../types/events.js';
 
 // =============================================================================
 // Date Helpers

@@ -26,23 +26,77 @@ locals {
   # Resource prefix
   prefix = "${var.project_name}-${var.environment}"
 
+  # Subdomain prefixes (parameterized to avoid hardcoding)
+  env_subdomain    = var.env_subdomain
+  admin_subdomain  = var.admin_subdomain
+  portal_subdomain = var.portal_subdomain
+  api_subdomain    = var.api_subdomain
+
   # CORS origins - dev only uses subdomain
   cors_origins = concat(
     [
-      "https://dev.${var.root_domain}",
+      "https://${local.env_subdomain}.${var.root_domain}",
     ],
     var.additional_cors_origins
   )
 
   # Platform CORS origins
   admin_cors_origins = concat(
-    ["https://admin-dev.${var.root_domain}"],
+    ["https://${local.admin_subdomain}.${var.root_domain}"],
     var.enable_platform ? ["http://localhost:3001"] : []
   )
   portal_cors_origins = concat(
-    ["https://portal-dev.${var.root_domain}"],
+    ["https://${local.portal_subdomain}.${var.root_domain}"],
     var.enable_platform ? ["http://localhost:3002"] : []
   )
+
+  # -------------------------------------------------------------------------
+  # Safe access helpers for conditional platform module outputs
+  # Using try() prevents crashes when count=0 modules are not created
+  # -------------------------------------------------------------------------
+
+  # DynamoDB table ARNs (safe access)
+  platform_orgs_table_arn             = try(module.dynamodb_orgs[0].table_arn, null)
+  platform_users_table_arn            = try(module.dynamodb_users[0].table_arn, null)
+  platform_memberships_table_arn      = try(module.dynamodb_memberships[0].table_arn, null)
+  platform_assignment_rules_table_arn = try(module.dynamodb_assignment_rules[0].table_arn, null)
+  platform_unassigned_table_arn       = try(module.dynamodb_unassigned[0].table_arn, null)
+  platform_notifications_table_arn    = try(module.dynamodb_notifications[0].table_arn, null)
+
+  # DynamoDB table names (safe access)
+  platform_orgs_table_name             = try(module.dynamodb_orgs[0].table_name, "")
+  platform_users_table_name            = try(module.dynamodb_users[0].table_name, "")
+  platform_memberships_table_name      = try(module.dynamodb_memberships[0].table_name, "")
+  platform_assignment_rules_table_name = try(module.dynamodb_assignment_rules[0].table_name, "")
+  platform_unassigned_table_name       = try(module.dynamodb_unassigned[0].table_name, "")
+  platform_notifications_table_name    = try(module.dynamodb_notifications[0].table_name, "")
+
+  # SQS queue outputs (safe access)
+  platform_assignment_queue_arn = try(module.assignment_queue[0].queue_arn, null)
+  platform_assignment_queue_url = try(module.assignment_queue[0].queue_url, "")
+  platform_notification_queue_arn = try(module.notification_queue[0].queue_arn, null)
+  platform_notification_queue_url = try(module.notification_queue[0].queue_url, "")
+
+  # Cognito outputs (safe access)
+  platform_admin_cognito_pool_id    = try(module.cognito_admin[0].pool_id, "")
+  platform_admin_cognito_client_id  = try(module.cognito_admin[0].client_id, "")
+  platform_portal_cognito_pool_id   = try(module.cognito_portal[0].pool_id, "")
+  platform_portal_cognito_client_id = try(module.cognito_portal[0].client_id, "")
+
+  # Pre-token Lambda outputs (safe access)
+  pre_token_admin_function_arn  = try(module.pre_token_admin[0].function_arn, null)
+  pre_token_admin_function_name = try(module.pre_token_admin[0].function_name, null)
+  pre_token_portal_function_arn  = try(module.pre_token_portal[0].function_arn, null)
+  pre_token_portal_function_name = try(module.pre_token_portal[0].function_name, null)
+
+  # Platform SSM outputs (safe access)
+  platform_ssm_parameter_arns = try(module.platform_ssm[0].all_parameter_arns, [])
+
+  # WAF output (safe access)
+  waf_web_acl_arn = try(module.waf[0].web_acl_arn, null)
+
+  # Monitoring output (safe access)
+  monitoring_sns_topic_arn = try(module.monitoring[0].sns_topic_arn, "")
 }
 
 # =============================================================================
@@ -367,10 +421,12 @@ module "cognito_admin" {
   count  = var.enable_platform ? 1 : 0
   source = "../../modules/cognito-userpool"
 
+  depends_on = [module.pre_token_admin]
+
   pool_name     = "${local.prefix}-admin-userpool"
   domain_prefix = var.platform_admin_cognito_domain
 
-  mfa_configuration            = "OPTIONAL"
+  mfa_configuration            = "ON" # MFA required for admin users in all environments
   advanced_security_mode       = "AUDIT"
   allow_admin_create_user_only = true
   challenge_on_new_device      = true
@@ -391,16 +447,17 @@ module "cognito_admin" {
   ]
 
   callback_urls = concat(
-    ["https://admin-dev.${var.root_domain}/auth/callback"],
+    ["https://${local.admin_subdomain}.${var.root_domain}/auth/callback"],
     ["http://localhost:3001/auth/callback"]
   )
   logout_urls = concat(
-    ["https://admin-dev.${var.root_domain}"],
+    ["https://${local.admin_subdomain}.${var.root_domain}"],
     ["http://localhost:3001"]
   )
 
   read_attributes  = ["email", "email_verified", "custom:role", "custom:orgId"]
-  write_attributes = ["email", "custom:role", "custom:orgId"]
+  # custom:role removed from write_attributes - role should only be set by admin API, not self-service
+  write_attributes = ["email", "custom:orgId"]
 
   # Token validity (relaxed for dev)
   access_token_validity  = 4
@@ -413,9 +470,9 @@ module "cognito_admin" {
     { name = "OrgViewer", description = "Organization read-only viewer", precedence = 3 },
   ]
 
-  # Pre-token generation trigger
-  pre_token_generation_lambda_arn  = var.enable_platform ? module.pre_token_admin[0].function_arn : null
-  pre_token_generation_lambda_name = var.enable_platform ? module.pre_token_admin[0].function_name : null
+  # Pre-token generation trigger (safe access via locals)
+  pre_token_generation_lambda_arn  = local.pre_token_admin_function_arn
+  pre_token_generation_lambda_name = local.pre_token_admin_function_name
 
   invite_email_subject = "Kanjona Admin - Your Account"
   invite_email_message = "Your admin account has been created. Username: {username}, Temporary password: {####}. Please log in and change your password."
@@ -427,6 +484,8 @@ module "cognito_admin" {
 module "cognito_portal" {
   count  = var.enable_platform ? 1 : 0
   source = "../../modules/cognito-userpool"
+
+  depends_on = [module.pre_token_portal]
 
   pool_name     = "${local.prefix}-portal-userpool"
   domain_prefix = var.platform_portal_cognito_domain
@@ -452,11 +511,11 @@ module "cognito_portal" {
   ]
 
   callback_urls = concat(
-    ["https://portal-dev.${var.root_domain}/auth/callback"],
+    ["https://${local.portal_subdomain}.${var.root_domain}/auth/callback"],
     ["http://localhost:3002/auth/callback"]
   )
   logout_urls = concat(
-    ["https://portal-dev.${var.root_domain}"],
+    ["https://${local.portal_subdomain}.${var.root_domain}"],
     ["http://localhost:3002"]
   )
 
@@ -473,9 +532,9 @@ module "cognito_portal" {
     { name = "OrgMember", description = "Organization member", precedence = 2 },
   ]
 
-  # Pre-token generation trigger
-  pre_token_generation_lambda_arn  = var.enable_platform ? module.pre_token_portal[0].function_arn : null
-  pre_token_generation_lambda_name = var.enable_platform ? module.pre_token_portal[0].function_name : null
+  # Pre-token generation trigger (safe access via locals)
+  pre_token_generation_lambda_arn  = local.pre_token_portal_function_arn
+  pre_token_generation_lambda_name = local.pre_token_portal_function_name
 
   invite_email_subject = "Kanjona Portal - Your Account"
   invite_email_message = "Your portal account has been created. Username: {username}, Temporary password: {####}. Please log in and change your password."
@@ -492,25 +551,35 @@ module "assignment_worker" {
   count  = var.enable_platform ? 1 : 0
   source = "../../modules/lambda-worker"
 
+  depends_on = [
+    module.dynamodb_orgs,
+    module.dynamodb_users,
+    module.dynamodb_memberships,
+    module.dynamodb_assignment_rules,
+    module.dynamodb_unassigned,
+    module.assignment_queue,
+    module.notification_queue,
+  ]
+
   function_name   = "${local.prefix}-assignment-worker"
   description     = "Processes lead assignment based on rules"
   memory_mb       = 256
   timeout_seconds = 60
 
-  sqs_queue_arn  = module.assignment_queue[0].queue_arn
+  sqs_queue_arn  = local.platform_assignment_queue_arn
   sqs_batch_size = 5
 
-  dynamodb_table_arns = [
-    module.dynamodb_orgs[0].table_arn,
-    module.dynamodb_users[0].table_arn,
-    module.dynamodb_memberships[0].table_arn,
-    module.dynamodb_assignment_rules[0].table_arn,
-    module.dynamodb_unassigned[0].table_arn,
-  ]
+  dynamodb_table_arns = compact([
+    local.platform_orgs_table_arn,
+    local.platform_users_table_arn,
+    local.platform_memberships_table_arn,
+    local.platform_assignment_rules_table_arn,
+    local.platform_unassigned_table_arn,
+  ])
 
   ssm_parameter_arns = concat(
     module.ssm.all_parameter_arns,
-    var.enable_platform ? module.platform_ssm[0].all_parameter_arns : [],
+    local.platform_ssm_parameter_arns,
   )
 
   event_bus_arn = module.eventbridge.event_bus_arn
@@ -519,16 +588,16 @@ module "assignment_worker" {
     ENVIRONMENT            = var.environment
     PROJECT_NAME           = var.project_name
     LOG_LEVEL              = "DEBUG"
-    ORGS_TABLE_NAME        = module.dynamodb_orgs[0].table_name
-    USERS_TABLE_NAME       = module.dynamodb_users[0].table_name
-    MEMBERSHIPS_TABLE_NAME = module.dynamodb_memberships[0].table_name
-    ASSIGNMENT_RULES_TABLE = module.dynamodb_assignment_rules[0].table_name
-    UNASSIGNED_TABLE_NAME  = module.dynamodb_unassigned[0].table_name
+    ORGS_TABLE_NAME        = local.platform_orgs_table_name
+    USERS_TABLE_NAME       = local.platform_users_table_name
+    MEMBERSHIPS_TABLE_NAME = local.platform_memberships_table_name
+    ASSIGNMENT_RULES_TABLE = local.platform_assignment_rules_table_name
+    UNASSIGNED_TABLE_NAME  = local.platform_unassigned_table_name
     EVENT_BUS_NAME         = module.eventbridge.event_bus_name
-    NOTIFICATION_QUEUE_URL = module.notification_queue[0].queue_url
+    NOTIFICATION_QUEUE_URL = local.platform_notification_queue_url
   }
 
-  sqs_send_queue_arns = [module.notification_queue[0].queue_arn]
+  sqs_send_queue_arns = compact([local.platform_notification_queue_arn])
 
   enable_xray        = var.enable_xray
   log_retention_days = 7
@@ -541,23 +610,30 @@ module "notification_worker" {
   count  = var.enable_platform ? 1 : 0
   source = "../../modules/lambda-worker"
 
+  depends_on = [
+    module.dynamodb_users,
+    module.dynamodb_memberships,
+    module.dynamodb_notifications,
+    module.notification_queue,
+  ]
+
   function_name   = "${local.prefix}-notification-worker"
   description     = "Sends email/SMS notifications for lead events"
   memory_mb       = 256
   timeout_seconds = 60
 
-  sqs_queue_arn  = module.notification_queue[0].queue_arn
+  sqs_queue_arn  = local.platform_notification_queue_arn
   sqs_batch_size = 5
 
-  dynamodb_table_arns = [
-    module.dynamodb_users[0].table_arn,
-    module.dynamodb_memberships[0].table_arn,
-    module.dynamodb_notifications[0].table_arn,
-  ]
+  dynamodb_table_arns = compact([
+    local.platform_users_table_arn,
+    local.platform_memberships_table_arn,
+    local.platform_notifications_table_arn,
+  ])
 
   ssm_parameter_arns = concat(
     module.ssm.all_parameter_arns,
-    var.enable_platform ? module.platform_ssm[0].all_parameter_arns : [],
+    local.platform_ssm_parameter_arns,
   )
 
   enable_ses = var.enable_ses
@@ -567,9 +643,9 @@ module "notification_worker" {
     ENVIRONMENT            = var.environment
     PROJECT_NAME           = var.project_name
     LOG_LEVEL              = "DEBUG"
-    USERS_TABLE_NAME       = module.dynamodb_users[0].table_name
-    MEMBERSHIPS_TABLE_NAME = module.dynamodb_memberships[0].table_name
-    NOTIFICATIONS_TABLE    = module.dynamodb_notifications[0].table_name
+    USERS_TABLE_NAME       = local.platform_users_table_name
+    MEMBERSHIPS_TABLE_NAME = local.platform_memberships_table_name
+    NOTIFICATIONS_TABLE    = local.platform_notifications_table_name
   }
 
   enable_xray        = var.enable_xray
@@ -583,27 +659,32 @@ module "pre_token_admin" {
   count  = var.enable_platform ? 1 : 0
   source = "../../modules/lambda-worker"
 
+  depends_on = [
+    module.dynamodb_users,
+    module.dynamodb_memberships,
+  ]
+
   function_name   = "${local.prefix}-pre-token-admin"
   description     = "Pre-token generation trigger for admin Cognito pool"
   memory_mb       = 128
   timeout_seconds = 10
 
-  dynamodb_table_arns = [
-    module.dynamodb_users[0].table_arn,
-    module.dynamodb_memberships[0].table_arn,
-  ]
+  dynamodb_table_arns = compact([
+    local.platform_users_table_arn,
+    local.platform_memberships_table_arn,
+  ])
 
   ssm_parameter_arns = concat(
     module.ssm.all_parameter_arns,
-    var.enable_platform ? module.platform_ssm[0].all_parameter_arns : [],
+    local.platform_ssm_parameter_arns,
   )
 
   environment_variables = {
     ENVIRONMENT            = var.environment
     PROJECT_NAME           = var.project_name
     LOG_LEVEL              = "DEBUG"
-    USERS_TABLE_NAME       = module.dynamodb_users[0].table_name
-    MEMBERSHIPS_TABLE_NAME = module.dynamodb_memberships[0].table_name
+    USERS_TABLE_NAME       = local.platform_users_table_name
+    MEMBERSHIPS_TABLE_NAME = local.platform_memberships_table_name
   }
 
   enable_xray        = var.enable_xray
@@ -617,29 +698,35 @@ module "pre_token_portal" {
   count  = var.enable_platform ? 1 : 0
   source = "../../modules/lambda-worker"
 
+  depends_on = [
+    module.dynamodb_users,
+    module.dynamodb_memberships,
+    module.dynamodb_orgs,
+  ]
+
   function_name   = "${local.prefix}-pre-token-portal"
   description     = "Pre-token generation trigger for portal Cognito pool"
   memory_mb       = 128
   timeout_seconds = 10
 
-  dynamodb_table_arns = [
-    module.dynamodb_users[0].table_arn,
-    module.dynamodb_memberships[0].table_arn,
-    module.dynamodb_orgs[0].table_arn,
-  ]
+  dynamodb_table_arns = compact([
+    local.platform_users_table_arn,
+    local.platform_memberships_table_arn,
+    local.platform_orgs_table_arn,
+  ])
 
   ssm_parameter_arns = concat(
     module.ssm.all_parameter_arns,
-    var.enable_platform ? module.platform_ssm[0].all_parameter_arns : [],
+    local.platform_ssm_parameter_arns,
   )
 
   environment_variables = {
     ENVIRONMENT            = var.environment
     PROJECT_NAME           = var.project_name
     LOG_LEVEL              = "DEBUG"
-    USERS_TABLE_NAME       = module.dynamodb_users[0].table_name
-    MEMBERSHIPS_TABLE_NAME = module.dynamodb_memberships[0].table_name
-    ORGS_TABLE_NAME        = module.dynamodb_orgs[0].table_name
+    USERS_TABLE_NAME       = local.platform_users_table_name
+    MEMBERSHIPS_TABLE_NAME = local.platform_memberships_table_name
+    ORGS_TABLE_NAME        = local.platform_orgs_table_name
   }
 
   enable_xray        = var.enable_xray
@@ -655,17 +742,22 @@ module "platform_eventbridge" {
   count  = var.enable_platform ? 1 : 0
   source = "../../modules/platform-eventbridge"
 
+  depends_on = [
+    module.assignment_queue,
+    module.notification_queue,
+  ]
+
   project_name = var.project_name
   environment  = var.environment
 
   event_bus_name = module.eventbridge.event_bus_name
   event_bus_arn  = module.eventbridge.event_bus_arn
 
-  assignment_queue_arn = module.assignment_queue[0].queue_arn
-  assignment_queue_url = module.assignment_queue[0].queue_url
+  assignment_queue_arn = local.platform_assignment_queue_arn
+  assignment_queue_url = local.platform_assignment_queue_url
 
-  notification_queue_arn = module.notification_queue[0].queue_arn
-  notification_queue_url = module.notification_queue[0].queue_url
+  notification_queue_arn = local.platform_notification_queue_arn
+  notification_queue_url = local.platform_notification_queue_url
 
   tags = local.common_tags
 }
@@ -676,6 +768,19 @@ module "platform_eventbridge" {
 module "platform_ssm" {
   count  = var.enable_platform ? 1 : 0
   source = "../../modules/platform-ssm"
+
+  depends_on = [
+    module.dynamodb_orgs,
+    module.dynamodb_users,
+    module.dynamodb_memberships,
+    module.dynamodb_assignment_rules,
+    module.dynamodb_unassigned,
+    module.dynamodb_notifications,
+    module.assignment_queue,
+    module.notification_queue,
+    module.cognito_admin,
+    module.cognito_portal,
+  ]
 
   project_name = var.project_name
   environment  = var.environment
@@ -694,23 +799,23 @@ module "platform_ssm" {
   admin_cors_origins  = local.admin_cors_origins
   portal_cors_origins = local.portal_cors_origins
 
-  # Table name references
-  orgs_table_name             = module.dynamodb_orgs[0].table_name
-  users_table_name            = module.dynamodb_users[0].table_name
-  memberships_table_name      = module.dynamodb_memberships[0].table_name
-  assignment_rules_table_name = module.dynamodb_assignment_rules[0].table_name
-  unassigned_table_name       = module.dynamodb_unassigned[0].table_name
-  notifications_table_name    = module.dynamodb_notifications[0].table_name
+  # Table name references (safe access via locals)
+  orgs_table_name             = local.platform_orgs_table_name
+  users_table_name            = local.platform_users_table_name
+  memberships_table_name      = local.platform_memberships_table_name
+  assignment_rules_table_name = local.platform_assignment_rules_table_name
+  unassigned_table_name       = local.platform_unassigned_table_name
+  notifications_table_name    = local.platform_notifications_table_name
 
-  # Queue references
-  assignment_queue_url   = module.assignment_queue[0].queue_url
-  notification_queue_url = module.notification_queue[0].queue_url
+  # Queue references (safe access via locals)
+  assignment_queue_url   = local.platform_assignment_queue_url
+  notification_queue_url = local.platform_notification_queue_url
 
-  # Cognito references
-  admin_cognito_pool_id    = module.cognito_admin[0].pool_id
-  admin_cognito_client_id  = module.cognito_admin[0].client_id
-  portal_cognito_pool_id   = module.cognito_portal[0].pool_id
-  portal_cognito_client_id = module.cognito_portal[0].client_id
+  # Cognito references (safe access via locals)
+  admin_cognito_pool_id    = local.platform_admin_cognito_pool_id
+  admin_cognito_client_id  = local.platform_admin_cognito_client_id
+  portal_cognito_pool_id   = local.platform_portal_cognito_pool_id
+  portal_cognito_client_id = local.platform_portal_cognito_client_id
 
   tags = local.common_tags
 }
@@ -727,7 +832,7 @@ module "admin_app" {
   app_name    = "${local.prefix}-admin-app"
   bucket_name = "${local.prefix}-admin-app-origin"
 
-  domain_aliases      = ["admin-dev.${var.root_domain}"]
+  domain_aliases      = ["${local.admin_subdomain}.${var.root_domain}"]
   acm_certificate_arn = module.acm.validated_certificate_arn
   route53_zone_id     = module.dns.zone_id
 
@@ -744,7 +849,7 @@ module "portal_app" {
   app_name    = "${local.prefix}-portal-app"
   bucket_name = "${local.prefix}-portal-app-origin"
 
-  domain_aliases      = ["portal-dev.${var.root_domain}"]
+  domain_aliases      = ["${local.portal_subdomain}.${var.root_domain}"]
   acm_certificate_arn = module.acm.validated_certificate_arn
   route53_zone_id     = module.dns.zone_id
 
@@ -789,7 +894,7 @@ module "ssm" {
   enable_debug               = true # Enable debug in dev
 
   # Runtime config - dev uses api-dev subdomain
-  api_base_url = "https://api-dev.${var.root_domain}"
+  api_base_url = "https://${local.api_subdomain}.${var.root_domain}"
 
   tags = local.common_tags
 }
@@ -926,11 +1031,11 @@ module "static_site" {
 
   # Dev uses only subdomain - prod owns root domain and www
   domain_aliases = [
-    "dev.${var.root_domain}",
+    "${local.env_subdomain}.${var.root_domain}",
   ]
 
   acm_certificate_arn = module.acm.validated_certificate_arn
-  waf_web_acl_arn     = var.enable_waf ? module.waf[0].web_acl_arn : null
+  waf_web_acl_arn     = local.waf_web_acl_arn
 
   # Cost optimization for dev
   price_class    = "PriceClass_100" # North America + Europe only
@@ -966,7 +1071,7 @@ module "dns" {
 
   # Dev only uses subdomain - prod owns root and www
   create_root_records   = false
-  additional_subdomains = ["dev"]
+  additional_subdomains = [local.env_subdomain]
 
   tags = local.common_tags
 }
@@ -1033,16 +1138,16 @@ module "synthetics" {
 
   # API Health Check Canary
   enable_api_canary   = true
-  api_health_endpoint = "https://api-dev.${var.root_domain}/health"
+  api_health_endpoint = "https://${local.api_subdomain}.${var.root_domain}/health"
   api_canary_schedule = "rate(10 minutes)" # Less frequent in dev
 
   # Website Availability Canary
   enable_website_canary   = true
-  website_url             = "https://dev.${var.root_domain}"
+  website_url             = "https://${local.env_subdomain}.${var.root_domain}"
   website_canary_schedule = "rate(10 minutes)" # Less frequent in dev
 
-  # Alerting
-  sns_topic_arn = var.enable_alarms ? module.monitoring[0].sns_topic_arn : ""
+  # Alerting (safe access via locals)
+  sns_topic_arn = local.monitoring_sns_topic_arn
 
   # Canary configuration
   enable_xray_tracing     = var.enable_xray
@@ -1104,10 +1209,10 @@ module "admin" {
   enable_localhost_callbacks = true # Allow localhost in dev
 
   admin_console_callback_urls = [
-    "https://dev.${var.root_domain}/admin/callback",
+    "https://${local.env_subdomain}.${var.root_domain}/admin/callback",
   ]
   admin_console_logout_urls = [
-    "https://dev.${var.root_domain}/admin",
+    "https://${local.env_subdomain}.${var.root_domain}/admin",
   ]
 
   # Exports configuration

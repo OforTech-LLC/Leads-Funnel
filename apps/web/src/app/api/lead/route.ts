@@ -172,21 +172,21 @@ function checkRateLimit(ip: string): boolean {
   return true;
 }
 
+/**
+ * Sanitize a string by encoding HTML entities (allowlist approach).
+ * Security: Uses HTML entity encoding instead of blocklist regex patterns,
+ * which prevents bypass via encoding tricks or novel attack vectors.
+ */
 function sanitizeString(input: string): string {
-  // Remove dangerous patterns
-  let sanitized = input
-    .replace(/<script\b[^>]*>/gi, '')
-    .replace(/<\/script>/gi, '')
-    .replace(/javascript:/gi, '')
-    .replace(/on\w+\s*=/gi, '')
-    .replace(/<iframe\b[^>]*>/gi, '')
-    .replace(/<object\b[^>]*>/gi, '')
-    .replace(/<embed\b[^>]*>/gi, '');
-
-  // Remove null bytes and control characters
-  sanitized = sanitized.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '');
-
-  return sanitized.trim().slice(0, 1000);
+  if (typeof input !== 'string') return '';
+  return input
+    .trim()
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .slice(0, 1000);
 }
 
 function validateEmail(email: string): boolean {

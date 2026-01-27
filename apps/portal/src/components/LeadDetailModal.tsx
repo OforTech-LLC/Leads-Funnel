@@ -79,7 +79,7 @@ export default function LeadDetailModal({
                   <p className="truncate text-sm text-gray-900">{lead.email}</p>
                 </div>
                 <a
-                  href={`mailto:${lead.email}`}
+                  href={`mailto:${encodeURIComponent(lead.email)}`}
                   className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-colors hover:bg-blue-100 active:bg-blue-200"
                   aria-label={`Email ${fullName}`}
                 >
@@ -107,7 +107,7 @@ export default function LeadDetailModal({
                   <p className="text-sm text-gray-900">{lead.phone}</p>
                 </div>
                 <a
-                  href={`tel:${lead.phone}`}
+                  href={`tel:${encodeURIComponent(lead.phone)}`}
                   className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg bg-green-50 text-green-600 transition-colors hover:bg-green-100 active:bg-green-200"
                   aria-label={`Call ${fullName}`}
                 >

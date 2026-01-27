@@ -11,8 +11,8 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: '*.amazonaws.com',
-        pathname: '/**',
+        hostname: '*.s3.amazonaws.com',
+        pathname: '/kanjona-*/**',
       },
     ],
     formats: ['image/avif', 'image/webp'],
@@ -35,6 +35,10 @@ const nextConfig = {
           {
             key: 'Strict-Transport-Security',
             value: 'max-age=31536000; includeSubDomains; preload',
+          },
+          {
+            key: 'Content-Security-Policy',
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.kanjona.com https://*.amazonaws.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';",
           },
         ],
       },

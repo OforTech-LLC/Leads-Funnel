@@ -1,33 +1,19 @@
 /**
  * Application constants
+ *
+ * LeadStatus, AdminPipelineStatus, and ExportFormat are imported from
+ * @kanjona/shared to maintain a single source of truth across all apps.
  */
 
+import { LEAD_STATUSES, ADMIN_PIPELINE_STATUSES, EXPORT_FORMATS } from '@kanjona/shared';
+import type { LeadStatus, AdminPipelineStatus, ExportFormatValue } from '@kanjona/shared';
+
+// Re-export shared constants and types for local use
+export { LEAD_STATUSES, ADMIN_PIPELINE_STATUSES as PIPELINE_STATUSES, EXPORT_FORMATS };
+export type { LeadStatus, ExportFormatValue as ExportFormat };
+export type PipelineStatus = AdminPipelineStatus;
+
 export const AUTH_COOKIE_NAME = 'admin_token';
-
-export const LEAD_STATUSES = [
-  'new',
-  'contacted',
-  'qualified',
-  'converted',
-  'lost',
-  'dnc',
-  'quarantined',
-] as const;
-
-export const PIPELINE_STATUSES = [
-  'none',
-  'nurturing',
-  'negotiating',
-  'closing',
-  'closed_won',
-  'closed_lost',
-] as const;
-
-export const EXPORT_FORMATS = ['csv', 'xlsx', 'pdf', 'docx', 'json'] as const;
-
-export type LeadStatus = (typeof LEAD_STATUSES)[number];
-export type PipelineStatus = (typeof PIPELINE_STATUSES)[number];
-export type ExportFormat = (typeof EXPORT_FORMATS)[number];
 
 export const STATUS_COLORS: Record<string, string> = {
   new: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
@@ -37,6 +23,8 @@ export const STATUS_COLORS: Record<string, string> = {
   lost: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
   dnc: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
   quarantined: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
+  booked: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200',
+  won: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200',
   active: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
   inactive: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
   pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',

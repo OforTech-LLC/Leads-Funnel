@@ -4,14 +4,10 @@
  * Logs all admin actions to DynamoDB for compliance and security.
  */
 
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';
+import { PutCommand } from '@aws-sdk/lib-dynamodb';
 import { v4 as uuidv4 } from 'uuid';
 import type { AdminConfig, AdminUser, AuditAction, AuditLogEntry } from '../types.js';
-
-const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({}), {
-  marshallOptions: { removeUndefinedValues: true },
-});
+import { getDocClient } from '../../lib/clients.js';
 
 // Default retention: 365 days (configurable via env)
 const AUDIT_RETENTION_DAYS = parseInt(process.env.AUDIT_RETENTION_DAYS || '365', 10);
@@ -30,6 +26,7 @@ export async function logAuditEvent(
   userAgent: string,
   funnelId?: string
 ): Promise<void> {
+  const ddb = getDocClient();
   const timestamp = new Date().toISOString();
   const auditId = uuidv4();
 

@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
       value: JSON.stringify(tokenPayload),
       httpOnly: true,
       secure: isProduction,
-      sameSite: 'strict',
+      sameSite: 'lax',
       path: '/',
       maxAge,
     });
@@ -179,7 +179,7 @@ export async function DELETE(request: NextRequest) {
       value: '',
       httpOnly: true,
       secure: isProduction,
-      sameSite: 'strict',
+      sameSite: 'lax',
       path: '/',
       maxAge: 0, // Immediate expiration
     });
@@ -190,7 +190,7 @@ export async function DELETE(request: NextRequest) {
       value: '',
       httpOnly: true,
       secure: isProduction,
-      sameSite: 'strict',
+      sameSite: 'lax',
       path: '/',
       maxAge: 0,
     });

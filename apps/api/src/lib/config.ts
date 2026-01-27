@@ -5,20 +5,8 @@
  * and cached for 60 seconds to minimise API calls.
  */
 
-import { SSMClient, GetParameterCommand } from '@aws-sdk/client-ssm';
-
-// ---------------------------------------------------------------------------
-// SSM Client (singleton)
-// ---------------------------------------------------------------------------
-
-let _ssm: SSMClient | null = null;
-
-function getSsm(): SSMClient {
-  if (!_ssm) {
-    _ssm = new SSMClient({ region: process.env.AWS_REGION || 'us-east-1' });
-  }
-  return _ssm;
-}
+import { GetParameterCommand } from '@aws-sdk/client-ssm';
+import { getSsmClient } from './clients.js';
 
 // ---------------------------------------------------------------------------
 // Cache
@@ -48,7 +36,7 @@ export async function loadConfig(key: string): Promise<string> {
     return cached.value;
   }
 
-  const ssm = getSsm();
+  const ssm = getSsmClient();
   const response = await ssm.send(new GetParameterCommand({ Name: key, WithDecryption: true }));
 
   const value = response.Parameter?.Value || '';

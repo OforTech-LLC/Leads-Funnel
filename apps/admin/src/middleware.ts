@@ -28,25 +28,29 @@ export function middleware(request: NextRequest) {
 
   if (!token) {
     const loginUrl = new URL('/login', request.url);
-    loginUrl.searchParams.set('returnTo', pathname);
     return NextResponse.redirect(loginUrl);
   }
 
   // Basic JWT expiration check (without full verification)
   try {
     const parts = token.split('.');
-    if (parts.length === 3) {
-      const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString('utf-8'));
-      if (payload.exp && payload.exp * 1000 < Date.now()) {
-        const loginUrl = new URL('/login', request.url);
-        loginUrl.searchParams.set('expired', '1');
-        const response = NextResponse.redirect(loginUrl);
-        response.cookies.delete(AUTH_COOKIE_NAME);
-        return response;
-      }
+    if (parts.length !== 3) {
+      throw new Error('Invalid JWT structure');
+    }
+    const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString('utf-8'));
+    if (payload.exp && payload.exp * 1000 < Date.now()) {
+      const loginUrl = new URL('/login', request.url);
+      loginUrl.searchParams.set('expired', '1');
+      const response = NextResponse.redirect(loginUrl);
+      response.cookies.delete(AUTH_COOKIE_NAME);
+      return response;
     }
   } catch {
-    // If token parsing fails, let it through - the API will reject it
+    // Security: Token is malformed - redirect to login instead of silently passing
+    const loginUrl = new URL('/login', request.url);
+    const response = NextResponse.redirect(loginUrl);
+    response.cookies.delete(AUTH_COOKIE_NAME);
+    return response;
   }
 
   return NextResponse.next();

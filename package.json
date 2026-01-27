@@ -11,9 +11,15 @@
     "dev": "npm run dev --workspace=@leads-funnel/web",
     "build": "npm run build --workspace=@kanjona/shared && npm run build --workspace=@leads-funnel/web",
     "build:shared": "npm run build --workspace=@kanjona/shared",
+    "build:admin": "npm run build --workspace=@leads-funnel/admin",
+    "build:portal": "npm run build --workspace=@leads-funnel/portal",
+    "build:all": "npm run build:shared && npm run build --workspace=@leads-funnel/web && npm run build --workspace=@leads-funnel/admin && npm run build --workspace=@leads-funnel/portal",
     "lint": "npm run lint --workspace=@leads-funnel/web",
+    "lint:admin": "npm run lint --workspace=@leads-funnel/admin",
+    "lint:portal": "npm run lint --workspace=@leads-funnel/portal",
     "lint:fix": "npm run lint --workspace=@leads-funnel/web -- --fix",
     "type-check": "npm run type-check --workspaces --if-present",
+    "type-check:all": "npm run type-check --workspaces --if-present",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md,css,scss}\"",
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md,css,scss}\"",
     "tf:fmt": "cd infra/terraform && terraform fmt -recursive",
@@ -36,12 +42,9 @@
     ],
     "*.{json,md,css,scss}": [
       "prettier --write"
-    ],
-    "*.tf": [
-      "terraform fmt"
     ]
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=22.0.0"
   }
 }

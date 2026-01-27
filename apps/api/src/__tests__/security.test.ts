@@ -18,7 +18,7 @@ import { generateNormalizedLead, DISPOSABLE_EMAIL_DOMAINS, SPAM_KEYWORDS } from 
 // Mock the hash module since we want to test security logic, not hashing
 vi.mock('../lib/hash.js', () => ({
   hashIp: vi.fn((ip: string, salt: string) => `hashed_${ip}_${salt}`),
-  hashEmail: vi.fn((email: string) => `hashed_${email}`),
+  hashEmailWithSalt: vi.fn((email: string, _salt: string) => `hashed_${email}`),
   generateIdempotencyKey: vi.fn(
     (email: string, pageUrl: string | undefined, bucket: string) =>
       `idem_${email}_${pageUrl || 'nourl'}_${bucket}`
@@ -37,6 +37,12 @@ describe('analyzeLeadSecurity', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    // Set required environment variable
+    process.env.EMAIL_HASH_SALT = 'test-email-salt';
+  });
+
+  afterEach(() => {
+    delete process.env.EMAIL_HASH_SALT;
   });
 
   // ===========================================================================

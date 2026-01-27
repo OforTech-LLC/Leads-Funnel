@@ -1,7 +1,7 @@
 # =============================================================================
 # Frontend Deployment Workflow
 # =============================================================================
-# Builds and deploys the Next.js frontend to S3/CloudFront
+# Builds and deploys the Next.js frontend apps to S3/CloudFront
 # =============================================================================
 
 name: Frontend Deploy
@@ -11,6 +11,8 @@ on:
     branches: [main]
     paths:
       - 'apps/web/**'
+      - 'apps/admin/**'
+      - 'apps/portal/**'
       - 'packages/**'
       - '.github/workflows/frontend-deploy.yml'
   workflow_dispatch:
@@ -31,12 +33,15 @@ on:
         type: string
 
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: '22'
   AWS_REGION: us-east-1
 
 jobs:
-  build:
-    name: Build Frontend
+  # ===========================================================================
+  # Web App
+  # ===========================================================================
+  build-web:
+    name: Build Web
     runs-on: ubuntu-latest
     outputs:
       artifact-name: ${{ steps.upload.outputs.artifact-name }}
@@ -64,13 +69,13 @@ jobs:
         id: upload
         uses: actions/upload-artifact@v4
         with:
-          name: frontend-build-${{ github.sha }}
+          name: web-build-${{ github.sha }}
           path: apps/web/out
           retention-days: 7
 
-  deploy-dev:
-    name: Deploy to Dev
-    needs: build
+  deploy-web-dev:
+    name: Deploy Web to Dev
+    needs: build-web
     if: github.event_name == 'push' || inputs.environment == 'dev'
     runs-on: ubuntu-latest
     environment: dev
@@ -79,7 +84,7 @@ jobs:
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
-          name: frontend-build-${{ github.sha }}
+          name: web-build-${{ github.sha }}
           path: ./out
 
       - name: Configure AWS credentials
@@ -112,14 +117,14 @@ jobs:
 
       - name: Post deployment summary
         run: |
-          echo "## Frontend Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "## Web Deployment Complete" >> $GITHUB_STEP_SUMMARY
           echo "- **Environment:** dev" >> $GITHUB_STEP_SUMMARY
           echo "- **URL:** https://dev.kanjona.com" >> $GITHUB_STEP_SUMMARY
           echo "- **Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
 
-  deploy-prod:
-    name: Deploy to Production
-    needs: build
+  deploy-web-prod:
+    name: Deploy Web to Production
+    needs: build-web
     if: inputs.environment == 'prod'
     runs-on: ubuntu-latest
     environment: prod
@@ -128,7 +133,7 @@ jobs:
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
-          name: frontend-build-${{ github.sha }}
+          name: web-build-${{ github.sha }}
           path: ./out
 
       - name: Configure AWS credentials
@@ -160,7 +165,259 @@ jobs:
 
       - name: Post deployment summary
         run: |
-          echo "## Frontend Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "## Web Deployment Complete" >> $GITHUB_STEP_SUMMARY
           echo "- **Environment:** prod" >> $GITHUB_STEP_SUMMARY
           echo "- **URL:** https://kanjona.com" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+
+  # ===========================================================================
+  # Admin App
+  # ===========================================================================
+  build-admin:
+    name: Build Admin
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build admin
+        run: npm run build --workspace=@leads-funnel/admin
+        env:
+          NEXT_PUBLIC_API_BASE_URL: ${{ inputs.environment == 'prod' && 'https://api.kanjona.com' || 'https://api-dev.kanjona.com' }}
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: admin-build-${{ github.sha }}
+          path: apps/admin/.next
+          retention-days: 7
+
+  deploy-admin-dev:
+    name: Deploy Admin to Dev
+    needs: build-admin
+    if: github.event_name == 'push' || inputs.environment == 'dev'
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: admin-build-${{ github.sha }}
+          path: ./out
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy to S3
+        run: |
+          aws s3 sync ./out s3://${{ secrets.DEV_ADMIN_S3_BUCKET }} \
+            --delete \
+            --cache-control "public, max-age=31536000, immutable" \
+            --exclude "*.html" \
+            --exclude "*.json"
+
+          aws s3 sync ./out s3://${{ secrets.DEV_ADMIN_S3_BUCKET }} \
+            --delete \
+            --cache-control "public, max-age=0, must-revalidate" \
+            --include "*.html" \
+            --include "*.json"
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.DEV_ADMIN_CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
+
+      - name: Post deployment summary
+        run: |
+          echo "## Admin Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment:** dev" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+
+  deploy-admin-prod:
+    name: Deploy Admin to Production
+    needs: build-admin
+    if: inputs.environment == 'prod'
+    runs-on: ubuntu-latest
+    environment: prod
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: admin-build-${{ github.sha }}
+          path: ./out
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy to S3
+        run: |
+          aws s3 sync ./out s3://${{ secrets.PROD_ADMIN_S3_BUCKET }} \
+            --delete \
+            --cache-control "public, max-age=31536000, immutable" \
+            --exclude "*.html" \
+            --exclude "*.json"
+
+          aws s3 sync ./out s3://${{ secrets.PROD_ADMIN_S3_BUCKET }} \
+            --delete \
+            --cache-control "public, max-age=0, must-revalidate" \
+            --include "*.html" \
+            --include "*.json"
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.PROD_ADMIN_CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
+
+      - name: Post deployment summary
+        run: |
+          echo "## Admin Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment:** prod" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+
+  # ===========================================================================
+  # Portal App
+  # ===========================================================================
+  build-portal:
+    name: Build Portal
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build portal
+        run: npm run build --workspace=@leads-funnel/portal
+        env:
+          NEXT_PUBLIC_API_BASE_URL: ${{ inputs.environment == 'prod' && 'https://api.kanjona.com' || 'https://api-dev.kanjona.com' }}
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: portal-build-${{ github.sha }}
+          path: apps/portal/.next
+          retention-days: 7
+
+  deploy-portal-dev:
+    name: Deploy Portal to Dev
+    needs: build-portal
+    if: github.event_name == 'push' || inputs.environment == 'dev'
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: portal-build-${{ github.sha }}
+          path: ./out
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy to S3
+        run: |
+          aws s3 sync ./out s3://${{ secrets.DEV_PORTAL_S3_BUCKET }} \
+            --delete \
+            --cache-control "public, max-age=31536000, immutable" \
+            --exclude "*.html" \
+            --exclude "*.json"
+
+          aws s3 sync ./out s3://${{ secrets.DEV_PORTAL_S3_BUCKET }} \
+            --delete \
+            --cache-control "public, max-age=0, must-revalidate" \
+            --include "*.html" \
+            --include "*.json"
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.DEV_PORTAL_CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
+
+      - name: Post deployment summary
+        run: |
+          echo "## Portal Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment:** dev" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+
+  deploy-portal-prod:
+    name: Deploy Portal to Production
+    needs: build-portal
+    if: inputs.environment == 'prod'
+    runs-on: ubuntu-latest
+    environment: prod
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: portal-build-${{ github.sha }}
+          path: ./out
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy to S3
+        run: |
+          aws s3 sync ./out s3://${{ secrets.PROD_PORTAL_S3_BUCKET }} \
+            --delete \
+            --cache-control "public, max-age=31536000, immutable" \
+            --exclude "*.html" \
+            --exclude "*.json"
+
+          aws s3 sync ./out s3://${{ secrets.PROD_PORTAL_S3_BUCKET }} \
+            --delete \
+            --cache-control "public, max-age=0, must-revalidate" \
+            --include "*.html" \
+            --include "*.json"
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.PROD_PORTAL_CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
+
+      - name: Post deployment summary
+        run: |
+          echo "## Portal Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment:** prod" >> $GITHUB_STEP_SUMMARY
           echo "- **Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY

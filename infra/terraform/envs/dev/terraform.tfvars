@@ -68,6 +68,6 @@ notification_email = ""
 # Protects the site during development. Disable when ready for public release.
 # =============================================================================
 
-enable_basic_auth   = true
-basic_auth_username = "admin"
-basic_auth_password = "admin"
+enable_basic_auth = true
+# basic_auth_username - Set via TF_VAR_basic_auth_username environment variable
+# basic_auth_password - Set via TF_VAR_basic_auth_password environment variable

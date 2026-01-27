@@ -28,7 +28,7 @@ variable "root_domain" {
 variable "runtime" {
   type        = string
   description = "Lambda runtime"
-  default     = "nodejs20.x"
+  default     = "nodejs22.x"
 }
 
 variable "app_version" {

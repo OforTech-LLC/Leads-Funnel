@@ -35,6 +35,21 @@ const STATUS_OPTIONS: { value: LeadStatus | ''; label: string }[] = [
   { value: 'dnc', label: 'Do Not Contact' },
 ];
 
+/**
+ * Validate that a download URL points to an allowed origin.
+ */
+function isValidDownloadUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return (
+      parsed.protocol === 'https:' &&
+      (parsed.hostname.endsWith('.amazonaws.com') || parsed.hostname.endsWith('.kanjona.com'))
+    );
+  } catch {
+    return false;
+  }
+}
+
 export default function ExportsPage() {
   const [funnels, setFunnels] = useState<string[]>([]);
   const [selectedFunnel, setSelectedFunnel] = useState('');
@@ -126,7 +141,12 @@ export default function ExportsPage() {
   async function handleDownload(job: ExportJob) {
     try {
       const { downloadUrl } = await getExportDownloadUrl(job.jobId);
-      window.open(downloadUrl, '_blank');
+      if (downloadUrl && isValidDownloadUrl(downloadUrl)) {
+        window.open(downloadUrl, '_blank', 'noopener,noreferrer');
+      } else {
+        console.error('Invalid download URL received');
+        setError('Invalid download URL received. Please try again.');
+      }
     } catch (err) {
       console.error('[Exports] Failed to get download URL:', err);
       setError(err instanceof Error ? err.message : 'Failed to get download URL');

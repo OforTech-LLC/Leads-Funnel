@@ -17,14 +17,14 @@
  */
 
 import { DynamoDBClient, ListTablesCommand } from '@aws-sdk/client-dynamodb';
-import {
-  DynamoDBDocumentClient,
-  ScanCommand,
-  DeleteCommand,
-  BatchWriteCommand,
-} from '@aws-sdk/lib-dynamodb';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { ScanCommand, DeleteCommand, BatchWriteCommand } from '@aws-sdk/lib-dynamodb';
+import { PutObjectCommand } from '@aws-sdk/client-s3';
 import type { Handler, ScheduledEvent } from 'aws-lambda';
+import { getDocClient, getS3Client } from '../lib/clients.js';
+import { createLogger } from '../lib/logging.js';
+import { hashEmailWithSalt } from '../lib/hash.js';
+
+const log = createLogger('data-retention');
 
 // =============================================================================
 // Configuration
@@ -87,34 +87,6 @@ interface FunnelResult {
 }
 
 // =============================================================================
-// Clients
-// =============================================================================
-
-const ddbClient = new DynamoDBClient({});
-const ddb = DynamoDBDocumentClient.from(ddbClient, {
-  marshallOptions: { removeUndefinedValues: true },
-});
-const s3 = new S3Client({});
-
-// =============================================================================
-// Logging
-// =============================================================================
-
-function log(
-  level: 'info' | 'warn' | 'error',
-  message: string,
-  data?: Record<string, unknown>
-): void {
-  const entry = {
-    timestamp: new Date().toISOString(),
-    level,
-    message,
-    ...data,
-  };
-  console.log(JSON.stringify(entry));
-}
-
-// =============================================================================
 // Helper Functions
 // =============================================================================
 
@@ -129,8 +101,12 @@ function getCutoffDate(retentionDays: number): string {
 
 /**
  * List all funnel tables
+ *
+ * Note: ListTables requires the low-level DynamoDB client. We create a
+ * temporary client since this is an infrequent operation.
  */
 async function listFunnelTables(config: RetentionConfig): Promise<string[]> {
+  const ddbClient = new DynamoDBClient({});
   const prefix = `${config.projectName}-${config.env}-`;
   const funnelIds: string[] = [];
   let lastTableName: string | undefined;
@@ -167,7 +143,15 @@ function getTableName(config: RetentionConfig, funnelId: string): string {
 }
 
 /**
- * Archive leads to S3 before deletion
+ * Get the email hash salt for archiving, with fallback
+ */
+function getArchiveEmailHashSalt(): string {
+  return process.env.EMAIL_HASH_SALT || 'archive-default-salt';
+}
+
+/**
+ * Archive leads to S3 before deletion.
+ * PII is redacted: emails are hashed, names are reduced to initials.
  */
 async function archiveLeads(
   config: RetentionConfig,
@@ -178,8 +162,10 @@ async function archiveLeads(
     return;
   }
 
+  const s3 = getS3Client();
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
   const key = `archives/${config.env}/${funnelId}/${timestamp}.json`;
+  const salt = getArchiveEmailHashSalt();
 
   const archiveData = {
     funnelId,
@@ -188,8 +174,8 @@ async function archiveLeads(
     recordCount: leads.length,
     leads: leads.map((lead) => ({
       leadId: lead.leadId,
-      email: lead.email,
-      name: lead.name,
+      emailHash: hashEmailWithSalt(lead.email, salt),
+      nameInitial: lead.name ? lead.name.charAt(0) + '***' : null,
       createdAt: lead.createdAt,
       status: lead.status,
     })),
@@ -210,7 +196,7 @@ async function archiveLeads(
     })
   );
 
-  log('info', 'Archived leads to S3', {
+  log.info('Archived leads to S3', {
     bucket: config.archiveBucket,
     key,
     recordCount: leads.length,
@@ -218,7 +204,7 @@ async function archiveLeads(
 }
 
 /**
- * Delete leads in batches
+ * Delete leads in batches with retry for unprocessed items
  */
 async function deleteLeadsBatch(
   tableName: string,
@@ -228,6 +214,8 @@ async function deleteLeadsBatch(
   if (dryRun || leads.length === 0) {
     return leads.length;
   }
+
+  const ddb = getDocClient();
 
   // DynamoDB batch limit is 25 items
   let deleted = 0;
@@ -252,18 +240,35 @@ async function deleteLeadsBatch(
         })
       );
 
-      // Handle unprocessed items
-      const unprocessed = result.UnprocessedItems?.[tableName]?.length || 0;
-      deleted += batch.length - unprocessed;
+      // Handle unprocessed items with exponential backoff retry
+      let unprocessedItems = result.UnprocessedItems?.[tableName];
+      let initialUnprocessed = unprocessedItems?.length || 0;
+      let retryCount = 0;
 
-      if (unprocessed > 0) {
-        log('warn', 'Some items were not processed', {
+      while (unprocessedItems && unprocessedItems.length > 0 && retryCount < 3) {
+        retryCount++;
+        await new Promise((resolve) => setTimeout(resolve, Math.pow(2, retryCount) * 100));
+        const retryResult = await ddb.send(
+          new BatchWriteCommand({
+            RequestItems: { [tableName]: unprocessedItems },
+          })
+        );
+        unprocessedItems = retryResult.UnprocessedItems?.[tableName];
+      }
+
+      const finalUnprocessed = unprocessedItems?.length || 0;
+      deleted += batch.length - finalUnprocessed;
+
+      if (finalUnprocessed > 0) {
+        log.warn('Some items were not processed after retries', {
           tableName,
-          unprocessed,
+          unprocessed: finalUnprocessed,
+          originalUnprocessed: initialUnprocessed,
+          retriesAttempted: retryCount,
         });
       }
     } catch (error) {
-      log('error', 'Batch delete failed', {
+      log.error('Batch delete failed', {
         tableName,
         error: error instanceof Error ? error.message : String(error),
       });
@@ -282,6 +287,7 @@ async function processRetentionForFunnel(
   funnelId: string,
   cutoffDate: string
 ): Promise<FunnelResult> {
+  const ddb = getDocClient();
   const tableName = getTableName(config, funnelId);
   const result: FunnelResult = {
     funnelId,
@@ -295,7 +301,7 @@ async function processRetentionForFunnel(
   let iterations = 0;
   const leadsToDelete: LeadRecord[] = [];
 
-  log('info', 'Processing funnel retention', {
+  log.info('Processing funnel retention', {
     funnelId,
     tableName,
     cutoffDate,
@@ -305,7 +311,7 @@ async function processRetentionForFunnel(
   // Scan for old leads
   do {
     if (iterations >= config.maxIterations) {
-      log('warn', 'Max iterations reached', { funnelId, iterations });
+      log.warn('Max iterations reached', { funnelId, iterations });
       break;
     }
     iterations++;
@@ -350,7 +356,7 @@ async function processRetentionForFunnel(
         const deleted = await deleteLeadsBatch(tableName, leadsToDelete, config.dryRun);
         result.deleted += deleted;
 
-        log('info', 'Processed batch', {
+        log.info('Processed batch', {
           funnelId,
           deleted,
           archived: config.archiveBucket ? leadsToDelete.length : 0,
@@ -362,7 +368,7 @@ async function processRetentionForFunnel(
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error);
       result.errors.push(errorMsg);
-      log('error', 'Scan failed', { funnelId, error: errorMsg });
+      log.error('Scan failed', { funnelId, error: errorMsg });
       break;
     }
   } while (lastKey);
@@ -378,7 +384,7 @@ async function processRetentionForFunnel(
       const deleted = await deleteLeadsBatch(tableName, leadsToDelete, config.dryRun);
       result.deleted += deleted;
 
-      log('info', 'Processed final batch', {
+      log.info('Processed final batch', {
         funnelId,
         deleted,
         archived: config.archiveBucket ? leadsToDelete.length : 0,
@@ -407,7 +413,7 @@ export async function executeRetention(
   const fullConfig = { ...loadConfig(), ...config };
   const cutoffDate = getCutoffDate(fullConfig.retentionDays);
 
-  log('info', 'Starting data retention cleanup', {
+  log.info('Starting data retention cleanup', {
     retentionDays: fullConfig.retentionDays,
     cutoffDate,
     dryRun: fullConfig.dryRun,
@@ -428,7 +434,7 @@ export async function executeRetention(
   try {
     // Get all funnel tables
     const funnelIds = await listFunnelTables(fullConfig);
-    log('info', 'Found funnel tables', { count: funnelIds.length, funnelIds });
+    log.info('Found funnel tables', { count: funnelIds.length, funnelIds });
 
     // Process each funnel
     for (const funnelId of funnelIds) {
@@ -446,20 +452,20 @@ export async function executeRetention(
       } catch (error) {
         const errorMsg = error instanceof Error ? error.message : String(error);
         result.errors.push(`${funnelId}: ${errorMsg}`);
-        log('error', 'Failed to process funnel', { funnelId, error: errorMsg });
+        log.error('Failed to process funnel', { funnelId, error: errorMsg });
       }
     }
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : String(error);
     result.success = false;
     result.errors.push(errorMsg);
-    log('error', 'Retention cleanup failed', { error: errorMsg });
+    log.error('Retention cleanup failed', { error: errorMsg });
   }
 
   result.duration = Date.now() - startTime;
   result.success = result.errors.length === 0;
 
-  log('info', 'Data retention cleanup completed', {
+  log.info('Data retention cleanup completed', {
     success: result.success,
     processedFunnels: result.processedFunnels.length,
     totalScanned: result.totalScanned,
@@ -477,7 +483,7 @@ export async function executeRetention(
  * Lambda handler for scheduled execution
  */
 export const handler: Handler<ScheduledEvent, RetentionResult> = async (event) => {
-  log('info', 'Lambda invoked', {
+  log.info('Lambda invoked', {
     source: event.source,
     time: event.time,
     region: event.region,

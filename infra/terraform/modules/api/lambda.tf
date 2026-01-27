@@ -24,7 +24,7 @@ data "archive_file" "lambda" {
 # -----------------------------------------------------------------------------
 # Lambda Function
 # -----------------------------------------------------------------------------
-# Lead capture Lambda function running Node.js 20.
+# Lead capture Lambda function running Node.js 22.
 # The TypeScript code is compiled and deployed from apps/api/dist.
 #
 # Deployment options:
@@ -44,7 +44,7 @@ resource "aws_lambda_function" "lead_capture" {
   source_code_hash = data.archive_file.lambda.output_base64sha256
 
   handler       = "handler.handler"
-  runtime       = "nodejs20.x"
+  runtime       = "nodejs22.x"
   architectures = ["arm64"] # Graviton - cheaper and faster
 
   memory_size = var.lambda_memory_mb
@@ -73,7 +73,9 @@ resource "aws_lambda_function" "lead_capture" {
       # Idempotency TTL
       IDEMPOTENCY_TTL_HOURS = tostring(var.idempotency_ttl_hours)
 
-      # IP hashing salt (should be set via secrets manager in production)
+      # IP hashing salt - passed as SSM parameter name for runtime retrieval
+      # SECURITY: The raw salt value is marked sensitive in variables.tf.
+      # For production, consider storing in Secrets Manager and passing the ARN instead.
       IP_HASH_SALT = var.ip_hash_salt
     }
   }
@@ -101,6 +103,7 @@ resource "aws_lambda_function" "lead_capture" {
 resource "aws_cloudwatch_log_group" "lambda" {
   name              = "/aws/lambda/${var.project_name}-${var.environment}-lead-capture"
   retention_in_days = var.log_retention_days
+  kms_key_id        = var.kms_key_arn
 
   tags = merge(var.tags, {
     Name = "${var.project_name}-${var.environment}-lambda-logs"

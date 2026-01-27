@@ -47,21 +47,10 @@ export function hmacSha256(input: string, key: string): string {
  */
 export function hashIp(ip: string, salt: string = ''): string {
   if (!salt) {
-    // Fallback to simple hash if no salt provided (development only)
+    console.warn('[Security] IP hashing without salt - hashes are reversible');
     return sha256(ip);
   }
   return hmacSha256(ip, salt);
-}
-
-/**
- * Hash an email address for logging (without salt)
- *
- * @deprecated Use hashEmailWithSalt for better privacy protection
- * @param email - The email address to hash
- * @returns Hex-encoded hashed email
- */
-export function hashEmail(email: string): string {
-  return sha256(email.toLowerCase().trim());
 }
 
 /**

@@ -71,8 +71,8 @@ variable "temporary_password_validity_days" {
 # -----------------------------------------------------------------------------
 variable "mfa_configuration" {
   type        = string
-  description = "MFA configuration: OFF, ON, or OPTIONAL"
-  default     = "OPTIONAL"
+  description = "MFA configuration: OFF, ON, or OPTIONAL. Default is ON for security."
+  default     = "ON"
 
   validation {
     condition     = contains(["OFF", "ON", "OPTIONAL"], var.mfa_configuration)

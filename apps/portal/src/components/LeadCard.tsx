@@ -41,7 +41,7 @@ export default function LeadCard({ lead, onStatusChange, isUpdating = false }: L
         {/* Call button */}
         {lead.phone && (
           <a
-            href={`tel:${lead.phone}`}
+            href={`tel:${encodeURIComponent(lead.phone)}`}
             className="inline-flex min-h-[36px] items-center gap-1.5 rounded-lg bg-green-50 px-3 py-1.5 text-xs font-medium text-green-700 transition-colors hover:bg-green-100 active:bg-green-200"
             onClick={(e) => e.stopPropagation()}
             aria-label={`Call ${fullName}`}
@@ -66,7 +66,7 @@ export default function LeadCard({ lead, onStatusChange, isUpdating = false }: L
         {/* Email button */}
         {lead.email && (
           <a
-            href={`mailto:${lead.email}`}
+            href={`mailto:${encodeURIComponent(lead.email)}`}
             className="inline-flex min-h-[36px] items-center gap-1.5 rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 transition-colors hover:bg-blue-100 active:bg-blue-200"
             onClick={(e) => e.stopPropagation()}
             aria-label={`Email ${fullName}`}

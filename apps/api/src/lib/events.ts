@@ -9,7 +9,7 @@
 
 import { EventBridgeClient, PutEventsCommand } from '@aws-sdk/client-eventbridge';
 import type { LeadCreatedEventDetail, EnvConfig, LeadRecord, SecurityAnalysis } from '../types.js';
-import type { LeadAssignedEventDetail, LeadUnassignedEventDetail } from '../workers/types.js';
+import type { LeadAssignedEventDetail, LeadUnassignedEventDetail } from './types/events.js';
 
 // =============================================================================
 // EventBridge Client Initialization

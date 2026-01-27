@@ -9,6 +9,7 @@
 import { PutCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
 import { getDocClient, tableName } from './client.js';
 import { ulid } from '../../lib/id.js';
+import { signCursor, verifyCursor } from '../cursor.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -100,11 +101,11 @@ export async function listNotificationsByLead(
 
   let exclusiveStartKey: Record<string, unknown> | undefined;
   if (cursor) {
-    try {
-      exclusiveStartKey = JSON.parse(Buffer.from(cursor, 'base64url').toString());
-    } catch {
-      // invalid cursor
+    const verified = verifyCursor(cursor);
+    if (verified) {
+      exclusiveStartKey = verified;
     }
+    // If verifyCursor returns null (invalid/tampered), skip setting ExclusiveStartKey
   }
 
   const result = await doc.send(
@@ -121,7 +122,7 @@ export async function listNotificationsByLead(
   const items = (result.Items || []) as NotificationRecord[];
   let nextCursor: string | undefined;
   if (result.LastEvaluatedKey) {
-    nextCursor = Buffer.from(JSON.stringify(result.LastEvaluatedKey)).toString('base64url');
+    nextCursor = signCursor(result.LastEvaluatedKey as Record<string, unknown>);
   }
 
   return { items, nextCursor };
@@ -140,11 +141,11 @@ export async function listNotifications(
 
   let exclusiveStartKey: Record<string, unknown> | undefined;
   if (cursor) {
-    try {
-      exclusiveStartKey = JSON.parse(Buffer.from(cursor, 'base64url').toString());
-    } catch {
-      // invalid cursor
+    const verified = verifyCursor(cursor);
+    if (verified) {
+      exclusiveStartKey = verified;
     }
+    // If verifyCursor returns null (invalid/tampered), skip setting ExclusiveStartKey
   }
 
   let keyCondition = 'gsi1pk = :pk';
@@ -171,7 +172,7 @@ export async function listNotifications(
   const items = (result.Items || []) as NotificationRecord[];
   let nextCursor: string | undefined;
   if (result.LastEvaluatedKey) {
-    nextCursor = Buffer.from(JSON.stringify(result.LastEvaluatedKey)).toString('base64url');
+    nextCursor = signCursor(result.LastEvaluatedKey as Record<string, unknown>);
   }
 
   return { items, nextCursor };

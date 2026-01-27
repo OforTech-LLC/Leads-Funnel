@@ -17,17 +17,17 @@
  *     - Internal ops only (alert notification)
  *
  * Idempotency:
- *   Checks notification timestamps on the lead record to prevent
- *   duplicate notifications on message replay.
+ *   Uses DynamoDB conditional update to atomically claim notification
+ *   ownership before dispatching, preventing duplicate notifications
+ *   on message replay.
  *
  * Partial Failure:
  *   Returns batchItemFailures for SQS partial batch failure handling.
  */
 
 import type { SQSEvent, SQSBatchResponse, SQSBatchItemFailure } from 'aws-lambda';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb';
-import { SSMClient, GetParameterCommand } from '@aws-sdk/client-ssm';
+import { GetCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
+import { GetParameterCommand } from '@aws-sdk/client-ssm';
 import type {
   NotificationWorkerConfig,
   FeatureFlags,
@@ -35,33 +35,11 @@ import type {
   LeadAssignedEventDetail,
   LeadUnassignedEventDetail,
 } from './types.js';
+import { getDocClient, getSsmClient } from '../lib/clients.js';
+import { createLogger } from '../lib/logging.js';
 import { dispatchNotifications } from '../lib/notifications/dispatcher.js';
 
-// =============================================================================
-// Client Initialization (reused across invocations)
-// =============================================================================
-
-let docClient: DynamoDBDocumentClient | null = null;
-let ssmClient: SSMClient | null = null;
-
-function getDocClient(region: string): DynamoDBDocumentClient {
-  if (!docClient) {
-    const client = new DynamoDBClient({ region });
-    docClient = DynamoDBDocumentClient.from(client, {
-      marshallOptions: {
-        removeUndefinedValues: true,
-      },
-    });
-  }
-  return docClient;
-}
-
-function getSsmClient(region: string): SSMClient {
-  if (!ssmClient) {
-    ssmClient = new SSMClient({ region });
-  }
-  return ssmClient;
-}
+const log = createLogger('notification-worker');
 
 // =============================================================================
 // Configuration
@@ -78,30 +56,6 @@ function loadConfig(): NotificationWorkerConfig {
     twilioSecretArn: process.env.TWILIO_SECRET_ARN || '',
     snsTopicArn: process.env.SNS_TOPIC_ARN || '',
   };
-}
-
-// =============================================================================
-// Structured Logging
-// =============================================================================
-
-interface LogParams {
-  level: 'info' | 'warn' | 'error';
-  message: string;
-  leadId?: string;
-  funnelId?: string;
-  eventType?: string;
-  errorCode?: string;
-  [key: string]: unknown;
-}
-
-function log(entry: LogParams): void {
-  console.log(
-    JSON.stringify({
-      timestamp: new Date().toISOString(),
-      service: 'notification-worker',
-      ...entry,
-    })
-  );
 }
 
 // =============================================================================
@@ -123,10 +77,7 @@ async function loadFeatureFlags(config: NotificationWorkerConfig): Promise<Featu
   }
 
   if (!config.featureFlagSsmPath) {
-    log({
-      level: 'warn',
-      message: 'Feature flag SSM path not configured, using defaults',
-    });
+    log.warn('Feature flag SSM path not configured, using defaults');
     return {
       enable_assignment_service: false,
       enable_notification_service: false,
@@ -157,9 +108,7 @@ async function loadFeatureFlags(config: NotificationWorkerConfig): Promise<Featu
     return flags;
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    log({
-      level: 'error',
-      message: 'Failed to load feature flags',
+    log.error('Failed to load feature flags', {
       errorCode: 'SSM_LOAD_ERROR',
       error: errorMessage,
     });
@@ -207,15 +156,57 @@ async function getLead(
     return (result.Item as LeadRecord) || null;
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    log({
-      level: 'error',
-      message: 'Failed to get lead',
+    log.error('Failed to get lead', {
       leadId,
       funnelId,
       errorCode: 'DDB_GET_ERROR',
       error: errorMessage,
     });
     throw error;
+  }
+}
+
+/**
+ * Claim notification lock using a DynamoDB conditional update.
+ *
+ * This prevents duplicate notifications by atomically setting a
+ * notifiedAt timestamp only if one does not already exist.
+ *
+ * @returns true if the lock was claimed (caller should send notifications)
+ * @returns false if already notified (caller should skip)
+ */
+async function claimNotificationLock(
+  config: NotificationWorkerConfig,
+  leadId: string,
+  funnelId: string
+): Promise<boolean> {
+  const client = getDocClient(config.awsRegion);
+
+  try {
+    await client.send(
+      new UpdateCommand({
+        TableName: config.ddbTableName,
+        Key: {
+          pk: `LEAD#${leadId}`,
+          sk: `FUNNEL#${funnelId}`,
+        },
+        UpdateExpression: 'SET notifiedAt = :now',
+        ConditionExpression: 'attribute_not_exists(notifiedAt)',
+        ExpressionAttributeValues: { ':now': new Date().toISOString() },
+      })
+    );
+    return true;
+  } catch (err: unknown) {
+    if (
+      err &&
+      typeof err === 'object' &&
+      'name' in err &&
+      err.name === 'ConditionalCheckFailedException'
+    ) {
+      log.info('Notification already sent, skipping duplicate', { leadId, funnelId });
+      return false;
+    }
+    throw err;
   }
 }
 
@@ -245,20 +236,14 @@ function parseEvent(messageBody: string): ParsedEvent | null {
     const detailType = envelope['detail-type'] || envelope.detailType;
 
     if (detailType !== 'lead.assigned' && detailType !== 'lead.unassigned') {
-      log({
-        level: 'warn',
-        message: 'Unknown event detail type',
-        eventType: detailType,
-      });
+      log.warn('Unknown event detail type', { eventType: detailType });
       return null;
     }
 
     const detail = envelope.detail;
 
     if (!detail || !detail.leadId || !detail.funnelId) {
-      log({
-        level: 'error',
-        message: 'Invalid event detail: missing leadId or funnelId',
+      log.error('Invalid event detail: missing leadId or funnelId', {
         eventType: detailType,
       });
       return null;
@@ -269,40 +254,11 @@ function parseEvent(messageBody: string): ParsedEvent | null {
       detail,
     };
   } catch {
-    log({
-      level: 'error',
-      message: 'Failed to parse SQS message body as JSON',
+    log.error('Failed to parse SQS message body as JSON', {
       errorCode: 'PARSE_ERROR',
     });
     return null;
   }
-}
-
-// =============================================================================
-// Duplicate Prevention
-// =============================================================================
-
-/**
- * Check if notifications have already been sent for this lead event.
- *
- * Uses notification timestamps on the lead record to detect duplicates:
- * - notifiedInternalAt: Internal notifications already sent
- * - notifiedOrgAt: Org notifications already sent
- *
- * @returns true if notifications have already been sent (duplicate)
- */
-function isAlreadyNotified(lead: LeadRecord, eventType: string): boolean {
-  if (eventType === 'lead.assigned') {
-    // For assigned events, check both internal and org timestamps
-    return !!(lead.notifiedInternalAt && lead.notifiedOrgAt);
-  }
-
-  if (eventType === 'lead.unassigned') {
-    // For unassigned events, only internal notification is sent
-    return !!lead.notifiedInternalAt;
-  }
-
-  return false;
 }
 
 // =============================================================================
@@ -315,8 +271,8 @@ function isAlreadyNotified(lead: LeadRecord, eventType: string): boolean {
  * Flow:
  * 1. Parse the event envelope
  * 2. Load the lead record
- * 3. Check for duplicate notifications
- * 4. Dispatch all applicable notifications
+ * 3. Claim notification lock (conditional write to prevent duplicates)
+ * 4. If lock acquired, dispatch all applicable notifications
  */
 async function processRecord(
   config: NotificationWorkerConfig,
@@ -334,9 +290,7 @@ async function processRecord(
   const { detailType, detail } = parsed;
   const { leadId, funnelId } = detail;
 
-  log({
-    level: 'info',
-    message: 'Processing notification event',
+  log.info('Processing notification event', {
     leadId,
     funnelId,
     eventType: detailType,
@@ -346,34 +300,22 @@ async function processRecord(
   const lead = await getLead(config, leadId, funnelId);
 
   if (!lead) {
-    log({
-      level: 'warn',
-      message: 'Lead not found for notification',
-      leadId,
-      funnelId,
-    });
+    log.warn('Lead not found for notification', { leadId, funnelId });
     // Lead may have been deleted - do not retry
     return;
   }
 
-  // Check for duplicate notifications
-  if (isAlreadyNotified(lead, detailType)) {
-    log({
-      level: 'info',
-      message: 'Notifications already sent for this event (duplicate)',
-      leadId,
-      funnelId,
-      eventType: detailType,
-    });
+  // Claim notification lock using conditional write (prevents duplicate notifications)
+  const lockClaimed = await claimNotificationLock(config, leadId, funnelId);
+  if (!lockClaimed) {
+    // Already notified - duplicate message
     return;
   }
 
-  // Dispatch all notifications
+  // Lock claimed - dispatch all notifications
   await dispatchNotifications(config, featureFlags, detail, lead);
 
-  log({
-    level: 'info',
-    message: 'Notification processing complete',
+  log.info('Notification processing complete', {
     leadId,
     funnelId,
     eventType: detailType,
@@ -396,20 +338,13 @@ async function processRecord(
 export async function handler(event: SQSEvent): Promise<SQSBatchResponse> {
   const config = loadConfig();
 
-  log({
-    level: 'info',
-    message: 'Notification worker invoked',
-    recordCount: event.Records.length,
-  });
+  log.info('Notification worker invoked', { recordCount: event.Records.length });
 
   // Check feature flag
   const featureFlags = await loadFeatureFlags(config);
 
   if (!featureFlags.enable_notification_service) {
-    log({
-      level: 'info',
-      message: 'Notification service disabled via feature flag',
-    });
+    log.info('Notification service disabled via feature flag');
 
     // Return success for all records (no-op)
     return { batchItemFailures: [] };
@@ -417,11 +352,7 @@ export async function handler(event: SQSEvent): Promise<SQSBatchResponse> {
 
   // Validate configuration
   if (!config.ddbTableName) {
-    log({
-      level: 'error',
-      message: 'DDB_TABLE_NAME not configured',
-      errorCode: 'CONFIG_ERROR',
-    });
+    log.error('DDB_TABLE_NAME not configured', { errorCode: 'CONFIG_ERROR' });
 
     // Fail all records so they are retried after config fix
     return {
@@ -439,9 +370,7 @@ export async function handler(event: SQSEvent): Promise<SQSBatchResponse> {
       await processRecord(config, featureFlags, record.body);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      log({
-        level: 'error',
-        message: 'Failed to process notification record',
+      log.error('Failed to process notification record', {
         messageId: record.messageId,
         errorCode: 'PROCESSING_ERROR',
         error: errorMessage,
@@ -453,9 +382,7 @@ export async function handler(event: SQSEvent): Promise<SQSBatchResponse> {
     }
   }
 
-  log({
-    level: 'info',
-    message: 'Notification worker completed',
+  log.info('Notification worker completed', {
     totalRecords: event.Records.length,
     failedRecords: batchItemFailures.length,
   });

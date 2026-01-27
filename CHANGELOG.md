@@ -5,11 +5,42 @@ All notable changes to the Kanjona platform will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [Unreleased] - 2026-01-27
 
-### Added
+### Security
 
-- Placeholder for upcoming features
+- Fixed cursor pagination HMAC timing attack with `timingSafeEqual`
+- HMAC-signed pagination cursors applied to all 8 database modules
+- Admin auth fail-closed when SSM allowlist unavailable
+- CORS origin allowlist (fail-closed in production)
+- OAuth state parameter protection on all three apps
+- SameSite=lax cookies for OAuth compatibility
+- Admin login error allowlist (prevents content injection)
+- Export download authorization check
+- Note length and count limits prevent DynamoDB abuse
+- Audit logs no longer store raw PII
+- Portal CSP headers added
+- Download URL validation before window.open
+
+### Changed
+
+- Upgraded Node.js to 22 across all Lambda runtimes, CI/CD, and TypeScript targets
+- Backend modularity refactor: centralized AWS clients, shared cursor module, structured logging,
+  typed error classes
+- Frontend coupling fixes: unified LeadStatus types via @kanjona/shared, consistent API clients and
+  auth patterns
+- Terraform modularity: safe `try()` index access, explicit `depends_on`, variable validation,
+  parameterized subdomains
+
+### Fixed
+
+- Admin Cognito MFA enforced (was OPTIONAL)
+- custom:role removed from client write_attributes
+- API Gateway JWT authorizer added to admin routes
+- SES/SNS permissions scoped to specific ARNs
+- Export rate limit race condition (atomic DynamoDB throttle)
+- Notification dedup race condition (conditional write lock)
+- XSS sanitization uses HTML entity encoding (not blocklist)
 
 ---
 
@@ -219,7 +250,7 @@ security hardening, 47 service verticals, and full infrastructure automation.
 | State          | Redux Toolkit                    |
 | i18n           | next-intl                        |
 | Backend        | Swift 5.10, Vapor                |
-| Admin API      | Node.js 20, TypeScript           |
+| Admin API      | Node.js 22, TypeScript           |
 | Database       | DynamoDB                         |
 | Events         | EventBridge                      |
 | Infrastructure | Terraform 1.7+                   |

@@ -12,6 +12,7 @@ import { PutCommand, GetCommand, UpdateCommand, QueryCommand } from '@aws-sdk/li
 import { getDocClient, tableName } from './client.js';
 import { ulid } from '../../lib/id.js';
 import { sha256 } from '../hash.js';
+import { signCursor, verifyCursor } from '../cursor.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -242,11 +243,11 @@ export async function listUsers(cursor?: string, limit = 25): Promise<PaginatedU
 
   let exclusiveStartKey: Record<string, unknown> | undefined;
   if (cursor) {
-    try {
-      exclusiveStartKey = JSON.parse(Buffer.from(cursor, 'base64url').toString());
-    } catch {
-      // invalid cursor
+    const verified = verifyCursor(cursor);
+    if (verified) {
+      exclusiveStartKey = verified;
     }
+    // If verifyCursor returns null (invalid/tampered), skip setting ExclusiveStartKey
   }
 
   const result = await doc.send(
@@ -265,7 +266,7 @@ export async function listUsers(cursor?: string, limit = 25): Promise<PaginatedU
   const items = (result.Items || []) as User[];
   let nextCursor: string | undefined;
   if (result.LastEvaluatedKey) {
-    nextCursor = Buffer.from(JSON.stringify(result.LastEvaluatedKey)).toString('base64url');
+    nextCursor = signCursor(result.LastEvaluatedKey as Record<string, unknown>);
   }
 
   return { items, nextCursor };

@@ -5,14 +5,8 @@
  * Supports CSV, XLSX, PDF, DOCX, and JSON formats.
  */
 
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import {
-  DynamoDBDocumentClient,
-  PutCommand,
-  GetCommand,
-  UpdateCommand,
-} from '@aws-sdk/lib-dynamodb';
-import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import { PutCommand, GetCommand, UpdateCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
+import { PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { v4 as uuidv4 } from 'uuid';
 import type {
@@ -24,12 +18,7 @@ import type {
   Lead,
 } from '../types.js';
 import { queryLeads } from './leads.js';
-
-const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({}), {
-  marshallOptions: { removeUndefinedValues: true },
-});
-
-const s3 = new S3Client({});
+import { getDocClient, getS3Client } from '../../lib/clients.js';
 
 // Export expiration: 24 hours
 const EXPORT_EXPIRATION_HOURS = 24;
@@ -43,6 +32,7 @@ export async function createExportJob(
   user: AdminUser,
   request: ExportRequest
 ): Promise<ExportJob> {
+  const ddb = getDocClient();
   const jobId = uuidv4();
   const timestamp = new Date().toISOString();
   const expiresAt = new Date(Date.now() + EXPORT_EXPIRATION_HOURS * 60 * 60 * 1000).toISOString();
@@ -95,19 +85,9 @@ export async function getExportJob(
   userId: string,
   jobId: string
 ): Promise<ExportJob | null> {
-  // Need to scan for job since we don't know the exact timestamp
-  const result = await ddb.send(
-    new GetCommand({
-      TableName: config.exportJobsTable,
-      Key: {
-        pk: `USER#${userId}`,
-        sk: `EXPORT#${jobId}`, // This won't work directly, need to query
-      },
-    })
-  );
+  const ddb = getDocClient();
 
-  // Actually need to query with begins_with
-  const { QueryCommand } = await import('@aws-sdk/lib-dynamodb');
+  // Query with begins_with to find the job regardless of timestamp in sort key
   const queryResult = await ddb.send(
     new QueryCommand({
       TableName: config.exportJobsTable,
@@ -135,6 +115,7 @@ async function updateJobStatus(
   s3Key?: string,
   recordCount?: number
 ): Promise<void> {
+  const ddb = getDocClient();
   const updates: string[] = ['#status = :status'];
   const names: Record<string, string> = { '#status': 'status' };
   const values: Record<string, unknown> = { ':status': status };
@@ -181,6 +162,8 @@ async function processExportJob(
   job: ExportJob,
   request: ExportRequest
 ): Promise<void> {
+  const s3 = getS3Client();
+
   // Update status to processing
   await updateJobStatus(config, job, 'processing');
 
@@ -395,6 +378,7 @@ export async function getDownloadUrl(config: AdminConfig, job: ExportJob): Promi
     throw new Error('Export not ready for download');
   }
 
+  const s3 = getS3Client();
   const command = new GetObjectCommand({
     Bucket: config.exportsBucket,
     Key: job.s3Key,
