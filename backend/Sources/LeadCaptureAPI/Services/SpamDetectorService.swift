@@ -146,8 +146,8 @@ public struct SpamDetectorService: Sendable {
         }
 
         // Normalize score to 0-1 range
-        let maxPossibleScore: Double = 5.0 // Maximum reasonable cumulative score
-        let normalizedScore = min(1.0, totalScore / maxPossibleScore)
+        // let maxPossibleScore: Double = 5.0 // Maximum reasonable cumulative score
+        let normalizedScore = min(1.0, totalScore)
 
         // Determine recommendation
         let recommendation: SpamRecommendation

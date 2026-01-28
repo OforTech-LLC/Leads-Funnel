@@ -18,6 +18,9 @@ let package = Package(
 
         // Crypto
         .package(url: "https://github.com/apple/swift-crypto.git", from: "3.0.0"),
+
+        // Swift Testing
+        .package(url: "https://github.com/apple/swift-testing.git", from: "0.6.0"),
     ],
     targets: [
         // Main API target
@@ -46,13 +49,17 @@ let package = Package(
             dependencies: [
                 "LeadCaptureAPI",
                 "Shared",
-                .product(name: "XCTVapor", package: "vapor")
+                .product(name: "XCTVapor", package: "vapor"),
+                .product(name: "Testing", package: "swift-testing")
             ],
             path: "Tests/LeadCaptureAPITests"
         ),
         .testTarget(
             name: "SharedTests",
-            dependencies: ["Shared"],
+            dependencies: [
+                "Shared",
+                .product(name: "Testing", package: "swift-testing")
+            ],
             path: "Tests/SharedTests"
         )
     ]

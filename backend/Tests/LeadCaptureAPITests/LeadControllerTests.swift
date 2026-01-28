@@ -57,12 +57,14 @@ struct LeadControllerTests {
         let healthController = HealthController()
         try app.register(collection: healthController)
 
-        try await app.test(.GET, "/health") { response in
-            #expect(response.status == .ok)
+        try await XCTVaporContext.$emitWarningIfCurrentTestInfoIsAvailable.withValue(false) {
+            try await app.test(.GET, "/health") { response in
+                #expect(response.status == .ok)
 
-            let body = try response.content.decode(HealthResponse.self)
-            #expect(body.status == .healthy)
-            #expect(!body.version.isEmpty)
+                let body = try response.content.decode(HealthResponse.self)
+                #expect(body.status == .healthy)
+                #expect(!body.version.isEmpty)
+            }
         }
     }
 
@@ -74,8 +76,10 @@ struct LeadControllerTests {
         let healthController = HealthController()
         try app.register(collection: healthController)
 
-        try await app.test(.GET, "/health/live") { response in
-            #expect(response.status == .ok)
+        try await XCTVaporContext.$emitWarningIfCurrentTestInfoIsAvailable.withValue(false) {
+            try await app.test(.GET, "/health/live") { response in
+                #expect(response.status == .ok)
+            }
         }
     }
 
@@ -87,10 +91,12 @@ struct LeadControllerTests {
         let healthController = HealthController()
         try app.register(collection: healthController)
 
-        try await app.test(.GET, "/health/ready") { response in
-            // Should return 200 if configured, 503 if not
-            let validStatuses: [HTTPStatus] = [.ok, .serviceUnavailable]
-            #expect(validStatuses.contains(response.status))
+        try await XCTVaporContext.$emitWarningIfCurrentTestInfoIsAvailable.withValue(false) {
+            try await app.test(.GET, "/health/ready") { response in
+                // Should return 200 if configured, 503 if not
+                let validStatuses: [HTTPStatus] = [.ok, .serviceUnavailable]
+                #expect(validStatuses.contains(response.status))
+            }
         }
     }
 

@@ -318,11 +318,12 @@ Infrastructure (Terraform)
 
 ---
 
-## 9. Testing Patterns
+### Testing Patterns
 
 ### Swift Backend
 
-- XCTVapor for controller tests
+- **Swift Testing** for all unit tests
+- XCTVapor for controller tests (bridged with Swift Testing)
 - Unit tests per service: ValidationServiceTests, RateLimiterServiceTests
 - Model tests: LeadModelTests
 
