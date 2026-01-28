@@ -12,7 +12,7 @@
 const COGNITO_DOMAIN = process.env.NEXT_PUBLIC_COGNITO_DOMAIN || '';
 const COGNITO_CLIENT_ID = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID || '';
 const COGNITO_REDIRECT_URI =
-  process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI || 'http://localhost:3001/api/auth/callback';
+  process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI || 'http://localhost:3001/callback';
 const COGNITO_LOGOUT_URI =
   process.env.NEXT_PUBLIC_COGNITO_LOGOUT_URI || 'http://localhost:3001/login';
 
@@ -146,28 +146,51 @@ export interface TokenResponse {
 }
 
 /**
- * Exchange authorization code for tokens via Cognito token endpoint.
+ * Exchange authorization code for tokens via Cognito token endpoint,
+ * then store tokens in httpOnly cookie via backend API.
+ * Returns true on success, false on failure.
  */
-export async function exchangeCodeForTokens(code: string): Promise<TokenResponse> {
-  const body = new URLSearchParams({
-    grant_type: 'authorization_code',
-    client_id: COGNITO_CLIENT_ID,
-    code,
-    redirect_uri: COGNITO_REDIRECT_URI,
-  });
+export async function exchangeCodeForTokens(code: string): Promise<boolean> {
+  try {
+    // Step 1: Exchange code for tokens with Cognito
+    const body = new URLSearchParams({
+      grant_type: 'authorization_code',
+      client_id: COGNITO_CLIENT_ID,
+      code,
+      redirect_uri: COGNITO_REDIRECT_URI,
+    });
 
-  const response = await fetch(`${COGNITO_DOMAIN}/oauth2/token`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: body.toString(),
-  });
+    const tokenResponse = await fetch(`${COGNITO_DOMAIN}/oauth2/token`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: body.toString(),
+    });
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Token exchange failed: ${response.status} - ${errorText}`);
+    if (!tokenResponse.ok) {
+      console.error('Token exchange failed:', await tokenResponse.text());
+      return false;
+    }
+
+    const tokens: TokenResponse = await tokenResponse.json();
+
+    // Step 2: Store tokens in httpOnly cookie via backend API
+    const storeResponse = await fetch(API_ENDPOINTS.AUTH, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        accessToken: tokens.access_token,
+        idToken: tokens.id_token,
+        refreshToken: tokens.refresh_token || '',
+        expiresIn: tokens.expires_in,
+      }),
+    });
+
+    return storeResponse.ok;
+  } catch (error) {
+    console.error('Token exchange error:', error);
+    return false;
   }
-
-  return response.json();
 }
 
 // ---------------------------------------------------------------------------

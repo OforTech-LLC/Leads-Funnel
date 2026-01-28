@@ -144,10 +144,11 @@ export async function exchangeCodeForTokens(code: string): Promise<AuthTokens> {
   // Security: CSRF token prevents cross-site request to store tokens
   const csrfToken = await csrfTokenManager.getToken();
 
-  // Store tokens in httpOnly cookie via API route
+  // Store tokens in httpOnly cookie via backend API
   // Security: httpOnly prevents XSS attacks from stealing tokens
   // Security: credentials: 'include' ensures cookies are sent/received
-  const cookieResponse = await fetch('/api/admin/auth', {
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+  const cookieResponse = await fetch(`${apiUrl}/auth/admin`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -187,7 +188,8 @@ export async function exchangeCodeForTokens(code: string): Promise<AuthTokens> {
 export async function refreshTokens(): Promise<AuthTokens | null> {
   try {
     // Check current auth status from server
-    const statusResponse = await fetch('/api/admin/auth', {
+    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+    const statusResponse = await fetch(`${apiUrl}/auth/admin`, {
       method: 'GET',
       credentials: 'include',
     });
@@ -199,7 +201,7 @@ export async function refreshTokens(): Promise<AuthTokens | null> {
     }
 
     // Request token refresh - server reads refresh token from httpOnly cookie
-    const tokenResponse = await fetch('/api/admin/auth/refresh', {
+    const tokenResponse = await fetch(`${apiUrl}/auth/admin/refresh`, {
       method: 'POST',
       credentials: 'include',
     });
@@ -250,7 +252,8 @@ export async function checkAuthStatus(): Promise<{
   }
 
   try {
-    const response = await fetch('/api/admin/auth', {
+    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+    const response = await fetch(`${apiUrl}/auth/admin`, {
       method: 'GET',
       credentials: 'include',
     });
@@ -292,7 +295,8 @@ export async function isAuthenticated(): Promise<boolean> {
  */
 export async function getAccessToken(): Promise<string | null> {
   try {
-    const response = await fetch('/api/admin/auth/token', {
+    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+    const response = await fetch(`${apiUrl}/auth/admin/token`, {
       method: 'GET',
       credentials: 'include',
     });
@@ -323,7 +327,8 @@ export async function getAccessToken(): Promise<string | null> {
  */
 export async function getCurrentUser(): Promise<AdminUser | null> {
   try {
-    const response = await fetch('/api/admin/auth/user', {
+    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+    const response = await fetch(`${apiUrl}/auth/admin/user`, {
       method: 'GET',
       credentials: 'include',
     });
@@ -359,8 +364,9 @@ export async function clearAuth(): Promise<void> {
   try {
     // Security: CSRF token required even for logout to prevent CSRF logout attacks
     const csrfToken = await csrfTokenManager.getToken();
+    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
 
-    await fetch('/api/admin/auth', {
+    await fetch(`${apiUrl}/auth/admin`, {
       method: 'DELETE',
       credentials: 'include',
       headers: {

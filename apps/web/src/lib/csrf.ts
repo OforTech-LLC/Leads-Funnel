@@ -252,13 +252,14 @@ export class CSRFTokenManager {
   /**
    * Fetch a new token from the server
    *
-   * Security: Uses same-origin credentials to ensure the request
-   * comes from the authenticated session.
+   * Security: Uses credentials include to ensure cookies are sent
+   * to the backend API for the double-submit pattern.
    */
   private async fetchToken(): Promise<string> {
-    const response = await fetch('/api/csrf', {
+    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+    const response = await fetch(`${apiUrl}/csrf`, {
       method: 'GET',
-      credentials: 'same-origin',
+      credentials: 'include',
     });
 
     if (!response.ok) {

@@ -38,8 +38,11 @@ export type AdminRole = (typeof ADMIN_ROLES)[keyof typeof ADMIN_ROLES];
 // API Endpoints
 // ---------------------------------------------------------------------------
 
+// Backend API base URL for auth endpoints
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+
 export const API_ENDPOINTS = {
-  AUTH: '/api/auth',
+  AUTH: `${API_BASE}/auth/admin`,
   LEADS: '/api/admin/leads',
   ORGS: '/api/admin/orgs',
   USERS: '/api/admin/users',

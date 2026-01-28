@@ -119,8 +119,9 @@ const cacheHeaders = [
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // SSR mode - these apps have API routes and middleware that require a server
-  // Deploy via containerized approach (Fargate, Lambda@Edge) rather than static S3
+  // Static export for S3/CloudFront deployment
+  // API routes have been moved to the Swift backend
+  output: 'export',
 
   // Enable strict mode for React
   reactStrictMode: true,
@@ -128,10 +129,11 @@ const nextConfig = {
   // Trailing slashes for cleaner URLs
   trailingSlash: true,
 
-  // Image optimization settings - ENABLED for performance
+  // Image settings for static export
+  // Note: Image optimization requires a server, so we use unoptimized for static export
   images: {
-    // Allow images from these remote sources
-    // Security: Restrict amazonaws.com to specific kanjona bucket prefix
+    unoptimized: true,
+    // Allow images from these remote sources (for development/reference)
     remotePatterns: [
       {
         protocol: 'https',
@@ -154,14 +156,6 @@ const nextConfig = {
         pathname: '/**',
       },
     ],
-    // Optimize images with modern formats
-    formats: ['image/avif', 'image/webp'],
-    // Device sizes for responsive images
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
-    // Image sizes for thumbnails
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    // Minimize layout shift
-    minimumCacheTTL: 31536000,
   },
 
   // Security and Cache headers
@@ -202,13 +196,6 @@ const nextConfig = {
     NEXT_PUBLIC_ROOT_DOMAIN: process.env.NEXT_PUBLIC_ROOT_DOMAIN,
   },
 
-  // Experimental features for enhanced security
-  experimental: {
-    // Enable server actions with stricter CSP
-    serverActions: {
-      bodySizeLimit: '1mb',
-    },
-  },
 };
 
 export default withNextIntl(nextConfig);

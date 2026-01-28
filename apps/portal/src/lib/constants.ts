@@ -11,7 +11,10 @@ import type { LeadStatus } from '@/lib/types';
 
 export const AUTH_COOKIE_NAME = 'portal_token';
 
-export const AUTH_ENDPOINT = '/api/auth';
+// Backend API base URL for auth endpoints
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+
+export const AUTH_ENDPOINT = `${API_BASE}/auth/portal`;
 
 // ── Storage Keys (localStorage/sessionStorage) ──
 

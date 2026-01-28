@@ -1,9 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // SSR mode for server-side features (auth)
+  // Static export for S3/CloudFront deployment
+  // Auth has been moved to the Swift backend
+  output: 'export',
 
+  // Image settings for static export
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
@@ -16,7 +20,6 @@ const nextConfig = {
         pathname: '/kanjona-*/**',
       },
     ],
-    formats: ['image/avif', 'image/webp'],
   },
 
   async headers() {

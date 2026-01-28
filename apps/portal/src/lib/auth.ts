@@ -133,20 +133,49 @@ export function getLogoutUrl(): string {
 }
 
 /**
- * Exchange authorization code for tokens via our API route.
- * The API route handles the Cognito token exchange and sets httpOnly cookies.
- * Security: redirect_uri is now determined server-side, not sent from client.
+ * Exchange authorization code for tokens via Cognito token endpoint,
+ * then store tokens in httpOnly cookie via backend API.
+ * Returns true on success, false on failure.
  */
 export async function exchangeCodeForTokens(code: string): Promise<boolean> {
   try {
-    const response = await fetch(AUTH_ENDPOINT, {
+    // Step 1: Exchange code for tokens with Cognito
+    const body = new URLSearchParams({
+      grant_type: 'authorization_code',
+      client_id: CLIENT_ID,
+      code,
+      redirect_uri: REDIRECT_URI,
+    });
+
+    const tokenResponse = await fetch(`${COGNITO_DOMAIN}/oauth2/token`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: body.toString(),
+    });
+
+    if (!tokenResponse.ok) {
+      console.error('Token exchange failed:', await tokenResponse.text());
+      return false;
+    }
+
+    const tokens = await tokenResponse.json();
+
+    // Step 2: Store tokens in httpOnly cookie via backend API
+    const storeResponse = await fetch(AUTH_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ code }),
+      body: JSON.stringify({
+        accessToken: tokens.access_token,
+        idToken: tokens.id_token,
+        refreshToken: tokens.refresh_token || '',
+        expiresIn: tokens.expires_in,
+      }),
     });
-    return response.ok;
-  } catch {
+
+    return storeResponse.ok;
+  } catch (error) {
+    console.error('Token exchange error:', error);
     return false;
   }
 }

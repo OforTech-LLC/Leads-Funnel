@@ -120,6 +120,14 @@ enum LeadCaptureApp {
         )
         try app.register(collection: voiceController)
 
+        // Register CSRF Controller
+        let csrfController = CSRFController(config: AppConfig.shared)
+        try app.register(collection: csrfController)
+
+        // Register Auth Controller
+        let authController = AuthController(config: AppConfig.shared)
+        try app.register(collection: authController)
+
         // Root endpoint
         app.get { req -> Response in
             let response = Response(status: .ok)

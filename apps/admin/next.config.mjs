@@ -1,7 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // SSR mode for server-side features (auth, API routes)
+  // Static export for S3/CloudFront deployment
+  // Auth and API routes have been moved to the Swift backend
+  output: 'export',
+
+  // Disable image optimization for static export
+  images: {
+    unoptimized: true,
+  },
 
   env: {
     NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
