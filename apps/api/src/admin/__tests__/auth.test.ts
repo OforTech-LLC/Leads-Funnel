@@ -17,14 +17,15 @@ import {
 } from '../../__tests__/helpers.js';
 import type { AdminConfig, AdminUser } from '../types.js';
 
-// Mock the SSM client
+// Mock the SSM client — factory must be self-contained (vi.mock is hoisted)
 vi.mock('@aws-sdk/client-ssm', () => {
-  const mockSSM = createMockSSMClient();
   return {
     SSMClient: vi.fn(() => ({
-      send: mockSSM.send,
+      send: vi.fn().mockResolvedValue({
+        Parameter: { Value: 'true' },
+      }),
     })),
-    GetParameterCommand: vi.fn((input) => ({ input })),
+    GetParameterCommand: vi.fn((input: unknown) => ({ input })),
   };
 });
 

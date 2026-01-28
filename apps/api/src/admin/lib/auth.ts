@@ -340,7 +340,8 @@ export function extractClientIp(
   if (xff) {
     // Security: Take the first IP (original client)
     // Format: "client, proxy1, proxy2"
-    return xff.split(',')[0].trim();
+    const firstIp = xff.split(',')[0].trim();
+    if (firstIp) return firstIp;
   }
 
   // Fall back to source IP from API Gateway request context

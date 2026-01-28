@@ -31,7 +31,7 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  SWIFT_VERSION: '5.10'
+  SWIFT_VERSION: '6.2'
 
 jobs:
   test:
