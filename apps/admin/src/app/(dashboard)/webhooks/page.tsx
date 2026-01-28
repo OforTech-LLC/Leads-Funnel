@@ -28,6 +28,51 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import RequireRole from '@/components/RequireRole';
 import { useToast } from '@/components/Toast';
 import { formatRelativeTime } from '@/lib/utils';
+import { ADMIN_ROLES } from '@/lib/constants';
+
+// ---------------------------------------------------------------------------
+// WebhookSecretDisplay
+// ---------------------------------------------------------------------------
+
+function WebhookSecretDisplay({ secret }: { secret: string }) {
+  const [visible, setVisible] = useState(false);
+  const toast = useToast();
+
+  const handleCopy = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(secret);
+      toast.success('Secret copied to clipboard');
+    } catch {
+      toast.error('Failed to copy secret');
+    }
+  }, [secret, toast]);
+
+  return (
+    <div className="flex items-center gap-2">
+      <code className="font-mono text-xs flex-1 min-w-0 truncate">
+        {visible
+          ? secret
+          : '\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022'}
+      </code>
+      <button
+        type="button"
+        onClick={() => setVisible((v) => !v)}
+        aria-label={visible ? 'Hide webhook secret' : 'Show webhook secret'}
+        className="px-2 py-1 text-xs border border-[var(--border-color)] rounded hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-secondary)] shrink-0"
+      >
+        {visible ? 'Hide' : 'Show'}
+      </button>
+      <button
+        type="button"
+        onClick={handleCopy}
+        aria-label="Copy webhook secret to clipboard"
+        className="px-2 py-1 text-xs border border-[var(--border-color)] rounded hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-secondary)] shrink-0"
+      >
+        Copy
+      </button>
+    </div>
+  );
+}
 
 // ---------------------------------------------------------------------------
 // WebhookCard
@@ -84,7 +129,7 @@ function WebhookCard({
           >
             Deliveries
           </button>
-          <RequireRole roles={['ADMIN']}>
+          <RequireRole roles={[ADMIN_ROLES.ADMIN]}>
             <button
               onClick={() => onEdit(webhook)}
               className="px-3 py-1.5 text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400"
@@ -322,7 +367,7 @@ export default function WebhooksPage() {
             Manage webhook endpoints for event notifications
           </p>
         </div>
-        <RequireRole roles={['ADMIN']}>
+        <RequireRole roles={[ADMIN_ROLES.ADMIN]}>
           <button
             onClick={() => setShowCreateModal(true)}
             className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
@@ -494,10 +539,10 @@ export default function WebhooksPage() {
             </div>
 
             <div className="bg-[var(--bg-tertiary)] rounded-md p-3">
-              <p className="text-xs text-[var(--text-secondary)]">
-                <span className="font-medium">Secret:</span>{' '}
-                <code className="font-mono">{editingWebhook.secret}</code>
+              <p className="text-xs text-[var(--text-secondary)] mb-1">
+                <span className="font-medium">Secret:</span>
               </p>
+              <WebhookSecretDisplay secret={editingWebhook.secret} />
             </div>
 
             <div className="flex justify-end gap-3 pt-4">

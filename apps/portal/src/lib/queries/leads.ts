@@ -18,6 +18,7 @@ import type {
   DashboardMetrics,
   Note,
 } from '@/lib/types';
+import { API_ENDPOINTS } from '@/lib/constants';
 
 const LEADS_PAGE_SIZE = 25;
 
@@ -47,7 +48,7 @@ export function useLeads(filters: LeadFilters = {}) {
       if (filters.dateFrom) params.set('dateFrom', filters.dateFrom);
       if (filters.dateTo) params.set('dateTo', filters.dateTo);
 
-      return api.get<PaginatedResponse<Lead>>(`/api/v1/portal/leads?${params.toString()}`);
+      return api.get<PaginatedResponse<Lead>>(`${API_ENDPOINTS.LEADS}?${params.toString()}`);
     },
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
     initialPageParam: undefined as string | undefined,
@@ -60,7 +61,7 @@ export function useLeads(filters: LeadFilters = {}) {
 export function useLead(funnelId: string, leadId: string) {
   return useQuery<Lead>({
     queryKey: leadKeys.detail(funnelId, leadId),
-    queryFn: () => api.get<Lead>(`/api/v1/portal/funnels/${funnelId}/leads/${leadId}`),
+    queryFn: () => api.get<Lead>(API_ENDPOINTS.LEAD_DETAIL(funnelId, leadId)),
     staleTime: 15_000,
     enabled: !!funnelId && !!leadId,
   });
@@ -71,7 +72,7 @@ export function useLead(funnelId: string, leadId: string) {
 export function useDashboardMetrics() {
   return useQuery<DashboardMetrics>({
     queryKey: leadKeys.dashboard(),
-    queryFn: () => api.get<DashboardMetrics>('/api/v1/portal/dashboard'),
+    queryFn: () => api.get<DashboardMetrics>(API_ENDPOINTS.DASHBOARD),
     staleTime: 60_000,
   });
 }
@@ -91,7 +92,7 @@ export function useUpdateLeadStatus() {
       leadId: string;
       status: LeadStatus;
     }) => {
-      return api.patch<Lead>(`/api/v1/portal/funnels/${funnelId}/leads/${leadId}/status`, {
+      return api.patch<Lead>(API_ENDPOINTS.LEAD_STATUS(funnelId, leadId), {
         status,
       });
     },
@@ -170,7 +171,7 @@ export function useAddNote() {
       leadId: string;
       content: string;
     }) => {
-      return api.post<Note>(`/api/v1/portal/funnels/${funnelId}/leads/${leadId}/notes`, {
+      return api.post<Note>(API_ENDPOINTS.LEAD_NOTES(funnelId, leadId), {
         content,
       });
     },
@@ -197,7 +198,7 @@ export function useAssignLead() {
       leadId: string;
       assignedTo: string | null;
     }) => {
-      return api.patch<Lead>(`/api/v1/portal/funnels/${funnelId}/leads/${leadId}/assign`, {
+      return api.patch<Lead>(API_ENDPOINTS.LEAD_ASSIGN(funnelId, leadId), {
         assignedTo,
       });
     },
@@ -244,7 +245,7 @@ export function useBulkUpdateStatus() {
       leads: { leadId: string; funnelId: string }[];
       status: LeadStatus;
     }) => {
-      return api.post<void>('/api/v1/portal/leads/bulk/status', {
+      return api.post<void>(API_ENDPOINTS.LEADS_BULK_STATUS, {
         leads,
         status,
       });
@@ -268,7 +269,7 @@ export function useBulkAssignLeads() {
       leads: { leadId: string; funnelId: string }[];
       assignedTo: string;
     }) => {
-      return api.post<void>('/api/v1/portal/leads/bulk/assign', {
+      return api.post<void>(API_ENDPOINTS.LEADS_BULK_ASSIGN, {
         leads,
         assignedTo,
       });

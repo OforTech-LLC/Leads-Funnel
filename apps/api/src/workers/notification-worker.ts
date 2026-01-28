@@ -38,6 +38,7 @@ import type {
 import { getDocClient, getSsmClient } from '../lib/clients.js';
 import { createLogger } from '../lib/logging.js';
 import { dispatchNotifications } from '../lib/notifications/dispatcher.js';
+import { DB_PREFIXES, GSI_KEYS } from '../lib/constants.js';
 
 const log = createLogger('notification-worker');
 
@@ -147,8 +148,8 @@ async function getLead(
       new GetCommand({
         TableName: config.ddbTableName,
         Key: {
-          pk: `LEAD#${leadId}`,
-          sk: `FUNNEL#${funnelId}`,
+          pk: `${DB_PREFIXES.LEAD}${leadId}`,
+          sk: `${GSI_KEYS.FUNNEL}${funnelId}`,
         },
       })
     );
@@ -187,8 +188,8 @@ async function claimNotificationLock(
       new UpdateCommand({
         TableName: config.ddbTableName,
         Key: {
-          pk: `LEAD#${leadId}`,
-          sk: `FUNNEL#${funnelId}`,
+          pk: `${DB_PREFIXES.LEAD}${leadId}`,
+          sk: `${GSI_KEYS.FUNNEL}${funnelId}`,
         },
         UpdateExpression: 'SET notifiedAt = :now',
         ConditionExpression: 'attribute_not_exists(notifiedAt)',

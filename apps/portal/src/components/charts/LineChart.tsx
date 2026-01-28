@@ -281,6 +281,31 @@ export default function LineChart({ data, series, height = 280, className = '' }
           ))}
         </div>
       )}
+
+      {/* Accessible data table (visually hidden) */}
+      <div className="sr-only">
+        <table>
+          <caption>Lead trends over time</caption>
+          <thead>
+            <tr>
+              <th>Date</th>
+              {series.map((s) => (
+                <th key={s.name}>{s.name}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((d) => (
+              <tr key={d.label}>
+                <td>{d.label}</td>
+                {d.values.map((v, i) => (
+                  <td key={i}>{v}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

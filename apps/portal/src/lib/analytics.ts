@@ -8,6 +8,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import type { LeadStatus } from '@/lib/types';
+import { API_ENDPOINTS } from '@/lib/constants';
 
 // ── Types ────────────────────────────────────
 
@@ -105,7 +106,9 @@ export function useAnalyticsOverview(dateRange: DateRange) {
   return useQuery<AnalyticsOverview>({
     queryKey: analyticsKeys.overview(dateRange),
     queryFn: () =>
-      api.get<AnalyticsOverview>(`/api/v1/portal/analytics/overview?${buildDateParams(dateRange)}`),
+      api.get<AnalyticsOverview>(
+        `${API_ENDPOINTS.ANALYTICS_OVERVIEW}?${buildDateParams(dateRange)}`
+      ),
     staleTime: 5 * 60_000,
   });
 }
@@ -117,7 +120,7 @@ export function useLeadTrends(dateRange: DateRange) {
     queryKey: analyticsKeys.trends(dateRange),
     queryFn: async () => {
       const result = await api.get<{ data: LeadTrendPoint[] }>(
-        `/api/v1/portal/analytics/trends?${buildDateParams(dateRange)}`
+        `${API_ENDPOINTS.ANALYTICS_TRENDS}?${buildDateParams(dateRange)}`
       );
       return result.data;
     },
@@ -132,7 +135,7 @@ export function useConversionFunnel(dateRange: DateRange) {
     queryKey: analyticsKeys.funnel(dateRange),
     queryFn: async () => {
       const result = await api.get<{ data: ConversionFunnelStage[] }>(
-        `/api/v1/portal/analytics/funnel?${buildDateParams(dateRange)}`
+        `${API_ENDPOINTS.ANALYTICS_FUNNEL}?${buildDateParams(dateRange)}`
       );
       return result.data;
     },
@@ -147,7 +150,7 @@ export function useLeadsByFunnel(dateRange: DateRange) {
     queryKey: analyticsKeys.byFunnel(dateRange),
     queryFn: async () => {
       const result = await api.get<{ data: FunnelBreakdown[] }>(
-        `/api/v1/portal/analytics/by-funnel?${buildDateParams(dateRange)}`
+        `${API_ENDPOINTS.ANALYTICS_BY_FUNNEL}?${buildDateParams(dateRange)}`
       );
       return result.data;
     },
@@ -162,7 +165,7 @@ export function useRecentActivity() {
     queryKey: analyticsKeys.activity(),
     queryFn: async () => {
       const result = await api.get<{ data: ActivityItem[] }>(
-        '/api/v1/portal/analytics/activity?limit=10'
+        `${API_ENDPOINTS.ANALYTICS_ACTIVITY}?limit=10`
       );
       return result.data;
     },

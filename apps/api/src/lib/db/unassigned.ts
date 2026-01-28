@@ -7,6 +7,7 @@
 
 import { PutCommand, QueryCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
 import { getDocClient, tableName } from './client.js';
+import { DB_PREFIXES } from '../constants.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -36,7 +37,7 @@ export async function addUnassigned(
   const now = new Date().toISOString();
 
   const entry: UnassignedEntry = {
-    pk: `UNASSIGNED#${funnelId}`,
+    pk: `${DB_PREFIXES.UNASSIGNED}${funnelId}`,
     sk: `${now}#${leadId}`,
     funnelId,
     leadId,
@@ -80,7 +81,7 @@ export async function listUnassigned(
     new QueryCommand({
       TableName: tableName(),
       KeyConditionExpression: 'pk = :pk',
-      ExpressionAttributeValues: { ':pk': `UNASSIGNED#${funnelId}` },
+      ExpressionAttributeValues: { ':pk': `${DB_PREFIXES.UNASSIGNED}${funnelId}` },
       Limit: limit,
       ScanIndexForward: false,
       ExclusiveStartKey: exclusiveStartKey,
@@ -104,7 +105,7 @@ export async function removeUnassigned(funnelId: string, sk: string): Promise<vo
   await doc.send(
     new DeleteCommand({
       TableName: tableName(),
-      Key: { pk: `UNASSIGNED#${funnelId}`, sk },
+      Key: { pk: `${DB_PREFIXES.UNASSIGNED}${funnelId}`, sk },
     })
   );
 }

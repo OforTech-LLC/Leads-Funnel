@@ -21,6 +21,7 @@ import { QueryCommand } from '@aws-sdk/lib-dynamodb';
 import type { PreTokenPortalConfig, UserRecord, MembershipRecord } from './types.js';
 import { getDocClient } from '../lib/clients.js';
 import { createLogger } from '../lib/logging.js';
+import { GSI_INDEX_NAMES } from '../lib/constants.js';
 
 const log = createLogger('pre-token-portal');
 
@@ -56,7 +57,7 @@ async function getUserByCognitoSub(
     const result = await client.send(
       new QueryCommand({
         TableName: config.ddbTableName,
-        IndexName: 'GSI2',
+        IndexName: GSI_INDEX_NAMES.GSI2,
         KeyConditionExpression: 'gsi2pk = :pk AND gsi2sk = :sk',
         ExpressionAttributeValues: {
           ':pk': `COGNITO#${cognitoSub}`,
@@ -99,7 +100,7 @@ async function getUserMemberships(
     const result = await client.send(
       new QueryCommand({
         TableName: config.ddbTableName,
-        IndexName: 'GSI1',
+        IndexName: GSI_INDEX_NAMES.GSI1,
         KeyConditionExpression: 'gsi1pk = :pk AND begins_with(gsi1sk, :skPrefix)',
         ExpressionAttributeValues: {
           ':pk': `USER#${userId}#MEMBERSHIPS`,

@@ -44,6 +44,17 @@ export interface LeadRecord {
   ipHash: string;
   gsi1pk: string;
   gsi1sk: string;
+  analysis?: LeadAnalysis;
+}
+
+/**
+ * AI Analysis result
+ */
+export interface LeadAnalysis {
+  urgency: 'high' | 'medium' | 'low';
+  intent: 'info_gathering' | 'ready_to_buy' | 'complaint' | 'other';
+  language: string;
+  summary: string;
 }
 
 /**

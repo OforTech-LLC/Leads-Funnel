@@ -10,6 +10,7 @@ import { PutCommand, GetCommand, UpdateCommand, QueryCommand } from '@aws-sdk/li
 import { getDocClient, tableName } from './client.js';
 import { ulid } from '../../lib/id.js';
 import { signCursor, verifyCursor } from '../cursor.js';
+import { DB_PREFIXES, DB_SORT_KEYS, GSI_KEYS, GSI_INDEX_NAMES } from '../constants.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -61,8 +62,8 @@ export async function createExport(input: CreateExportInput): Promise<ExportJob>
   const ttl = Math.floor(Date.now() / 1000) + EXPORT_EXPIRY_HOURS * 3600;
 
   const job: ExportJob = {
-    pk: `EXPORT#${exportId}`,
-    sk: 'META',
+    pk: `${DB_PREFIXES.EXPORT}${exportId}`,
+    sk: DB_SORT_KEYS.META,
     exportId,
     requestedBy: input.requestedBy,
     funnelId: input.funnelId,
@@ -73,8 +74,8 @@ export async function createExport(input: CreateExportInput): Promise<ExportJob>
     createdAt: now,
     expiresAt,
     ttl,
-    gsi1pk: 'EXPORTS',
-    gsi1sk: `CREATED#${now}`,
+    gsi1pk: GSI_KEYS.EXPORTS_LIST,
+    gsi1sk: `${GSI_KEYS.CREATED}${now}`,
   };
 
   await doc.send(
@@ -92,7 +93,7 @@ export async function getExport(exportId: string): Promise<ExportJob | null> {
   const result = await doc.send(
     new GetCommand({
       TableName: tableName(),
-      Key: { pk: `EXPORT#${exportId}`, sk: 'META' },
+      Key: { pk: `${DB_PREFIXES.EXPORT}${exportId}`, sk: DB_SORT_KEYS.META },
     })
   );
   return (result.Item as ExportJob) || null;
@@ -146,7 +147,7 @@ export async function updateExport(
   const result = await doc.send(
     new UpdateCommand({
       TableName: tableName(),
-      Key: { pk: `EXPORT#${exportId}`, sk: 'META' },
+      Key: { pk: `${DB_PREFIXES.EXPORT}${exportId}`, sk: DB_SORT_KEYS.META },
       UpdateExpression: `SET ${parts.join(', ')}`,
       ExpressionAttributeNames: Object.keys(names).length > 0 ? names : undefined,
       ExpressionAttributeValues: values,
@@ -178,9 +179,9 @@ export async function listExports(cursor?: string, limit = 25): Promise<Paginate
   const result = await doc.send(
     new QueryCommand({
       TableName: tableName(),
-      IndexName: 'GSI1',
+      IndexName: GSI_INDEX_NAMES.GSI1,
       KeyConditionExpression: 'gsi1pk = :pk',
-      ExpressionAttributeValues: { ':pk': 'EXPORTS' },
+      ExpressionAttributeValues: { ':pk': GSI_KEYS.EXPORTS_LIST },
       Limit: limit,
       ScanIndexForward: false,
       ExclusiveStartKey: exclusiveStartKey,

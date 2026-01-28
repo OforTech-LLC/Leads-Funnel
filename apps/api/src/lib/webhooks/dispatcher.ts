@@ -6,15 +6,17 @@
  * - 5-second timeout
  * - Delivery attempt recording in DynamoDB
  * - Retry with exponential backoff (3 attempts: 0s, 30s, 300s)
+ * - Idempotency via eventId + deliveryAttempt dedup key (Issue #8)
  */
 
 import { createHmac } from 'crypto';
-import { PutCommand } from '@aws-sdk/lib-dynamodb';
+import { PutCommand, GetCommand } from '@aws-sdk/lib-dynamodb';
 import { getDocClient, tableName } from '../db/client.js';
 import { ulid } from '../id.js';
 import { createLogger } from '../logging.js';
 import { findWebhooksForEvent } from './registry.js';
 import type { WebhookConfig, WebhookEvent, WebhookDelivery, WebhookEventType } from './types.js';
+import { DB_PREFIXES, DB_SORT_KEYS } from '../constants.js';
 
 const log = createLogger('webhook-dispatcher');
 
@@ -26,6 +28,71 @@ const DELIVERY_TIMEOUT_MS = 5000;
 const MAX_ATTEMPTS = 3;
 const RETRY_DELAYS_MS = [0, 30_000, 300_000]; // 0s, 30s, 5min
 const DELIVERY_TTL_DAYS = 30;
+
+// ---------------------------------------------------------------------------
+// Idempotency (Issue #8)
+// ---------------------------------------------------------------------------
+
+/**
+ * Build a dedup key from eventId + webhookId + attempt number.
+ *
+ * This ensures that if a Lambda retry re-processes the same event,
+ * we do not deliver the same payload twice.  The dedup record is
+ * written with a TTL so it auto-expires after the delivery window.
+ */
+function buildDedupKey(eventId: string, webhookId: string, attempt: number): string {
+  return `${eventId}#${webhookId}#${attempt}`;
+}
+
+/**
+ * Check whether a delivery has already been attempted for the given
+ * eventId + webhookId + attempt combination.
+ *
+ * @returns true if the delivery was already recorded (skip).
+ */
+async function isDeliveryDuplicate(dedupKey: string): Promise<boolean> {
+  const doc = getDocClient();
+  try {
+    const result = await doc.send(
+      new GetCommand({
+        TableName: tableName(),
+        Key: {
+          pk: `${DB_PREFIXES.IDEMPOTENCY}WH#${dedupKey}`,
+          sk: 'DEDUP',
+        },
+      })
+    );
+    return !!result.Item;
+  } catch {
+    // If the check fails, proceed with delivery (fail-open for liveness)
+    return false;
+  }
+}
+
+/**
+ * Record a dedup entry so future retries of the same event+webhook+attempt
+ * are skipped.
+ */
+async function recordDedupKey(dedupKey: string): Promise<void> {
+  const doc = getDocClient();
+  const ttl = Math.floor(Date.now() / 1000) + DELIVERY_TTL_DAYS * 86400;
+
+  try {
+    await doc.send(
+      new PutCommand({
+        TableName: tableName(),
+        Item: {
+          pk: `${DB_PREFIXES.IDEMPOTENCY}WH#${dedupKey}`,
+          sk: 'DEDUP',
+          createdAt: new Date().toISOString(),
+          ttl,
+        },
+      })
+    );
+  } catch {
+    // Non-critical: if dedup write fails, worst case is a duplicate delivery
+  }
+}
 
 // ---------------------------------------------------------------------------
 // HMAC Signature
@@ -107,6 +174,10 @@ async function deliverToUrl(
 /**
  * Deliver a webhook event to a single registered endpoint.
  * Retries up to MAX_ATTEMPTS times with exponential backoff.
+ *
+ * Idempotency (Issue #8): Before each attempt, checks a dedup key
+ * composed of eventId + webhookId + attempt number. If the key exists,
+ * the attempt is skipped (already delivered or attempted).
  */
 async function deliverToWebhook(webhook: WebhookConfig, event: WebhookEvent): Promise<void> {
   const payload = JSON.stringify(event);
@@ -114,6 +185,18 @@ async function deliverToWebhook(webhook: WebhookConfig, event: WebhookEvent): Pr
   const ttl = Math.floor(Date.now() / 1000) + DELIVERY_TTL_DAYS * 86400;
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    // Idempotency check: skip if this exact attempt was already delivered
+    const dedupKey = buildDedupKey(event.id, webhook.id, attempt);
+    const isDuplicate = await isDeliveryDuplicate(dedupKey);
+    if (isDuplicate) {
+      log.info('webhook.delivery.deduplicated', {
+        webhookId: webhook.id,
+        eventId: event.id,
+        attempt,
+      });
+      continue;
+    }
+
     // Wait for retry delay (0 on first attempt)
     const delay = RETRY_DELAYS_MS[attempt - 1] || 0;
     if (delay > 0) {
@@ -128,7 +211,7 @@ async function deliverToWebhook(webhook: WebhookConfig, event: WebhookEvent): Pr
       const success = result.status >= 200 && result.status < 300;
 
       delivery = {
-        pk: `WHDELIVER#${webhook.id}`,
+        pk: `${DB_PREFIXES.WHDELIVER}${webhook.id}`,
         sk: deliveredAt,
         webhookId: webhook.id,
         eventType: event.type,
@@ -144,6 +227,8 @@ async function deliverToWebhook(webhook: WebhookConfig, event: WebhookEvent): Pr
       };
 
       await recordDelivery(delivery);
+      // Record dedup entry so retries skip this attempt
+      await recordDedupKey(dedupKey);
 
       if (success) {
         log.info('webhook.delivered', {
@@ -165,7 +250,7 @@ async function deliverToWebhook(webhook: WebhookConfig, event: WebhookEvent): Pr
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
 
       delivery = {
-        pk: `WHDELIVER#${webhook.id}`,
+        pk: `${DB_PREFIXES.WHDELIVER}${webhook.id}`,
         sk: deliveredAt,
         webhookId: webhook.id,
         eventType: event.type,
@@ -180,6 +265,8 @@ async function deliverToWebhook(webhook: WebhookConfig, event: WebhookEvent): Pr
       };
 
       await recordDelivery(delivery);
+      // Record dedup entry even on error to prevent retry storms
+      await recordDedupKey(dedupKey);
 
       log.warn('webhook.delivery.error', {
         webhookId: webhook.id,
@@ -272,7 +359,7 @@ export async function sendTestWebhook(webhook: WebhookConfig): Promise<WebhookDe
     const success = result.status >= 200 && result.status < 300;
 
     const delivery: WebhookDelivery = {
-      pk: `WHDELIVER#${webhook.id}`,
+      pk: `${DB_PREFIXES.WHDELIVER}${webhook.id}`,
       sk: deliveredAt,
       webhookId: webhook.id,
       eventType: 'lead.created',
@@ -293,7 +380,7 @@ export async function sendTestWebhook(webhook: WebhookConfig): Promise<WebhookDe
     const errorMessage = err instanceof Error ? err.message : 'Unknown error';
 
     const delivery: WebhookDelivery = {
-      pk: `WHDELIVER#${webhook.id}`,
+      pk: `${DB_PREFIXES.WHDELIVER}${webhook.id}`,
       sk: deliveredAt,
       webhookId: webhook.id,
       eventType: 'lead.created',

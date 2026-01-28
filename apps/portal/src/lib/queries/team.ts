@@ -5,6 +5,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import type { TeamMember, TeamInvite } from '@/lib/types';
+import { API_ENDPOINTS } from '@/lib/constants';
 
 // ── Query keys ───────────────────────────────
 
@@ -19,7 +20,7 @@ export const teamKeys = {
 export function useTeamMembers() {
   return useQuery<TeamMember[]>({
     queryKey: teamKeys.members(),
-    queryFn: () => api.get<TeamMember[]>('/api/v1/portal/org/members'),
+    queryFn: () => api.get<TeamMember[]>(API_ENDPOINTS.TEAM_MEMBERS),
     staleTime: 60_000,
   });
 }
@@ -29,7 +30,7 @@ export function useTeamMembers() {
 export function useTeamInvites() {
   return useQuery<TeamInvite[]>({
     queryKey: teamKeys.invites(),
-    queryFn: () => api.get<TeamInvite[]>('/api/v1/portal/org/members/invites'),
+    queryFn: () => api.get<TeamInvite[]>(API_ENDPOINTS.TEAM_INVITES),
     staleTime: 60_000,
   });
 }
@@ -41,7 +42,7 @@ export function useInviteMember() {
 
   return useMutation({
     mutationFn: async ({ email, role }: { email: string; role: 'admin' | 'agent' }) => {
-      return api.post<TeamInvite>('/api/v1/portal/org/members/invite', { email, role });
+      return api.post<TeamInvite>(API_ENDPOINTS.TEAM_INVITE, { email, role });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: teamKeys.all });
@@ -56,7 +57,7 @@ export function useRemoveMember() {
 
   return useMutation({
     mutationFn: async (userId: string) => {
-      return api.delete<void>(`/api/v1/portal/org/members/${userId}`);
+      return api.delete<void>(API_ENDPOINTS.TEAM_MEMBER(userId));
     },
     onMutate: async (userId) => {
       await queryClient.cancelQueries({ queryKey: teamKeys.members() });
@@ -89,7 +90,7 @@ export function useUpdateMemberRole() {
 
   return useMutation({
     mutationFn: async ({ userId, role }: { userId: string; role: 'admin' | 'agent' }) => {
-      return api.put<TeamMember>(`/api/v1/portal/org/members/${userId}/role`, { role });
+      return api.put<TeamMember>(API_ENDPOINTS.TEAM_MEMBER_ROLE(userId), { role });
     },
     onMutate: async ({ userId, role }) => {
       await queryClient.cancelQueries({ queryKey: teamKeys.members() });

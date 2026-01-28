@@ -18,6 +18,7 @@ import { handler as adminHandler } from './handlers/admin.js';
 import { handler as portalHandler } from './handlers/portal.js';
 import { checkFeatureEnabled, getCorsOrigin } from './lib/response.js';
 import { createLogger } from './lib/logging.js';
+import { HTTP_STATUS, HTTP_HEADERS, CONTENT_TYPES } from './lib/constants.js';
 
 const log = createLogger('router');
 
@@ -27,16 +28,16 @@ const log = createLogger('router');
 
 function buildCorsHeaders(requestOrigin?: string): Record<string, string> {
   return {
-    'Access-Control-Allow-Origin': getCorsOrigin(requestOrigin),
-    'Access-Control-Allow-Headers': 'content-type,authorization',
-    'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
-    'Content-Type': 'application/json',
+    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_ORIGIN]: getCorsOrigin(requestOrigin),
+    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_HEADERS]: 'content-type,authorization',
+    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_METHODS]: 'GET,POST,PUT,DELETE,OPTIONS',
+    [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.JSON,
   };
 }
 
 function notFound(requestOrigin?: string): APIGatewayProxyResultV2 {
   return {
-    statusCode: 404,
+    statusCode: HTTP_STATUS.NOT_FOUND,
     headers: buildCorsHeaders(requestOrigin),
     body: JSON.stringify({
       ok: false,
@@ -50,7 +51,7 @@ function notFound(requestOrigin?: string): APIGatewayProxyResultV2 {
 
 function preflight(requestOrigin?: string): APIGatewayProxyResultV2 {
   return {
-    statusCode: 204,
+    statusCode: HTTP_STATUS.NO_CONTENT,
     headers: buildCorsHeaders(requestOrigin),
     body: '',
   };

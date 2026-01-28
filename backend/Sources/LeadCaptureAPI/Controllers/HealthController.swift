@@ -176,38 +176,3 @@ public struct HealthController: RouteCollection {
         return (0, 512, 0)
     }
 }
-
-// MARK: - Response Types
-
-/// Basic health response
-public struct HealthResponse: Content {
-    public let status: HealthStatus
-    public let version: String
-    public let timestamp: String
-    public let environment: String
-}
-
-/// Detailed health response with dependency checks
-public struct DetailedHealthResponse: Content {
-    public let status: HealthStatus
-    public let version: String
-    public let timestamp: String
-    public let environment: String
-    public let uptime: String
-    public let uptimeSeconds: Int
-    public let checks: [String: HealthCheckResult]
-}
-
-/// Health status enum
-public enum HealthStatus: String, Codable, Sendable {
-    case healthy = "healthy"
-    case degraded = "degraded"
-    case unhealthy = "unhealthy"
-}
-
-/// Individual health check result
-public struct HealthCheckResult: Content {
-    public let status: HealthStatus
-    public let latencyMs: Int?
-    public let message: String?
-}

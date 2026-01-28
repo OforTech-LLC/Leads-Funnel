@@ -1,0 +1,130 @@
+# =============================================================================
+# Platform Cognito User Pools - Prod Environment (Admin + Portal)
+# =============================================================================
+# Controlled by enable_platform feature flag.
+# Production: ENFORCED security, no localhost URLs, stricter token validity.
+# =============================================================================
+
+# --- Admin User Pool ---
+module "cognito_admin" {
+  count  = var.enable_platform ? 1 : 0
+  source = "../../modules/cognito-userpool"
+
+  depends_on = [module.pre_token_admin]
+
+  pool_name     = "${local.prefix}-admin-userpool"
+  domain_prefix = var.platform_admin_cognito_domain
+
+  mfa_configuration            = "ON" # Required in production
+  advanced_security_mode       = "ENFORCED"
+  allow_admin_create_user_only = true
+  challenge_on_new_device      = true
+
+  custom_attributes = [
+    {
+      name                = "role"
+      attribute_data_type = "String"
+      min_length          = 1
+      max_length          = 50
+    },
+    {
+      name                = "orgId"
+      attribute_data_type = "String"
+      min_length          = 1
+      max_length          = 100
+    },
+  ]
+
+  # Production callback URLs only - NO localhost
+  callback_urls = [
+    "https://${local.admin_subdomain}.${var.root_domain}/auth/callback",
+  ]
+  logout_urls = [
+    "https://${local.admin_subdomain}.${var.root_domain}",
+  ]
+
+  read_attributes = ["email", "email_verified", "custom:role", "custom:orgId"]
+  # custom:role removed from write_attributes - role should only be set by admin API, not self-service
+  write_attributes = ["email", "custom:orgId"]
+
+  # Token validity (stricter for prod)
+  access_token_validity  = 1
+  id_token_validity      = 1
+  refresh_token_validity = 7
+
+  user_groups = [
+    { name = "SuperAdmin", description = "Platform super administrator", precedence = 1 },
+    { name = "OrgAdmin", description = "Organization administrator", precedence = 2 },
+    { name = "OrgViewer", description = "Organization read-only viewer", precedence = 3 },
+  ]
+
+  # Pre-token generation trigger (safe access via locals)
+  pre_token_generation_lambda_arn  = local.pre_token_admin_function_arn
+  pre_token_generation_lambda_name = local.pre_token_admin_function_name
+
+  invite_email_subject = "Kanjona Admin - Your Account"
+  invite_email_message = "Your admin account has been created. Username: {username}, Temporary password: {####}. Please log in and change your password."
+
+  tags = merge(local.common_tags, { Type = "platform-admin-cognito" })
+}
+
+# --- Portal User Pool ---
+module "cognito_portal" {
+  count  = var.enable_platform ? 1 : 0
+  source = "../../modules/cognito-userpool"
+
+  depends_on = [module.pre_token_portal]
+
+  pool_name     = "${local.prefix}-portal-userpool"
+  domain_prefix = var.platform_portal_cognito_domain
+
+  mfa_configuration            = "OPTIONAL" # Optional for portal users
+  advanced_security_mode       = "ENFORCED"
+  allow_admin_create_user_only = false # Allow self-registration for portal
+  challenge_on_new_device      = true
+
+  custom_attributes = [
+    {
+      name                = "orgId"
+      attribute_data_type = "String"
+      min_length          = 1
+      max_length          = 100
+    },
+    {
+      name                = "membershipRole"
+      attribute_data_type = "String"
+      min_length          = 1
+      max_length          = 50
+    },
+  ]
+
+  # Production callback URLs only - NO localhost
+  callback_urls = [
+    "https://${local.portal_subdomain}.${var.root_domain}/auth/callback",
+  ]
+  logout_urls = [
+    "https://${local.portal_subdomain}.${var.root_domain}",
+  ]
+
+  read_attributes  = ["email", "email_verified", "custom:orgId", "custom:membershipRole"]
+  write_attributes = ["email", "custom:orgId", "custom:membershipRole"]
+
+  # Token validity (stricter for prod)
+  access_token_validity  = 1
+  id_token_validity      = 1
+  refresh_token_validity = 7
+
+  user_groups = [
+    { name = "OrgOwner", description = "Organization owner", precedence = 1 },
+    { name = "OrgMember", description = "Organization member", precedence = 2 },
+  ]
+
+  # Pre-token generation trigger (safe access via locals)
+  pre_token_generation_lambda_arn  = local.pre_token_portal_function_arn
+  pre_token_generation_lambda_name = local.pre_token_portal_function_name
+
+  invite_email_subject = "Kanjona Portal - Your Account"
+  invite_email_message = "Your portal account has been created. Username: {username}, Temporary password: {####}. Please log in and change your password."
+
+  tags = merge(local.common_tags, { Type = "platform-portal-cognito" })
+}

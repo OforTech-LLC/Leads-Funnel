@@ -15,6 +15,79 @@ export type PipelineStatus = AdminPipelineStatus;
 
 export const AUTH_COOKIE_NAME = 'admin_token';
 
+// ---------------------------------------------------------------------------
+// Storage Keys (localStorage/sessionStorage)
+// ---------------------------------------------------------------------------
+
+export const STORAGE_KEYS = {
+  OAUTH_STATE: 'admin_oauth_state',
+} as const;
+
+// ---------------------------------------------------------------------------
+// Admin Roles
+// ---------------------------------------------------------------------------
+
+export const ADMIN_ROLES = {
+  ADMIN: 'ADMIN',
+  OPERATOR: 'OPERATOR',
+  VIEWER: 'VIEWER',
+} as const;
+export type AdminRole = (typeof ADMIN_ROLES)[keyof typeof ADMIN_ROLES];
+
+// ---------------------------------------------------------------------------
+// API Endpoints
+// ---------------------------------------------------------------------------
+
+export const API_ENDPOINTS = {
+  AUTH: '/api/auth',
+  LEADS: '/api/admin/leads',
+  ORGS: '/api/admin/orgs',
+  USERS: '/api/admin/users',
+  RULES: '/api/admin/rules',
+  WEBHOOKS: '/api/admin/webhooks',
+  EXPORTS: '/api/admin/exports',
+  ANALYTICS: '/api/admin/analytics',
+  NOTIFICATIONS: '/api/admin/notifications',
+  FUNNELS: '/api/admin/funnels',
+  SETTINGS: '/api/admin/settings',
+} as const;
+
+// ---------------------------------------------------------------------------
+// Lead Status Labels & Colors
+// ---------------------------------------------------------------------------
+
+export const LEAD_STATUS_LABELS: Record<string, string> = {
+  new: 'New',
+  assigned: 'Assigned',
+  unassigned: 'Unassigned',
+  contacted: 'Contacted',
+  qualified: 'Qualified',
+  booked: 'Booked',
+  converted: 'Converted',
+  won: 'Won',
+  lost: 'Lost',
+  dnc: 'Do Not Contact',
+  quarantined: 'Quarantined',
+} as const;
+
+export const LEAD_STATUS_COLORS: Record<string, string> = {
+  new: 'blue',
+  assigned: 'indigo',
+  unassigned: 'gray',
+  contacted: 'yellow',
+  qualified: 'purple',
+  booked: 'cyan',
+  converted: 'green',
+  won: 'emerald',
+  lost: 'red',
+  dnc: 'orange',
+  quarantined: 'rose',
+} as const;
+
+// ---------------------------------------------------------------------------
+// Status Badge Colors (Tailwind classes)
+// ---------------------------------------------------------------------------
+
 export const STATUS_COLORS: Record<string, string> = {
   new: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
   contacted: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
@@ -32,6 +105,10 @@ export const STATUS_COLORS: Record<string, string> = {
   completed: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
   failed: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
 };
+
+// ---------------------------------------------------------------------------
+// Navigation
+// ---------------------------------------------------------------------------
 
 export const NAV_ITEMS = [
   { label: 'Dashboard', href: '/', icon: 'dashboard' },

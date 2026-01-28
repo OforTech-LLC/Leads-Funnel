@@ -11,6 +11,7 @@ import { getDocClient, tableName } from './client.js';
 import { ulid } from '../../lib/id.js';
 import { sha256 } from '../hash.js';
 import { signCursor, verifyCursor } from '../cursor.js';
+import { DB_PREFIXES, DB_SORT_KEYS, GSI_KEYS, GSI_INDEX_NAMES } from '../constants.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -68,8 +69,8 @@ export async function createOrg(input: CreateOrgInput): Promise<Org> {
   const now = new Date().toISOString();
 
   const org: Org = {
-    pk: `ORG#${orgId}`,
-    sk: 'META',
+    pk: `${DB_PREFIXES.ORG}${orgId}`,
+    sk: DB_SORT_KEYS.META,
     orgId,
     name: input.name,
     slug: input.slug,
@@ -81,8 +82,8 @@ export async function createOrg(input: CreateOrgInput): Promise<Org> {
     settings: input.settings || {},
     createdAt: now,
     updatedAt: now,
-    gsi1pk: 'ORGS',
-    gsi1sk: `CREATED#${now}`,
+    gsi1pk: GSI_KEYS.ORGS_LIST,
+    gsi1sk: `${GSI_KEYS.CREATED}${now}`,
   };
 
   await doc.send(
@@ -110,7 +111,7 @@ export async function getOrg(orgId: string): Promise<Org | null> {
   const result = await doc.send(
     new GetCommand({
       TableName: tableName(),
-      Key: { pk: `ORG#${orgId}`, sk: 'META' },
+      Key: { pk: `${DB_PREFIXES.ORG}${orgId}`, sk: DB_SORT_KEYS.META },
     })
   );
   const item = result.Item as Org | undefined;
@@ -163,7 +164,7 @@ export async function updateOrg(input: UpdateOrgInput): Promise<Org> {
   const result = await doc.send(
     new UpdateCommand({
       TableName: tableName(),
-      Key: { pk: `ORG#${input.orgId}`, sk: 'META' },
+      Key: { pk: `${DB_PREFIXES.ORG}${input.orgId}`, sk: DB_SORT_KEYS.META },
       UpdateExpression: `SET ${parts.join(', ')}`,
       ExpressionAttributeNames: names,
       ExpressionAttributeValues: values,
@@ -182,7 +183,7 @@ export async function softDeleteOrg(orgId: string): Promise<void> {
   await doc.send(
     new UpdateCommand({
       TableName: tableName(),
-      Key: { pk: `ORG#${orgId}`, sk: 'META' },
+      Key: { pk: `${DB_PREFIXES.ORG}${orgId}`, sk: DB_SORT_KEYS.META },
       UpdateExpression: 'SET deletedAt = :d, #updatedAt = :u',
       ExpressionAttributeNames: { '#updatedAt': 'updatedAt' },
       ExpressionAttributeValues: { ':d': now, ':u': now },
@@ -211,10 +212,10 @@ export async function listOrgs(cursor?: string, limit = 25): Promise<PaginatedOr
   const result = await doc.send(
     new QueryCommand({
       TableName: tableName(),
-      IndexName: 'GSI1',
+      IndexName: GSI_INDEX_NAMES.GSI1,
       KeyConditionExpression: 'gsi1pk = :pk',
       FilterExpression: 'attribute_not_exists(deletedAt)',
-      ExpressionAttributeValues: { ':pk': 'ORGS' },
+      ExpressionAttributeValues: { ':pk': GSI_KEYS.ORGS_LIST },
       Limit: limit,
       ScanIndexForward: false,
       ExclusiveStartKey: exclusiveStartKey,

@@ -15,6 +15,12 @@
  * - Save/restore progress via sessionStorage
  * - Animated success screen after submission
  * - Includes A/B experiment variant tracking in payload
+ *
+ * Accessibility:
+ * - aria-live="polite" on step progress indicator
+ * - Visually hidden step announcements for screen readers
+ * - role="alert" and aria-live="assertive" on error messages
+ * - aria-describedby linking fields to their errors
  */
 
 import { useState, useCallback, useEffect, type FormEvent, type ChangeEvent } from 'react';
@@ -315,12 +321,23 @@ export function MultiStepForm({
 
   return (
     <div style={containerStyle}>
-      {/* Progress Bar */}
-      <div style={progressContainerStyle}>
+      {/* Progress Bar with aria-live for screen reader announcements */}
+      <div style={progressContainerStyle} aria-live="polite" role="status">
         <div style={progressLabelStyle}>
           {t('stepOf', { current: currentStep, total: TOTAL_STEPS })}
         </div>
-        <div style={progressBarBgStyle}>
+        {/* Visually hidden step announcement for screen readers */}
+        <span className="sr-only">
+          Step {currentStep} of {TOTAL_STEPS}
+        </span>
+        <div
+          style={progressBarBgStyle}
+          role="progressbar"
+          aria-valuenow={currentStep}
+          aria-valuemin={1}
+          aria-valuemax={TOTAL_STEPS}
+          aria-label={`Form progress: step ${currentStep} of ${TOTAL_STEPS}`}
+        >
           <motion.div
             style={{ ...progressBarFillStyle, backgroundColor: primaryColor }}
             initial={false}
@@ -332,12 +349,12 @@ export function MultiStepForm({
 
       {/* Error Message */}
       {isError && serverError && (
-        <div style={errorBannerStyle} role="alert">
+        <div style={errorBannerStyle} role="alert" aria-live="assertive">
           {serverError.includes('Network') ? messagesT('networkError') : messagesT('error')}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} noValidate>
+      <form onSubmit={handleSubmit} noValidate aria-label={t('step1.title')}>
         <AnimatePresence mode="wait">
           {/* Step 1: Service Details */}
           {currentStep === 1 && (
@@ -362,6 +379,7 @@ export function MultiStepForm({
                   onChange={handleChange}
                   style={{ ...inputStyle, ...(errors.subCategory ? inputErrorStyle : {}) }}
                   aria-invalid={!!errors.subCategory}
+                  aria-describedby={errors.subCategory ? 'subCategory-error' : undefined}
                 >
                   <option value="">{t('step1.selectOption')}</option>
                   {categories.map((cat) => (
@@ -370,12 +388,23 @@ export function MultiStepForm({
                     </option>
                   ))}
                 </select>
-                {errors.subCategory && <span style={fieldErrorStyle}>{errors.subCategory}</span>}
+                {errors.subCategory && (
+                  <span
+                    id="subCategory-error"
+                    role="alert"
+                    aria-live="assertive"
+                    style={fieldErrorStyle}
+                  >
+                    {errors.subCategory}
+                  </span>
+                )}
               </div>
 
               {/* Urgency */}
-              <div style={fieldStyle}>
-                <label style={labelStyle}>{t('step1.urgency')} *</label>
+              <div style={fieldStyle} role="radiogroup" aria-labelledby="urgency-label">
+                <span id="urgency-label" style={labelStyle}>
+                  {t('step1.urgency')} *
+                </span>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {['asap', 'within_week', 'exploring'].map((val) => (
                     <label key={val} style={radioLabelStyle}>
@@ -391,7 +420,16 @@ export function MultiStepForm({
                     </label>
                   ))}
                 </div>
-                {errors.urgency && <span style={fieldErrorStyle}>{errors.urgency}</span>}
+                {errors.urgency && (
+                  <span
+                    id="urgency-error"
+                    role="alert"
+                    aria-live="assertive"
+                    style={fieldErrorStyle}
+                  >
+                    {errors.urgency}
+                  </span>
+                )}
               </div>
 
               {/* ZIP Code */}
@@ -410,8 +448,18 @@ export function MultiStepForm({
                   inputMode="numeric"
                   style={{ ...inputStyle, ...(errors.zipCode ? inputErrorStyle : {}) }}
                   aria-invalid={!!errors.zipCode}
+                  aria-describedby={errors.zipCode ? 'zipCode-error' : undefined}
                 />
-                {errors.zipCode && <span style={fieldErrorStyle}>{errors.zipCode}</span>}
+                {errors.zipCode && (
+                  <span
+                    id="zipCode-error"
+                    role="alert"
+                    aria-live="assertive"
+                    style={fieldErrorStyle}
+                  >
+                    {errors.zipCode}
+                  </span>
+                )}
               </div>
 
               <button
@@ -451,8 +499,18 @@ export function MultiStepForm({
                   autoComplete="name"
                   style={{ ...inputStyle, ...(errors.name ? inputErrorStyle : {}) }}
                   aria-invalid={!!errors.name}
+                  aria-describedby={errors.name ? 'msf-name-error' : undefined}
                 />
-                {errors.name && <span style={fieldErrorStyle}>{errors.name}</span>}
+                {errors.name && (
+                  <span
+                    id="msf-name-error"
+                    role="alert"
+                    aria-live="assertive"
+                    style={fieldErrorStyle}
+                  >
+                    {errors.name}
+                  </span>
+                )}
               </div>
 
               {/* Email */}
@@ -471,8 +529,18 @@ export function MultiStepForm({
                   autoComplete="email"
                   style={{ ...inputStyle, ...(errors.email ? inputErrorStyle : {}) }}
                   aria-invalid={!!errors.email}
+                  aria-describedby={errors.email ? 'msf-email-error' : undefined}
                 />
-                {errors.email && <span style={fieldErrorStyle}>{errors.email}</span>}
+                {errors.email && (
+                  <span
+                    id="msf-email-error"
+                    role="alert"
+                    aria-live="assertive"
+                    style={fieldErrorStyle}
+                  >
+                    {errors.email}
+                  </span>
+                )}
               </div>
 
               {/* Phone */}
@@ -491,8 +559,18 @@ export function MultiStepForm({
                   autoComplete="tel"
                   style={{ ...inputStyle, ...(errors.phone ? inputErrorStyle : {}) }}
                   aria-invalid={!!errors.phone}
+                  aria-describedby={errors.phone ? 'msf-phone-error' : undefined}
                 />
-                {errors.phone && <span style={fieldErrorStyle}>{errors.phone}</span>}
+                {errors.phone && (
+                  <span
+                    id="msf-phone-error"
+                    role="alert"
+                    aria-live="assertive"
+                    style={fieldErrorStyle}
+                  >
+                    {errors.phone}
+                  </span>
+                )}
               </div>
 
               {/* Best time to call */}
@@ -561,8 +639,18 @@ export function MultiStepForm({
                     ...(errors.message ? inputErrorStyle : {}),
                   }}
                   aria-invalid={!!errors.message}
+                  aria-describedby={errors.message ? 'msf-message-error' : undefined}
                 />
-                {errors.message && <span style={fieldErrorStyle}>{errors.message}</span>}
+                {errors.message && (
+                  <span
+                    id="msf-message-error"
+                    role="alert"
+                    aria-live="assertive"
+                    style={fieldErrorStyle}
+                  >
+                    {errors.message}
+                  </span>
+                )}
               </div>
 
               {/* Referral source */}
@@ -595,12 +683,22 @@ export function MultiStepForm({
                     checked={formData.consent}
                     onChange={handleChange}
                     style={{ marginRight: '8px', marginTop: '3px' }}
+                    aria-describedby={errors.consent ? 'consent-error' : undefined}
                   />
                   <span style={{ fontSize: '13px', color: '#555', lineHeight: 1.4 }}>
                     {t('step3.consentText')}
                   </span>
                 </label>
-                {errors.consent && <span style={fieldErrorStyle}>{errors.consent}</span>}
+                {errors.consent && (
+                  <span
+                    id="consent-error"
+                    role="alert"
+                    aria-live="assertive"
+                    style={fieldErrorStyle}
+                  >
+                    {errors.consent}
+                  </span>
+                )}
               </div>
 
               <div style={{ display: 'flex', gap: '12px' }}>

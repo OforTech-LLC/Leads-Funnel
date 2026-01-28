@@ -30,6 +30,7 @@ import type {
 import { getDocClient, getSsmClient } from '../clients.js';
 import { sendEmail, buildLeadAssignedEmail, buildLeadUnassignedEmail } from './email.js';
 import { sendSms, buildLeadAssignedSms, buildLeadUnassignedSms } from './sms.js';
+import { DB_PREFIXES, DB_SORT_KEYS, GSI_KEYS, GSI_INDEX_NAMES } from '../constants.js';
 
 // =============================================================================
 // SSM Parameter Cache
@@ -118,8 +119,8 @@ async function loadOrg(
       new GetCommand({
         TableName: tableName,
         Key: {
-          pk: `ORG#${orgId}`,
-          sk: 'META',
+          pk: `${DB_PREFIXES.ORG}${orgId}`,
+          sk: DB_SORT_KEYS.META,
         },
       })
     );
@@ -157,11 +158,11 @@ async function loadOrgMembers(
     const result = await client.send(
       new QueryCommand({
         TableName: tableName,
-        IndexName: 'GSI1',
+        IndexName: GSI_INDEX_NAMES.GSI1,
         KeyConditionExpression: 'gsi1pk = :pk AND begins_with(gsi1sk, :skPrefix)',
         ExpressionAttributeValues: {
-          ':pk': `ORG#${orgId}#MEMBERS`,
-          ':skPrefix': 'MEMBER#',
+          ':pk': `${DB_PREFIXES.ORG}${orgId}#MEMBERS`,
+          ':skPrefix': GSI_KEYS.MEMBER,
         },
       })
     );
@@ -232,8 +233,8 @@ async function updateLeadNotificationTimestamp(
       new UpdateCommand({
         TableName: tableName,
         Key: {
-          pk: `LEAD#${leadId}`,
-          sk: `FUNNEL#${funnelId}`,
+          pk: `${DB_PREFIXES.LEAD}${leadId}`,
+          sk: `${GSI_KEYS.FUNNEL}${funnelId}`,
         },
         UpdateExpression: 'SET #field = :now',
         ExpressionAttributeNames: {
@@ -324,7 +325,7 @@ async function notifyInternal(
       });
 
       await recordNotification(config.awsRegion, config.ddbTableName, {
-        pk: `NOTIFICATION#${lead.leadId}`,
+        pk: `${DB_PREFIXES.NOTIFY}${lead.leadId}`,
         sk: `EMAIL#internal#${recipient.email}`,
         notificationId: uuidv4(),
         leadId: lead.leadId,
@@ -356,7 +357,7 @@ async function notifyInternal(
       });
 
       await recordNotification(config.awsRegion, config.ddbTableName, {
-        pk: `NOTIFICATION#${lead.leadId}`,
+        pk: `${DB_PREFIXES.NOTIFY}${lead.leadId}`,
         sk: `SMS#internal#${recipient.phone}`,
         notificationId: uuidv4(),
         leadId: lead.leadId,
@@ -497,7 +498,7 @@ async function notifyOrgMembers(
       });
 
       await recordNotification(config.awsRegion, config.ddbTableName, {
-        pk: `NOTIFICATION#${lead.leadId}`,
+        pk: `${DB_PREFIXES.NOTIFY}${lead.leadId}`,
         sk: `EMAIL#org_member#${member.userId}`,
         notificationId: uuidv4(),
         leadId: lead.leadId,
@@ -526,7 +527,7 @@ async function notifyOrgMembers(
       });
 
       await recordNotification(config.awsRegion, config.ddbTableName, {
-        pk: `NOTIFICATION#${lead.leadId}`,
+        pk: `${DB_PREFIXES.NOTIFY}${lead.leadId}`,
         sk: `SMS#org_member#${member.userId}`,
         notificationId: uuidv4(),
         leadId: lead.leadId,

@@ -1,16 +1,14 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { useFocusTrap } from '@/lib/useFocusTrap';
+import { VALIDATION, ERROR_MESSAGES } from '@/lib/constants';
 
 interface InviteModalProps {
   open: boolean;
   onClose: () => void;
   onInvite: (email: string, role: 'admin' | 'agent') => void;
   isLoading?: boolean;
-}
-
-function isValidEmail(email: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
 export default function InviteModal({
@@ -23,8 +21,12 @@ export default function InviteModal({
   const [role, setRole] = useState<'admin' | 'agent'>('agent');
   const [error, setError] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
-  // Focus input when modal opens, reset state
+  // Focus trap
+  useFocusTrap(modalRef, open);
+
+  // Reset state when modal opens
   useEffect(() => {
     if (open) {
       setEmail('');
@@ -40,12 +42,12 @@ export default function InviteModal({
     const trimmed = email.trim();
 
     if (!trimmed) {
-      setError('Email address is required');
+      setError(ERROR_MESSAGES.EMAIL_REQUIRED);
       return;
     }
 
-    if (!isValidEmail(trimmed)) {
-      setError('Please enter a valid email address');
+    if (!VALIDATION.EMAIL_REGEX.test(trimmed)) {
+      setError(ERROR_MESSAGES.EMAIL_INVALID);
       return;
     }
 
@@ -78,6 +80,7 @@ export default function InviteModal({
 
       {/* Modal panel */}
       <div
+        ref={modalRef}
         className="relative w-full max-w-md rounded-2xl border border-gray-100 bg-white p-6 shadow-xl"
         style={{ animation: 'dialog-enter 0.2s ease-out' }}
       >

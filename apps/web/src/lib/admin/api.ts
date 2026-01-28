@@ -22,6 +22,13 @@ const MAX_RETRIES = 3;
 const INITIAL_RETRY_DELAY_MS = 1000;
 
 // Types
+export interface LeadAnalysis {
+  urgency: 'high' | 'medium' | 'low';
+  intent: 'info_gathering' | 'ready_to_buy' | 'complaint' | 'other';
+  language: string;
+  summary: string;
+}
+
 export interface Lead {
   leadId: string;
   funnelId: string;
@@ -35,6 +42,7 @@ export interface Lead {
   doNotContact: boolean;
   createdAt: string;
   updatedAt: string;
+  analysis?: LeadAnalysis;
 }
 
 export interface QueryLeadsRequest {
@@ -306,4 +314,22 @@ export async function getExportDownloadUrl(
  */
 export async function getFunnelStats(funnelId: string): Promise<{ stats: FunnelStats }> {
   return apiRequest(`/admin/stats?funnelId=${encodeURIComponent(funnelId)}`);
+}
+
+/**
+ * Feature Flags
+ */
+export interface FeatureFlags {
+  [key: string]: boolean;
+}
+
+export async function getFeatureFlags(): Promise<FeatureFlags> {
+  return apiRequest('/admin/flags');
+}
+
+export async function updateFeatureFlag(flag: string, enabled: boolean): Promise<void> {
+  return apiRequest('/admin/flags', {
+    method: 'PATCH',
+    body: JSON.stringify({ flag, enabled }),
+  });
 }

@@ -16,8 +16,10 @@ const COGNITO_REDIRECT_URI =
 const COGNITO_LOGOUT_URI =
   process.env.NEXT_PUBLIC_COGNITO_LOGOUT_URI || 'http://localhost:3001/login';
 
+import { API_ENDPOINTS, STORAGE_KEYS } from './constants';
+
 // Session storage key for OAuth state (CSRF protection)
-const OAUTH_STATE_KEY = 'admin_oauth_state';
+const OAUTH_STATE_KEY = STORAGE_KEYS.OAUTH_STATE;
 
 // State expiration time (5 minutes)
 const STATE_EXPIRY_MS = 5 * 60 * 1000;
@@ -181,7 +183,7 @@ export async function checkAuth(): Promise<{
   user?: { email: string; sub: string; groups: string[] };
 }> {
   try {
-    const response = await fetch('/api/auth', {
+    const response = await fetch(API_ENDPOINTS.AUTH, {
       method: 'GET',
       credentials: 'include',
     });
@@ -202,7 +204,7 @@ export async function checkAuth(): Promise<{
  */
 export async function logout(): Promise<void> {
   try {
-    await fetch('/api/auth', {
+    await fetch(API_ENDPOINTS.AUTH, {
       method: 'DELETE',
       credentials: 'include',
     });

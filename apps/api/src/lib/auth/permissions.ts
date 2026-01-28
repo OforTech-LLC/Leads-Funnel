@@ -2,6 +2,8 @@
  * RBAC Permission definitions for Admin and Portal roles.
  */
 
+import { ADMIN_ROLES, MEMBERSHIP_ROLES } from '../constants.js';
+
 // ---------------------------------------------------------------------------
 // Role enums
 // ---------------------------------------------------------------------------
@@ -17,14 +19,14 @@ export type MembershipRole = 'ORG_OWNER' | 'MANAGER' | 'AGENT' | 'VIEWER';
  * Only ADMIN can perform write operations (create/update/delete).
  */
 export function canAdminWrite(role: AdminRole): boolean {
-  return role === 'ADMIN';
+  return role === ADMIN_ROLES.ADMIN;
 }
 
 /**
  * Both ADMIN and VIEWER can read.
  */
 export function canAdminRead(role: AdminRole): boolean {
-  return role === 'ADMIN' || role === 'VIEWER';
+  return role === ADMIN_ROLES.ADMIN || role === ADMIN_ROLES.VIEWER;
 }
 
 // ---------------------------------------------------------------------------
@@ -35,14 +37,18 @@ export function canAdminRead(role: AdminRole): boolean {
  * ORG_OWNER, MANAGER, and AGENT can update leads.
  */
 export function canPortalUpdateLead(memberRole: MembershipRole): boolean {
-  return memberRole === 'ORG_OWNER' || memberRole === 'MANAGER' || memberRole === 'AGENT';
+  return (
+    memberRole === MEMBERSHIP_ROLES.ORG_OWNER ||
+    memberRole === MEMBERSHIP_ROLES.MANAGER ||
+    memberRole === MEMBERSHIP_ROLES.AGENT
+  );
 }
 
 /**
  * Only ORG_OWNER can manage members.
  */
 export function canPortalManageMembers(memberRole: MembershipRole): boolean {
-  return memberRole === 'ORG_OWNER';
+  return memberRole === MEMBERSHIP_ROLES.ORG_OWNER;
 }
 
 /**
@@ -51,5 +57,5 @@ export function canPortalManageMembers(memberRole: MembershipRole): boolean {
  * VIEWER can only view (no updates).
  */
 export function canPortalViewAllOrgLeads(memberRole: MembershipRole): boolean {
-  return memberRole === 'ORG_OWNER' || memberRole === 'MANAGER';
+  return memberRole === MEMBERSHIP_ROLES.ORG_OWNER || memberRole === MEMBERSHIP_ROLES.MANAGER;
 }

@@ -130,7 +130,7 @@ public actor LeadService {
         let duplicateCheck = quarantineService.checkDuplicate(request, existingLeads: existingLeads)
 
         if duplicateCheck.isDuplicate, let existingLead = duplicateCheck.existingLead {
-            throw AppError.duplicateLead(existingId: existingLead.id)
+            throw AppError.duplicateLead(existingId: existingLead.id?.uuidString ?? "")
         }
 
         // 8. Check quarantine criteria (already computed above)
@@ -228,7 +228,7 @@ public actor LeadService {
                         do {
                             try await eventBridgeService.publishLeadCreated(lead)
                         } catch {
-                            SecureLogger.error("Failed to publish lead.created event", error: error, metadata: ["leadId": leadId])
+                            SecureLogger.error("Failed to publish lead.created event", error: error, metadata: ["leadId": leadId?.uuidString ?? ""])
                         }
                     }
                 }
@@ -237,17 +237,17 @@ public actor LeadService {
                 group.addTask {
                     do {
                         try await dynamoDBService.createAuditLog(AuditLogItem(
-                            leadId: lead.id,
+                            leadId: lead.id?.uuidString ?? "",
                             action: action,
                             actor: "api",
                             newState: leadJSON,
                             context: [
                                 "ip": ipAddress ?? "unknown",
-                                "source": lead.source.rawValue
+                                "source": lead.source
                             ]
                         ))
                     } catch {
-                        SecureLogger.error("Failed to create audit log", error: error, metadata: ["leadId": leadId, "action": action])
+                        SecureLogger.error("Failed to create audit log", error: error, metadata: ["leadId": leadId?.uuidString ?? "", "action": action])
                     }
                 }
 
@@ -257,13 +257,13 @@ public actor LeadService {
                         do {
                             try await dynamoDBService.storeIdempotencyResponse(
                                 key: key,
-                                leadId: lead.id,
+                                leadId: lead.id?.uuidString ?? "",
                                 response: json,
                                 statusCode: 201,
                                 requestHash: requestHash
                             )
                         } catch {
-                            SecureLogger.error("Failed to store idempotency response", error: error, metadata: ["leadId": leadId])
+                            SecureLogger.error("Failed to store idempotency response", error: error, metadata: ["leadId": leadId?.uuidString ?? ""])
                         }
                     }
                 }
@@ -320,7 +320,7 @@ public actor LeadService {
                     do {
                         try await eventBridgeService.publishLeadQuarantined(lead, reasons: reasons)
                     } catch {
-                        SecureLogger.error("Failed to publish lead.quarantined event", error: error, metadata: ["leadId": leadId])
+                        SecureLogger.error("Failed to publish lead.quarantined event", error: error, metadata: ["leadId": leadId?.uuidString ?? ""])
                     }
                 }
 
@@ -328,7 +328,7 @@ public actor LeadService {
                 group.addTask {
                     do {
                         try await dynamoDBService.createAuditLog(AuditLogItem(
-                            leadId: lead.id,
+                            leadId: lead.id?.uuidString ?? "",
                             action: "quarantined",
                             actor: "api",
                             newState: leadJSON,
@@ -338,7 +338,7 @@ public actor LeadService {
                             ]
                         ))
                     } catch {
-                        SecureLogger.error("Failed to create quarantine audit log", error: error, metadata: ["leadId": leadId])
+                        SecureLogger.error("Failed to create quarantine audit log", error: error, metadata: ["leadId": leadId?.uuidString ?? ""])
                     }
                 }
 
@@ -348,13 +348,13 @@ public actor LeadService {
                         do {
                             try await dynamoDBService.storeIdempotencyResponse(
                                 key: key,
-                                leadId: lead.id,
+                                leadId: lead.id?.uuidString ?? "",
                                 response: json,
                                 statusCode: 201,
                                 requestHash: requestHash
                             )
                         } catch {
-                            SecureLogger.error("Failed to store quarantine idempotency response", error: error, metadata: ["leadId": leadId])
+                            SecureLogger.error("Failed to store quarantine idempotency response", error: error, metadata: ["leadId": leadId?.uuidString ?? ""])
                         }
                     }
                 }
@@ -367,44 +367,5 @@ public actor LeadService {
         encoder.dateEncodingStrategy = .iso8601
         let data = try encoder.encode(value)
         return String(data: data, encoding: .utf8) ?? "{}"
-    }
-}
-
-// MARK: - Create Lead Result
-
-/// Result of create lead operation
-public struct CreateLeadResult: Sendable {
-    /// The created lead (nil if returning cached response)
-    public let lead: Lead?
-
-    /// Cached response for idempotent requests
-    public let cachedResponse: String?
-
-    /// HTTP status code
-    public let statusCode: Int
-
-    /// Whether this is a cached idempotent response
-    public let isIdempotent: Bool
-
-    /// Whether the lead was quarantined
-    public let isQuarantined: Bool
-
-    /// Quarantine reasons if applicable
-    public let quarantineReasons: [String]?
-
-    public init(
-        lead: Lead?,
-        cachedResponse: String? = nil,
-        statusCode: Int = 201,
-        isIdempotent: Bool = false,
-        isQuarantined: Bool = false,
-        quarantineReasons: [String]? = nil
-    ) {
-        self.lead = lead
-        self.cachedResponse = cachedResponse
-        self.statusCode = statusCode
-        self.isIdempotent = isIdempotent
-        self.isQuarantined = isQuarantined
-        self.quarantineReasons = quarantineReasons
     }
 }

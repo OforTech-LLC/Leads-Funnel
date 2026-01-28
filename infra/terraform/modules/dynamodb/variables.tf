@@ -59,6 +59,17 @@ variable "enable_deletion_protection" {
   default     = false
 }
 
+variable "rate_limits_billing_mode" {
+  type        = string
+  description = "Billing mode for rate limits table (PAY_PER_REQUEST or PROVISIONED)"
+  default     = "PAY_PER_REQUEST"
+
+  validation {
+    condition     = contains(["PAY_PER_REQUEST", "PROVISIONED"], var.rate_limits_billing_mode)
+    error_message = "Billing mode must be either PAY_PER_REQUEST or PROVISIONED."
+  }
+}
+
 # -----------------------------------------------------------------------------
 # Tags
 # -----------------------------------------------------------------------------

@@ -48,7 +48,7 @@ public actor DynamoDBService {
             _ = try await client.putItem(input)
             return lead
         } catch let error as AWSClientError where error.errorCode == "ConditionalCheckFailedException" {
-            throw AppError.duplicateLead(existingId: lead.id)
+            throw AppError.duplicateLead(existingId: lead.id?.uuidString ?? "")
         } catch {
             throw AppError.databaseError(underlying: error)
         }

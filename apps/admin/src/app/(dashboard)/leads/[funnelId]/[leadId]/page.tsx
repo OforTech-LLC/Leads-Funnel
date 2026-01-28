@@ -15,7 +15,7 @@ import {
   useReassignLeadMutation,
 } from '@/store/services/leads';
 import type { LeadStatus, PipelineStatus } from '@/lib/constants';
-import { LEAD_STATUSES, PIPELINE_STATUSES } from '@/lib/constants';
+import { LEAD_STATUSES, PIPELINE_STATUSES, ADMIN_ROLES } from '@/lib/constants';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorAlert from '@/components/ErrorAlert';
 import FormField from '@/components/FormField';
@@ -136,7 +136,7 @@ export default function LeadDetailPage() {
             )}
           </div>
           <div className="flex items-center gap-3 self-start">
-            <RequireRole roles={['ADMIN']}>
+            <RequireRole roles={[ADMIN_ROLES.ADMIN]}>
               <button
                 onClick={() => setShowReassign(true)}
                 className="px-4 py-2 text-sm font-medium border border-[var(--border-color)] rounded-md hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-primary)]"
@@ -145,7 +145,7 @@ export default function LeadDetailPage() {
               </button>
             </RequireRole>
             {!editMode && (
-              <RequireRole roles={['ADMIN', 'OPERATOR']}>
+              <RequireRole roles={[ADMIN_ROLES.ADMIN, ADMIN_ROLES.OPERATOR]}>
                 <button
                   onClick={startEdit}
                   className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"

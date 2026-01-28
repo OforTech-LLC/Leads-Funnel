@@ -9,6 +9,7 @@ import { verifyJwt, type JwtClaims } from './jwt.js';
 import type { AdminRole } from './permissions.js';
 import { loadConfig } from '../config.js';
 import { sha256 } from '../hash.js';
+import { ADMIN_ROLES, HTTP_HEADERS } from '../constants.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -27,7 +28,9 @@ export interface AdminIdentity {
 // ---------------------------------------------------------------------------
 
 function extractBearer(event: APIGatewayProxyEventV2): string | null {
-  const header = event.headers?.['authorization'] || event.headers?.['Authorization'];
+  const header =
+    event.headers?.[HTTP_HEADERS.AUTHORIZATION_LOWER] ||
+    event.headers?.[HTTP_HEADERS.AUTHORIZATION];
   if (!header) return null;
 
   const [scheme, token] = header.split(' ');
@@ -37,8 +40,8 @@ function extractBearer(event: APIGatewayProxyEventV2): string | null {
 
 function determineAdminRole(groups: string[]): AdminRole {
   // Map Cognito groups to our internal roles
-  if (groups.includes('Admin') || groups.includes('ADMIN')) return 'ADMIN';
-  return 'VIEWER';
+  if (groups.includes('Admin') || groups.includes(ADMIN_ROLES.ADMIN)) return ADMIN_ROLES.ADMIN;
+  return ADMIN_ROLES.VIEWER;
 }
 
 // ---------------------------------------------------------------------------

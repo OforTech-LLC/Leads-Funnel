@@ -16,27 +16,6 @@ public struct SpamDetectorService: Sendable {
 
     // MARK: - Types
 
-    /// Spam detection result
-    public struct SpamResult: Sendable {
-        /// Whether the submission is considered spam
-        public let isSpam: Bool
-        /// Confidence score (0.0 - 1.0)
-        public let confidence: Double
-        /// Reasons for spam classification
-        public let reasons: [String]
-        /// Individual check scores
-        public let scores: [String: Double]
-        /// Recommendation (allow, quarantine, block)
-        public let recommendation: SpamRecommendation
-    }
-
-    /// Spam handling recommendation
-    public enum SpamRecommendation: String, Sendable {
-        case allow = "allow"
-        case quarantine = "quarantine"
-        case block = "block"
-    }
-
     /// Detection weights for scoring
     private struct DetectionWeights {
         static let disposableEmail: Double = 0.9

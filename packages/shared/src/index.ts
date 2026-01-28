@@ -7,6 +7,7 @@
 // Platform Types (3-sided marketplace)
 // =============================================================================
 
+export { OrgTypeEnum, OrgStatusEnum, LeadVisibilityPolicyEnum } from './types/org';
 export type {
   OrgType,
   OrgStatus,
@@ -16,8 +17,10 @@ export type {
   UpdateOrgInput,
 } from './types/org';
 
+export { UserStatusEnum } from './types/user';
 export type { UserStatus, User, CreateUserInput, UpdateUserInput } from './types/user';
 
+export { MembershipRoleEnum } from './types/membership';
 export type {
   MembershipRole,
   Membership,
@@ -34,6 +37,11 @@ export type {
   RuleTestResult,
 } from './types/assignment-rule';
 
+export {
+  NotificationChannelEnum,
+  NotificationStatusEnum,
+  NotificationTargetTypeEnum,
+} from './types/notification';
 export type {
   NotificationChannel,
   NotificationStatus,
@@ -43,6 +51,7 @@ export type {
 
 // Re-export new lead types with "Platform" prefix to avoid collision with
 // the original Lead interface (which represents form-submission data).
+export { PipelineStatusEnum } from './types/lead';
 export type {
   PipelineStatus,
   Lead as PlatformLead,
@@ -51,13 +60,15 @@ export type {
   ReassignLeadInput,
 } from './types/lead';
 
+export { ExportFormatEnum, ExportStatusEnum } from './types/export';
 export type { ExportFormat, ExportStatus, ExportJob, CreateExportInput } from './types/export';
 
 export type { AuditEntry } from './types/audit';
 
 export type { PaginationRequest, PaginationResponse, PaginatedResult } from './types/pagination';
 
-export type { ErrorCode, ApiErrorResponse, ApiSuccessResponse } from './types/api';
+export { ApiErrorCodes } from './types/api';
+export type { ErrorCode, ApiErrorCode, ApiErrorResponse, ApiSuccessResponse } from './types/api';
 
 export type { LeadCreatedEvent, LeadAssignedEvent, LeadUnassignedEvent } from './types/events';
 
@@ -67,6 +78,12 @@ export type { LeadCreatedEvent, LeadAssignedEvent, LeadUnassignedEvent } from '.
 
 export { FEATURE_FLAGS, FEATURE_FLAG_DEFAULTS } from './feature-flags';
 export type { FeatureFlag } from './feature-flags';
+
+/**
+ * Alias for FEATURE_FLAGS to match the FeatureFlagNames convention.
+ * Prefer using `FeatureFlagNames.BILLING_ENABLED` for enum-style access.
+ */
+export { FEATURE_FLAGS as FeatureFlagNames } from './feature-flags';
 
 // =============================================================================
 // Lead Scoring
@@ -95,7 +112,7 @@ export type {
 // Webhooks
 // =============================================================================
 
-export { WEBHOOK_EVENTS } from './webhooks';
+export { WEBHOOK_EVENTS, WebhookEventEnum } from './webhooks';
 export type { WebhookEventType, WebhookConfig, WebhookDelivery } from './webhooks';
 
 // =============================================================================
@@ -123,8 +140,13 @@ export type { MessagingProvider, MessagingConfig, MessagingPayload } from './mes
 // App Notifications & Preferences
 // =============================================================================
 
-export { NOTIFICATION_TYPES } from './notifications';
-export type { NotificationType, AppNotification, NotificationPreferences } from './notifications';
+export { NOTIFICATION_TYPES, NotificationTypeEnum, DigestFrequencyEnum } from './notifications';
+export type {
+  NotificationType,
+  DigestFrequency,
+  AppNotification,
+  NotificationPreferences,
+} from './notifications';
 
 // =============================================================================
 // Lead Status State Machine
@@ -181,6 +203,24 @@ export const LEAD_STATUSES = [
 export type LeadStatus = (typeof LEAD_STATUSES)[number];
 
 /**
+ * Const enum-like object for lead statuses.
+ * Use `LeadStatusEnum.NEW` instead of hardcoding `'new'`.
+ */
+export const LeadStatusEnum = {
+  NEW: 'new',
+  ASSIGNED: 'assigned',
+  UNASSIGNED: 'unassigned',
+  CONTACTED: 'contacted',
+  QUALIFIED: 'qualified',
+  BOOKED: 'booked',
+  CONVERTED: 'converted',
+  WON: 'won',
+  LOST: 'lost',
+  DNC: 'dnc',
+  QUARANTINED: 'quarantined',
+} as const satisfies Record<string, LeadStatus>;
+
+/**
  * Admin pipeline stages (separate from lead status).
  * These represent internal workflow steps.
  */
@@ -196,11 +236,87 @@ export const ADMIN_PIPELINE_STATUSES = [
 export type AdminPipelineStatus = (typeof ADMIN_PIPELINE_STATUSES)[number];
 
 /**
+ * Const enum-like object for admin pipeline statuses.
+ * Use `AdminPipelineStatusEnum.NURTURING` instead of hardcoding `'nurturing'`.
+ */
+export const AdminPipelineStatusEnum = {
+  NONE: 'none',
+  NURTURING: 'nurturing',
+  NEGOTIATING: 'negotiating',
+  CLOSING: 'closing',
+  CLOSED_WON: 'closed_won',
+  CLOSED_LOST: 'closed_lost',
+} as const satisfies Record<string, AdminPipelineStatus>;
+
+/**
  * Supported export file formats.
  */
 export const EXPORT_FORMATS = ['csv', 'xlsx', 'pdf', 'docx', 'json'] as const;
 
 export type ExportFormatValue = (typeof EXPORT_FORMATS)[number];
+
+// =============================================================================
+// Funnel Category Enum
+// =============================================================================
+
+/**
+ * Const enum-like object for funnel categories.
+ * Use `FunnelCategoryEnum.CORE` instead of hardcoding `'core'`.
+ */
+export const FunnelCategoryEnum = {
+  CORE: 'core',
+  HOME_SERVICES: 'home-services',
+  HEALTH: 'health',
+  LEGAL: 'legal',
+  BUSINESS: 'business',
+  AUTO: 'auto',
+  EDUCATION: 'education',
+  EVENTS: 'events',
+} as const satisfies Record<string, FunnelCategory>;
+
+// =============================================================================
+// Consent Source Enum
+// =============================================================================
+
+/**
+ * Const enum-like object for consent sources.
+ * Use `ConsentSourceEnum.FORM` instead of hardcoding `'form'`.
+ */
+export const ConsentSourceEnum = {
+  FORM: 'form',
+  API: 'api',
+  IMPORT: 'import',
+  MANUAL: 'manual',
+} as const;
+
+export type ConsentSource = (typeof ConsentSourceEnum)[keyof typeof ConsentSourceEnum];
+
+// =============================================================================
+// Health Status Enums
+// =============================================================================
+
+/**
+ * Const enum-like object for health check statuses.
+ * Use `HealthStatusEnum.HEALTHY` instead of hardcoding `'healthy'`.
+ */
+export const HealthStatusEnum = {
+  HEALTHY: 'healthy',
+  DEGRADED: 'degraded',
+  UNHEALTHY: 'unhealthy',
+} as const;
+
+export type HealthStatus = (typeof HealthStatusEnum)[keyof typeof HealthStatusEnum];
+
+/**
+ * Const enum-like object for individual service statuses.
+ * Use `ServiceStatusEnum.UP` instead of hardcoding `'up'`.
+ */
+export const ServiceStatusEnum = {
+  UP: 'up',
+  DOWN: 'down',
+} as const;
+
+export type ServiceStatus = (typeof ServiceStatusEnum)[keyof typeof ServiceStatusEnum];
 
 // =============================================================================
 // UTM Parameters
@@ -238,7 +354,7 @@ export interface LeadConsent {
   /** Version of terms of service accepted */
   termsVersion?: string;
   /** Source of consent (form, api, import) */
-  consentSource?: 'form' | 'api' | 'import' | 'manual';
+  consentSource?: ConsentSource;
 }
 
 /**
@@ -379,7 +495,7 @@ export interface LeadSubmitResponse {
  * Health check response
  */
 export interface HealthResponse {
-  status: 'healthy' | 'degraded' | 'unhealthy';
+  status: HealthStatus;
   version: string;
   timestamp: string;
   services?: Record<string, ServiceHealth>;
@@ -389,7 +505,7 @@ export interface HealthResponse {
  * Service health status
  */
 export interface ServiceHealth {
-  status: 'up' | 'down';
+  status: ServiceStatus;
   latency?: number;
   message?: string;
 }
@@ -563,7 +679,7 @@ export function validateConsent(
 export function createConsentRecord(
   input: LeadConsentInput,
   ipHash?: string,
-  source: LeadConsent['consentSource'] = 'form'
+  source: ConsentSource = 'form'
 ): LeadConsent {
   return {
     privacyAccepted: input.privacyAccepted,

@@ -11,6 +11,7 @@ import type {
   GranularNotificationPreferences,
   ServicePreferences,
 } from '@/lib/types';
+import { API_ENDPOINTS } from '@/lib/constants';
 
 // ── Query keys ───────────────────────────────
 
@@ -27,7 +28,7 @@ export const profileKeys = {
 export function useProfile() {
   return useQuery<UserProfile>({
     queryKey: profileKeys.user(),
-    queryFn: () => api.get<UserProfile>('/api/v1/portal/profile'),
+    queryFn: () => api.get<UserProfile>(API_ENDPOINTS.PROFILE),
     staleTime: 5 * 60_000,
   });
 }
@@ -37,7 +38,7 @@ export function useProfile() {
 export function useOrg(orgId: string) {
   return useQuery<Organization>({
     queryKey: profileKeys.org(orgId),
-    queryFn: () => api.get<Organization>(`/api/v1/portal/orgs/${orgId}`),
+    queryFn: () => api.get<Organization>(API_ENDPOINTS.ORG(orgId)),
     staleTime: 5 * 60_000,
     enabled: !!orgId,
   });
@@ -50,7 +51,7 @@ export function useUpdateSettings() {
 
   return useMutation({
     mutationFn: async (preferences: NotificationPreferences) => {
-      return api.put<UserProfile>('/api/v1/portal/profile/notifications', preferences);
+      return api.put<UserProfile>(API_ENDPOINTS.PROFILE_NOTIFICATIONS, preferences);
     },
     onMutate: async (preferences) => {
       await queryClient.cancelQueries({ queryKey: profileKeys.user() });
@@ -83,7 +84,7 @@ export function useUpdateProfile() {
 
   return useMutation({
     mutationFn: async ({ firstName, lastName }: { firstName: string; lastName: string }) => {
-      return api.put<UserProfile>('/api/v1/portal/profile', { firstName, lastName });
+      return api.put<UserProfile>(API_ENDPOINTS.PROFILE, { firstName, lastName });
     },
     onMutate: async ({ firstName, lastName }) => {
       await queryClient.cancelQueries({ queryKey: profileKeys.user() });
@@ -117,7 +118,7 @@ export function useUpdateOrg() {
 
   return useMutation({
     mutationFn: async ({ orgId, name }: { orgId: string; name: string }) => {
-      return api.put<Organization>(`/api/v1/portal/orgs/${orgId}`, { name });
+      return api.put<Organization>(API_ENDPOINTS.ORG(orgId), { name });
     },
     onSuccess: (_data, { orgId }) => {
       queryClient.invalidateQueries({ queryKey: profileKeys.org(orgId) });
@@ -130,7 +131,7 @@ export function useUpdateOrg() {
 export function useServicePreferences() {
   return useQuery<ServicePreferences>({
     queryKey: profileKeys.servicePrefs(),
-    queryFn: () => api.get<ServicePreferences>('/api/v1/portal/profile/service-preferences'),
+    queryFn: () => api.get<ServicePreferences>(API_ENDPOINTS.PROFILE_SERVICE_PREFERENCES),
     staleTime: 5 * 60_000,
   });
 }
@@ -140,7 +141,7 @@ export function useUpdateServicePreferences() {
 
   return useMutation({
     mutationFn: async (prefs: Partial<ServicePreferences>) => {
-      return api.put<ServicePreferences>('/api/v1/portal/profile/service-preferences', prefs);
+      return api.put<ServicePreferences>(API_ENDPOINTS.PROFILE_SERVICE_PREFERENCES, prefs);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: profileKeys.servicePrefs() });
@@ -154,7 +155,7 @@ export function useGranularNotifications() {
   return useQuery<GranularNotificationPreferences>({
     queryKey: profileKeys.granularNotifs(),
     queryFn: () =>
-      api.get<GranularNotificationPreferences>('/api/v1/portal/profile/notification-preferences'),
+      api.get<GranularNotificationPreferences>(API_ENDPOINTS.PROFILE_NOTIFICATION_PREFERENCES),
     staleTime: 5 * 60_000,
   });
 }
@@ -165,7 +166,7 @@ export function useUpdateGranularNotifications() {
   return useMutation({
     mutationFn: async (prefs: Partial<GranularNotificationPreferences>) => {
       return api.put<GranularNotificationPreferences>(
-        '/api/v1/portal/profile/notification-preferences',
+        API_ENDPOINTS.PROFILE_NOTIFICATION_PREFERENCES,
         prefs
       );
     },

@@ -52,7 +52,8 @@
   "footer": {
     "copyright": "All rights reserved.",
     "privacy": "Privacy Policy",
-    "terms": "Terms of Service"
+    "terms": "Terms of Service",
+    "doNotSell": "Do Not Sell My Personal Information"
   },
   "funnels": {
     "real-estate": {
@@ -5287,5 +5288,18 @@
       "body": "If you have any questions about these Terms of Service, please contact us:",
       "email": "Email: legal@kanjona.com"
     }
+  },
+  "cookieConsent": {
+    "title": "We use cookies",
+    "description": "We use cookies to enhance your experience. By continuing, you agree to our use of cookies.",
+    "acceptAll": "Accept All",
+    "rejectNonEssential": "Reject Non-Essential",
+    "managePreferences": "Manage Preferences",
+    "privacyLink": "Privacy Policy",
+    "save": "Save Preferences",
+    "analytics": "Analytics Cookies",
+    "analyticsDesc": "Help us understand how visitors interact with our website.",
+    "marketing": "Marketing Cookies",
+    "marketingDesc": "Used to deliver personalized advertisements."
   }
 }

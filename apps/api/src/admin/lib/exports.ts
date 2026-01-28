@@ -19,6 +19,7 @@ import type {
 } from '../types.js';
 import { queryLeads } from './leads.js';
 import { getDocClient, getS3Client } from '../../lib/clients.js';
+import { DB_PREFIXES } from '../../lib/constants.js';
 
 // Export expiration: 24 hours
 const EXPORT_EXPIRATION_HOURS = 24;
@@ -39,8 +40,8 @@ export async function createExportJob(
   const ttl = Math.floor(Date.now() / 1000) + EXPORT_EXPIRATION_HOURS * 60 * 60;
 
   const job: ExportJob = {
-    pk: `USER#${user.sub}`,
-    sk: `EXPORT#${timestamp}#${jobId}`,
+    pk: `${DB_PREFIXES.USER}${user.sub}`,
+    sk: `${DB_PREFIXES.EXPORT}${timestamp}#${jobId}`,
     jobId,
     userId: user.sub,
     userEmail: user.email,
@@ -94,8 +95,8 @@ export async function getExportJob(
       KeyConditionExpression: 'pk = :pk AND begins_with(sk, :skPrefix)',
       FilterExpression: 'jobId = :jobId',
       ExpressionAttributeValues: {
-        ':pk': `USER#${userId}`,
-        ':skPrefix': 'EXPORT#',
+        ':pk': `${DB_PREFIXES.USER}${userId}`,
+        ':skPrefix': DB_PREFIXES.EXPORT,
         ':jobId': jobId,
       },
     })

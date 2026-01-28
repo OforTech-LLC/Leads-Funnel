@@ -155,6 +155,29 @@ export default function DonutChart({
           </div>
         ))}
       </div>
+
+      {/* Accessible data table (visually hidden) */}
+      <div className="sr-only">
+        <table>
+          <caption>Leads by status</caption>
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Count</th>
+              <th>Percentage</th>
+            </tr>
+          </thead>
+          <tbody>
+            {segments.map((seg) => (
+              <tr key={seg.label}>
+                <td>{seg.label}</td>
+                <td>{seg.value}</td>
+                <td>{seg.percentage}%</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

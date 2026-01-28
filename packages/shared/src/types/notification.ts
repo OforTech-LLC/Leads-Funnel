@@ -3,9 +3,43 @@
  * internal teams, organizations, and individual users.
  */
 
-export type NotificationChannel = 'email' | 'sms';
-export type NotificationStatus = 'sent' | 'failed' | 'bounced';
-export type NotificationTargetType = 'internal' | 'org' | 'user';
+/**
+ * Const enum-like object for notification channels.
+ * Use `NotificationChannelEnum.EMAIL` instead of hardcoding `'email'`.
+ */
+export const NotificationChannelEnum = {
+  EMAIL: 'email',
+  SMS: 'sms',
+} as const;
+
+export type NotificationChannel =
+  (typeof NotificationChannelEnum)[keyof typeof NotificationChannelEnum];
+
+/**
+ * Const enum-like object for notification statuses.
+ * Use `NotificationStatusEnum.SENT` instead of hardcoding `'sent'`.
+ */
+export const NotificationStatusEnum = {
+  SENT: 'sent',
+  FAILED: 'failed',
+  BOUNCED: 'bounced',
+} as const;
+
+export type NotificationStatus =
+  (typeof NotificationStatusEnum)[keyof typeof NotificationStatusEnum];
+
+/**
+ * Const enum-like object for notification target types.
+ * Use `NotificationTargetTypeEnum.INTERNAL` instead of hardcoding `'internal'`.
+ */
+export const NotificationTargetTypeEnum = {
+  INTERNAL: 'internal',
+  ORG: 'org',
+  USER: 'user',
+} as const;
+
+export type NotificationTargetType =
+  (typeof NotificationTargetTypeEnum)[keyof typeof NotificationTargetTypeEnum];
 
 export interface Notification {
   notificationId: string;

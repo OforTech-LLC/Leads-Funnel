@@ -9,6 +9,11 @@
  * - Memoized handlers
  * - Extracted styles
  * - Input sanitization for XSS prevention
+ *
+ * Accessibility:
+ * - Decorative SVGs (lock icon, success checkmark) have aria-hidden="true"
+ * - Submit error message has role="alert" for screen reader announcement
+ * - Guarantee text uses text.tertiary (not text.muted) for WCAG AA contrast
  */
 
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
@@ -258,6 +263,7 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
                 fill="none"
                 stroke={tokens.colors.status.success}
                 strokeWidth="3"
+                aria-hidden="true"
               >
                 <polyline points="20 6 9 17 4 12" />
               </svg>
@@ -282,7 +288,7 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} style={formStyles.form}>
+        <form onSubmit={handleSubmit} style={formStyles.form} aria-label={title}>
           {fields.map((field) => {
             if (field.type === 'textarea') {
               return (
@@ -295,6 +301,8 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
                   error={errors[field.name]}
                   required={field.required}
                   maxLength={2000}
+                  name={field.name}
+                  id={field.name}
                 />
               );
             }
@@ -309,6 +317,8 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
                   onChange={(e) => handleChange(field.name, e.target.value)}
                   error={errors[field.name]}
                   required={field.required}
+                  name={field.name}
+                  id={field.name}
                 />
               );
             }
@@ -333,12 +343,18 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
                         ? 'name'
                         : undefined
                 }
+                name={field.name}
+                id={field.name}
               />
             );
           })}
 
           {/* Submit error */}
-          {errors.submit && <p style={formStyles.error}>{errors.submit}</p>}
+          {errors.submit && (
+            <p role="alert" aria-live="assertive" style={formStyles.error}>
+              {errors.submit}
+            </p>
+          )}
 
           {/* Submit button */}
           <GlassButton type="submit" variant="primary" size="lg" fullWidth loading={isSubmitting}>
@@ -355,6 +371,7 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
+                aria-hidden="true"
               >
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                 <path d="M7 11V7a5 5 0 0110 0v4" />
@@ -398,9 +415,10 @@ const formStyles = {
     fontSize: tokens.typography.fontSize.sm,
     margin: 0,
   },
+  // Use text.tertiary instead of text.muted for WCAG AA contrast
   guarantee: {
     fontSize: tokens.typography.fontSize.sm,
-    color: tokens.colors.text.muted,
+    color: tokens.colors.text.tertiary,
     textAlign: 'center' as const,
     margin: 0,
     display: 'flex',

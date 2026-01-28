@@ -3,7 +3,17 @@
  * Users are individuals who belong to organizations and interact with leads.
  */
 
-export type UserStatus = 'active' | 'inactive' | 'invited';
+/**
+ * Const enum-like object for user statuses.
+ * Use `UserStatusEnum.ACTIVE` instead of hardcoding `'active'`.
+ */
+export const UserStatusEnum = {
+  ACTIVE: 'active',
+  INACTIVE: 'inactive',
+  INVITED: 'invited',
+} as const;
+
+export type UserStatus = (typeof UserStatusEnum)[keyof typeof UserStatusEnum];
 
 export interface User {
   userId: string;

@@ -10,6 +10,7 @@ import { PutCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
 import { getDocClient, tableName } from './client.js';
 import { ulid } from '../../lib/id.js';
 import { signCursor, verifyCursor } from '../cursor.js';
+import { DB_PREFIXES, GSI_KEYS, GSI_INDEX_NAMES } from '../constants.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -89,7 +90,7 @@ export async function recordAudit(input: RecordAuditInput): Promise<AuditEntry> 
   const ttl = Math.floor(Date.now() / 1000) + AUDIT_RETENTION_DAYS * 86400;
 
   const entry: AuditEntry = {
-    pk: `AUDIT#${input.actorId}`,
+    pk: `${DB_PREFIXES.AUDIT}${input.actorId}`,
     sk: `${now}#${id}`,
     auditId: id,
     actorId: input.actorId,
@@ -101,7 +102,7 @@ export async function recordAudit(input: RecordAuditInput): Promise<AuditEntry> 
     ipHash: input.ipHash,
     timestamp: now,
     ttl,
-    gsi1pk: 'AUDITLOG',
+    gsi1pk: GSI_KEYS.AUDITLOG,
     gsi1sk: now,
   };
 
@@ -144,7 +145,7 @@ export async function listAuditByActor(
     new QueryCommand({
       TableName: tableName(),
       KeyConditionExpression: 'pk = :pk',
-      ExpressionAttributeValues: { ':pk': `AUDIT#${actorId}` },
+      ExpressionAttributeValues: { ':pk': `${DB_PREFIXES.AUDIT}${actorId}` },
       Limit: limit,
       ScanIndexForward: false,
       ExclusiveStartKey: exclusiveStartKey,
@@ -181,7 +182,7 @@ export async function listAudit(
   }
 
   let keyCondition = 'gsi1pk = :pk';
-  const exprValues: Record<string, unknown> = { ':pk': 'AUDITLOG' };
+  const exprValues: Record<string, unknown> = { ':pk': GSI_KEYS.AUDITLOG };
 
   if (startDate && endDate) {
     keyCondition += ' AND gsi1sk BETWEEN :start AND :end';
@@ -192,7 +193,7 @@ export async function listAudit(
   const result = await doc.send(
     new QueryCommand({
       TableName: tableName(),
-      IndexName: 'GSI1',
+      IndexName: GSI_INDEX_NAMES.GSI1,
       KeyConditionExpression: keyCondition,
       ExpressionAttributeValues: exprValues,
       Limit: limit,

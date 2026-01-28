@@ -3,6 +3,9 @@
 /**
  * Funnel Benefits Component
  * Benefits/features section for service funnel pages
+ *
+ * Accessibility:
+ * - All decorative SVG icons have aria-hidden="true"
  */
 
 import { useTranslations } from 'next-intl';
@@ -122,6 +125,7 @@ function BenefitIcon({ icon, color }: { icon: BenefitIconType; color: string }) 
     strokeWidth: 2,
     strokeLinecap: 'round' as const,
     strokeLinejoin: 'round' as const,
+    'aria-hidden': true as const,
   };
 
   switch (icon) {

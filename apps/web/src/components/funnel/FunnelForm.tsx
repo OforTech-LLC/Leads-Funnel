@@ -4,6 +4,11 @@
  * Funnel Form Component
  * Lead capture form for service funnel pages with enhanced trust badges.
  * Supports A/B testing between single-step (LeadForm) and multi-step (MultiStepForm).
+ *
+ * Accessibility:
+ * - All decorative SVG icons in trust badges have aria-hidden="true"
+ * - Star rating container has aria-hidden="true" (purely decorative)
+ * - People counter SVG has aria-hidden="true"
  */
 
 import { useTranslations } from 'next-intl';
@@ -94,7 +99,7 @@ export function FunnelForm({ service, formVariant }: FunnelFormProps) {
         {/* Aggregate rating display */}
         <FadeIn delay={0.5}>
           <div style={formStyles.ratingRow}>
-            <div style={formStyles.starsRow}>
+            <div style={formStyles.starsRow} aria-hidden="true">
               {[1, 2, 3, 4, 5].map((s) => (
                 <span key={`form-star-${s}`} style={{ color: '#FBBF24', fontSize: '18px' }}>
                   ★
@@ -117,6 +122,7 @@ export function FunnelForm({ service, formVariant }: FunnelFormProps) {
               fill="none"
               stroke="#22C55E"
               strokeWidth="2"
+              aria-hidden="true"
             >
               <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
               <circle cx="9" cy="7" r="4" />
@@ -172,6 +178,7 @@ function TrustBadge({ icon, text }: { icon: string; text: string }) {
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
+          aria-hidden="true"
         >
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
         </svg>
@@ -184,6 +191,7 @@ function TrustBadge({ icon, text }: { icon: string; text: string }) {
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
+          aria-hidden="true"
         >
           <circle cx="12" cy="12" r="10" />
           <path d="M12 6v6l4 2" />
@@ -197,6 +205,7 @@ function TrustBadge({ icon, text }: { icon: string; text: string }) {
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
+          aria-hidden="true"
         >
           <path d="M20 6L9 17l-5-5" />
         </svg>
@@ -209,25 +218,57 @@ function TrustBadge({ icon, text }: { icon: string; text: string }) {
 function EnhancedBadge({ icon, text }: { icon: string; text: string }) {
   const iconMap: Record<string, React.ReactNode> = {
     lock: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2">
+      <svg
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#22C55E"
+        strokeWidth="2"
+        aria-hidden="true"
+      >
         <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
         <path d="M7 11V7a5 5 0 0 1 10 0v4" />
       </svg>
     ),
     noSpam: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2">
+      <svg
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#22C55E"
+        strokeWidth="2"
+        aria-hidden="true"
+      >
         <circle cx="12" cy="12" r="10" />
         <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
       </svg>
     ),
     privacyProtected: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2">
+      <svg
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#22C55E"
+        strokeWidth="2"
+        aria-hidden="true"
+      >
         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
         <circle cx="12" cy="12" r="3" />
       </svg>
     ),
     verified: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2">
+      <svg
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#22C55E"
+        strokeWidth="2"
+        aria-hidden="true"
+      >
         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
         <polyline points="22 4 12 14.01 9 11.01" />
       </svg>

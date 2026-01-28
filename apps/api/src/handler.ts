@@ -14,13 +14,7 @@ import { publishLeadCreatedEvent } from './lib/events.js';
 import { getElapsedMs } from './lib/time.js';
 import * as http from './lib/http.js';
 import { v4 as uuidv4 } from 'uuid';
-
-// =============================================================================
-// Security Constants
-// =============================================================================
-
-// Maximum payload size (10KB) - prevents DoS via large payloads
-const MAX_PAYLOAD_SIZE = 10 * 1024; // 10KB in bytes
+import { MAX_LEAD_PAYLOAD_SIZE } from './lib/constants.js';
 
 // =============================================================================
 // Environment Configuration
@@ -90,7 +84,7 @@ function checkPayloadSize(body: string | undefined): { valid: boolean; size: num
   const size = Buffer.byteLength(body, 'utf8');
 
   return {
-    valid: size <= MAX_PAYLOAD_SIZE,
+    valid: size <= MAX_LEAD_PAYLOAD_SIZE,
     size,
   };
 }
@@ -200,7 +194,7 @@ export async function handler(
       message: 'Payload too large',
       errorCode: 'PAYLOAD_TOO_LARGE',
     });
-    return addRequestIdHeader(http.payloadTooLarge(MAX_PAYLOAD_SIZE), requestId);
+    return addRequestIdHeader(http.payloadTooLarge(MAX_LEAD_PAYLOAD_SIZE), requestId);
   }
 
   const config = loadConfig();

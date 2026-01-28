@@ -21,6 +21,18 @@
   --color-status-dnc: #6b7280;
 }
 
+/* ── Focus indicators (accessibility) ────────── */
+
+:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;

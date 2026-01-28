@@ -314,6 +314,7 @@ export default function LeadsPage() {
               <th>Phone</th>
               <th>Status</th>
               <th>Pipeline</th>
+              <th>AI Analysis</th>
               <th>Created</th>
               {canWrite && <th>Actions</th>}
             </tr>
@@ -321,14 +322,14 @@ export default function LeadsPage() {
           <tbody>
             {loading && leads.length === 0 ? (
               <tr>
-                <td colSpan={canWrite ? 8 : 6} className="loading-cell">
+                <td colSpan={canWrite ? 9 : 7} className="loading-cell">
                   <div className="loading-spinner" />
                   <span>Loading leads...</span>
                 </td>
               </tr>
             ) : leads.length === 0 ? (
               <tr>
-                <td colSpan={canWrite ? 8 : 6} className="empty-cell">
+                <td colSpan={canWrite ? 9 : 7} className="empty-cell">
                   No leads found
                 </td>
               </tr>
@@ -356,6 +357,16 @@ export default function LeadsPage() {
                     <span className={`pipeline-badge ${lead.pipelineStatus}`}>
                       {formatPipeline(lead.pipelineStatus)}
                     </span>
+                  </td>
+                  <td>
+                    {/* UI Fix 5: Handle async analysis race condition */}
+                    {lead.analysis ? (
+                      <span title={lead.analysis.summary}>
+                        {lead.analysis.urgency.toUpperCase()} / {lead.analysis.intent}
+                      </span>
+                    ) : (
+                      <span className="text-gray-500 italic">Processing...</span>
+                    )}
                   </td>
                   <td>{new Date(lead.createdAt).toLocaleDateString()}</td>
                   {canWrite && (

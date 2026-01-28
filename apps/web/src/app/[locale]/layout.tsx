@@ -9,6 +9,9 @@ import { StoreProvider } from './StoreProvider';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { WebVitalsReporter } from '@/components/WebVitalsReporter';
 import { GoogleAnalytics } from '@/components/GoogleAnalytics';
+import { CookieConsent } from '@/components/CookieConsent';
+
+import '../globals.css';
 
 /**
  * Generate static params for all supported locales
@@ -36,8 +39,9 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
  */
 function LoadingFallback() {
   return (
-    <div style={loadingStyles.container}>
+    <div style={loadingStyles.container} role="status">
       <div style={loadingStyles.spinner} />
+      <span className="sr-only">Loading...</span>
       <style>{`
         @keyframes spin {
           to { transform: rotate(360deg); }
@@ -80,17 +84,37 @@ export default async function LocaleLayout({
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
       </head>
       <body style={bodyStyles}>
-        {/* Google Analytics 4 */}
+        {/* Skip-to-content link (WCAG 2.4.1 - Bypass Blocks) */}
+        <a
+          href="#main-content"
+          style={skipLinkStyles}
+          onFocus={(e) => {
+            // Apply visible styles on focus via inline override
+            Object.assign(e.currentTarget.style, skipLinkFocusStyles);
+          }}
+          onBlur={(e) => {
+            // Re-apply sr-only styles on blur
+            Object.assign(e.currentTarget.style, skipLinkStyles);
+          }}
+        >
+          Skip to content
+        </a>
+
+        {/* Google Analytics 4 - respects cookie consent */}
         <GoogleAnalytics />
         <NextIntlClientProvider messages={messages}>
           <StoreProvider>
             {/* ErrorBoundary is a Client Component - do not pass onError from Server Component */}
             {/* Error logging is handled internally by ErrorBoundary's componentDidCatch */}
             <ErrorBoundary>
-              <Suspense fallback={<LoadingFallback />}>{children}</Suspense>
+              <Suspense fallback={<LoadingFallback />}>
+                <div id="main-content">{children}</div>
+              </Suspense>
             </ErrorBoundary>
             {/* Core Web Vitals tracking */}
             <WebVitalsReporter />
+            {/* Cookie Consent Banner - GDPR/CCPA compliant */}
+            <CookieConsent />
           </StoreProvider>
         </NextIntlClientProvider>
       </body>
@@ -133,4 +157,42 @@ const loadingStyles = {
     borderRadius: '50%',
     animation: 'spin 1s linear infinite',
   } as React.CSSProperties,
+};
+
+/**
+ * Skip link styles (visually hidden by default, visible on focus)
+ */
+const skipLinkStyles: React.CSSProperties = {
+  position: 'absolute',
+  width: '1px',
+  height: '1px',
+  padding: '0',
+  margin: '-1px',
+  overflow: 'hidden',
+  clip: 'rect(0, 0, 0, 0)',
+  whiteSpace: 'nowrap',
+  borderWidth: '0',
+  textDecoration: 'none',
+};
+
+const skipLinkFocusStyles: React.CSSProperties = {
+  position: 'fixed',
+  top: '16px',
+  left: '16px',
+  width: 'auto',
+  height: 'auto',
+  padding: '8px 16px',
+  margin: '0',
+  overflow: 'visible',
+  clip: 'auto',
+  whiteSpace: 'normal',
+  borderWidth: '0',
+  zIndex: 200,
+  backgroundColor: '#ffffff',
+  color: '#000000',
+  borderRadius: '8px',
+  boxShadow: '0 4px 14px rgba(0, 0, 0, 0.3)',
+  fontSize: '14px',
+  fontWeight: 600,
+  textDecoration: 'none',
 };

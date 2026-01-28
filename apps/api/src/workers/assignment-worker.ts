@@ -38,6 +38,7 @@ import { createLogger } from '../lib/logging.js';
 import { matchLeadToRule } from '../lib/assignment/matcher.js';
 import { checkAndIncrementCap } from '../lib/assignment/caps.js';
 import { emitLeadAssigned, emitLeadUnassigned } from '../lib/events.js';
+import { DB_PREFIXES, DB_SORT_KEYS, GSI_KEYS } from '../lib/constants.js';
 
 const log = createLogger('assignment-worker');
 
@@ -225,8 +226,8 @@ async function getLead(
       new GetCommand({
         TableName: config.ddbTableName,
         Key: {
-          pk: `LEAD#${leadId}`,
-          sk: `FUNNEL#${funnelId}`,
+          pk: `${DB_PREFIXES.LEAD}${leadId}`,
+          sk: `${GSI_KEYS.FUNNEL}${funnelId}`,
         },
       })
     );
@@ -269,8 +270,8 @@ async function assignLead(
       new UpdateCommand({
         TableName: config.ddbTableName,
         Key: {
-          pk: `LEAD#${leadId}`,
-          sk: `FUNNEL#${funnelId}`,
+          pk: `${DB_PREFIXES.LEAD}${leadId}`,
+          sk: `${GSI_KEYS.FUNNEL}${funnelId}`,
         },
         UpdateExpression: [
           'SET assignedOrgId = :orgId',
@@ -294,12 +295,12 @@ async function assignLead(
           ':assignedAt': now,
           ':updatedAt': now,
           ...(assignedUserId ? { ':userId': assignedUserId } : {}),
-          ':gsi2pk': `ORG#${assignedOrgId}#LEADS`,
-          ':gsi2sk': `ASSIGNED#${now}`,
+          ':gsi2pk': `${GSI_KEYS.ORG}${assignedOrgId}${GSI_KEYS.ORG_LEADS_SUFFIX}`,
+          ':gsi2sk': `${GSI_KEYS.ASSIGNED}${now}`,
           ...(assignedUserId
             ? {
-                ':gsi3pk': `USER#${assignedUserId}#LEADS`,
-                ':gsi3sk': `ASSIGNED#${now}`,
+                ':gsi3pk': `${DB_PREFIXES.USER}${assignedUserId}${GSI_KEYS.USER_LEADS_SUFFIX}`,
+                ':gsi3sk': `${GSI_KEYS.ASSIGNED}${now}`,
               }
             : {}),
         },
@@ -337,8 +338,8 @@ async function isTargetActive(
       new GetCommand({
         TableName: config.ddbTableName,
         Key: {
-          pk: `ORG#${rule.orgId}`,
-          sk: 'META',
+          pk: `${DB_PREFIXES.ORG}${rule.orgId}`,
+          sk: DB_SORT_KEYS.META,
         },
         ProjectionExpression: '#status',
         ExpressionAttributeNames: {
@@ -357,8 +358,8 @@ async function isTargetActive(
         new GetCommand({
           TableName: config.ddbTableName,
           Key: {
-            pk: `USER#${rule.targetId}`,
-            sk: 'META',
+            pk: `${DB_PREFIXES.USER}${rule.targetId}`,
+            sk: DB_SORT_KEYS.META,
           },
           ProjectionExpression: '#status',
           ExpressionAttributeNames: {
@@ -403,8 +404,8 @@ async function writeUnassignedRecord(
   const ttl = Math.floor(Date.now() / 1000) + 90 * 24 * 60 * 60;
 
   const record: UnassignedLeadRecord = {
-    pk: `UNASSIGNED#${leadId}`,
-    sk: `FUNNEL#${funnelId}`,
+    pk: `${DB_PREFIXES.UNASSIGNED}${leadId}`,
+    sk: `${GSI_KEYS.FUNNEL}${funnelId}`,
     leadId,
     funnelId,
     zipCode,

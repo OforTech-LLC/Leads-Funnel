@@ -13,6 +13,7 @@
 
 import { useState, useCallback, useRef, useMemo } from 'react';
 import { useToast } from './Toast';
+import { escapeCsvValue } from '@/lib/csv';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -43,6 +44,8 @@ const LEAD_FIELDS = [
 ];
 
 const REQUIRED_FIELDS = LEAD_FIELDS.filter((f) => f.required).map((f) => f.value);
+
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 // ---------------------------------------------------------------------------
 // Step indicators
@@ -120,6 +123,7 @@ export default function ImportWizard({ onImport }: ImportWizardProps) {
   const [importProgress, setImportProgress] = useState(0);
   const [result, setResult] = useState<ImportResult | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const toast = useToast();
 
@@ -184,6 +188,12 @@ export default function ImportWizard({ onImport }: ImportWizardProps) {
         toast.error('Please upload a CSV file');
         return;
       }
+      if (f.size > MAX_FILE_SIZE) {
+        setError('File size exceeds 10MB limit');
+        toast.error('File size exceeds 10MB limit');
+        return;
+      }
+      setError(null);
       setFile(f);
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -286,12 +296,14 @@ export default function ImportWizard({ onImport }: ImportWizardProps) {
     }
   }, [mappedData, onImport, toast]);
 
-  // Download error report
+  // Download error report (with CSV injection protection)
   const downloadErrorReport = useCallback(() => {
     if (!result?.errors.length) return;
     const csvContent = [
       'Row,Field,Message',
-      ...result.errors.map((e) => `${e.row},"${e.field}","${e.message}"`),
+      ...result.errors.map(
+        (e) => `${e.row},${escapeCsvValue(e.field)},${escapeCsvValue(e.message)}`
+      ),
     ].join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -312,6 +324,7 @@ export default function ImportWizard({ onImport }: ImportWizardProps) {
     setValidationErrors([]);
     setImportProgress(0);
     setResult(null);
+    setError(null);
   }, []);
 
   const previewRows = rows.slice(0, 5);
@@ -322,47 +335,56 @@ export default function ImportWizard({ onImport }: ImportWizardProps) {
 
       {/* Step 1: Upload */}
       {step === 1 && (
-        <div
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          className={`border-2 border-dashed rounded-lg p-12 text-center transition-colors cursor-pointer ${
-            isDragging
-              ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-              : 'border-[var(--border-color)] hover:border-[var(--text-tertiary)]'
-          }`}
-          onClick={() => fileInputRef.current?.click()}
-          role="button"
-          aria-label="Upload CSV file"
-        >
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".csv"
-            onChange={(e) => {
-              const f = e.target.files?.[0];
-              if (f) handleFile(f);
-            }}
-            className="hidden"
-          />
-          <svg
-            className="w-12 h-12 mx-auto text-[var(--text-tertiary)] mb-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+        <>
+          <div
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            className={`border-2 border-dashed rounded-lg p-12 text-center transition-colors cursor-pointer ${
+              isDragging
+                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                : 'border-[var(--border-color)] hover:border-[var(--text-tertiary)]'
+            }`}
+            onClick={() => fileInputRef.current?.click()}
+            role="button"
+            aria-label="Upload CSV file"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".csv"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) handleFile(f);
+              }}
+              className="hidden"
             />
-          </svg>
-          <p className="text-sm text-[var(--text-primary)] font-medium">
-            Drop your CSV file here or click to browse
-          </p>
-          <p className="text-xs text-[var(--text-tertiary)] mt-1">Only .csv files are accepted</p>
-        </div>
+            <svg
+              className="w-12 h-12 mx-auto text-[var(--text-tertiary)] mb-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+              />
+            </svg>
+            <p className="text-sm text-[var(--text-primary)] font-medium">
+              Drop your CSV file here or click to browse
+            </p>
+            <p className="text-xs text-[var(--text-tertiary)] mt-1">
+              Only .csv files are accepted (max 10MB)
+            </p>
+          </div>
+          {error && (
+            <div className="rounded-md border border-red-200 bg-red-50 dark:bg-red-900/20 dark:border-red-800 p-4">
+              <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+            </div>
+          )}
+        </>
       )}
 
       {/* Step 2: Column Mapping */}

@@ -3,6 +3,12 @@
 /**
  * Glass UI Primitives
  * Glassmorphism / Liquid Glass Components
+ *
+ * Accessibility:
+ * - Decorative SVGs have aria-hidden="true"
+ * - Error messages have role="alert" for screen reader announcements
+ * - TestimonialCard role text uses text.tertiary (not text.muted) for contrast
+ * - FAQAccordion chevrons have aria-hidden="true"
  */
 
 import React, { forwardRef, useState } from 'react';
@@ -67,7 +73,7 @@ export const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(
       xl: tokens.spacing[12],
     };
 
-    const baseStyles: React.CSSProperties = {
+    const baseStyles: any = {
       ...getGlassStyles(variant),
       borderRadius: tokens.radii.card,
       padding: paddingValues[padding as GlassSize],
@@ -157,7 +163,7 @@ export const GlassButton = forwardRef<HTMLButtonElement, GlassButtonProps>(
       },
     };
 
-    const baseStyles: React.CSSProperties = {
+    const baseStyles: any = {
       ...variantStyles[variant as ButtonVariant],
       ...sizeStyles[size as GlassSize],
       borderRadius: tokens.radii.button,
@@ -197,6 +203,7 @@ export const GlassButton = forwardRef<HTMLButtonElement, GlassButtonProps>(
           <motion.span
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+            aria-hidden="true"
             style={{
               display: 'inline-block',
               width: '1em',
@@ -252,7 +259,7 @@ export const GlassInput = forwardRef<HTMLInputElement, GlassInputProps>(
       alignItems: 'center',
     };
 
-    const inputStyles: React.CSSProperties = {
+    const inputStyles: any = {
       ...getGlassStyles('light'),
       ...sizeStyles[size],
       width: '100%',
@@ -293,14 +300,24 @@ export const GlassInput = forwardRef<HTMLInputElement, GlassInputProps>(
       pointerEvents: 'none',
     };
 
+    // Generate a stable ID for error association
+    const fieldId = props.id || props.name;
+    const errorId = fieldId ? `${fieldId}-glass-error` : undefined;
+
     return (
       <div style={containerStyles}>
         {label && <label style={labelStyles}>{label}</label>}
         <div style={inputWrapperStyles}>
-          {icon && <span style={iconStyles}>{icon}</span>}
+          {icon && (
+            <span style={iconStyles} aria-hidden="true">
+              {icon}
+            </span>
+          )}
           <input
             ref={ref}
             style={inputStyles}
+            aria-invalid={!!error}
+            aria-describedby={error && errorId ? errorId : undefined}
             onFocus={(e) => {
               setFocused(true);
               props.onFocus?.(e);
@@ -312,7 +329,11 @@ export const GlassInput = forwardRef<HTMLInputElement, GlassInputProps>(
             {...props}
           />
         </div>
-        {error && <span style={errorStyles}>{error}</span>}
+        {error && (
+          <span id={errorId} role="alert" aria-live="assertive" style={errorStyles}>
+            {error}
+          </span>
+        )}
       </div>
     );
   }
@@ -344,7 +365,7 @@ export const GlassTextarea = forwardRef<HTMLTextAreaElement, GlassTextareaProps>
       xl: { padding: '20px 24px', fontSize: tokens.typography.fontSize.xl },
     };
 
-    const textareaStyles: React.CSSProperties = {
+    const textareaStyles: any = {
       ...getGlassStyles('light'),
       ...sizeStyles[size],
       width: '100%',
@@ -364,6 +385,9 @@ export const GlassTextarea = forwardRef<HTMLTextAreaElement, GlassTextareaProps>
       ...style,
     };
 
+    const fieldId = props.id || props.name;
+    const errorId = fieldId ? `${fieldId}-glass-error` : undefined;
+
     return (
       <div
         style={{ display: 'flex', flexDirection: 'column', gap: tokens.spacing[2], width: '100%' }}
@@ -382,6 +406,8 @@ export const GlassTextarea = forwardRef<HTMLTextAreaElement, GlassTextareaProps>
         <textarea
           ref={ref}
           style={textareaStyles}
+          aria-invalid={!!error}
+          aria-describedby={error && errorId ? errorId : undefined}
           onFocus={(e) => {
             setFocused(true);
             props.onFocus?.(e);
@@ -394,6 +420,9 @@ export const GlassTextarea = forwardRef<HTMLTextAreaElement, GlassTextareaProps>
         />
         {error && (
           <span
+            id={errorId}
+            role="alert"
+            aria-live="assertive"
             style={{ color: tokens.colors.status.error, fontSize: tokens.typography.fontSize.sm }}
           >
             {error}
@@ -438,7 +467,7 @@ export const GlassSection = forwardRef<HTMLElement, GlassSectionProps>(
       xl: `${tokens.spacing[24]} ${tokens.spacing[12]}`,
     };
 
-    const sectionStyles: React.CSSProperties = {
+    const sectionStyles: any = {
       ...getGlassStyles(variant),
       padding: paddingValues[padding as GlassSize],
       borderRadius: fullWidth ? 0 : tokens.radii['2xl'],
@@ -498,7 +527,7 @@ export const GlassDivider: React.FC<GlassDividerProps> = ({
           boxShadow: glow ? tokens.shadows.glowPurple : 'none',
         };
 
-  return <div style={styles} />;
+  return <div style={styles} aria-hidden="true" />;
 };
 
 // =============================================================================
@@ -590,7 +619,10 @@ export const TestimonialCard: React.FC<TestimonialCardProps> = ({
   return (
     <GlassCard variant="medium" padding="lg" glow>
       {rating && (
-        <div style={{ display: 'flex', gap: tokens.spacing[1], marginBottom: tokens.spacing[4] }}>
+        <div
+          style={{ display: 'flex', gap: tokens.spacing[1], marginBottom: tokens.spacing[4] }}
+          aria-label={`Rating: ${rating} out of 5 stars`}
+        >
           {STAR_POSITIONS.map((starPosition) => (
             <svg
               key={`testimonial-star-${starPosition}`}
@@ -600,6 +632,7 @@ export const TestimonialCard: React.FC<TestimonialCardProps> = ({
               fill={
                 starPosition <= rating ? tokens.colors.accent.primary : tokens.colors.border.subtle
               }
+              aria-hidden="true"
             >
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
             </svg>
@@ -643,7 +676,10 @@ export const TestimonialCard: React.FC<TestimonialCardProps> = ({
           </div>
           {role && (
             <div
-              style={{ color: tokens.colors.text.muted, fontSize: tokens.typography.fontSize.sm }}
+              style={{
+                color: tokens.colors.text.tertiary,
+                fontSize: tokens.typography.fontSize.sm,
+              }}
             >
               {role}
             </div>
@@ -685,6 +721,15 @@ export const FAQAccordion: React.FC<FAQAccordionProps> = ({ items }) => {
             hover={false}
             style={{ cursor: 'pointer' }}
             onClick={() => setOpenIndex(openIndex === itemIndex ? null : itemIndex)}
+            role="button"
+            aria-expanded={openIndex === itemIndex}
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setOpenIndex(openIndex === itemIndex ? null : itemIndex);
+              }
+            }}
           >
             <div
               style={{
@@ -708,6 +753,7 @@ export const FAQAccordion: React.FC<FAQAccordionProps> = ({ items }) => {
                 animate={{ rotate: openIndex === itemIndex ? 180 : 0 }}
                 transition={{ duration: 0.2 }}
                 style={{ color: tokens.colors.accent.primary, flexShrink: 0 }}
+                aria-hidden="true"
               >
                 <svg
                   width="24"
@@ -716,6 +762,7 @@ export const FAQAccordion: React.FC<FAQAccordionProps> = ({ items }) => {
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
+                  aria-hidden="true"
                 >
                   <polyline points="6 9 12 15 18 9" />
                 </svg>
@@ -827,7 +874,7 @@ export const GlassSelect = forwardRef<HTMLSelectElement, GlassSelectProps>(
       xl: { padding: '20px 24px', fontSize: tokens.typography.fontSize.xl },
     };
 
-    const selectStyles: React.CSSProperties = {
+    const selectStyles: any = {
       ...getGlassStyles('light'),
       ...sizeStyles[size],
       width: '100%',
@@ -852,6 +899,9 @@ export const GlassSelect = forwardRef<HTMLSelectElement, GlassSelectProps>(
       ...style,
     };
 
+    const fieldId = props.id || props.name;
+    const errorId = fieldId ? `${fieldId}-glass-error` : undefined;
+
     return (
       <div
         style={{ display: 'flex', flexDirection: 'column', gap: tokens.spacing[2], width: '100%' }}
@@ -870,6 +920,8 @@ export const GlassSelect = forwardRef<HTMLSelectElement, GlassSelectProps>(
         <select
           ref={ref}
           style={selectStyles}
+          aria-invalid={!!error}
+          aria-describedby={error && errorId ? errorId : undefined}
           onFocus={(e) => {
             setFocused(true);
             props.onFocus?.(e);
@@ -892,6 +944,9 @@ export const GlassSelect = forwardRef<HTMLSelectElement, GlassSelectProps>(
         </select>
         {error && (
           <span
+            id={errorId}
+            role="alert"
+            aria-live="assertive"
             style={{ color: tokens.colors.status.error, fontSize: tokens.typography.fontSize.sm }}
           >
             {error}

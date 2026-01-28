@@ -14,6 +14,7 @@ import { signCursor, verifyCursor } from '../cursor.js';
 import { ValidationError } from '../errors.js';
 import { v4 as uuidv4 } from 'uuid';
 import { createHash } from 'node:crypto';
+import { DB_PREFIXES, DB_SORT_KEYS, GSI_KEYS, GSI_INDEX_NAMES } from '../constants.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -200,8 +201,8 @@ export async function createLead(input: CreateLeadInput): Promise<PlatformLead> 
   const emailHash = createHash('sha256').update(input.email.toLowerCase().trim()).digest('hex');
 
   const lead: PlatformLead = {
-    pk: `LEAD#${input.funnelId}#${leadId}`,
-    sk: 'META',
+    pk: `${DB_PREFIXES.LEAD}${input.funnelId}#${leadId}`,
+    sk: DB_SORT_KEYS.META,
     leadId,
     funnelId: input.funnelId,
     name: input.name || '',
@@ -219,10 +220,10 @@ export async function createLead(input: CreateLeadInput): Promise<PlatformLead> 
     createdAt: now,
     updatedAt: now,
     // GSI projections
-    gsi1pk: `FUNNEL#${input.funnelId}`,
-    gsi1sk: `CREATED#${now}`,
-    gsi3pk: `STATUS#${input.funnelId}#${status}`,
-    gsi3sk: `CREATED#${now}`,
+    gsi1pk: `${GSI_KEYS.FUNNEL}${input.funnelId}`,
+    gsi1sk: `${GSI_KEYS.CREATED}${now}`,
+    gsi3pk: `${GSI_KEYS.STATUS}${input.funnelId}#${status}`,
+    gsi3sk: `${GSI_KEYS.CREATED}${now}`,
   };
 
   await doc.send(
@@ -240,7 +241,7 @@ export async function getLead(funnelId: string, leadId: string): Promise<Platfor
   const result = await doc.send(
     new GetCommand({
       TableName: tableName(),
-      Key: { pk: `LEAD#${funnelId}#${leadId}`, sk: 'META' },
+      Key: { pk: `${DB_PREFIXES.LEAD}${funnelId}#${leadId}`, sk: DB_SORT_KEYS.META },
     })
   );
   return (result.Item as PlatformLead | undefined) || null;
@@ -283,15 +284,15 @@ export async function updateLead(input: UpdateLeadInput): Promise<PlatformLead> 
     values[':status'] = input.status;
     // Update status GSI
     parts.push('gsi3pk = :gsi3pk');
-    values[':gsi3pk'] = `STATUS#${input.funnelId}#${input.status}`;
+    values[':gsi3pk'] = `${GSI_KEYS.STATUS}${input.funnelId}#${input.status}`;
   }
   if (input.orgId !== undefined) {
     parts.push('orgId = :orgId');
     values[':orgId'] = input.orgId;
     // Update org GSI
     parts.push('gsi2pk = :gsi2pk, gsi2sk = :gsi2sk');
-    values[':gsi2pk'] = `ORG#${input.orgId}`;
-    values[':gsi2sk'] = `CREATED#${now}`;
+    values[':gsi2pk'] = `${GSI_KEYS.ORG}${input.orgId}`;
+    values[':gsi2sk'] = `${GSI_KEYS.CREATED}${now}`;
   }
   if (input.assignedUserId !== undefined) {
     parts.push('assignedUserId = :assignedUserId');
@@ -321,7 +322,7 @@ export async function updateLead(input: UpdateLeadInput): Promise<PlatformLead> 
   const result = await doc.send(
     new UpdateCommand({
       TableName: tableName(),
-      Key: { pk: `LEAD#${input.funnelId}#${input.leadId}`, sk: 'META' },
+      Key: { pk: `${DB_PREFIXES.LEAD}${input.funnelId}#${input.leadId}`, sk: DB_SORT_KEYS.META },
       UpdateExpression: `SET ${parts.join(', ')}`,
       ExpressionAttributeNames: names,
       ExpressionAttributeValues: values,
@@ -350,7 +351,7 @@ export async function assignLead(
     const result = await doc.send(
       new UpdateCommand({
         TableName: tableName(),
-        Key: { pk: `LEAD#${funnelId}#${leadId}`, sk: 'META' },
+        Key: { pk: `${DB_PREFIXES.LEAD}${funnelId}#${leadId}`, sk: DB_SORT_KEYS.META },
         UpdateExpression: `SET #status = :assigned, orgId = :orgId, ruleId = :ruleId,
           assignedAt = :now, #updatedAt = :now,
           gsi2pk = :gsi2pk, gsi2sk = :gsi2sk,
@@ -364,9 +365,9 @@ export async function assignLead(
           ':orgId': orgId,
           ':ruleId': ruleId,
           ':now': now,
-          ':gsi2pk': `ORG#${orgId}`,
-          ':gsi2sk': `CREATED#${now}`,
-          ':gsi3pk': `STATUS#${funnelId}#assigned`,
+          ':gsi2pk': `${GSI_KEYS.ORG}${orgId}`,
+          ':gsi2sk': `${GSI_KEYS.CREATED}${now}`,
+          ':gsi3pk': `${GSI_KEYS.STATUS}${funnelId}#assigned`,
           ':new': 'new',
         },
         ConditionExpression: 'attribute_exists(pk) AND #status = :new',
@@ -402,7 +403,7 @@ export async function markUnassigned(
     const result = await doc.send(
       new UpdateCommand({
         TableName: tableName(),
-        Key: { pk: `LEAD#${funnelId}#${leadId}`, sk: 'META' },
+        Key: { pk: `${DB_PREFIXES.LEAD}${funnelId}#${leadId}`, sk: DB_SORT_KEYS.META },
         UpdateExpression: `SET #status = :unassigned, #updatedAt = :now,
           gsi3pk = :gsi3pk`,
         ExpressionAttributeNames: {
@@ -412,7 +413,7 @@ export async function markUnassigned(
         ExpressionAttributeValues: {
           ':unassigned': 'unassigned',
           ':now': now,
-          ':gsi3pk': `STATUS#${funnelId}#unassigned`,
+          ':gsi3pk': `${GSI_KEYS.STATUS}${funnelId}#unassigned`,
           ':new': 'new',
         },
         ConditionExpression: 'attribute_exists(pk) AND #status = :new',
@@ -448,7 +449,7 @@ export async function reassignLead(
   const result = await doc.send(
     new UpdateCommand({
       TableName: tableName(),
-      Key: { pk: `LEAD#${funnelId}#${leadId}`, sk: 'META' },
+      Key: { pk: `${DB_PREFIXES.LEAD}${funnelId}#${leadId}`, sk: DB_SORT_KEYS.META },
       UpdateExpression: `SET orgId = :orgId, ruleId = :ruleId, assignedAt = :now,
         #status = :assigned, #updatedAt = :now,
         gsi2pk = :gsi2pk, gsi2sk = :gsi2sk,
@@ -462,9 +463,9 @@ export async function reassignLead(
         ':ruleId': newRuleId || null,
         ':assigned': 'assigned',
         ':now': now,
-        ':gsi2pk': `ORG#${newOrgId}`,
-        ':gsi2sk': `CREATED#${now}`,
-        ':gsi3pk': `STATUS#${funnelId}#assigned`,
+        ':gsi2pk': `${GSI_KEYS.ORG}${newOrgId}`,
+        ':gsi2sk': `${GSI_KEYS.CREATED}${now}`,
+        ':gsi3pk': `${GSI_KEYS.STATUS}${funnelId}#assigned`,
       },
       ConditionExpression: 'attribute_exists(pk)',
       ReturnValues: 'ALL_NEW',
@@ -505,12 +506,12 @@ export async function queryLeads(input: QueryLeadsInput): Promise<PaginatedLeads
   if (input.orgId) {
     // Query by org
     let keyCondition = 'gsi2pk = :pk';
-    const exprValues: Record<string, unknown> = { ':pk': `ORG#${input.orgId}` };
+    const exprValues: Record<string, unknown> = { ':pk': `${GSI_KEYS.ORG}${input.orgId}` };
 
     if (input.startDate && input.endDate) {
       keyCondition += ' AND gsi2sk BETWEEN :start AND :end';
-      exprValues[':start'] = `CREATED#${input.startDate}`;
-      exprValues[':end'] = `CREATED#${input.endDate}`;
+      exprValues[':start'] = `${GSI_KEYS.CREATED}${input.startDate}`;
+      exprValues[':end'] = `${GSI_KEYS.CREATED}${input.endDate}`;
     }
 
     if (filterExprValues) {
@@ -520,7 +521,7 @@ export async function queryLeads(input: QueryLeadsInput): Promise<PaginatedLeads
     const result = await doc.send(
       new QueryCommand({
         TableName: tableName(),
-        IndexName: 'GSI2',
+        IndexName: GSI_INDEX_NAMES.GSI2,
         KeyConditionExpression: keyCondition,
         ExpressionAttributeValues: exprValues,
         ...(filterExpression ? { FilterExpression: filterExpression } : {}),
@@ -538,13 +539,13 @@ export async function queryLeads(input: QueryLeadsInput): Promise<PaginatedLeads
     // Query by funnel + status
     let keyCondition = 'gsi3pk = :pk';
     const exprValues: Record<string, unknown> = {
-      ':pk': `STATUS#${input.funnelId}#${input.status}`,
+      ':pk': `${GSI_KEYS.STATUS}${input.funnelId}#${input.status}`,
     };
 
     if (input.startDate && input.endDate) {
       keyCondition += ' AND gsi3sk BETWEEN :start AND :end';
-      exprValues[':start'] = `CREATED#${input.startDate}`;
-      exprValues[':end'] = `CREATED#${input.endDate}`;
+      exprValues[':start'] = `${GSI_KEYS.CREATED}${input.startDate}`;
+      exprValues[':end'] = `${GSI_KEYS.CREATED}${input.endDate}`;
     }
 
     if (filterExprValues) {
@@ -554,7 +555,7 @@ export async function queryLeads(input: QueryLeadsInput): Promise<PaginatedLeads
     const result = await doc.send(
       new QueryCommand({
         TableName: tableName(),
-        IndexName: 'GSI3',
+        IndexName: GSI_INDEX_NAMES.GSI3,
         KeyConditionExpression: keyCondition,
         ExpressionAttributeValues: exprValues,
         ...(filterExpression ? { FilterExpression: filterExpression } : {}),
@@ -571,12 +572,12 @@ export async function queryLeads(input: QueryLeadsInput): Promise<PaginatedLeads
   if (input.funnelId) {
     // Query by funnel
     let keyCondition = 'gsi1pk = :pk';
-    const exprValues: Record<string, unknown> = { ':pk': `FUNNEL#${input.funnelId}` };
+    const exprValues: Record<string, unknown> = { ':pk': `${GSI_KEYS.FUNNEL}${input.funnelId}` };
 
     if (input.startDate && input.endDate) {
       keyCondition += ' AND gsi1sk BETWEEN :start AND :end';
-      exprValues[':start'] = `CREATED#${input.startDate}`;
-      exprValues[':end'] = `CREATED#${input.endDate}`;
+      exprValues[':start'] = `${GSI_KEYS.CREATED}${input.startDate}`;
+      exprValues[':end'] = `${GSI_KEYS.CREATED}${input.endDate}`;
     }
 
     if (filterExprValues) {
@@ -586,7 +587,7 @@ export async function queryLeads(input: QueryLeadsInput): Promise<PaginatedLeads
     const result = await doc.send(
       new QueryCommand({
         TableName: tableName(),
-        IndexName: 'GSI1',
+        IndexName: GSI_INDEX_NAMES.GSI1,
         KeyConditionExpression: keyCondition,
         ExpressionAttributeValues: exprValues,
         ...(filterExpression ? { FilterExpression: filterExpression } : {}),

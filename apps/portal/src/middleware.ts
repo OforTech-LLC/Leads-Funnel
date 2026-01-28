@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { AUTH_COOKIE_NAME, AUTH_ENDPOINT } from '@/lib/constants';
 
-const PUBLIC_PATHS = ['/login', '/callback', '/api/auth'];
+const PUBLIC_PATHS = ['/login', '/callback', AUTH_ENDPOINT];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -17,7 +18,7 @@ export function middleware(request: NextRequest) {
   }
 
   // Check for portal_token cookie
-  const token = request.cookies.get('portal_token')?.value;
+  const token = request.cookies.get(AUTH_COOKIE_NAME)?.value;
 
   if (!token) {
     const loginUrl = new URL('/login', request.url);
@@ -34,14 +35,14 @@ export function middleware(request: NextRequest) {
       const loginUrl = new URL('/login', request.url);
       loginUrl.searchParams.set('expired', '1');
       const response = NextResponse.redirect(loginUrl);
-      response.cookies.delete('portal_token');
+      response.cookies.delete(AUTH_COOKIE_NAME);
       return response;
     }
   } catch {
     // If token can't be parsed, redirect to login
     const loginUrl = new URL('/login', request.url);
     const response = NextResponse.redirect(loginUrl);
-    response.cookies.delete('portal_token');
+    response.cookies.delete(AUTH_COOKIE_NAME);
     return response;
   }
 

@@ -10,6 +10,10 @@
  * - Variant: "Compare Top Pros Near You"
  * - Urgency text below button
  * - Trust text below urgency
+ *
+ * Accessibility:
+ * - Scroll indicator SVG has aria-hidden="true"
+ * - Service icon emoji has role="img" with aria-label
  */
 
 import { useTranslations } from 'next-intl';
@@ -92,6 +96,8 @@ export function FunnelHero({ service }: FunnelHeroProps) {
               repeat: Infinity,
               ease: 'easeInOut',
             }}
+            role="img"
+            aria-label={service.slug.replace(/-/g, ' ')}
           >
             {service.icon}
           </motion.div>
@@ -187,8 +193,9 @@ export function FunnelHero({ service }: FunnelHeroProps) {
         </FadeIn>
       </div>
 
-      {/* Scroll indicator */}
+      {/* Scroll indicator (decorative) */}
       <motion.div
+        aria-hidden="true"
         style={{
           position: 'absolute',
           bottom: '30px',
@@ -207,6 +214,7 @@ export function FunnelHero({ service }: FunnelHeroProps) {
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
+          aria-hidden="true"
         >
           <path d="M12 5v14M19 12l-7 7-7-7" />
         </svg>

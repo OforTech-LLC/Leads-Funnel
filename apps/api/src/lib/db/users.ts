@@ -13,6 +13,7 @@ import { getDocClient, tableName } from './client.js';
 import { ulid } from '../../lib/id.js';
 import { sha256 } from '../hash.js';
 import { signCursor, verifyCursor } from '../cursor.js';
+import { DB_PREFIXES, DB_SORT_KEYS, GSI_KEYS, GSI_INDEX_NAMES } from '../constants.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -69,8 +70,8 @@ export async function createUser(input: CreateUserInput): Promise<User> {
   const emailLower = input.email.toLowerCase().trim();
 
   const user: User = {
-    pk: `USER#${userId}`,
-    sk: 'META',
+    pk: `${DB_PREFIXES.USER}${userId}`,
+    sk: DB_SORT_KEYS.META,
     userId,
     cognitoSub: input.cognitoSub,
     email: emailLower,
@@ -80,12 +81,12 @@ export async function createUser(input: CreateUserInput): Promise<User> {
     preferences: input.preferences || {},
     createdAt: now,
     updatedAt: now,
-    gsi1pk: `EMAIL#${emailLower}`,
-    gsi1sk: 'META',
-    gsi2pk: input.cognitoSub ? `COGNITOSUB#${input.cognitoSub}` : undefined,
-    gsi2sk: input.cognitoSub ? 'META' : undefined,
-    gsi3pk: 'USERS',
-    gsi3sk: `CREATED#${now}`,
+    gsi1pk: `${GSI_KEYS.EMAIL}${emailLower}`,
+    gsi1sk: DB_SORT_KEYS.META,
+    gsi2pk: input.cognitoSub ? `${GSI_KEYS.COGNITOSUB}${input.cognitoSub}` : undefined,
+    gsi2sk: input.cognitoSub ? DB_SORT_KEYS.META : undefined,
+    gsi3pk: GSI_KEYS.USERS_LIST,
+    gsi3sk: `${GSI_KEYS.CREATED}${now}`,
   };
 
   await doc.send(
@@ -113,7 +114,7 @@ export async function getUser(userId: string): Promise<User | null> {
   const result = await doc.send(
     new GetCommand({
       TableName: tableName(),
-      Key: { pk: `USER#${userId}`, sk: 'META' },
+      Key: { pk: `${DB_PREFIXES.USER}${userId}`, sk: DB_SORT_KEYS.META },
     })
   );
   const item = result.Item as User | undefined;
@@ -128,12 +129,12 @@ export async function getUserByEmail(email: string): Promise<User | null> {
   const result = await doc.send(
     new QueryCommand({
       TableName: tableName(),
-      IndexName: 'GSI1',
+      IndexName: GSI_INDEX_NAMES.GSI1,
       KeyConditionExpression: 'gsi1pk = :pk AND gsi1sk = :sk',
       FilterExpression: 'attribute_not_exists(deletedAt)',
       ExpressionAttributeValues: {
-        ':pk': `EMAIL#${emailLower}`,
-        ':sk': 'META',
+        ':pk': `${GSI_KEYS.EMAIL}${emailLower}`,
+        ':sk': DB_SORT_KEYS.META,
       },
       Limit: 1,
     })
@@ -149,12 +150,12 @@ export async function getUserByCognitoSub(cognitoSub: string): Promise<User | nu
   const result = await doc.send(
     new QueryCommand({
       TableName: tableName(),
-      IndexName: 'GSI2',
+      IndexName: GSI_INDEX_NAMES.GSI2,
       KeyConditionExpression: 'gsi2pk = :pk AND gsi2sk = :sk',
       FilterExpression: 'attribute_not_exists(deletedAt)',
       ExpressionAttributeValues: {
-        ':pk': `COGNITOSUB#${cognitoSub}`,
-        ':sk': 'META',
+        ':pk': `${GSI_KEYS.COGNITOSUB}${cognitoSub}`,
+        ':sk': DB_SORT_KEYS.META,
       },
       Limit: 1,
     })
@@ -181,13 +182,13 @@ export async function updateUser(input: UpdateUserInput): Promise<User> {
     const emailLower = input.email.toLowerCase().trim();
     parts.push('email = :email, gsi1pk = :gsi1pk');
     values[':email'] = emailLower;
-    values[':gsi1pk'] = `EMAIL#${emailLower}`;
+    values[':gsi1pk'] = `${GSI_KEYS.EMAIL}${emailLower}`;
   }
   if (input.cognitoSub !== undefined) {
     parts.push('cognitoSub = :sub, gsi2pk = :gsi2pk, gsi2sk = :gsi2sk');
     values[':sub'] = input.cognitoSub;
-    values[':gsi2pk'] = `COGNITOSUB#${input.cognitoSub}`;
-    values[':gsi2sk'] = 'META';
+    values[':gsi2pk'] = `${GSI_KEYS.COGNITOSUB}${input.cognitoSub}`;
+    values[':gsi2sk'] = DB_SORT_KEYS.META;
   }
   if (input.phone !== undefined) {
     parts.push('phone = :phone');
@@ -205,7 +206,7 @@ export async function updateUser(input: UpdateUserInput): Promise<User> {
   const result = await doc.send(
     new UpdateCommand({
       TableName: tableName(),
-      Key: { pk: `USER#${input.userId}`, sk: 'META' },
+      Key: { pk: `${DB_PREFIXES.USER}${input.userId}`, sk: DB_SORT_KEYS.META },
       UpdateExpression: `SET ${parts.join(', ')}`,
       ExpressionAttributeNames: names,
       ExpressionAttributeValues: values,
@@ -224,7 +225,7 @@ export async function softDeleteUser(userId: string): Promise<void> {
   await doc.send(
     new UpdateCommand({
       TableName: tableName(),
-      Key: { pk: `USER#${userId}`, sk: 'META' },
+      Key: { pk: `${DB_PREFIXES.USER}${userId}`, sk: DB_SORT_KEYS.META },
       UpdateExpression: 'SET deletedAt = :d, #updatedAt = :u',
       ExpressionAttributeNames: { '#updatedAt': 'updatedAt' },
       ExpressionAttributeValues: { ':d': now, ':u': now },
@@ -253,10 +254,10 @@ export async function listUsers(cursor?: string, limit = 25): Promise<PaginatedU
   const result = await doc.send(
     new QueryCommand({
       TableName: tableName(),
-      IndexName: 'GSI3',
+      IndexName: GSI_INDEX_NAMES.GSI3,
       KeyConditionExpression: 'gsi3pk = :pk',
       FilterExpression: 'attribute_not_exists(deletedAt)',
-      ExpressionAttributeValues: { ':pk': 'USERS' },
+      ExpressionAttributeValues: { ':pk': GSI_KEYS.USERS_LIST },
       Limit: limit,
       ScanIndexForward: false,
       ExclusiveStartKey: exclusiveStartKey,

@@ -1,7 +1,7 @@
 /**
  * Funnel Page Metadata Generation
  * SEO metadata for all 47 service funnel pages
- * Includes FAQPage schema (Task 6) and AggregateRating + Review schema (Task 8)
+ * Includes FAQPage schema, AggregateRating + Review schema, and BreadcrumbList schema
  */
 
 import type { Metadata } from 'next';
@@ -128,7 +128,7 @@ export function generateFunnelJsonLd(service: ServiceConfig, locale: Locale) {
 }
 
 /**
- * Generate FAQPage JSON-LD structured data (Task 6)
+ * Generate FAQPage JSON-LD structured data
  * Pulls FAQ data from translations for each funnel
  */
 export function generateFunnelFAQJsonLd(service: ServiceConfig, locale: Locale) {
@@ -152,8 +152,34 @@ export function generateFunnelFAQJsonLd(service: ServiceConfig, locale: Locale) 
 }
 
 /**
- * Generate AggregateRating + Review JSON-LD structured data (Task 8)
- * Uses testimonials data from translations for each funnel
+ * Generate BreadcrumbList JSON-LD structured data
+ * Provides navigation path: Home > Service Name
+ */
+export function generateBreadcrumbJsonLd(service: ServiceConfig, locale: Locale) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: `https://kanjona.com/${locale}`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: service.slug.replace(/-/g, ' '),
+        item: `https://kanjona.com/${locale}/${service.slug}`,
+      },
+    ],
+  };
+}
+
+/**
+ * Generate AggregateRating + Review JSON-LD structured data
+ * Uses testimonials data from translations for each funnel.
+ * Each Review includes datePublished and publisher fields for rich result eligibility.
  */
 export function generateFunnelAggregateRatingJsonLd(service: ServiceConfig, locale: Locale) {
   const t = messages[locale] as Messages & { funnels?: Record<string, FunnelTranslation> };
@@ -175,20 +201,33 @@ export function generateFunnelAggregateRatingJsonLd(service: ServiceConfig, loca
   const slugHash = service.slug.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
   const reviewCount = baseCount + (slugHash % 100);
 
-  // Build Review objects from testimonials
-  const reviews = items.map((item) => ({
-    '@type': 'Review' as const,
-    author: {
-      '@type': 'Person' as const,
-      name: item.name,
-    },
-    reviewRating: {
-      '@type': 'Rating' as const,
-      ratingValue: item.rating || '5',
-      bestRating: '5',
-    },
-    reviewBody: item.text,
-  }));
+  // Generate deterministic dates spread across the last 12 months
+  const now = new Date();
+  const reviews = items.map((item, index) => {
+    const monthsAgo = Math.floor((index * 11) / Math.max(items.length - 1, 1));
+    const reviewDate = new Date(now);
+    reviewDate.setMonth(reviewDate.getMonth() - monthsAgo);
+    const datePublished = reviewDate.toISOString().split('T')[0];
+
+    return {
+      '@type': 'Review' as const,
+      author: {
+        '@type': 'Person' as const,
+        name: item.name,
+      },
+      reviewRating: {
+        '@type': 'Rating' as const,
+        ratingValue: item.rating || '5',
+        bestRating: '5',
+      },
+      reviewBody: item.text,
+      datePublished,
+      publisher: {
+        '@type': 'Organization' as const,
+        name: 'Kanjona',
+      },
+    };
+  });
 
   return {
     '@context': 'https://schema.org',

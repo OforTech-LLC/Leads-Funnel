@@ -12,26 +12,37 @@ import type {
   RateLimitResult,
   IdempotencyResult,
   EnvConfig,
+  LeadAnalysis,
 } from '../types.js';
 import { getIsoTimestamp, getRateLimitTtl, getIdempotencyTtl, getWindowBucket } from './time.js';
 import { getDocClient } from './clients.js';
 import { v4 as uuidv4 } from 'uuid';
+import { DB_PREFIXES, DB_SORT_KEYS, GSI_KEYS, SK_PREFIXES } from './constants.js';
 
 // =============================================================================
 // Rate Limiting
 // =============================================================================
 
+// Hyperscale Sharding: Distribute hot keys (e.g. shared IPs) across 10 partitions.
+// We enforce (Limit / 10) on each shard. Statistically approximates the global limit.
+const RATE_LIMIT_SHARDS = 10;
+
 /**
  * Check and increment rate limit for an IP hash
- * Uses atomic counter increment with TTL
+ * Uses atomic counter increment with TTL and Probabilistic Sharding
  */
 export async function checkRateLimit(config: EnvConfig, ipHash: string): Promise<RateLimitResult> {
   const client = getDocClient(config.awsRegion);
   const windowBucket = getWindowBucket(config.rateLimitWindowMin);
   const ttl = getRateLimitTtl(config.rateLimitWindowMin);
 
-  const pk = `IP#${ipHash}`;
-  const sk = `WINDOW#${windowBucket}`;
+  // Select a random shard (0-9) to distribute write heat
+  const shardId = Math.floor(Math.random() * RATE_LIMIT_SHARDS);
+  const pk = `${DB_PREFIXES.IP}${ipHash}#${shardId}`;
+  const sk = `${SK_PREFIXES.WINDOW}${windowBucket}`;
+
+  // Scale the limit down per shard
+  const shardedLimit = Math.ceil(config.rateLimitMax / RATE_LIMIT_SHARDS);
 
   try {
     // Atomic increment using UpdateItem with ADD
@@ -55,9 +66,11 @@ export async function checkRateLimit(config: EnvConfig, ipHash: string): Promise
 
     const currentCount = (result.Attributes?.count as number) || 1;
 
+    // Check against the sharded limit
+    // Return the *projected* global count for the API response
     return {
-      allowed: currentCount <= config.rateLimitMax,
-      currentCount,
+      allowed: currentCount <= shardedLimit,
+      currentCount: currentCount * RATE_LIMIT_SHARDS, // Projected total
       maxAllowed: config.rateLimitMax,
     };
   } catch (error) {
@@ -84,8 +97,8 @@ export async function checkIdempotency(
   const client = getDocClient(config.awsRegion);
   const ttl = getIdempotencyTtl(config.idempotencyTtlHours);
 
-  const pk = `IDEMPOTENCY#${idempotencyKey}`;
-  const sk = 'META';
+  const pk = `${DB_PREFIXES.IDEMPOTENCY}${idempotencyKey}`;
+  const sk = DB_SORT_KEYS.META;
 
   try {
     // Try conditional write - only succeeds if item doesn't exist
@@ -169,8 +182,8 @@ export async function storeLead(
   const status = security.suspicious ? 'quarantined' : 'accepted';
 
   const record: LeadRecord = {
-    pk: `LEAD#${leadId}`,
-    sk: 'META',
+    pk: `${DB_PREFIXES.LEAD}${leadId}`,
+    sk: DB_SORT_KEYS.META,
     leadId,
     name: lead.name,
     email: lead.email,
@@ -183,8 +196,8 @@ export async function storeLead(
     utm: lead.utm,
     userAgent,
     ipHash: security.ipHash,
-    gsi1pk: `EMAIL#${lead.email}`,
-    gsi1sk: `CREATED#${createdAt}`,
+    gsi1pk: `${GSI_KEYS.EMAIL}${lead.email}`,
+    gsi1sk: `${GSI_KEYS.CREATED}${createdAt}`,
   };
 
   // Build the DynamoDB item, optionally including score from scoring engine
@@ -201,4 +214,47 @@ export async function storeLead(
   );
 
   return record;
+}
+
+/**
+ * Update lead with AI analysis results
+ */
+export async function updateLeadAnalysis(
+  config: EnvConfig,
+  leadId: string,
+  analysis: LeadAnalysis
+): Promise<void> {
+  const client = getDocClient(config.awsRegion);
+  const pk = `${DB_PREFIXES.LEAD}${leadId}`;
+  const sk = DB_SORT_KEYS.META;
+
+  await client.send(
+    new UpdateCommand({
+      TableName: config.ddbTableName,
+      Key: { pk, sk },
+      UpdateExpression: 'SET analysis = :analysis, updatedAt = :updatedAt',
+      ExpressionAttributeValues: {
+        ':analysis': analysis,
+        ':updatedAt': new Date().toISOString(),
+      },
+    })
+  );
+}
+
+/**
+ * Get a lead by ID
+ */
+export async function getLead(config: EnvConfig, leadId: string): Promise<LeadRecord | null> {
+  const client = getDocClient(config.awsRegion);
+  const pk = `${DB_PREFIXES.LEAD}${leadId}`;
+  const sk = DB_SORT_KEYS.META;
+
+  const result = await client.send(
+    new GetCommand({
+      TableName: config.ddbTableName,
+      Key: { pk, sk },
+    })
+  );
+
+  return (result.Item as LeadRecord) || null;
 }

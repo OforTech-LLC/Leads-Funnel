@@ -8,8 +8,10 @@
  */
 
 import { useState, useEffect } from 'react';
+import { ADMIN_ROLES, API_ENDPOINTS } from '@/lib/constants';
+import type { AdminRole } from '@/lib/constants';
 
-export type AdminRole = 'ADMIN' | 'VIEWER' | 'OPERATOR';
+export type { AdminRole };
 
 export interface CurrentUser {
   sub: string;
@@ -20,15 +22,15 @@ export interface CurrentUser {
 
 /**
  * Derive the admin role from Cognito groups.
- * - cognito:groups containing "admin" -> ADMIN
- * - cognito:groups containing "operator" -> OPERATOR
- * - otherwise -> VIEWER
+ * Uses exact match to prevent privilege escalation (e.g. a group named
+ * "admin-readonly" should NOT grant ADMIN).
  */
 function deriveRole(groups: string[]): AdminRole {
   const lower = groups.map((g) => g.toLowerCase());
-  if (lower.some((g) => g.includes('admin'))) return 'ADMIN';
-  if (lower.some((g) => g.includes('operator'))) return 'OPERATOR';
-  return 'VIEWER';
+  if (lower.some((g) => g === 'admin' || g === 'admins')) return ADMIN_ROLES.ADMIN;
+  if (lower.some((g) => g === 'operator' || g === 'operators')) return ADMIN_ROLES.OPERATOR;
+  if (lower.some((g) => g === 'viewer' || g === 'viewers')) return ADMIN_ROLES.VIEWER;
+  return ADMIN_ROLES.VIEWER;
 }
 
 interface UseCurrentUserResult {
@@ -45,7 +47,7 @@ export function useCurrentUser(): UseCurrentUserResult {
 
     async function loadUser() {
       try {
-        const res = await fetch('/api/auth', { credentials: 'include' });
+        const res = await fetch(API_ENDPOINTS.AUTH, { credentials: 'include' });
         if (res.ok) {
           const data = await res.json();
           if (!cancelled && data.user) {

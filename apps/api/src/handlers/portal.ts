@@ -7,6 +7,7 @@
  * Performance:
  *   - X-Request-Id header injected on every response for distributed tracing
  *   - All DynamoDB/S3/SSM calls use centralized clients with HTTP keep-alive
+ *   - 1 MB body size limit enforced before JSON parsing (Issue #1)
  *
  * Endpoints:
  *   GET  /portal/me                              - Current user profile
@@ -45,6 +46,15 @@ import { parseBody, pathParam, queryParam, getIpHash } from '../lib/handler-util
 import { createLogger } from '../lib/logging.js';
 import { isFeatureEnabled, loadFeatureFlags } from '../lib/config.js';
 import { emitLeadStatusChanged, emitLeadNoteAdded } from '../lib/events.js';
+import {
+  MAX_BODY_SIZE,
+  DB_PREFIXES,
+  DB_SORT_KEYS,
+  HTTP_HEADERS,
+  BILLING_TIERS,
+  VALID_BILLING_TIERS,
+  ACTOR_TYPES,
+} from '../lib/constants.js';
 
 const log = createLogger('portal-handler');
 
@@ -69,6 +79,32 @@ async function getMemberRole(userId: string, orgId: string): Promise<MembershipR
 }
 
 // ---------------------------------------------------------------------------
+// Body size check (Issue #1)
+// ---------------------------------------------------------------------------
+
+/**
+ * Reject request bodies larger than MAX_BODY_SIZE (1 MB).
+ *
+ * Returns a 413 Payload Too Large response if the body exceeds the limit,
+ * or null if the body is within bounds.  GET / DELETE / OPTIONS requests
+ * are exempt (they should not carry a body).
+ */
+function checkBodySize(event: APIGatewayProxyEventV2): APIGatewayProxyResultV2 | null {
+  const method = event.requestContext.http.method;
+  if (method === 'GET' || method === 'DELETE' || method === 'OPTIONS') return null;
+
+  const body = event.body;
+  if (!body) return null;
+
+  const byteSize = Buffer.byteLength(body, 'utf8');
+  if (byteSize > MAX_BODY_SIZE) {
+    log.warn('portal.bodyTooLarge', { size: byteSize, limit: MAX_BODY_SIZE });
+    return resp.payloadTooLarge();
+  }
+  return null;
+}
+
+// ---------------------------------------------------------------------------
 // X-Request-Id injection wrapper
 // ---------------------------------------------------------------------------
 
@@ -86,7 +122,7 @@ function injectRequestId(
     ...response,
     headers: {
       ...headers,
-      'X-Request-Id': requestId,
+      [HTTP_HEADERS.X_REQUEST_ID]: requestId,
     },
   };
 }
@@ -114,6 +150,10 @@ async function handlePortalRequest(
   if (method === 'OPTIONS') {
     return resp.noContent();
   }
+
+  // Issue #1: Enforce 1 MB body size limit before any processing
+  const sizeCheck = checkBodySize(event);
+  if (sizeCheck) return sizeCheck;
 
   // Authenticate
   let identity;
@@ -249,7 +289,7 @@ async function handlePortalRequest(
 
       if (!newStatus) return resp.badRequest('status is required');
 
-      const validStatuses: leadsDb.LeadStatus[] = [
+      const validPortalStatuses: leadsDb.LeadStatus[] = [
         'new',
         'assigned',
         'contacted',
@@ -258,8 +298,8 @@ async function handlePortalRequest(
         'lost',
         'dnc',
       ];
-      if (!validStatuses.includes(newStatus as leadsDb.LeadStatus)) {
-        return resp.badRequest(`Invalid status. Must be one of: ${validStatuses.join(', ')}`);
+      if (!validPortalStatuses.includes(newStatus as leadsDb.LeadStatus)) {
+        return resp.badRequest(`Invalid status. Must be one of: ${validPortalStatuses.join(', ')}`);
       }
 
       // Load lead and check access
@@ -297,7 +337,7 @@ async function handlePortalRequest(
 
       await recordAudit({
         actorId: identity.userId,
-        actorType: 'portal_user',
+        actorType: ACTOR_TYPES.PORTAL_USER,
         action: 'lead.update',
         resourceType: 'lead',
         resourceId: `${funnelId}:${leadId}`,
@@ -364,7 +404,7 @@ async function handlePortalRequest(
 
       await recordAudit({
         actorId: identity.userId,
-        actorType: 'portal_user',
+        actorType: ACTOR_TYPES.PORTAL_USER,
         action: 'lead.update',
         resourceType: 'lead',
         resourceId: `${funnelId}:${leadId}`,
@@ -405,7 +445,7 @@ async function handlePortalRequest(
 
       await recordAudit({
         actorId: identity.userId,
-        actorType: 'portal_user',
+        actorType: ACTOR_TYPES.PORTAL_USER,
         action: 'settings.update',
         resourceType: 'user',
         resourceId: identity.userId,
@@ -513,15 +553,15 @@ async function handleBillingRoutes(
     const body = parseBody(event);
     if (body === null) return resp.badRequest('Invalid JSON in request body');
     const newTier = body.tier as string | undefined;
-    if (!newTier || !['free', 'starter', 'pro', 'enterprise'].includes(newTier)) {
-      return resp.badRequest('tier must be one of: free, starter, pro, enterprise');
+    if (!newTier || !(VALID_BILLING_TIERS as readonly string[]).includes(newTier)) {
+      return resp.badRequest(`tier must be one of: ${VALID_BILLING_TIERS.join(', ')}`);
     }
 
-    const account = await changePlan(orgId, newTier as 'free' | 'starter' | 'pro' | 'enterprise');
+    const account = await changePlan(orgId, newTier as (typeof VALID_BILLING_TIERS)[number]);
 
     await recordAudit({
       actorId: identity.userId,
-      actorType: 'portal_user',
+      actorType: ACTOR_TYPES.PORTAL_USER,
       action: 'billing.upgrade',
       resourceType: 'billing',
       resourceId: orgId,
@@ -563,8 +603,8 @@ async function handleCalendarRoutes(
 
     const now = new Date().toISOString();
     const config = {
-      pk: `CALENDAR#${identity.userId}`,
-      sk: 'CONFIG',
+      pk: `${DB_PREFIXES.CALENDAR}${identity.userId}`,
+      sk: DB_SORT_KEYS.CONFIG,
       userId: identity.userId,
       orgId: identity.primaryOrgId,
       provider,
@@ -586,7 +626,7 @@ async function handleCalendarRoutes(
 
     await recordAudit({
       actorId: identity.userId,
-      actorType: 'portal_user',
+      actorType: ACTOR_TYPES.PORTAL_USER,
       action: 'calendar.connect',
       resourceType: 'calendar',
       resourceId: identity.userId,
@@ -607,7 +647,10 @@ async function handleCalendarRoutes(
     const result = await doc.send(
       new GetCommand({
         TableName: tableName(),
-        Key: { pk: `CALENDAR#${identity.userId}`, sk: 'CONFIG' },
+        Key: {
+          pk: `${DB_PREFIXES.CALENDAR}${identity.userId}`,
+          sk: DB_SORT_KEYS.CONFIG,
+        },
       })
     );
 
@@ -646,7 +689,10 @@ async function handleCalendarRoutes(
     const result = await doc.send(
       new GetCommand({
         TableName: tableName(),
-        Key: { pk: `CALENDAR#${identity.userId}`, sk: 'CONFIG' },
+        Key: {
+          pk: `${DB_PREFIXES.CALENDAR}${identity.userId}`,
+          sk: DB_SORT_KEYS.CONFIG,
+        },
       })
     );
 
@@ -669,7 +715,7 @@ async function handleCalendarRoutes(
 
     await recordAudit({
       actorId: identity.userId,
-      actorType: 'portal_user',
+      actorType: ACTOR_TYPES.PORTAL_USER,
       action: 'calendar.book',
       resourceType: 'calendar',
       resourceId: eventId,
@@ -691,13 +737,16 @@ async function handleCalendarRoutes(
     await doc.send(
       new DeleteCommand({
         TableName: tableName(),
-        Key: { pk: `CALENDAR#${identity.userId}`, sk: 'CONFIG' },
+        Key: {
+          pk: `${DB_PREFIXES.CALENDAR}${identity.userId}`,
+          sk: DB_SORT_KEYS.CONFIG,
+        },
       })
     );
 
     await recordAudit({
       actorId: identity.userId,
-      actorType: 'portal_user',
+      actorType: ACTOR_TYPES.PORTAL_USER,
       action: 'calendar.disconnect',
       resourceType: 'calendar',
       resourceId: identity.userId,
@@ -744,7 +793,7 @@ async function handleIntegrationRoutes(
 
     await recordAudit({
       actorId: identity.userId,
-      actorType: 'portal_user',
+      actorType: ACTOR_TYPES.PORTAL_USER,
       action: 'integration.configure',
       resourceType: 'integration',
       resourceId: `${orgId}:slack`,
@@ -770,7 +819,7 @@ async function handleIntegrationRoutes(
 
     await recordAudit({
       actorId: identity.userId,
-      actorType: 'portal_user',
+      actorType: ACTOR_TYPES.PORTAL_USER,
       action: 'integration.configure',
       resourceType: 'integration',
       resourceId: `${orgId}:teams`,
@@ -791,7 +840,7 @@ async function handleIntegrationRoutes(
 
     await recordAudit({
       actorId: identity.userId,
-      actorType: 'portal_user',
+      actorType: ACTOR_TYPES.PORTAL_USER,
       action: 'integration.remove',
       resourceType: 'integration',
       resourceId: `${orgId}:${provider}`,

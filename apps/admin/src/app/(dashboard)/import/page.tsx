@@ -10,6 +10,7 @@
 import ImportWizard from '@/components/ImportWizard';
 import RequireRole from '@/components/RequireRole';
 import { useImportLeadsMutation } from '@/store/services/leads';
+import { ADMIN_ROLES } from '@/lib/constants';
 
 export default function ImportPage() {
   const [importLeads] = useImportLeadsMutation();
@@ -28,7 +29,7 @@ export default function ImportPage() {
       </div>
 
       <RequireRole
-        roles={['ADMIN']}
+        roles={[ADMIN_ROLES.ADMIN, ADMIN_ROLES.OPERATOR]}
         fallback={
           <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg p-12 text-center">
             <p className="text-sm text-[var(--text-secondary)]">

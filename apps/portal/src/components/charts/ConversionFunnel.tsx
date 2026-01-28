@@ -225,6 +225,31 @@ export default function ConversionFunnel({
           )}
         </div>
       )}
+
+      {/* Accessible data table (visually hidden) */}
+      <div className="sr-only">
+        <table>
+          <caption>Conversion funnel stages</caption>
+          <thead>
+            <tr>
+              <th>Stage</th>
+              <th>Count</th>
+              <th>Percentage</th>
+              <th>Drop-off</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((d) => (
+              <tr key={d.stage}>
+                <td>{d.label}</td>
+                <td>{d.count}</td>
+                <td>{d.percentage}%</td>
+                <td>{d.dropOffPercent > 0 ? `${d.dropOffPercent}%` : 'N/A'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

@@ -9,7 +9,7 @@
  */
 
 import { useCurrentUser } from '@/lib/useCurrentUser';
-import type { AdminRole } from '@/lib/useCurrentUser';
+import type { AdminRole } from '@/lib/constants';
 
 interface RequireRoleProps {
   /** Roles that are allowed to see the children */

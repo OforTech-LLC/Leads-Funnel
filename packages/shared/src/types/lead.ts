@@ -3,7 +3,20 @@
  * These types represent the full lead lifecycle in the 3-sided platform.
  */
 
-export type PipelineStatus = 'new' | 'contacted' | 'booked' | 'won' | 'lost' | 'dnc';
+/**
+ * Const enum-like object for pipeline statuses.
+ * Use `PipelineStatusEnum.NEW` instead of hardcoding `'new'`.
+ */
+export const PipelineStatusEnum = {
+  NEW: 'new',
+  CONTACTED: 'contacted',
+  BOOKED: 'booked',
+  WON: 'won',
+  LOST: 'lost',
+  DNC: 'dnc',
+} as const;
+
+export type PipelineStatus = (typeof PipelineStatusEnum)[keyof typeof PipelineStatusEnum];
 
 export interface Lead {
   leadId: string;

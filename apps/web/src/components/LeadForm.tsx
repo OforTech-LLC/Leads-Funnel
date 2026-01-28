@@ -10,6 +10,11 @@
  * - Shows a "We saved your progress" message when restoring
  * - Clears sessionStorage on successful submission
  * - Tracks field abandonment and field completion data
+ *
+ * Accessibility:
+ * - role="alert" and aria-live="assertive" on error messages
+ * - aria-describedby linking fields to their error messages
+ * - aria-invalid on fields with errors
  */
 
 import { useState, useCallback, useEffect, useRef, type FormEvent, type ChangeEvent } from 'react';
@@ -285,14 +290,14 @@ export function LeadForm({ funnelId, primaryColor = '#0070f3' }: LeadFormProps) 
 
       {/* Error Message */}
       {isError && serverError && (
-        <div style={styles.errorMessage} role="alert">
+        <div style={styles.errorMessage} role="alert" aria-live="assertive">
           {serverError.includes('Network') ? messagesT('networkError') : messagesT('error')}
         </div>
       )}
 
       {/* Form */}
       {!isSuccess && (
-        <form onSubmit={handleSubmit} noValidate style={styles.form}>
+        <form onSubmit={handleSubmit} noValidate style={styles.form} aria-label={t('title')}>
           {/* Name Field */}
           <div style={styles.field}>
             <label htmlFor="name" style={styles.label}>
@@ -312,14 +317,14 @@ export function LeadForm({ funnelId, primaryColor = '#0070f3' }: LeadFormProps) 
               autoComplete="name"
               maxLength={100}
               aria-invalid={touched.name && !!errors.name}
-              aria-describedby={errors.name ? 'name-error' : undefined}
+              aria-describedby={touched.name && errors.name ? 'name-error' : undefined}
               style={{
                 ...styles.input,
                 ...(touched.name && errors.name ? styles.inputError : {}),
               }}
             />
             {touched.name && errors.name && (
-              <span id="name-error" style={styles.fieldError}>
+              <span id="name-error" role="alert" aria-live="assertive" style={styles.fieldError}>
                 {t('name.required')}
               </span>
             )}
@@ -344,14 +349,14 @@ export function LeadForm({ funnelId, primaryColor = '#0070f3' }: LeadFormProps) 
               autoComplete="email"
               maxLength={254}
               aria-invalid={touched.email && !!errors.email}
-              aria-describedby={errors.email ? 'email-error' : undefined}
+              aria-describedby={touched.email && errors.email ? 'email-error' : undefined}
               style={{
                 ...styles.input,
                 ...(touched.email && errors.email ? styles.inputError : {}),
               }}
             />
             {touched.email && errors.email && (
-              <span id="email-error" style={styles.fieldError}>
+              <span id="email-error" role="alert" aria-live="assertive" style={styles.fieldError}>
                 {errors.email.includes('valid') ? t('email.invalid') : t('email.required')}
               </span>
             )}
@@ -375,14 +380,14 @@ export function LeadForm({ funnelId, primaryColor = '#0070f3' }: LeadFormProps) 
               autoComplete="tel"
               maxLength={20}
               aria-invalid={touched.phone && !!errors.phone}
-              aria-describedby={errors.phone ? 'phone-error' : undefined}
+              aria-describedby={touched.phone && errors.phone ? 'phone-error' : undefined}
               style={{
                 ...styles.input,
                 ...(touched.phone && errors.phone ? styles.inputError : {}),
               }}
             />
             {touched.phone && errors.phone && (
-              <span id="phone-error" style={styles.fieldError}>
+              <span id="phone-error" role="alert" aria-live="assertive" style={styles.fieldError}>
                 {errors.phone}
               </span>
             )}
@@ -405,7 +410,7 @@ export function LeadForm({ funnelId, primaryColor = '#0070f3' }: LeadFormProps) 
               rows={4}
               maxLength={1000}
               aria-invalid={touched.message && !!errors.message}
-              aria-describedby={errors.message ? 'message-error' : undefined}
+              aria-describedby={touched.message && errors.message ? 'message-error' : undefined}
               style={{
                 ...styles.input,
                 ...styles.textarea,
@@ -413,7 +418,7 @@ export function LeadForm({ funnelId, primaryColor = '#0070f3' }: LeadFormProps) 
               }}
             />
             {touched.message && errors.message && (
-              <span id="message-error" style={styles.fieldError}>
+              <span id="message-error" role="alert" aria-live="assertive" style={styles.fieldError}>
                 {errors.message}
               </span>
             )}

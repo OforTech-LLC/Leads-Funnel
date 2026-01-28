@@ -7,6 +7,7 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import type { LeadStatus } from '@/lib/types';
+import { API_ENDPOINTS } from '@/lib/constants';
 
 // ── Types ────────────────────────────────────
 
@@ -39,7 +40,7 @@ export interface ExportJob {
 export function useCreateExport() {
   return useMutation({
     mutationFn: async (request: ExportRequest) => {
-      return api.post<ExportJob>('/api/v1/portal/exports', request);
+      return api.post<ExportJob>(API_ENDPOINTS.EXPORTS, request);
     },
   });
 }
@@ -49,7 +50,7 @@ export function useCreateExport() {
 export function useExportStatus(exportId: string | null) {
   return useQuery<ExportJob>({
     queryKey: ['exports', 'status', exportId],
-    queryFn: () => api.get<ExportJob>(`/api/v1/portal/exports/${exportId}`),
+    queryFn: () => api.get<ExportJob>(API_ENDPOINTS.EXPORT_STATUS(exportId!)),
     enabled: !!exportId,
     refetchInterval: (query) => {
       const data = query.state.data;
@@ -68,7 +69,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8
 
 export function downloadExportFile(exportId: string): void {
   // Open download URL in a new tab/trigger download
-  const url = `${API_BASE_URL}/api/v1/portal/exports/${exportId}/download`;
+  const url = `${API_BASE_URL}${API_ENDPOINTS.EXPORT_DOWNLOAD(exportId)}`;
   const link = document.createElement('a');
   link.href = url;
   link.setAttribute('download', '');

@@ -12,6 +12,7 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorAlert from '@/components/ErrorAlert';
 import RequireRole from '@/components/RequireRole';
 import { useToast } from '@/components/Toast';
+import { ADMIN_ROLES, API_ENDPOINTS } from '@/lib/constants';
 
 interface SettingsData {
   featureFlags: Record<string, boolean>;
@@ -27,7 +28,7 @@ function SettingsContent() {
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch('/api/admin/settings', { credentials: 'include' });
+        const res = await fetch(API_ENDPOINTS.SETTINGS, { credentials: 'include' });
         if (!res.ok) throw new Error('Failed to load settings');
         const json = await res.json();
         setData(json);
@@ -172,7 +173,7 @@ export default function SettingsPage() {
       </div>
 
       <RequireRole
-        roles={['ADMIN']}
+        roles={[ADMIN_ROLES.ADMIN]}
         fallback={
           <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg p-8 text-center">
             <p className="text-sm text-[var(--text-secondary)]">

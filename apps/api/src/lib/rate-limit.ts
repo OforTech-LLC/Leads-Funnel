@@ -8,10 +8,13 @@
  * Design:
  *   - Single DynamoDB call per check (atomic ADD + conditional TTL).
  *   - Uses the existing single-table with a composite key:
- *       PK = RATELIMIT#<userId>#<windowKey>
+ *       PK = RATELIMIT#<shard>#<userId>#<windowKey>
  *       SK = LIMIT
  *   - TTL column auto-expires old windows via DynamoDB TTL.
  *   - Supports configurable window sizes (per-minute, per-hour).
+ *   - Partition key sharding (Issue #9): A deterministic shard prefix
+ *     distributes counters across multiple DynamoDB partitions to avoid
+ *     hot-partition throttling at high concurrency.
  *
  * At 1B req/day (~11,500 req/s) each rate-limit check is a single
  * DynamoDB UpdateItem -- well within on-demand capacity limits.
@@ -20,6 +23,7 @@
 import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import { getDocClient, tableName } from './clients.js';
 import { createLogger } from './logging.js';
+import { DB_PREFIXES, DB_SORT_KEYS } from './constants.js';
 
 const log = createLogger('rate-limit');
 
@@ -45,6 +49,35 @@ export interface RateLimitResult {
   remaining: number;
   /** Seconds until the current window expires (present when rate-limited). */
   retryAfter?: number;
+}
+
+// ---------------------------------------------------------------------------
+// Shard configuration (Issue #9)
+// ---------------------------------------------------------------------------
+
+/**
+ * Number of DynamoDB partition shards for rate-limit counters.
+ *
+ * At 11,500 req/s a single partition key can become a hot partition
+ * (DynamoDB targets ~1,000 WCU per physical partition).  Spreading
+ * counters across NUM_SHARDS keys reduces per-partition load.
+ *
+ * The shard is deterministic: hash(userId) % NUM_SHARDS so the same
+ * user always hits the same shard.
+ */
+const NUM_SHARDS = 8;
+
+/**
+ * Compute a deterministic shard index from a userId string.
+ * Uses a simple FNV-1a-style hash for speed (no crypto overhead).
+ */
+function shardIndex(userId: string): number {
+  let hash = 2166136261; // FNV offset basis
+  for (let i = 0; i < userId.length; i++) {
+    hash ^= userId.charCodeAt(i);
+    hash = (hash * 16777619) >>> 0; // FNV prime, keep 32-bit unsigned
+  }
+  return hash % NUM_SHARDS;
 }
 
 // ---------------------------------------------------------------------------
@@ -114,11 +147,16 @@ function getSecondsUntilReset(window: RateLimitWindow): number {
  * (the window will TTL away) but report `allowed: false`.  This avoids
  * a more expensive conditional expression + retry loop while keeping the
  * implementation lock-free and branch-free.
+ *
+ * Partition key sharding (Issue #9):
+ *   PK = RATELIMIT#<shard>#<userId>#<windowKey>
+ *   The shard prefix distributes writes across multiple DynamoDB partitions.
  */
 export async function checkRateLimit(config: RateLimitConfig): Promise<RateLimitResult> {
   const windowKey = getWindowKey(config.window);
-  const pk = `RATELIMIT#${config.userId}#${windowKey}`;
-  const sk = 'LIMIT';
+  const shard = shardIndex(config.userId);
+  const pk = `${DB_PREFIXES.RATELIMIT}${shard}#${config.userId}#${windowKey}`;
+  const sk = DB_SORT_KEYS.LIMIT;
   const ttl = getWindowTtl(config.window);
 
   try {

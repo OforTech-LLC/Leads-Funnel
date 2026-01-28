@@ -23,6 +23,7 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorAlert from '@/components/ErrorAlert';
 import RequireRole from '@/components/RequireRole';
 import { useToast } from '@/components/Toast';
+import { ADMIN_ROLES } from '@/lib/constants';
 
 // ---------------------------------------------------------------------------
 // Date Range Selector
@@ -253,7 +254,7 @@ export default function AnalyticsPage() {
           </p>
         </div>
 
-        <RequireRole roles={['ADMIN', 'VIEWER']}>
+        <RequireRole roles={[ADMIN_ROLES.ADMIN, ADMIN_ROLES.VIEWER]}>
           <button
             onClick={handleExport}
             className="px-4 py-2 text-sm font-medium border border-[var(--border-color)] rounded-md hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-primary)] self-start"

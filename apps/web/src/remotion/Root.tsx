@@ -72,7 +72,7 @@ export const RemotionRoot: React.FC = () => {
         <Composition
           key={serviceId}
           id={`hero-${serviceId}`}
-          component={ServiceHeroVideo}
+          component={ServiceHeroVideo as any}
           durationInFrames={SERVICE_VIDEO_CONFIG.durationInFrames}
           fps={SERVICE_VIDEO_CONFIG.fps}
           width={SERVICE_VIDEO_CONFIG.width}

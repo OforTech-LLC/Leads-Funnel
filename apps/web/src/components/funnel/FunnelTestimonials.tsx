@@ -3,9 +3,16 @@
 /**
  * Funnel Testimonials Component
  * Carousel with 5 testimonials per service, auto-rotation, and aggregate rating.
+ *
+ * Accessibility:
+ * - role="region" with aria-label and aria-roledescription="carousel"
+ * - aria-live="polite" on slide container for screen reader announcements
+ * - Keyboard navigation: Left/Right arrows to change slides
+ * - Prev/Next buttons with aria-labels
+ * - Current slide indicator with "Slide X of Y" labels
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { FadeIn } from '@/components/animations';
 import type { ServiceConfig } from '@/config/services';
@@ -27,20 +34,40 @@ export function FunnelTestimonials({ service }: FunnelTestimonialsProps) {
   const t = useTranslations(`funnels.${service.slug}` as 'funnels.real-estate');
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const carouselRef = useRef<HTMLElement>(null);
 
   // Build testimonial indices
   const testimonials = Array.from({ length: TESTIMONIAL_COUNT }, (_, i) => i);
 
-  // Auto-rotate
+  // Navigation helpers
   const nextSlide = useCallback(() => {
     setActiveIndex((prev) => (prev + 1) % TESTIMONIAL_COUNT);
   }, []);
 
+  const prevSlide = useCallback(() => {
+    setActiveIndex((prev) => (prev - 1 + TESTIMONIAL_COUNT) % TESTIMONIAL_COUNT);
+  }, []);
+
+  // Auto-rotate
   useEffect(() => {
     if (isPaused) return;
     const timer = setInterval(nextSlide, AUTO_ROTATE_MS);
     return () => clearInterval(timer);
   }, [isPaused, nextSlide]);
+
+  // Keyboard navigation
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        nextSlide();
+      }
+    },
+    [prevSlide, nextSlide]
+  );
 
   // Get rating for a testimonial (read from translation or default to 5)
   const getRating = (index: number): number => {
@@ -53,16 +80,20 @@ export function FunnelTestimonials({ service }: FunnelTestimonialsProps) {
     }
   };
 
-  // Compute how many to show side-by-side based on a simple approach
-  // Mobile: 1, Desktop: up to 3 visible (CSS handles this via grid)
   return (
     <section
+      ref={carouselRef}
+      role="region"
+      aria-label="Customer testimonials"
+      aria-roledescription="carousel"
       style={{
         padding: '80px 24px',
         backgroundColor: '#f9fafb',
       }}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
     >
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
         {/* Header with aggregate rating */}
@@ -89,7 +120,7 @@ export function FunnelTestimonials({ service }: FunnelTestimonialsProps) {
               flexWrap: 'wrap',
             }}
           >
-            <div style={{ display: 'flex', gap: '2px' }}>
+            <div style={{ display: 'flex', gap: '2px' }} aria-hidden="true">
               {STAR_POSITIONS.map((pos) => (
                 <span key={`agg-star-${pos}`} style={{ color: '#FBBF24', fontSize: '20px' }}>
                   ★
@@ -102,8 +133,42 @@ export function FunnelTestimonials({ service }: FunnelTestimonialsProps) {
           </div>
         </FadeIn>
 
-        {/* Testimonial cards - responsive grid */}
+        {/* Prev/Next Navigation */}
         <div
+          style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginBottom: '16px' }}
+        >
+          <button onClick={prevSlide} aria-label="Previous testimonial" style={navButtonStyle}>
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              aria-hidden="true"
+            >
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+          <button onClick={nextSlide} aria-label="Next testimonial" style={navButtonStyle}>
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              aria-hidden="true"
+            >
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Testimonial cards - responsive grid with aria-live for slide changes */}
+        <div
+          aria-live="polite"
+          aria-atomic="true"
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
@@ -114,6 +179,9 @@ export function FunnelTestimonials({ service }: FunnelTestimonialsProps) {
           {getVisibleIndices(activeIndex, TESTIMONIAL_COUNT).map((idx) => (
             <div
               key={`testimonial-${idx}`}
+              role="group"
+              aria-roledescription="slide"
+              aria-label={`Testimonial ${idx + 1} of ${TESTIMONIAL_COUNT}`}
               style={{
                 padding: '32px',
                 backgroundColor: '#fff',
@@ -125,10 +193,14 @@ export function FunnelTestimonials({ service }: FunnelTestimonialsProps) {
               }}
             >
               {/* Star rating */}
-              <div style={{ marginBottom: '16px' }}>
+              <div
+                style={{ marginBottom: '16px' }}
+                aria-label={`Rating: ${getRating(idx)} out of 5 stars`}
+              >
                 {STAR_POSITIONS.map((starPos) => (
                   <span
                     key={`star-${idx}-${starPos}`}
+                    aria-hidden="true"
                     style={{
                       color: starPos <= getRating(idx) ? '#FBBF24' : '#E5E7EB',
                       fontSize: '18px',
@@ -162,6 +234,7 @@ export function FunnelTestimonials({ service }: FunnelTestimonialsProps) {
                 }}
               >
                 <div
+                  aria-hidden="true"
                   style={{
                     width: '48px',
                     height: '48px',
@@ -195,6 +268,8 @@ export function FunnelTestimonials({ service }: FunnelTestimonialsProps) {
 
         {/* Navigation dots */}
         <div
+          role="tablist"
+          aria-label="Testimonial slides"
           style={{
             display: 'flex',
             justifyContent: 'center',
@@ -205,8 +280,10 @@ export function FunnelTestimonials({ service }: FunnelTestimonialsProps) {
           {testimonials.map((idx) => (
             <button
               key={`dot-${idx}`}
+              role="tab"
               onClick={() => setActiveIndex(idx)}
-              aria-label={`Go to testimonial ${idx + 1}`}
+              aria-selected={activeIndex === idx}
+              aria-label={`Slide ${idx + 1} of ${TESTIMONIAL_COUNT}`}
               style={{
                 width: activeIndex === idx ? '28px' : '10px',
                 height: '10px',
@@ -249,5 +326,23 @@ function safeTranslate(t: ReturnType<typeof useTranslations>, key: string): stri
     return '';
   }
 }
+
+// ---------------------------------------------------------------------------
+// Styles
+// ---------------------------------------------------------------------------
+
+const navButtonStyle: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: '40px',
+  height: '40px',
+  borderRadius: '50%',
+  border: '1px solid #D1D5DB',
+  backgroundColor: '#fff',
+  cursor: 'pointer',
+  color: '#444',
+  transition: 'all 0.2s ease',
+};
 
 export default FunnelTestimonials;

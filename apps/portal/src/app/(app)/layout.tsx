@@ -4,6 +4,7 @@ import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
 import DesktopSidebar from '@/components/DesktopSidebar';
 import NotificationBell from '@/components/NotificationBell';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { useProfile } from '@/lib/queries/profile';
 
 function DesktopTopBar() {
@@ -42,8 +43,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         {/* Desktop top bar with notifications (hidden on mobile) */}
         <DesktopTopBar />
 
-        {/* Page content */}
-        <main className="pb-20 lg:pb-0">{children}</main>
+        {/* Page content wrapped in ErrorBoundary */}
+        <main className="pb-20 lg:pb-0">
+          <ErrorBoundary>{children}</ErrorBoundary>
+        </main>
 
         {/* Mobile bottom nav */}
         <BottomNav />

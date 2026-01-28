@@ -20,6 +20,7 @@ import type { PreTokenGenerationTriggerEvent } from 'aws-lambda';
 import { QueryCommand } from '@aws-sdk/lib-dynamodb';
 import { getDocClient } from '../lib/clients.js';
 import { createLogger } from '../lib/logging.js';
+import { DB_PREFIXES, DB_SORT_KEYS, GSI_KEYS, GSI_INDEX_NAMES } from '../lib/constants.js';
 
 const log = createLogger('pre-token-portal-handler');
 
@@ -45,12 +46,12 @@ export async function handler(
   const userResult = await doc.send(
     new QueryCommand({
       TableName: table,
-      IndexName: 'GSI2',
+      IndexName: GSI_INDEX_NAMES.GSI2,
       KeyConditionExpression: 'gsi2pk = :pk AND gsi2sk = :sk',
       FilterExpression: 'attribute_not_exists(deletedAt)',
       ExpressionAttributeValues: {
-        ':pk': `COGNITOSUB#${cognitoSub}`,
-        ':sk': 'META',
+        ':pk': `${GSI_KEYS.COGNITOSUB}${cognitoSub}`,
+        ':sk': DB_SORT_KEYS.META,
       },
       Limit: 1,
     })
@@ -69,11 +70,11 @@ export async function handler(
   const membResult = await doc.send(
     new QueryCommand({
       TableName: table,
-      IndexName: 'GSI1',
+      IndexName: GSI_INDEX_NAMES.GSI1,
       KeyConditionExpression: 'gsi1pk = :pk AND begins_with(gsi1sk, :skPrefix)',
       ExpressionAttributeValues: {
-        ':pk': `USER#${userId}`,
-        ':skPrefix': 'ORG#',
+        ':pk': `${DB_PREFIXES.USER}${userId}`,
+        ':skPrefix': DB_PREFIXES.ORG,
       },
     })
   );

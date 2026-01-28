@@ -123,8 +123,10 @@ resource "aws_dynamodb_table" "funnel" {
 # access patterns for rate limit checks.
 # -----------------------------------------------------------------------------
 resource "aws_dynamodb_table" "rate_limits" {
-  name         = "${var.project_name}-${var.environment}-rate-limits"
-  billing_mode = "PAY_PER_REQUEST" # On-demand capacity
+  name           = "${var.project_name}-${var.environment}-rate-limits"
+  billing_mode   = var.rate_limits_billing_mode
+  read_capacity  = var.rate_limits_billing_mode == "PROVISIONED" ? 1000 : null
+  write_capacity = var.rate_limits_billing_mode == "PROVISIONED" ? 1000 : null
 
   # Primary key for rate limit records
   # Pattern: pk=RATELIMIT#<funnel_id>#<ip_hash>, sk=WINDOW#<bucket>

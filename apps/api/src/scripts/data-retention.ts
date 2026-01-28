@@ -23,6 +23,7 @@ import type { Handler, ScheduledEvent } from 'aws-lambda';
 import { getDocClient, getS3Client } from '../lib/clients.js';
 import { createLogger } from '../lib/logging.js';
 import { hashEmailWithSalt } from '../lib/hash.js';
+import { DB_PREFIXES, DB_SORT_KEYS } from '../lib/constants.js';
 
 const log = createLogger('data-retention');
 
@@ -322,8 +323,8 @@ async function processRetentionForFunnel(
           TableName: tableName,
           FilterExpression: 'begins_with(pk, :leadPrefix) AND sk = :meta AND createdAt < :cutoff',
           ExpressionAttributeValues: {
-            ':leadPrefix': 'LEAD#',
-            ':meta': 'META',
+            ':leadPrefix': DB_PREFIXES.LEAD,
+            ':meta': DB_SORT_KEYS.META,
             ':cutoff': cutoffDate,
           },
           ProjectionExpression: 'pk, sk, leadId, email, #name, createdAt, #status',

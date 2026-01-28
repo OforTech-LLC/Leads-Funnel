@@ -102,6 +102,22 @@ export default async function middleware(request: NextRequest) {
   // Add nonce header for server components to access
   response.headers.set('x-nonce', nonce);
 
+  // A/B Testing: Assign bucket if not present
+  if (!request.cookies.get('ab-bucket')) {
+    const bucket = Math.random() < 0.5 ? 'A' : 'B';
+    response.cookies.set('ab-bucket', bucket, {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+      httpOnly: false, // Accessible to client-side JS for analytics
+      sameSite: 'lax',
+    });
+    // Add header for server components to access immediately
+    response.headers.set('x-ab-bucket', bucket);
+  } else {
+    // Pass existing bucket to header for consistency
+    response.headers.set('x-ab-bucket', request.cookies.get('ab-bucket')?.value || 'A');
+  }
+
   // Add all security headers
   for (const [key, value] of Object.entries(securityHeaders)) {
     response.headers.set(key, value);

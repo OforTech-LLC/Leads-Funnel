@@ -17,6 +17,7 @@
 import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import { getDocClient } from '../clients.js';
 import type { CapCheckResult } from '../types/events.js';
+import { DB_PREFIXES, DB_SORT_KEYS, SK_PREFIXES } from '../constants.js';
 
 // =============================================================================
 // Date Helpers
@@ -92,7 +93,7 @@ async function atomicCapCheck(
   ttl: number
 ): Promise<boolean> {
   const client = getDocClient(region);
-  const sk = 'COUNTER';
+  const sk = DB_SORT_KEYS.COUNTER;
 
   try {
     // Atomic increment with conditional check:
@@ -147,7 +148,7 @@ async function atomicCapCheck(
  */
 async function decrementCap(tableName: string, region: string, pk: string): Promise<void> {
   const client = getDocClient(region);
-  const sk = 'COUNTER';
+  const sk = DB_SORT_KEYS.COUNTER;
 
   try {
     await client.send(
@@ -212,7 +213,7 @@ export async function checkAndIncrementCap(
 
   // Check daily cap first (most likely to be hit)
   if (dailyCap !== undefined && dailyCap > 0) {
-    const dailyPk = `RULE#${ruleId}#CAP#DAILY#${dailyKey}`;
+    const dailyPk = `${DB_PREFIXES.RULE}${ruleId}${SK_PREFIXES.CAP_DAILY}${dailyKey}`;
     const dailyAllowed = await atomicCapCheck(tableName, region, dailyPk, dailyCap, getDailyTtl());
 
     if (!dailyAllowed) {
@@ -224,7 +225,7 @@ export async function checkAndIncrementCap(
 
     // Daily cap passed - now check monthly cap
     if (monthlyCap !== undefined && monthlyCap > 0) {
-      const monthlyPk = `RULE#${ruleId}#CAP#MONTHLY#${monthlyKey}`;
+      const monthlyPk = `${DB_PREFIXES.RULE}${ruleId}${SK_PREFIXES.CAP_MONTHLY}${monthlyKey}`;
       const monthlyAllowed = await atomicCapCheck(
         tableName,
         region,
@@ -248,7 +249,7 @@ export async function checkAndIncrementCap(
 
   // Only monthly cap configured
   if (monthlyCap !== undefined && monthlyCap > 0) {
-    const monthlyPk = `RULE#${ruleId}#CAP#MONTHLY#${monthlyKey}`;
+    const monthlyPk = `${DB_PREFIXES.RULE}${ruleId}${SK_PREFIXES.CAP_MONTHLY}${monthlyKey}`;
     const monthlyAllowed = await atomicCapCheck(
       tableName,
       region,

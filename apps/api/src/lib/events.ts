@@ -17,15 +17,7 @@ import type { LeadCreatedEventDetail, EnvConfig, LeadRecord, SecurityAnalysis } 
 import type { LeadAssignedEventDetail, LeadUnassignedEventDetail } from './types/events.js';
 import { isFeatureEnabled } from './config.js';
 import { getEventBridgeClient } from './clients.js';
-
-// =============================================================================
-// Event Constants
-// =============================================================================
-
-const EVENT_SOURCE = 'kanjona.funnel';
-const EVENT_DETAIL_TYPE_CREATED = 'lead.created';
-const EVENT_DETAIL_TYPE_ASSIGNED = 'lead.assigned';
-const EVENT_DETAIL_TYPE_UNASSIGNED = 'lead.unassigned';
+import { EVENT_SOURCE, EVENT_TYPES } from './constants.js';
 
 // =============================================================================
 // Webhook Dispatch (non-blocking)
@@ -86,7 +78,7 @@ export async function publishLeadCreatedEvent(
       Entries: [
         {
           Source: EVENT_SOURCE,
-          DetailType: EVENT_DETAIL_TYPE_CREATED,
+          DetailType: EVENT_TYPES.LEAD_CREATED,
           Detail: JSON.stringify(detail),
           EventBusName: config.eventBusName,
         },
@@ -97,7 +89,7 @@ export async function publishLeadCreatedEvent(
   // Dispatch webhook (fire-and-forget)
   // Note: LeadRecord (capture-time) does not carry funnelId; that is set
   // later by the assignment worker on PlatformLead.
-  void maybeDispatchWebhook('lead.created', {
+  void maybeDispatchWebhook(EVENT_TYPES.LEAD_CREATED as 'lead.created', {
     leadId: lead.leadId,
     status: lead.status,
     createdAt: lead.createdAt,
@@ -131,7 +123,7 @@ export async function emitLeadAssigned(
       Entries: [
         {
           Source: EVENT_SOURCE,
-          DetailType: EVENT_DETAIL_TYPE_ASSIGNED,
+          DetailType: EVENT_TYPES.LEAD_ASSIGNED,
           Detail: JSON.stringify(detail),
           EventBusName: eventBusName,
         },
@@ -140,7 +132,7 @@ export async function emitLeadAssigned(
   );
 
   // Dispatch webhook (fire-and-forget)
-  void maybeDispatchWebhook('lead.assigned', {
+  void maybeDispatchWebhook(EVENT_TYPES.LEAD_ASSIGNED as 'lead.assigned', {
     leadId: detail.leadId,
     funnelId: detail.funnelId,
     assignedOrgId: detail.assignedOrgId,
@@ -191,7 +183,7 @@ export async function emitLeadUnassigned(
       Entries: [
         {
           Source: EVENT_SOURCE,
-          DetailType: EVENT_DETAIL_TYPE_UNASSIGNED,
+          DetailType: EVENT_TYPES.LEAD_UNASSIGNED,
           Detail: JSON.stringify(detail),
           EventBusName: eventBusName,
         },
@@ -215,7 +207,7 @@ export async function emitLeadStatusChanged(data: {
   newStatus: string;
   changedBy: string;
 }): Promise<void> {
-  void maybeDispatchWebhook('lead.status_changed', data);
+  void maybeDispatchWebhook(EVENT_TYPES.LEAD_STATUS_CHANGED as 'lead.status_changed', data);
 }
 
 /**
@@ -227,5 +219,5 @@ export async function emitLeadNoteAdded(data: {
   funnelId: string;
   addedBy: string;
 }): Promise<void> {
-  void maybeDispatchWebhook('lead.note_added', data);
+  void maybeDispatchWebhook(EVENT_TYPES.LEAD_NOTE_ADDED as 'lead.note_added', data);
 }

@@ -6,6 +6,10 @@
  *
  * Uses client-side only rendering to avoid hydration mismatches
  * from Math.random() generating different values on server vs client.
+ *
+ * Accessibility:
+ * - Container has aria-hidden="true" since all content is purely decorative
+ * - Container has role="presentation" to reinforce decorative nature
  */
 
 import { motion } from 'framer-motion';
@@ -94,6 +98,8 @@ export function FloatingElements({
   return (
     <div
       className={className}
+      aria-hidden="true"
+      role="presentation"
       style={{
         position: 'absolute',
         inset: 0,

@@ -10,6 +10,7 @@
 
 import Sidebar, { SidebarProvider } from '@/components/Sidebar';
 import Header from '@/components/Header';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -18,7 +19,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <Sidebar />
         <div className="lg:ml-64 flex flex-col min-h-screen">
           <Header />
-          <main className="flex-1 p-4 lg:p-6">{children}</main>
+          <main className="flex-1 p-4 lg:p-6">
+            <ErrorBoundary>{children}</ErrorBoundary>
+          </main>
         </div>
       </div>
     </SidebarProvider>

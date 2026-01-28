@@ -1,25 +1,42 @@
+import dynamic from 'next/dynamic';
 import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
 import { routing, type Locale } from '@/i18n/routing';
-import { services, getServiceBySlug, getAllServiceSlugs } from '@/config/services';
-import {
-  FunnelHero,
-  FunnelBenefits,
-  FunnelForm,
-  FunnelTestimonials,
-  FunnelFAQ,
-} from '@/components/funnel';
+import { getServiceBySlug, getAllServiceSlugs } from '@/config/services';
+import { FunnelHero, FunnelBenefits, FunnelForm } from '@/components/funnel';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { Footer } from '@/components/Footer';
 import {
   generateFunnelMetadata,
-  generateFunnelJsonLd,
   generateFunnelFAQJsonLd,
   generateFunnelAggregateRatingJsonLd,
+  generateBreadcrumbJsonLd,
 } from '@/seo/funnelMetadata';
 import { ExitIntent } from '@/components/ExitIntent';
 import { StickyCTA } from '@/components/StickyCTA';
 import { SocialProofBar } from '@/components/SocialProofBar';
+
+/**
+ * Lazy-load non-critical sections for better initial page performance.
+ * These sections are below the fold and benefit from code splitting.
+ */
+const FunnelTestimonials = dynamic(() => import('@/components/funnel/FunnelTestimonials'), {
+  loading: () => (
+    <div
+      className="h-96 animate-pulse bg-white/5 rounded-xl"
+      style={{ height: '384px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)' }}
+    />
+  ),
+});
+
+const FunnelFAQ = dynamic(() => import('@/components/funnel/FunnelFAQ'), {
+  loading: () => (
+    <div
+      className="h-64 animate-pulse bg-white/5 rounded-xl"
+      style={{ height: '256px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)' }}
+    />
+  ),
+});
 
 /**
  * Generate static params for all locales and services
@@ -76,9 +93,10 @@ export default async function ServiceFunnelPage({
     notFound();
   }
 
-  // Generate structured data (FAQ + AggregateRating + Review schemas)
+  // Generate structured data (FAQ + AggregateRating + Review + Breadcrumb schemas)
   const faqJsonLd = generateFunnelFAQJsonLd(serviceConfig, locale as Locale);
   const ratingJsonLd = generateFunnelAggregateRatingJsonLd(serviceConfig, locale as Locale);
+  const breadcrumbJsonLd = generateBreadcrumbJsonLd(serviceConfig, locale as Locale);
 
   return (
     <main style={{ minHeight: '100vh' }}>
@@ -96,6 +114,11 @@ export default async function ServiceFunnelPage({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(ratingJsonLd) }}
         />
       )}
+      {/* BreadcrumbList Schema JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
 
       {/* Social Proof Bar */}
       <SocialProofBar variant="total" />
@@ -128,10 +151,10 @@ export default async function ServiceFunnelPage({
       {/* Lead Form Section */}
       <FunnelForm service={serviceConfig} />
 
-      {/* Testimonials Section */}
+      {/* Testimonials Section (lazy-loaded) */}
       <FunnelTestimonials service={serviceConfig} />
 
-      {/* FAQ Section */}
+      {/* FAQ Section (lazy-loaded) */}
       <FunnelFAQ service={serviceConfig} />
 
       {/* Footer with legal links */}

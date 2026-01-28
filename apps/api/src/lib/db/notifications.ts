@@ -10,6 +10,7 @@ import { PutCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
 import { getDocClient, tableName } from './client.js';
 import { ulid } from '../../lib/id.js';
 import { signCursor, verifyCursor } from '../cursor.js';
+import { DB_PREFIXES, GSI_KEYS, GSI_INDEX_NAMES } from '../constants.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -58,7 +59,7 @@ export async function recordNotification(
   const now = new Date().toISOString();
 
   const record: NotificationRecord = {
-    pk: `NOTIFY#${input.leadId}`,
+    pk: `${DB_PREFIXES.NOTIFY}${input.leadId}`,
     sk: `${input.channel}#${now}#${id}`,
     notificationId: id,
     leadId: input.leadId,
@@ -70,7 +71,7 @@ export async function recordNotification(
     status: input.status,
     errorMessage: input.errorMessage,
     sentAt: now,
-    gsi1pk: 'NOTIFYLOG',
+    gsi1pk: GSI_KEYS.NOTIFYLOG,
     gsi1sk: now,
   };
 
@@ -112,7 +113,7 @@ export async function listNotificationsByLead(
     new QueryCommand({
       TableName: tableName(),
       KeyConditionExpression: 'pk = :pk',
-      ExpressionAttributeValues: { ':pk': `NOTIFY#${leadId}` },
+      ExpressionAttributeValues: { ':pk': `${DB_PREFIXES.NOTIFY}${leadId}` },
       Limit: limit,
       ScanIndexForward: false,
       ExclusiveStartKey: exclusiveStartKey,
@@ -149,7 +150,7 @@ export async function listNotifications(
   }
 
   let keyCondition = 'gsi1pk = :pk';
-  const exprValues: Record<string, unknown> = { ':pk': 'NOTIFYLOG' };
+  const exprValues: Record<string, unknown> = { ':pk': GSI_KEYS.NOTIFYLOG };
 
   if (startDate && endDate) {
     keyCondition += ' AND gsi1sk BETWEEN :start AND :end';
@@ -160,7 +161,7 @@ export async function listNotifications(
   const result = await doc.send(
     new QueryCommand({
       TableName: tableName(),
-      IndexName: 'GSI1',
+      IndexName: GSI_INDEX_NAMES.GSI1,
       KeyConditionExpression: keyCondition,
       ExpressionAttributeValues: exprValues,
       Limit: limit,

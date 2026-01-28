@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import {
   useProfile,
   useOrg,
@@ -15,6 +15,7 @@ import {
 import { logout } from '@/lib/auth';
 import { MetricCardSkeleton } from '@/components/LoadingSpinner';
 import { toast } from '@/lib/toast';
+import { VALIDATION, ERROR_MESSAGES, SUCCESS_MESSAGES } from '@/lib/constants';
 import type { BusinessHours, BusinessHoursDay, GranularNotificationPreferences } from '@/lib/types';
 
 // ── Constants ────────────────────────────────
@@ -108,13 +109,16 @@ export default function SettingsPage() {
   const [isEditingName, setIsEditingName] = useState(false);
   const [editFirstName, setEditFirstName] = useState('');
   const [editLastName, setEditLastName] = useState('');
+  const [nameErrors, setNameErrors] = useState<{ firstName?: string; lastName?: string }>({});
 
   // Org editing state
   const [isEditingOrg, setIsEditingOrg] = useState(false);
   const [editOrgName, setEditOrgName] = useState('');
+  const [orgNameError, setOrgNameError] = useState('');
 
   // ZIP code input state
   const [zipInput, setZipInput] = useState('');
+  const [zipError, setZipError] = useState('');
 
   // Business hours state
   const [localBusinessHours, setLocalBusinessHours] = useState<BusinessHours | null>(null);
@@ -129,26 +133,51 @@ export default function SettingsPage() {
     if (!profile) return;
     setEditFirstName(profile.firstName);
     setEditLastName(profile.lastName);
+    setNameErrors({});
     setIsEditingName(true);
   }
 
   function cancelEditName() {
     setIsEditingName(false);
+    setNameErrors({});
+  }
+
+  function validateProfileName(): boolean {
+    const errors: { firstName?: string; lastName?: string } = {};
+    const trimFirst = editFirstName.trim();
+    const trimLast = editLastName.trim();
+
+    if (!trimFirst) {
+      errors.firstName = ERROR_MESSAGES.FIRST_NAME_REQUIRED;
+    } else if (trimFirst.length < VALIDATION.MIN_NAME_LENGTH) {
+      errors.firstName = ERROR_MESSAGES.NAME_TOO_SHORT;
+    }
+
+    if (!trimLast) {
+      errors.lastName = ERROR_MESSAGES.LAST_NAME_REQUIRED;
+    } else if (trimLast.length < VALIDATION.MIN_NAME_LENGTH) {
+      errors.lastName = ERROR_MESSAGES.NAME_TOO_SHORT;
+    }
+
+    setNameErrors(errors);
+    return Object.keys(errors).length === 0;
   }
 
   function saveProfileName() {
+    if (!validateProfileName()) return;
+
     const trimFirst = editFirstName.trim();
     const trimLast = editLastName.trim();
-    if (!trimFirst || !trimLast) return;
 
     updateProfile.mutate(
       { firstName: trimFirst, lastName: trimLast },
       {
         onSuccess: () => {
-          toast.success('Profile updated');
+          toast.success(SUCCESS_MESSAGES.PROFILE_UPDATED);
           setIsEditingName(false);
+          setNameErrors({});
         },
-        onError: () => toast.error('Failed to update profile'),
+        onError: () => toast.error(ERROR_MESSAGES.PROFILE_UPDATE_FAILED),
       }
     );
   }
@@ -158,21 +187,31 @@ export default function SettingsPage() {
   function startEditingOrg() {
     if (!org) return;
     setEditOrgName(org.name);
+    setOrgNameError('');
     setIsEditingOrg(true);
   }
 
   function saveOrgName() {
     const trimmed = editOrgName.trim();
-    if (!trimmed || !profile?.primaryOrgId) return;
+    if (!trimmed) {
+      setOrgNameError('Organization name is required');
+      return;
+    }
+    if (trimmed.length < VALIDATION.MIN_NAME_LENGTH) {
+      setOrgNameError(ERROR_MESSAGES.NAME_TOO_SHORT);
+      return;
+    }
+    if (!profile?.primaryOrgId) return;
 
+    setOrgNameError('');
     updateOrg.mutate(
       { orgId: profile.primaryOrgId, name: trimmed },
       {
         onSuccess: () => {
-          toast.success('Organization name updated');
+          toast.success(SUCCESS_MESSAGES.ORG_NAME_UPDATED);
           setIsEditingOrg(false);
         },
-        onError: () => toast.error('Failed to update organization'),
+        onError: () => toast.error(ERROR_MESSAGES.ORG_UPDATE_FAILED),
       }
     );
   }
@@ -186,7 +225,7 @@ export default function SettingsPage() {
         emailNotifications: !profile.notificationPreferences.emailNotifications,
         smsNotifications: profile.notificationPreferences.smsNotifications,
       },
-      { onSuccess: () => toast.success('Notification preferences saved') }
+      { onSuccess: () => toast.success(SUCCESS_MESSAGES.NOTIFICATION_PREFS_SAVED) }
     );
   }
 
@@ -197,7 +236,7 @@ export default function SettingsPage() {
         emailNotifications: profile.notificationPreferences.emailNotifications,
         smsNotifications: !profile.notificationPreferences.smsNotifications,
       },
-      { onSuccess: () => toast.success('Notification preferences saved') }
+      { onSuccess: () => toast.success(SUCCESS_MESSAGES.NOTIFICATION_PREFS_SAVED) }
     );
   }
 
@@ -214,7 +253,7 @@ export default function SettingsPage() {
       : [...selectedCategories, category];
     updateServicePrefs.mutate(
       { categories: next },
-      { onSuccess: () => toast.success('Service preferences saved') }
+      { onSuccess: () => toast.success(SUCCESS_MESSAGES.SERVICE_PREFS_SAVED) }
     );
   }
 
@@ -224,17 +263,18 @@ export default function SettingsPage() {
     const trimmed = zipInput.trim();
     if (!trimmed || zipCodes.includes(trimmed)) {
       setZipInput('');
+      setZipError('');
       return;
     }
-    // Basic 5-digit ZIP validation
-    if (!/^\d{5}$/.test(trimmed)) {
-      toast.error('Please enter a valid 5-digit ZIP code');
+    if (!VALIDATION.ZIP_REGEX.test(trimmed)) {
+      setZipError(ERROR_MESSAGES.ZIP_INVALID);
       return;
     }
+    setZipError('');
     const next = [...zipCodes, trimmed];
     updateServicePrefs.mutate(
       { zipCodes: next },
-      { onSuccess: () => toast.success('Coverage area added') }
+      { onSuccess: () => toast.success(SUCCESS_MESSAGES.COVERAGE_ADDED) }
     );
     setZipInput('');
   }
@@ -281,7 +321,7 @@ export default function SettingsPage() {
       { businessHours: localBusinessHours ?? businessHours },
       {
         onSuccess: () => {
-          toast.success('Business hours saved');
+          toast.success(SUCCESS_MESSAGES.BUSINESS_HOURS_SAVED);
           setLocalBusinessHours(null);
         },
         onError: () => toast.error('Failed to save business hours'),
@@ -292,7 +332,7 @@ export default function SettingsPage() {
   function copyOrgId() {
     if (org?.id) {
       navigator.clipboard.writeText(org.id).then(
-        () => toast.success('Organization ID copied'),
+        () => toast.success(SUCCESS_MESSAGES.ORG_ID_COPIED),
         () => toast.error('Failed to copy')
       );
     }
@@ -335,30 +375,64 @@ export default function SettingsPage() {
               {isEditingName ? (
                 <div className="flex-1 space-y-2">
                   <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={editFirstName}
-                      onChange={(e) => setEditFirstName(e.target.value)}
-                      placeholder="First name"
-                      className="h-9 flex-1 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-900 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
-                      aria-label="First name"
-                    />
-                    <input
-                      type="text"
-                      value={editLastName}
-                      onChange={(e) => setEditLastName(e.target.value)}
-                      placeholder="Last name"
-                      className="h-9 flex-1 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-900 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
-                      aria-label="Last name"
-                    />
+                    <div className="flex-1">
+                      <input
+                        type="text"
+                        value={editFirstName}
+                        onChange={(e) => {
+                          setEditFirstName(e.target.value);
+                          if (nameErrors.firstName) {
+                            setNameErrors((prev) => ({ ...prev, firstName: undefined }));
+                          }
+                        }}
+                        placeholder="First name"
+                        className={`h-9 w-full rounded-lg border bg-white px-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 ${
+                          nameErrors.firstName
+                            ? 'border-red-300 focus:border-red-500'
+                            : 'border-gray-200 focus:border-brand-500'
+                        }`}
+                        aria-label="First name"
+                        aria-invalid={!!nameErrors.firstName}
+                        aria-describedby={nameErrors.firstName ? 'first-name-error' : undefined}
+                      />
+                      {nameErrors.firstName && (
+                        <p id="first-name-error" className="mt-1 text-xs text-red-500" role="alert">
+                          {nameErrors.firstName}
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <input
+                        type="text"
+                        value={editLastName}
+                        onChange={(e) => {
+                          setEditLastName(e.target.value);
+                          if (nameErrors.lastName) {
+                            setNameErrors((prev) => ({ ...prev, lastName: undefined }));
+                          }
+                        }}
+                        placeholder="Last name"
+                        className={`h-9 w-full rounded-lg border bg-white px-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 ${
+                          nameErrors.lastName
+                            ? 'border-red-300 focus:border-red-500'
+                            : 'border-gray-200 focus:border-brand-500'
+                        }`}
+                        aria-label="Last name"
+                        aria-invalid={!!nameErrors.lastName}
+                        aria-describedby={nameErrors.lastName ? 'last-name-error' : undefined}
+                      />
+                      {nameErrors.lastName && (
+                        <p id="last-name-error" className="mt-1 text-xs text-red-500" role="alert">
+                          {nameErrors.lastName}
+                        </p>
+                      )}
+                    </div>
                   </div>
                   <div className="flex gap-2">
                     <button
                       type="button"
                       onClick={saveProfileName}
-                      disabled={
-                        updateProfile.isPending || !editFirstName.trim() || !editLastName.trim()
-                      }
+                      disabled={updateProfile.isPending}
                       className="rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-brand-700 disabled:opacity-50"
                     >
                       {updateProfile.isPending ? 'Saving...' : 'Save'}
@@ -515,25 +589,43 @@ export default function SettingsPage() {
         </div>
         <div className="p-4">
           {/* ZIP input */}
-          <div className="flex gap-2 mb-3">
-            <input
-              type="text"
-              value={zipInput}
-              onChange={(e) => setZipInput(e.target.value.replace(/\D/g, '').slice(0, 5))}
-              onKeyDown={handleZipKeyDown}
-              placeholder="Enter ZIP code"
-              maxLength={5}
-              className="h-10 flex-1 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-900 placeholder-gray-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
-              aria-label="Add ZIP code"
-            />
-            <button
-              type="button"
-              onClick={addZipCode}
-              disabled={!zipInput.trim() || updateServicePrefs.isPending}
-              className="rounded-lg bg-brand-600 px-4 py-2 text-xs font-medium text-white hover:bg-brand-700 disabled:opacity-50"
-            >
-              Add
-            </button>
+          <div className="mb-3">
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <input
+                  type="text"
+                  value={zipInput}
+                  onChange={(e) => {
+                    setZipInput(e.target.value.replace(/\D/g, '').slice(0, 5));
+                    if (zipError) setZipError('');
+                  }}
+                  onKeyDown={handleZipKeyDown}
+                  placeholder="Enter ZIP code"
+                  maxLength={5}
+                  className={`h-10 w-full rounded-lg border bg-white px-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 ${
+                    zipError
+                      ? 'border-red-300 focus:border-red-500'
+                      : 'border-gray-200 focus:border-brand-500'
+                  }`}
+                  aria-label="Add ZIP code"
+                  aria-invalid={!!zipError}
+                  aria-describedby={zipError ? 'zip-error' : undefined}
+                />
+              </div>
+              <button
+                type="button"
+                onClick={addZipCode}
+                disabled={!zipInput.trim() || updateServicePrefs.isPending}
+                className="rounded-lg bg-brand-600 px-4 py-2 text-xs font-medium text-white hover:bg-brand-700 disabled:opacity-50"
+              >
+                Add
+              </button>
+            </div>
+            {zipError && (
+              <p id="zip-error" className="mt-1 text-xs text-red-500" role="alert">
+                {zipError}
+              </p>
+            )}
           </div>
 
           {/* ZIP chips */}
@@ -667,29 +759,50 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between px-4 py-3">
               <span className="text-xs text-gray-500">Name</span>
               {isEditingOrg ? (
-                <div className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    value={editOrgName}
-                    onChange={(e) => setEditOrgName(e.target.value)}
-                    className="h-8 w-40 rounded-lg border border-gray-200 bg-white px-2 text-sm text-gray-900 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
-                    aria-label="Organization name"
-                  />
-                  <button
-                    type="button"
-                    onClick={saveOrgName}
-                    disabled={updateOrg.isPending || !editOrgName.trim()}
-                    className="rounded-lg bg-brand-600 px-2 py-1 text-xs font-medium text-white hover:bg-brand-700 disabled:opacity-50"
-                  >
-                    Save
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setIsEditingOrg(false)}
-                    className="rounded-lg bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600 hover:bg-gray-200"
-                  >
-                    Cancel
-                  </button>
+                <div className="flex flex-col items-end gap-1">
+                  <div className="flex items-center gap-2">
+                    <div>
+                      <input
+                        type="text"
+                        value={editOrgName}
+                        onChange={(e) => {
+                          setEditOrgName(e.target.value);
+                          if (orgNameError) setOrgNameError('');
+                        }}
+                        className={`h-8 w-40 rounded-lg border bg-white px-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 ${
+                          orgNameError
+                            ? 'border-red-300 focus:border-red-500'
+                            : 'border-gray-200 focus:border-brand-500'
+                        }`}
+                        aria-label="Organization name"
+                        aria-invalid={!!orgNameError}
+                        aria-describedby={orgNameError ? 'org-name-error' : undefined}
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={saveOrgName}
+                      disabled={updateOrg.isPending || !editOrgName.trim()}
+                      className="rounded-lg bg-brand-600 px-2 py-1 text-xs font-medium text-white hover:bg-brand-700 disabled:opacity-50"
+                    >
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsEditingOrg(false);
+                        setOrgNameError('');
+                      }}
+                      className="rounded-lg bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600 hover:bg-gray-200"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                  {orgNameError && (
+                    <p id="org-name-error" className="text-xs text-red-500" role="alert">
+                      {orgNameError}
+                    </p>
+                  )}
                 </div>
               ) : (
                 <span className="text-sm font-medium text-gray-900">{org.name}</span>

@@ -4,8 +4,32 @@
 
 import type { PipelineStatus } from './lead';
 
-export type ExportFormat = 'csv' | 'xlsx' | 'pdf' | 'docx' | 'json';
-export type ExportStatus = 'pending' | 'processing' | 'completed' | 'failed';
+/**
+ * Const enum-like object for export formats.
+ * Use `ExportFormatEnum.CSV` instead of hardcoding `'csv'`.
+ */
+export const ExportFormatEnum = {
+  CSV: 'csv',
+  XLSX: 'xlsx',
+  PDF: 'pdf',
+  DOCX: 'docx',
+  JSON: 'json',
+} as const;
+
+export type ExportFormat = (typeof ExportFormatEnum)[keyof typeof ExportFormatEnum];
+
+/**
+ * Const enum-like object for export statuses.
+ * Use `ExportStatusEnum.PENDING` instead of hardcoding `'pending'`.
+ */
+export const ExportStatusEnum = {
+  PENDING: 'pending',
+  PROCESSING: 'processing',
+  COMPLETED: 'completed',
+  FAILED: 'failed',
+} as const;
+
+export type ExportStatus = (typeof ExportStatusEnum)[keyof typeof ExportStatusEnum];
 
 export interface ExportJob {
   exportId: string;

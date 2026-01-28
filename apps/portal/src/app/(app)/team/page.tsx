@@ -14,6 +14,7 @@ import InviteModal from '@/components/InviteModal';
 import EmptyState from '@/components/EmptyState';
 import { MetricCardSkeleton } from '@/components/LoadingSpinner';
 import { toast } from '@/lib/toast';
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from '@/lib/constants';
 
 export default function TeamPage() {
   const [showInvite, setShowInvite] = useState(false);
@@ -50,11 +51,11 @@ export default function TeamPage() {
       { email, role },
       {
         onSuccess: () => {
-          toast.success(`Invitation sent to ${email}`);
+          toast.success(SUCCESS_MESSAGES.INVITE_SENT(email));
           setShowInvite(false);
         },
         onError: () => {
-          toast.error('Failed to send invitation. Please try again.');
+          toast.error(ERROR_MESSAGES.INVITE_FAILED);
         },
       }
     );
@@ -62,8 +63,8 @@ export default function TeamPage() {
 
   function handleRemove(userId: string) {
     removeMember.mutate(userId, {
-      onSuccess: () => toast.success('Team member removed'),
-      onError: () => toast.error('Failed to remove team member'),
+      onSuccess: () => toast.success(SUCCESS_MESSAGES.MEMBER_REMOVED),
+      onError: () => toast.error(ERROR_MESSAGES.REMOVE_MEMBER_FAILED),
     });
   }
 
@@ -71,8 +72,8 @@ export default function TeamPage() {
     updateRole.mutate(
       { userId, role },
       {
-        onSuccess: () => toast.success('Role updated'),
-        onError: () => toast.error('Failed to update role'),
+        onSuccess: () => toast.success(SUCCESS_MESSAGES.ROLE_UPDATED),
+        onError: () => toast.error(ERROR_MESSAGES.UPDATE_ROLE_FAILED),
       }
     );
   }

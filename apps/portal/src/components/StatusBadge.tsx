@@ -19,6 +19,18 @@ const STATUS_CONFIG: Record<
     textClass: 'text-blue-700',
     dotClass: 'bg-blue-500',
   },
+  assigned: {
+    label: 'Assigned',
+    bgClass: 'bg-cyan-50',
+    textClass: 'text-cyan-700',
+    dotClass: 'bg-cyan-500',
+  },
+  unassigned: {
+    label: 'Unassigned',
+    bgClass: 'bg-slate-50',
+    textClass: 'text-slate-600',
+    dotClass: 'bg-slate-400',
+  },
   contacted: {
     label: 'Contacted',
     bgClass: 'bg-yellow-50',

@@ -8,6 +8,8 @@
 // - GET/POST/DELETE on /api/auth
 // ──────────────────────────────────────────────
 
+import { AUTH_ENDPOINT, STORAGE_KEYS } from './constants';
+
 const COGNITO_DOMAIN = process.env.NEXT_PUBLIC_COGNITO_DOMAIN || '';
 const CLIENT_ID = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID || '';
 const PORTAL_URL = process.env.NEXT_PUBLIC_PORTAL_URL || 'http://localhost:3002';
@@ -36,7 +38,7 @@ export interface CurrentUser {
 }
 
 // Session storage key for OAuth state (CSRF protection)
-const OAUTH_STATE_KEY = 'portal_oauth_state';
+const OAUTH_STATE_KEY = STORAGE_KEYS.OAUTH_STATE;
 
 // State expiration time (5 minutes)
 const STATE_EXPIRY_MS = 5 * 60 * 1000;
@@ -137,7 +139,7 @@ export function getLogoutUrl(): string {
  */
 export async function exchangeCodeForTokens(code: string): Promise<boolean> {
   try {
-    const response = await fetch('/api/auth', {
+    const response = await fetch(AUTH_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -178,7 +180,7 @@ function parseJwt(token: string): TokenPayload | null {
  */
 export async function getCurrentUser(): Promise<CurrentUser | null> {
   try {
-    const response = await fetch('/api/auth', {
+    const response = await fetch(AUTH_ENDPOINT, {
       method: 'GET',
       credentials: 'include',
     });
@@ -217,7 +219,7 @@ export function getUserFromToken(token: string): CurrentUser | null {
  */
 export async function logout(): Promise<void> {
   try {
-    await fetch('/api/auth', {
+    await fetch(AUTH_ENDPOINT, {
       method: 'DELETE',
       credentials: 'include',
     });

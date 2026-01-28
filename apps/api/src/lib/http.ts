@@ -4,6 +4,8 @@
 
 import type { APIGatewayProxyResultV2 } from 'aws-lambda';
 import type { FieldErrors } from '@kanjona/shared';
+import { HTTP_STATUS, HTTP_HEADERS, CONTENT_TYPES } from './constants.js';
+import type { CaptureStatus } from './constants.js';
 
 // =============================================================================
 // Security Headers
@@ -11,11 +13,11 @@ import type { FieldErrors } from '@kanjona/shared';
 
 /** Security headers to include in all responses */
 const SECURITY_HEADERS = {
-  'X-Content-Type-Options': 'nosniff',
-  'X-Frame-Options': 'DENY',
-  'X-XSS-Protection': '1; mode=block',
-  'Cache-Control': 'no-store, no-cache, must-revalidate, private',
-  Pragma: 'no-cache',
+  [HTTP_HEADERS.X_CONTENT_TYPE_OPTIONS]: 'nosniff',
+  [HTTP_HEADERS.X_FRAME_OPTIONS]: 'DENY',
+  [HTTP_HEADERS.X_XSS_PROTECTION]: '1; mode=block',
+  [HTTP_HEADERS.CACHE_CONTROL]: 'no-store, no-cache, must-revalidate, private',
+  [HTTP_HEADERS.PRAGMA]: 'no-cache',
 } as const;
 
 // =============================================================================
@@ -71,28 +73,28 @@ function buildCorsHeaders(requestOrigin?: string): Record<string, string> {
   if (!allowedOrigin) {
     return {
       ...SECURITY_HEADERS,
-      'Content-Type': 'application/json',
+      [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.JSON,
     };
   }
 
   return {
     ...SECURITY_HEADERS,
-    'Access-Control-Allow-Origin': allowedOrigin,
-    'Access-Control-Allow-Headers': 'content-type,authorization,x-csrf-token',
-    'Access-Control-Allow-Methods': 'POST,OPTIONS',
-    'Access-Control-Allow-Credentials': 'true',
-    'Content-Type': 'application/json',
+    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_ORIGIN]: allowedOrigin,
+    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_HEADERS]: 'content-type,authorization,x-csrf-token',
+    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_METHODS]: 'POST,OPTIONS',
+    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_CREDENTIALS]: 'true',
+    [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.JSON,
     // Prevent caching of CORS responses
-    Vary: 'Origin',
+    [HTTP_HEADERS.VARY]: 'Origin',
   };
 }
 
 // Default headers for responses without origin context
 const DEFAULT_CORS_HEADERS = {
   ...SECURITY_HEADERS,
-  'Access-Control-Allow-Headers': 'content-type,authorization,x-csrf-token',
-  'Access-Control-Allow-Methods': 'POST,OPTIONS',
-  'Content-Type': 'application/json',
+  [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_HEADERS]: 'content-type,authorization,x-csrf-token',
+  [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_METHODS]: 'POST,OPTIONS',
+  [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.JSON,
 } as const;
 
 // =============================================================================
@@ -102,7 +104,7 @@ const DEFAULT_CORS_HEADERS = {
 interface SuccessResponse {
   ok: true;
   leadId: string;
-  status: 'accepted' | 'quarantined';
+  status: CaptureStatus;
 }
 
 interface ErrorResponse {
@@ -138,11 +140,11 @@ function buildResponse(
  */
 export function created(
   leadId: string,
-  status: 'accepted' | 'quarantined',
+  status: CaptureStatus,
   requestOrigin?: string
 ): APIGatewayProxyResultV2 {
   return buildResponse(
-    201,
+    HTTP_STATUS.CREATED,
     {
       ok: true,
       leadId,
@@ -157,11 +159,11 @@ export function created(
  */
 export function ok(
   leadId: string,
-  status: 'accepted' | 'quarantined',
+  status: CaptureStatus,
   requestOrigin?: string
 ): APIGatewayProxyResultV2 {
   return buildResponse(
-    200,
+    HTTP_STATUS.OK,
     {
       ok: true,
       leadId,
@@ -176,7 +178,7 @@ export function ok(
  */
 export function noContent(requestOrigin?: string): APIGatewayProxyResultV2 {
   return {
-    statusCode: 204,
+    statusCode: HTTP_STATUS.NO_CONTENT,
     headers: requestOrigin ? buildCorsHeaders(requestOrigin) : DEFAULT_CORS_HEADERS,
     body: '',
   };
@@ -190,7 +192,7 @@ export function validationError(
   requestOrigin?: string
 ): APIGatewayProxyResultV2 {
   return buildResponse(
-    400,
+    HTTP_STATUS.BAD_REQUEST,
     {
       ok: false,
       error: {
@@ -208,7 +210,7 @@ export function validationError(
  */
 export function invalidJson(message: string, requestOrigin?: string): APIGatewayProxyResultV2 {
   return buildResponse(
-    400,
+    HTTP_STATUS.BAD_REQUEST,
     {
       ok: false,
       error: {
@@ -225,7 +227,7 @@ export function invalidJson(message: string, requestOrigin?: string): APIGateway
  */
 export function methodNotAllowed(requestOrigin?: string): APIGatewayProxyResultV2 {
   return buildResponse(
-    405,
+    HTTP_STATUS.METHOD_NOT_ALLOWED,
     {
       ok: false,
       error: {
@@ -242,7 +244,7 @@ export function methodNotAllowed(requestOrigin?: string): APIGatewayProxyResultV
  */
 export function payloadTooLarge(maxSize: number, requestOrigin?: string): APIGatewayProxyResultV2 {
   return buildResponse(
-    413,
+    HTTP_STATUS.PAYLOAD_TOO_LARGE,
     {
       ok: false,
       error: {
@@ -259,7 +261,7 @@ export function payloadTooLarge(maxSize: number, requestOrigin?: string): APIGat
  */
 export function rateLimited(requestOrigin?: string): APIGatewayProxyResultV2 {
   return buildResponse(
-    429,
+    HTTP_STATUS.RATE_LIMITED,
     {
       ok: false,
       error: {
@@ -277,7 +279,7 @@ export function rateLimited(requestOrigin?: string): APIGatewayProxyResultV2 {
  */
 export function internalError(requestOrigin?: string): APIGatewayProxyResultV2 {
   return buildResponse(
-    500,
+    HTTP_STATUS.INTERNAL_ERROR,
     {
       ok: false,
       error: {

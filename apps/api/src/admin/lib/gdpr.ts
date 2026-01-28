@@ -17,6 +17,7 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import type { AdminConfig, Lead, AuditLogEntry } from '../types.js';
 import { getDocClient } from '../../lib/clients.js';
+import { GSI_INDEX_NAMES } from '../../lib/constants.js';
 
 // =============================================================================
 // Types
@@ -150,7 +151,7 @@ async function findLeadsByEmail(tableName: string, email: string): Promise<Lead[
     const result = await ddb.send(
       new QueryCommand({
         TableName: tableName,
-        IndexName: 'GSI1',
+        IndexName: GSI_INDEX_NAMES.GSI1,
         KeyConditionExpression: 'gsi1pk = :email',
         ExpressionAttributeValues: {
           ':email': `EMAIL#${email.toLowerCase()}`,
@@ -179,7 +180,7 @@ async function findAuditLogsByEmail(config: AdminConfig, email: string): Promise
     const result = await ddb.send(
       new QueryCommand({
         TableName: config.auditTable,
-        IndexName: 'GSI1',
+        IndexName: GSI_INDEX_NAMES.GSI1,
         KeyConditionExpression: 'gsi1pk = :email',
         ExpressionAttributeValues: {
           ':email': `EMAIL#${email.toLowerCase()}`,
@@ -542,7 +543,7 @@ export async function getGdprHistory(
     const result = await ddb.send(
       new QueryCommand({
         TableName: config.auditTable,
-        IndexName: 'GSI1',
+        IndexName: GSI_INDEX_NAMES.GSI1,
         KeyConditionExpression: 'gsi1pk = :gsi1pk',
         ExpressionAttributeValues: {
           ':gsi1pk': `GDPR#${normalizedEmail}`,

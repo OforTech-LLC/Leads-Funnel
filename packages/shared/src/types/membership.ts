@@ -2,7 +2,18 @@
  * Membership types linking users to organizations with specific roles.
  */
 
-export type MembershipRole = 'ORG_OWNER' | 'MANAGER' | 'AGENT' | 'VIEWER';
+/**
+ * Const enum-like object for membership roles.
+ * Use `MembershipRoleEnum.OWNER` instead of hardcoding `'ORG_OWNER'`.
+ */
+export const MembershipRoleEnum = {
+  OWNER: 'ORG_OWNER',
+  MANAGER: 'MANAGER',
+  AGENT: 'AGENT',
+  VIEWER: 'VIEWER',
+} as const;
+
+export type MembershipRole = (typeof MembershipRoleEnum)[keyof typeof MembershipRoleEnum];
 
 export interface Membership {
   orgId: string;

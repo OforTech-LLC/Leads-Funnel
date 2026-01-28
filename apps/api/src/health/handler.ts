@@ -14,6 +14,7 @@ import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Context } from 'a
 import { DynamoDBClient, DescribeTableCommand } from '@aws-sdk/client-dynamodb';
 import { createLogger } from '../lib/logging.js';
 import { getCorsOrigin } from '../lib/response.js';
+import { HTTP_STATUS, HTTP_HEADERS, CONTENT_TYPES } from '../lib/constants.js';
 
 const log = createLogger('health');
 
@@ -106,11 +107,11 @@ async function checkDynamoDB(): Promise<DependencyStatus> {
 // Fix 11: Use getCorsOrigin instead of hardcoded '*'
 function buildCorsHeaders(): Record<string, string> {
   return {
-    'Access-Control-Allow-Origin': getCorsOrigin(),
-    'Access-Control-Allow-Headers': 'content-type',
-    'Access-Control-Allow-Methods': 'GET,OPTIONS',
-    'Content-Type': 'application/json',
-    'Cache-Control': 'no-cache, no-store, must-revalidate',
+    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_ORIGIN]: getCorsOrigin(),
+    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_HEADERS]: 'content-type',
+    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_METHODS]: 'GET,OPTIONS',
+    [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.JSON,
+    [HTTP_HEADERS.CACHE_CONTROL]: 'no-cache, no-store, must-revalidate',
   };
 }
 
@@ -135,7 +136,7 @@ export async function handler(
   // Handle OPTIONS preflight
   if (event.requestContext.http.method === 'OPTIONS') {
     return {
-      statusCode: 204,
+      statusCode: HTTP_STATUS.NO_CONTENT,
       headers: corsHeaders,
       body: '',
     };
@@ -144,7 +145,7 @@ export async function handler(
   // Only allow GET
   if (event.requestContext.http.method !== 'GET') {
     return {
-      statusCode: 405,
+      statusCode: HTTP_STATUS.METHOD_NOT_ALLOWED,
       headers: corsHeaders,
       body: JSON.stringify({
         ok: false,
@@ -175,7 +176,8 @@ export async function handler(
     };
 
     // Return 200 for healthy, 503 for unhealthy
-    const statusCode = overallStatus === 'healthy' ? 200 : 503;
+    const statusCode =
+      overallStatus === 'healthy' ? HTTP_STATUS.OK : HTTP_STATUS.SERVICE_UNAVAILABLE;
 
     log.info('Health check completed', {
       status: overallStatus,
@@ -202,6 +204,6 @@ export async function handler(
       },
     };
 
-    return buildResponse(503, healthStatus);
+    return buildResponse(HTTP_STATUS.SERVICE_UNAVAILABLE, healthStatus);
   }
 }

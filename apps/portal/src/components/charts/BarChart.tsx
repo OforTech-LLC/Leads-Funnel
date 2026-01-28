@@ -48,7 +48,7 @@ export default function BarChart({
   const chartWidth = width - PADDING.left - PADDING.right;
   const chartHeight = height - PADDING.top - PADDING.bottom;
 
-  const { yMax, yTicks, barWidth, barGap, bars } = useMemo(() => {
+  const { yMax, yTicks, bars } = useMemo(() => {
     if (data.length === 0) {
       return { yMax: 100, yTicks: [0, 50, 100], barWidth: 0, barGap: 0, bars: [] };
     }
@@ -198,6 +198,27 @@ export default function BarChart({
           <p className="text-sm font-bold text-gray-900">{tooltip.value}</p>
         </div>
       )}
+
+      {/* Accessible data table (visually hidden) */}
+      <div className="sr-only">
+        <table>
+          <caption>Leads by funnel</caption>
+          <thead>
+            <tr>
+              <th>Funnel</th>
+              <th>Lead Count</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((d) => (
+              <tr key={d.label}>
+                <td>{d.label}</td>
+                <td>{d.value}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

@@ -3,12 +3,13 @@
  */
 
 import type { APIGatewayProxyResultV2 } from 'aws-lambda';
+import { HTTP_STATUS, HTTP_HEADERS, CONTENT_TYPES } from '../../lib/constants.js';
 
 const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-  'Content-Type': 'application/json',
+  [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_ORIGIN]: '*',
+  [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_METHODS]: 'GET, POST, OPTIONS',
+  [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_HEADERS]: 'Content-Type, Authorization',
+  [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.JSON,
 };
 
 /**
@@ -16,7 +17,7 @@ const CORS_HEADERS = {
  */
 export function ok<T>(data: T): APIGatewayProxyResultV2 {
   return {
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     headers: CORS_HEADERS,
     body: JSON.stringify({ success: true, data }),
   };
@@ -27,7 +28,7 @@ export function ok<T>(data: T): APIGatewayProxyResultV2 {
  */
 export function created<T>(data: T): APIGatewayProxyResultV2 {
   return {
-    statusCode: 201,
+    statusCode: HTTP_STATUS.CREATED,
     headers: CORS_HEADERS,
     body: JSON.stringify({ success: true, data }),
   };
@@ -38,7 +39,7 @@ export function created<T>(data: T): APIGatewayProxyResultV2 {
  */
 export function noContent(): APIGatewayProxyResultV2 {
   return {
-    statusCode: 204,
+    statusCode: HTTP_STATUS.NO_CONTENT,
     headers: CORS_HEADERS,
     body: '',
   };
@@ -49,7 +50,7 @@ export function noContent(): APIGatewayProxyResultV2 {
  */
 export function badRequest(message: string, code?: string): APIGatewayProxyResultV2 {
   return {
-    statusCode: 400,
+    statusCode: HTTP_STATUS.BAD_REQUEST,
     headers: CORS_HEADERS,
     body: JSON.stringify({
       success: false,
@@ -66,7 +67,7 @@ export function badRequest(message: string, code?: string): APIGatewayProxyResul
  */
 export function unauthorized(message: string, code?: string): APIGatewayProxyResultV2 {
   return {
-    statusCode: 401,
+    statusCode: HTTP_STATUS.UNAUTHORIZED,
     headers: CORS_HEADERS,
     body: JSON.stringify({
       success: false,
@@ -83,7 +84,7 @@ export function unauthorized(message: string, code?: string): APIGatewayProxyRes
  */
 export function forbidden(message: string, code?: string): APIGatewayProxyResultV2 {
   return {
-    statusCode: 403,
+    statusCode: HTTP_STATUS.FORBIDDEN,
     headers: CORS_HEADERS,
     body: JSON.stringify({
       success: false,
@@ -100,7 +101,7 @@ export function forbidden(message: string, code?: string): APIGatewayProxyResult
  */
 export function notFound(message: string): APIGatewayProxyResultV2 {
   return {
-    statusCode: 404,
+    statusCode: HTTP_STATUS.NOT_FOUND,
     headers: CORS_HEADERS,
     body: JSON.stringify({
       success: false,
@@ -117,7 +118,7 @@ export function notFound(message: string): APIGatewayProxyResultV2 {
  */
 export function methodNotAllowed(): APIGatewayProxyResultV2 {
   return {
-    statusCode: 405,
+    statusCode: HTTP_STATUS.METHOD_NOT_ALLOWED,
     headers: CORS_HEADERS,
     body: JSON.stringify({
       success: false,
@@ -134,7 +135,7 @@ export function methodNotAllowed(): APIGatewayProxyResultV2 {
  */
 export function internalError(): APIGatewayProxyResultV2 {
   return {
-    statusCode: 500,
+    statusCode: HTTP_STATUS.INTERNAL_ERROR,
     headers: CORS_HEADERS,
     body: JSON.stringify({
       success: false,

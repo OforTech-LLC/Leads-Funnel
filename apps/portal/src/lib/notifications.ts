@@ -11,6 +11,7 @@ import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tansta
 import { useEffect, useState, useCallback } from 'react';
 import { api } from '@/lib/api';
 import type { PaginatedResponse } from '@/lib/types';
+import { API_ENDPOINTS } from '@/lib/constants';
 
 // ── Types ────────────────────────────────────
 
@@ -80,7 +81,7 @@ export function useNotificationCount() {
 
   return useQuery<NotificationCount>({
     queryKey: notificationKeys.count(),
-    queryFn: () => api.get<NotificationCount>('/api/v1/portal/notifications/count'),
+    queryFn: () => api.get<NotificationCount>(API_ENDPOINTS.NOTIFICATION_COUNT),
     refetchInterval,
     refetchOnWindowFocus: true,
     staleTime: 5_000,
@@ -96,7 +97,7 @@ export function useNotifications() {
     queryKey: notificationKeys.list(),
     queryFn: async () => {
       const result = await api.get<{ data: Notification[] }>(
-        '/api/v1/portal/notifications?limit=20'
+        `${API_ENDPOINTS.NOTIFICATIONS}?limit=20`
       );
       return result.data;
     },
@@ -119,7 +120,7 @@ export function useInfiniteNotifications(filters?: { type?: NotificationType; re
       if (filters?.read !== undefined) params.set('read', String(filters.read));
 
       return api.get<PaginatedResponse<Notification>>(
-        `/api/v1/portal/notifications?${params.toString()}`
+        `${API_ENDPOINTS.NOTIFICATIONS}?${params.toString()}`
       );
     },
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
@@ -135,7 +136,7 @@ export function useMarkNotificationRead() {
 
   return useMutation({
     mutationFn: async (notificationId: string) => {
-      return api.put<void>(`/api/v1/portal/notifications/${notificationId}/read`);
+      return api.put<void>(API_ENDPOINTS.NOTIFICATION_READ(notificationId));
     },
     onMutate: async (notificationId) => {
       await queryClient.cancelQueries({ queryKey: notificationKeys.all });
@@ -180,7 +181,7 @@ export function useMarkAllRead() {
 
   return useMutation({
     mutationFn: async () => {
-      return api.post<void>('/api/v1/portal/notifications/mark-all-read');
+      return api.post<void>(API_ENDPOINTS.NOTIFICATIONS_MARK_ALL_READ);
     },
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: notificationKeys.all });

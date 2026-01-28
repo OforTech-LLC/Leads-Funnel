@@ -2,7 +2,7 @@
 
 /**
  * Shared Footer Component
- * Displays copyright, legal links, and optional language switcher.
+ * Displays copyright, legal links (including CCPA "Do Not Sell"), and optional language switcher.
  * Used across all funnel pages and the main page layout.
  */
 
@@ -39,6 +39,10 @@ export function Footer({ accentColor = '#0070f3', showLanguageSwitcher = false }
           <span style={footerStyles.separator}>|</span>
           <Link href="/terms" style={footerStyles.link}>
             {t('terms')}
+          </Link>
+          <span style={footerStyles.separator}>|</span>
+          <Link href="/privacy#ccpa" style={footerStyles.link}>
+            {t('doNotSell')}
           </Link>
         </nav>
 

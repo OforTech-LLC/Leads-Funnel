@@ -9,6 +9,13 @@
  * - Mobile: not shown (mouse detection does not work on touch devices)
  * - Only shown once per session (sessionStorage flag)
  * - Not shown if form already submitted (checks Redux state)
+ *
+ * Accessibility:
+ * - role="dialog" and aria-modal="true"
+ * - aria-labelledby pointing to the modal heading
+ * - Focus trap: Tab cycles within the modal
+ * - Focus returns to previously focused element on close
+ * - Escape key to close
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -24,6 +31,9 @@ export function ExitIntent() {
   const [isVisible, setIsVisible] = useState(false);
   const isFormSubmitted = useAppSelector(selectIsSuccess);
   const hasTriggered = useRef(false);
+
+  // Store the element that had focus before the modal opened
+  const previouslyFocusedElement = useRef<HTMLElement | null>(null);
 
   // Check if we are on a touch / mobile device
   const isMobile = useCallback((): boolean => {
@@ -59,17 +69,33 @@ export function ExitIntent() {
 
     hasTriggered.current = true;
     markAsShown();
+    // Save the currently focused element before opening modal
+    previouslyFocusedElement.current = document.activeElement as HTMLElement | null;
     setIsVisible(true);
   }, [isFormSubmitted, wasAlreadyShown, isMobile, markAsShown]);
 
-  // Dismiss the popup
+  // Dismiss the popup and return focus
   const dismiss = useCallback(() => {
     setIsVisible(false);
+    // Return focus to the element that was focused before modal opened
+    if (
+      previouslyFocusedElement.current &&
+      typeof previouslyFocusedElement.current.focus === 'function'
+    ) {
+      previouslyFocusedElement.current.focus();
+    }
   }, []);
 
   // Smooth scroll to form and dismiss
   const goToForm = useCallback(() => {
     setIsVisible(false);
+    // Return focus first
+    if (
+      previouslyFocusedElement.current &&
+      typeof previouslyFocusedElement.current.focus === 'function'
+    ) {
+      previouslyFocusedElement.current.focus();
+    }
     const formEl = document.getElementById('lead-form');
     if (formEl) {
       formEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -154,7 +180,7 @@ export function ExitIntent() {
           style={overlayStyles}
           role="dialog"
           aria-modal="true"
-          aria-label={t('ariaLabel')}
+          aria-labelledby="exit-intent-heading"
           onClick={(e) => {
             if (e.target === e.currentTarget) dismiss();
           }}
@@ -176,6 +202,7 @@ export function ExitIntent() {
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
+                aria-hidden="true"
               >
                 <path d="M18 6L6 18M6 6l12 12" />
               </svg>
@@ -189,7 +216,9 @@ export function ExitIntent() {
                 </span>
               </div>
 
-              <h2 style={headlineStyles}>{t('headline')}</h2>
+              <h2 id="exit-intent-heading" style={headlineStyles}>
+                {t('headline')}
+              </h2>
 
               <p style={subtextStyles}>{t('subtext')}</p>
 

@@ -12,6 +12,7 @@ import { logout } from '@/lib/auth';
 import { useEffect, useState } from 'react';
 import { useSidebar } from './Sidebar';
 import NotificationCenter from './NotificationCenter';
+import { API_ENDPOINTS } from '@/lib/constants';
 
 export default function Header() {
   const { theme, toggleTheme } = useTheme();
@@ -21,7 +22,7 @@ export default function Header() {
   useEffect(() => {
     async function loadUser() {
       try {
-        const res = await fetch('/api/auth', { credentials: 'include' });
+        const res = await fetch(API_ENDPOINTS.AUTH, { credentials: 'include' });
         if (res.ok) {
           const data = await res.json();
           setUserEmail(data.user?.email || '');

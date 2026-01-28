@@ -20,6 +20,7 @@
  */
 
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Context } from 'aws-lambda';
+import { HTTP_STATUS, HTTP_HEADERS, CONTENT_TYPES } from '../lib/constants.js';
 import type {
   AdminConfig,
   AdminUser,
@@ -205,10 +206,10 @@ function addRequestIdHeader(
 function rateLimitedResponse(requestId: string, retryAfter: number): APIGatewayProxyResultV2 {
   return addRequestIdHeader(
     {
-      statusCode: 429,
+      statusCode: HTTP_STATUS.RATE_LIMITED,
       headers: {
-        'Content-Type': 'application/json',
-        'Retry-After': String(retryAfter),
+        [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.JSON,
+        [HTTP_HEADERS.RETRY_AFTER]: String(retryAfter),
       },
       body: JSON.stringify({
         success: false,

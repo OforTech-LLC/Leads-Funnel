@@ -17,6 +17,7 @@ import { getDocClient, tableName } from '../db/client.js';
 import { ulid } from '../id.js';
 import { signCursor, verifyCursor } from '../cursor.js';
 import type { WebhookConfig, CreateWebhookInput, UpdateWebhookInput } from './types.js';
+import { DB_PREFIXES, DB_SORT_KEYS, GSI_KEYS, GSI_INDEX_NAMES } from '../constants.js';
 
 // ---------------------------------------------------------------------------
 // Operations
@@ -31,8 +32,8 @@ export async function createWebhook(input: CreateWebhookInput): Promise<WebhookC
   const now = new Date().toISOString();
 
   const webhook: WebhookConfig = {
-    pk: `WEBHOOK#${id}`,
-    sk: 'CONFIG',
+    pk: `${DB_PREFIXES.WEBHOOK}${id}`,
+    sk: DB_SORT_KEYS.CONFIG,
     id,
     orgId: input.orgId,
     url: input.url,
@@ -41,8 +42,8 @@ export async function createWebhook(input: CreateWebhookInput): Promise<WebhookC
     active: input.active ?? true,
     createdAt: now,
     updatedAt: now,
-    gsi1pk: `ORG#${input.orgId}#WEBHOOKS`,
-    gsi1sk: `CREATED#${now}`,
+    gsi1pk: `${GSI_KEYS.ORG}${input.orgId}${GSI_KEYS.ORG_WEBHOOKS_SUFFIX}`,
+    gsi1sk: `${GSI_KEYS.CREATED}${now}`,
   };
 
   await doc.send(
@@ -64,7 +65,7 @@ export async function getWebhook(id: string): Promise<WebhookConfig | null> {
   const result = await doc.send(
     new GetCommand({
       TableName: tableName(),
-      Key: { pk: `WEBHOOK#${id}`, sk: 'CONFIG' },
+      Key: { pk: `${DB_PREFIXES.WEBHOOK}${id}`, sk: DB_SORT_KEYS.CONFIG },
     })
   );
   return (result.Item as WebhookConfig | undefined) || null;
@@ -102,7 +103,7 @@ export async function updateWebhook(input: UpdateWebhookInput): Promise<WebhookC
   const result = await doc.send(
     new UpdateCommand({
       TableName: tableName(),
-      Key: { pk: `WEBHOOK#${input.id}`, sk: 'CONFIG' },
+      Key: { pk: `${DB_PREFIXES.WEBHOOK}${input.id}`, sk: DB_SORT_KEYS.CONFIG },
       UpdateExpression: `SET ${parts.join(', ')}`,
       ExpressionAttributeNames: names,
       ExpressionAttributeValues: values,
@@ -123,7 +124,7 @@ export async function deleteWebhook(id: string): Promise<void> {
   await doc.send(
     new DeleteCommand({
       TableName: tableName(),
-      Key: { pk: `WEBHOOK#${id}`, sk: 'CONFIG' },
+      Key: { pk: `${DB_PREFIXES.WEBHOOK}${id}`, sk: DB_SORT_KEYS.CONFIG },
       ConditionExpression: 'attribute_exists(pk)',
     })
   );
@@ -155,9 +156,11 @@ export async function listWebhooksByOrg(
   const result = await doc.send(
     new QueryCommand({
       TableName: tableName(),
-      IndexName: 'GSI1',
+      IndexName: GSI_INDEX_NAMES.GSI1,
       KeyConditionExpression: 'gsi1pk = :pk',
-      ExpressionAttributeValues: { ':pk': `ORG#${orgId}#WEBHOOKS` },
+      ExpressionAttributeValues: {
+        ':pk': `${GSI_KEYS.ORG}${orgId}${GSI_KEYS.ORG_WEBHOOKS_SUFFIX}`,
+      },
       Limit: limit,
       ScanIndexForward: false,
       ExclusiveStartKey: exclusiveStartKey,
@@ -194,8 +197,8 @@ export async function findWebhooksForEvent(eventType: string): Promise<WebhookCo
         FilterExpression:
           'begins_with(pk, :prefix) AND sk = :sk AND active = :active AND contains(events, :evt)',
         ExpressionAttributeValues: {
-          ':prefix': 'WEBHOOK#',
-          ':sk': 'CONFIG',
+          ':prefix': DB_PREFIXES.WEBHOOK,
+          ':sk': DB_SORT_KEYS.CONFIG,
           ':active': true,
           ':evt': eventType,
         },

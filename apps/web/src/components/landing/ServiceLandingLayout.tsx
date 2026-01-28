@@ -5,6 +5,12 @@
  *
  * Data-driven layout component for all service landing pages.
  * Accepts configuration objects and renders appropriate sections.
+ *
+ * Accessibility:
+ * - Ambient glow divs have aria-hidden="true"
+ * - Language switcher SVGs have aria-hidden="true"
+ * - Language switcher button has aria-label and aria-expanded
+ * - Footer text uses text.tertiary (not text.muted) for WCAG AA contrast
  */
 
 import React, { useState, useEffect } from 'react';
@@ -21,7 +27,9 @@ import {
 } from './sections';
 
 // Lazy load HeroVideo to handle missing video files gracefully
-const HeroVideo = React.lazy(() => import('@/components/HeroVideo').then(mod => ({ default: mod.HeroVideo })));
+const HeroVideo = React.lazy(() =>
+  import('@/components/HeroVideo').then((mod) => ({ default: mod.HeroVideo }))
+);
 
 // =============================================================================
 // Types
@@ -115,12 +123,25 @@ interface FormConfig {
   submitText: string;
 }
 
-export type SectionType = 'hero' | 'benefits' | 'process' | 'testimonials' | 'gallery' | 'faq' | 'cta';
+export type SectionType =
+  | 'hero'
+  | 'benefits'
+  | 'process'
+  | 'testimonials'
+  | 'gallery'
+  | 'faq'
+  | 'cta';
 
 export interface SectionConfig {
   type: SectionType;
   enabled: boolean;
-  config?: HeroConfig | BenefitsConfig | ProcessConfig | TestimonialsConfig | FAQConfig | FormConfig;
+  config?:
+    | HeroConfig
+    | BenefitsConfig
+    | ProcessConfig
+    | TestimonialsConfig
+    | FAQConfig
+    | FormConfig;
 }
 
 interface ServiceLandingLayoutProps {
@@ -192,7 +213,7 @@ export const ServiceLandingLayout: React.FC<ServiceLandingLayoutProps> = ({
         return (
           <section
             key="hero"
-                        style={{
+            style={{
               minHeight: '100vh',
               display: 'flex',
               alignItems: 'center',
@@ -223,7 +244,7 @@ export const ServiceLandingLayout: React.FC<ServiceLandingLayoutProps> = ({
         return (
           <section
             key="benefits"
-                        style={{
+            style={{
               padding: `${tokens.spacing[20]} ${tokens.spacing[6]}`,
               position: 'relative',
             }}
@@ -244,7 +265,7 @@ export const ServiceLandingLayout: React.FC<ServiceLandingLayoutProps> = ({
         return (
           <section
             key="process"
-                        style={{
+            style={{
               padding: `${tokens.spacing[20]} ${tokens.spacing[6]}`,
               background: tokens.colors.surface.glass,
               position: 'relative',
@@ -267,7 +288,7 @@ export const ServiceLandingLayout: React.FC<ServiceLandingLayoutProps> = ({
         return (
           <section
             key="testimonials"
-                        style={{
+            style={{
               padding: `${tokens.spacing[20]} ${tokens.spacing[6]}`,
               position: 'relative',
             }}
@@ -289,7 +310,7 @@ export const ServiceLandingLayout: React.FC<ServiceLandingLayoutProps> = ({
         return (
           <section
             key="faq"
-                        style={{
+            style={{
               padding: `${tokens.spacing[20]} ${tokens.spacing[6]}`,
               background: tokens.colors.surface.glass,
               position: 'relative',
@@ -312,7 +333,7 @@ export const ServiceLandingLayout: React.FC<ServiceLandingLayoutProps> = ({
           <section
             key="cta"
             id="contact"
-                        style={{
+            style={{
               padding: `${tokens.spacing[24]} ${tokens.spacing[6]}`,
               position: 'relative',
               background: `linear-gradient(180deg, transparent 0%, ${service.accentColor}10 100%)`,
@@ -347,8 +368,9 @@ export const ServiceLandingLayout: React.FC<ServiceLandingLayoutProps> = ({
         overflowX: 'hidden',
       }}
     >
-      {/* Animated ambient background glows */}
+      {/* Animated ambient background glows (decorative, hidden from AT) */}
       <motion.div
+        aria-hidden="true"
         className="ambient-glow"
         animate={{
           x: [0, 30, -20, 0],
@@ -373,6 +395,7 @@ export const ServiceLandingLayout: React.FC<ServiceLandingLayoutProps> = ({
         }}
       />
       <motion.div
+        aria-hidden="true"
         className="ambient-glow"
         animate={{
           x: [0, -40, 30, 0],
@@ -398,6 +421,7 @@ export const ServiceLandingLayout: React.FC<ServiceLandingLayoutProps> = ({
         }}
       />
       <motion.div
+        aria-hidden="true"
         className="ambient-glow"
         animate={{
           x: ['-50%', '-45%', '-55%', '-50%'],
@@ -460,122 +484,134 @@ export const ServiceLandingLayout: React.FC<ServiceLandingLayoutProps> = ({
           </div>
 
           {/* Language Switcher */}
-          <div style={{ position: 'relative' }}>
-            <motion.button
-              onClick={() => setLangMenuOpen(!langMenuOpen)}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: tokens.spacing[2],
-                padding: `${tokens.spacing[2]} ${tokens.spacing[4]}`,
-                background: tokens.colors.surface.glass,
-                border: `1px solid ${tokens.colors.border.subtle}`,
-                borderRadius: tokens.radii.full,
-                color: tokens.colors.text.primary,
-                fontSize: tokens.typography.fontSize.sm,
-                fontWeight: tokens.typography.fontWeight.medium,
-                cursor: 'pointer',
-              }}
-            >
-              <span>{languages.find((l) => l.code === currentLocale)?.flag}</span>
-              <span>{currentLocale.toUpperCase()}</span>
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
+          <nav aria-label="Language selection">
+            <div style={{ position: 'relative' }}>
+              <motion.button
+                onClick={() => setLangMenuOpen(!langMenuOpen)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                aria-expanded={langMenuOpen}
+                aria-haspopup="true"
+                aria-label={`Language: ${currentLocale.toUpperCase()}. Click to change.`}
                 style={{
-                  transform: langMenuOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                  transition: 'transform 0.2s',
-                }}
-              >
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </motion.button>
-
-            {/* Dropdown */}
-            {langMenuOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                style={{
-                  position: 'absolute',
-                  top: '100%',
-                  right: 0,
-                  marginTop: tokens.spacing[2],
-                  background: 'rgba(10, 10, 15, 0.9)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: tokens.spacing[2],
+                  padding: `${tokens.spacing[2]} ${tokens.spacing[4]}`,
+                  background: tokens.colors.surface.glass,
                   border: `1px solid ${tokens.colors.border.subtle}`,
-                  borderRadius: tokens.radii.lg,
-                  overflow: 'hidden',
-                  minWidth: '120px',
+                  borderRadius: tokens.radii.full,
+                  color: tokens.colors.text.primary,
+                  fontSize: tokens.typography.fontSize.sm,
+                  fontWeight: tokens.typography.fontWeight.medium,
+                  cursor: 'pointer',
                 }}
               >
-                {languages.map((lang) => (
-                  <button
-                    key={lang.code}
-                    onClick={() => switchLanguage(lang.code)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: tokens.spacing[3],
-                      width: '100%',
-                      padding: `${tokens.spacing[3]} ${tokens.spacing[4]}`,
-                      background: currentLocale === lang.code ? `${service.accentColor}20` : 'transparent',
-                      border: 'none',
-                      color: tokens.colors.text.primary,
-                      fontSize: tokens.typography.fontSize.sm,
-                      cursor: 'pointer',
-                      transition: 'background 0.2s',
-                    }}
-                    onMouseEnter={(e) => {
-                      if (currentLocale !== lang.code) {
-                        e.currentTarget.style.background = tokens.colors.surface.glass;
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (currentLocale !== lang.code) {
-                        e.currentTarget.style.background = 'transparent';
-                      }
-                    }}
-                  >
-                    <span style={{ fontSize: '1.2em' }}>{lang.flag}</span>
-                    <span>{lang.label}</span>
-                    {currentLocale === lang.code && (
-                      <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke={service.accentColor}
-                        strokeWidth="2"
-                        style={{ marginLeft: 'auto' }}
-                      >
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                    )}
-                  </button>
-                ))}
-              </motion.div>
-            )}
-          </div>
+                <span aria-hidden="true">
+                  {languages.find((l) => l.code === currentLocale)?.flag}
+                </span>
+                <span>{currentLocale.toUpperCase()}</span>
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  aria-hidden="true"
+                  style={{
+                    transform: langMenuOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                    transition: 'transform 0.2s',
+                  }}
+                >
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </motion.button>
+
+              {/* Dropdown */}
+              {langMenuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  role="menu"
+                  aria-label="Select language"
+                  style={{
+                    position: 'absolute',
+                    top: '100%',
+                    right: 0,
+                    marginTop: tokens.spacing[2],
+                    background: 'rgba(10, 10, 15, 0.9)',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)',
+                    border: `1px solid ${tokens.colors.border.subtle}`,
+                    borderRadius: tokens.radii.lg,
+                    overflow: 'hidden',
+                    minWidth: '120px',
+                  }}
+                >
+                  {languages.map((lang) => (
+                    <button
+                      key={lang.code}
+                      role="menuitem"
+                      onClick={() => switchLanguage(lang.code)}
+                      aria-current={currentLocale === lang.code ? 'true' : undefined}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: tokens.spacing[3],
+                        width: '100%',
+                        padding: `${tokens.spacing[3]} ${tokens.spacing[4]}`,
+                        background:
+                          currentLocale === lang.code ? `${service.accentColor}20` : 'transparent',
+                        border: 'none',
+                        color: tokens.colors.text.primary,
+                        fontSize: tokens.typography.fontSize.sm,
+                        cursor: 'pointer',
+                        transition: 'background 0.2s',
+                      }}
+                      onMouseEnter={(e) => {
+                        if (currentLocale !== lang.code) {
+                          e.currentTarget.style.background = tokens.colors.surface.glass;
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (currentLocale !== lang.code) {
+                          e.currentTarget.style.background = 'transparent';
+                        }
+                      }}
+                    >
+                      <span style={{ fontSize: '1.2em' }} aria-hidden="true">
+                        {lang.flag}
+                      </span>
+                      <span>{lang.label}</span>
+                      {currentLocale === lang.code && (
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke={service.accentColor}
+                          strokeWidth="2"
+                          style={{ marginLeft: 'auto' }}
+                          aria-hidden="true"
+                        >
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      )}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </div>
+          </nav>
         </div>
       </header>
 
       {/* Hero Video Intro - Disabled for now until videos are rendered */}
       {!skipVideo && !videoComplete && (
         <React.Suspense fallback={null}>
-          <HeroVideo
-            serviceId={service.id}
-            onComplete={handleVideoComplete}
-            autoSkipDelay={3000}
-          />
+          <HeroVideo serviceId={service.id} onComplete={handleVideoComplete} autoSkipDelay={3000} />
         </React.Suspense>
       )}
 
@@ -601,8 +637,13 @@ export const ServiceLandingLayout: React.FC<ServiceLandingLayoutProps> = ({
               textAlign: 'center',
             }}
           >
-            <p style={{ color: tokens.colors.text.muted, fontSize: tokens.typography.fontSize.sm }}>
-              © {new Date().getFullYear()} Kanjona. All rights reserved.
+            <p
+              style={{
+                color: tokens.colors.text.tertiary,
+                fontSize: tokens.typography.fontSize.sm,
+              }}
+            >
+              &copy; {new Date().getFullYear()} Kanjona. All rights reserved.
             </p>
           </footer>
         </motion.main>

@@ -81,32 +81,24 @@ export function hashEmailWithSalt(email: string, salt: string): string {
 }
 
 /**
- * Generate idempotency key from email, pageUrl, and window bucket
+ * Generate idempotency key from lead content
  *
- * This key is used to detect duplicate submissions within a time window.
- * The hash includes the time bucket to allow repeated submissions after
- * the window expires.
+ * Fix 6: Use content-based hashing instead of time-based buckets.
+ * This ensures that submitting the exact same lead content (email + funnel + message)
+ * always produces the same key, preventing duplicates even if the user
+ * keeps the tab open for > 24 hours.
  *
  * @param normalizedEmail - Normalized (lowercase, trimmed) email
- * @param pageUrl - The page URL where the form was submitted
- * @param windowBucket - Time window bucket identifier
+ * @param funnelId - Funnel identifier
+ * @param content - Unique content payload (e.g. message + phone + name)
  * @returns Hex-encoded idempotency key
- *
- * @example
- * ```typescript
- * const key = generateIdempotencyKey(
- *   email.toLowerCase(),
- *   pageUrl,
- *   getWindowBucket(60) // 60 minute windows
- * );
- * ```
  */
 export function generateIdempotencyKey(
   normalizedEmail: string,
-  pageUrl: string | undefined,
-  windowBucket: string
+  funnelId: string,
+  content: string
 ): string {
-  const input = `${normalizedEmail}|${pageUrl || ''}|${windowBucket}`;
+  const input = `${normalizedEmail}|${funnelId}|${content}`;
   return sha256(input);
 }
 

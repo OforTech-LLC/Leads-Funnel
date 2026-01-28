@@ -19,6 +19,7 @@ import type {
 } from '../types.js';
 import { getDocClient } from '../../lib/clients.js';
 import { createLogger } from '../../lib/logging.js';
+import { DB_PREFIXES, DB_SORT_KEYS, GSI_KEYS, GSI_INDEX_NAMES } from '../../lib/constants.js';
 
 const log = createLogger('admin-leads');
 
@@ -59,7 +60,7 @@ export async function queryLeads(
   // Build filter expression parts
   const filterParts: string[] = ['begins_with(pk, :leadPrefix)'];
   const expressionValues: Record<string, unknown> = {
-    ':leadPrefix': 'LEAD#',
+    ':leadPrefix': DB_PREFIXES.LEAD,
   };
   const expressionNames: Record<string, string> = {};
 
@@ -95,10 +96,10 @@ export async function queryLeads(
     result = await ddb.send(
       new QueryCommand({
         TableName: tableName,
-        IndexName: 'GSI2',
+        IndexName: GSI_INDEX_NAMES.GSI2,
         KeyConditionExpression: 'gsi2pk = :statusKey',
         ExpressionAttributeValues: {
-          ':statusKey': `STATUS#${request.status}`,
+          ':statusKey': `${GSI_KEYS.STATUS}${request.status}`,
           ...expressionValues,
         },
         ExpressionAttributeNames:
@@ -125,7 +126,7 @@ export async function queryLeads(
   }
 
   // Build response
-  const leads = (result.Items || []).filter((item) => item.sk === 'META') as Lead[];
+  const leads = (result.Items || []).filter((item) => item.sk === DB_SORT_KEYS.META) as Lead[];
 
   // Sort results if needed
   if (request.sortField) {
@@ -165,8 +166,8 @@ export async function getLead(
     new GetCommand({
       TableName: tableName,
       Key: {
-        pk: `LEAD#${leadId}`,
-        sk: 'META',
+        pk: `${DB_PREFIXES.LEAD}${leadId}`,
+        sk: DB_SORT_KEYS.META,
       },
       // Only fetch needed attributes
       ProjectionExpression:
@@ -203,7 +204,7 @@ export async function updateLead(config: AdminConfig, request: UpdateLeadRequest
     updateParts.push('gsi2pk = :gsi2pk');
     expressionNames['#status'] = 'status';
     expressionValues[':status'] = request.status;
-    expressionValues[':gsi2pk'] = `STATUS#${request.status}`;
+    expressionValues[':gsi2pk'] = `${GSI_KEYS.STATUS}${request.status}`;
   }
 
   if (request.pipelineStatus !== undefined) {
@@ -231,7 +232,7 @@ export async function updateLead(config: AdminConfig, request: UpdateLeadRequest
       updateParts.push('gsi2pk = :gsi2pk');
       expressionNames['#status'] = 'status';
       expressionValues[':status'] = 'dnc';
-      expressionValues[':gsi2pk'] = 'STATUS#dnc';
+      expressionValues[':gsi2pk'] = `${GSI_KEYS.STATUS}dnc`;
     }
   }
 
@@ -239,8 +240,8 @@ export async function updateLead(config: AdminConfig, request: UpdateLeadRequest
     new UpdateCommand({
       TableName: tableName,
       Key: {
-        pk: `LEAD#${request.leadId}`,
-        sk: 'META',
+        pk: `${DB_PREFIXES.LEAD}${request.leadId}`,
+        sk: DB_SORT_KEYS.META,
       },
       UpdateExpression: `SET ${updateParts.join(', ')}`,
       ExpressionAttributeNames: expressionNames,
@@ -353,8 +354,8 @@ export async function getFunnelStats(config: AdminConfig, funnelId: string): Pro
         TableName: tableName,
         FilterExpression: 'begins_with(pk, :leadPrefix) AND sk = :meta',
         ExpressionAttributeValues: {
-          ':leadPrefix': 'LEAD#',
-          ':meta': 'META',
+          ':leadPrefix': DB_PREFIXES.LEAD,
+          ':meta': DB_SORT_KEYS.META,
         },
         // Only fetch needed attributes for stats calculation
         ProjectionExpression: '#status, pipelineStatus, createdAt',

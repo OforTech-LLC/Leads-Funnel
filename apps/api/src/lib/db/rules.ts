@@ -11,6 +11,7 @@ import { PutCommand, GetCommand, UpdateCommand, QueryCommand } from '@aws-sdk/li
 import { getDocClient, tableName } from './client.js';
 import { ulid } from '../../lib/id.js';
 import { signCursor, verifyCursor } from '../cursor.js';
+import { DB_PREFIXES, DB_SORT_KEYS, GSI_KEYS, GSI_INDEX_NAMES } from '../constants.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -66,8 +67,8 @@ export async function createRule(input: CreateRuleInput): Promise<AssignmentRule
   const priorityPad = String(input.priority).padStart(4, '0');
 
   const rule: AssignmentRule = {
-    pk: `RULE#${ruleId}`,
-    sk: 'META',
+    pk: `${DB_PREFIXES.RULE}${ruleId}`,
+    sk: DB_SORT_KEYS.META,
     ruleId,
     funnelId: input.funnelId,
     orgId: input.orgId,
@@ -78,10 +79,10 @@ export async function createRule(input: CreateRuleInput): Promise<AssignmentRule
     isActive: input.isActive ?? true,
     createdAt: now,
     updatedAt: now,
-    gsi1pk: `FUNNEL#${input.funnelId}`,
-    gsi1sk: `PRIORITY#${priorityPad}`,
-    gsi2pk: `ORG#${input.orgId}`,
-    gsi2sk: `RULE#${ruleId}`,
+    gsi1pk: `${GSI_KEYS.FUNNEL}${input.funnelId}`,
+    gsi1sk: `${GSI_KEYS.PRIORITY}${priorityPad}`,
+    gsi2pk: `${GSI_KEYS.ORG}${input.orgId}`,
+    gsi2sk: `${DB_PREFIXES.RULE}${ruleId}`,
   };
 
   await doc.send(
@@ -104,7 +105,7 @@ export async function getRule(ruleId: string): Promise<AssignmentRule | null> {
   const result = await doc.send(
     new GetCommand({
       TableName: tableName(),
-      Key: { pk: `RULE#${ruleId}`, sk: 'META' },
+      Key: { pk: `${DB_PREFIXES.RULE}${ruleId}`, sk: DB_SORT_KEYS.META },
     })
   );
   const item = result.Item as AssignmentRule | undefined;
@@ -130,7 +131,7 @@ export async function updateRule(input: UpdateRuleInput): Promise<AssignmentRule
     values[':priority'] = input.priority;
     const priorityPad = String(input.priority).padStart(4, '0');
     parts.push('gsi1sk = :gsi1sk');
-    values[':gsi1sk'] = `PRIORITY#${priorityPad}`;
+    values[':gsi1sk'] = `${GSI_KEYS.PRIORITY}${priorityPad}`;
   }
   if (input.zipPatterns !== undefined) {
     parts.push('zipPatterns = :zp');
@@ -148,7 +149,7 @@ export async function updateRule(input: UpdateRuleInput): Promise<AssignmentRule
   const result = await doc.send(
     new UpdateCommand({
       TableName: tableName(),
-      Key: { pk: `RULE#${input.ruleId}`, sk: 'META' },
+      Key: { pk: `${DB_PREFIXES.RULE}${input.ruleId}`, sk: DB_SORT_KEYS.META },
       UpdateExpression: `SET ${parts.join(', ')}`,
       ExpressionAttributeNames: names,
       ExpressionAttributeValues: values,
@@ -167,7 +168,7 @@ export async function softDeleteRule(ruleId: string): Promise<void> {
   await doc.send(
     new UpdateCommand({
       TableName: tableName(),
-      Key: { pk: `RULE#${ruleId}`, sk: 'META' },
+      Key: { pk: `${DB_PREFIXES.RULE}${ruleId}`, sk: DB_SORT_KEYS.META },
       UpdateExpression: 'SET deletedAt = :d, #updatedAt = :u, isActive = :f',
       ExpressionAttributeNames: { '#updatedAt': 'updatedAt' },
       ExpressionAttributeValues: { ':d': now, ':u': now, ':f': false },
@@ -201,10 +202,10 @@ export async function listRules(
     const result = await doc.send(
       new QueryCommand({
         TableName: tableName(),
-        IndexName: 'GSI1',
+        IndexName: GSI_INDEX_NAMES.GSI1,
         KeyConditionExpression: 'gsi1pk = :pk',
         FilterExpression: 'attribute_not_exists(deletedAt)',
-        ExpressionAttributeValues: { ':pk': `FUNNEL#${funnelId}` },
+        ExpressionAttributeValues: { ':pk': `${GSI_KEYS.FUNNEL}${funnelId}` },
         Limit: limit,
         ScanIndexForward: true, // ascending priority
         ExclusiveStartKey: exclusiveStartKey,
@@ -226,7 +227,7 @@ export async function listRules(
       TableName: tableName(),
       FilterExpression:
         'begins_with(pk, :prefix) AND sk = :meta AND attribute_not_exists(deletedAt)',
-      ExpressionAttributeValues: { ':prefix': 'RULE#', ':meta': 'META' },
+      ExpressionAttributeValues: { ':prefix': DB_PREFIXES.RULE, ':meta': DB_SORT_KEYS.META },
       Limit: limit,
       ExclusiveStartKey: exclusiveStartKey,
     })
@@ -253,11 +254,11 @@ export async function getRulesByFunnel(funnelId: string): Promise<AssignmentRule
     const result = await doc.send(
       new QueryCommand({
         TableName: tableName(),
-        IndexName: 'GSI1',
+        IndexName: GSI_INDEX_NAMES.GSI1,
         KeyConditionExpression: 'gsi1pk = :pk',
         FilterExpression: 'isActive = :yes AND attribute_not_exists(deletedAt)',
         ExpressionAttributeValues: {
-          ':pk': `FUNNEL#${funnelId}`,
+          ':pk': `${GSI_KEYS.FUNNEL}${funnelId}`,
           ':yes': true,
         },
         ScanIndexForward: true,

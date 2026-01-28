@@ -1,0 +1,32 @@
+/* =============================================================================
+ * Global Accessibility Styles
+ * ============================================================================= */
+
+/* Focus indicators for accessibility (WCAG 2.1 SC 2.4.7) */
+:focus-visible {
+  outline: 2px solid #8b5cf6;
+  outline-offset: 2px;
+}
+
+/* Remove default outline only when :focus-visible is supported */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* =============================================================================
+ * Screen-reader only utility (sr-only)
+ * Tailwind-compatible — hides content visually while keeping it accessible
+ * to screen readers. Used by VisuallyHidden component and skip link.
+ * ============================================================================= */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

@@ -1,12 +1,20 @@
 /**
- * Admin Exports Infrastructure
+ * Admin Exports Infrastructure - KMS & S3
  *
- * S3 bucket for exports and DynamoDB audit table.
+ * This file contains:
+ * - KMS key for S3 bucket encryption
+ * - S3 access logs bucket
+ * - S3 exports bucket with versioning, encryption, lifecycle, CORS, policy
+ *
+ * Related files:
+ * - dynamodb.tf: Admin audit log table and export jobs table
+ *
  * Security features:
  * - KMS encryption for S3 bucket
  * - S3 access logging enabled
  * - Public access blocked
  * - Versioning enabled
+ * - HTTPS-only bucket policy
  */
 
 # =====================================================
@@ -246,89 +254,4 @@ resource "aws_s3_bucket_policy" "exports" {
   })
 
   depends_on = [aws_s3_bucket_public_access_block.exports]
-}
-
-# =====================================================
-# Admin Audit Log Table
-# =====================================================
-
-resource "aws_dynamodb_table" "audit" {
-  name         = "${var.project_name}-${var.environment}-admin-audit"
-  billing_mode = "PAY_PER_REQUEST"
-
-  hash_key  = "pk"
-  range_key = "sk"
-
-  attribute {
-    name = "pk"
-    type = "S"
-  }
-
-  attribute {
-    name = "sk"
-    type = "S"
-  }
-
-  # GSI for actor lookup
-  attribute {
-    name = "actorEmailHash"
-    type = "S"
-  }
-
-  global_secondary_index {
-    name            = "GSI1"
-    hash_key        = "actorEmailHash"
-    range_key       = "sk"
-    projection_type = "ALL"
-  }
-
-  # TTL for automatic cleanup (optional)
-  ttl {
-    attribute_name = "ttl"
-    enabled        = var.audit_ttl_enabled
-  }
-
-  point_in_time_recovery {
-    enabled = var.environment == "prod"
-  }
-
-  deletion_protection_enabled = var.environment == "prod"
-
-  tags = var.tags
-}
-
-# =====================================================
-# Export Jobs Table (track export status)
-# =====================================================
-
-resource "aws_dynamodb_table" "export_jobs" {
-  name         = "${var.project_name}-${var.environment}-admin-export-jobs"
-  billing_mode = "PAY_PER_REQUEST"
-
-  hash_key  = "pk"
-  range_key = "sk"
-
-  attribute {
-    name = "pk"
-    type = "S"
-  }
-
-  attribute {
-    name = "sk"
-    type = "S"
-  }
-
-  # TTL for automatic cleanup
-  ttl {
-    attribute_name = "ttl"
-    enabled        = true
-  }
-
-  point_in_time_recovery {
-    enabled = var.environment == "prod"
-  }
-
-  deletion_protection_enabled = var.environment == "prod"
-
-  tags = var.tags
 }

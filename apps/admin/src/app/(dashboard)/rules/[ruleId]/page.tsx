@@ -22,6 +22,7 @@ import ConfirmDialog from '@/components/ConfirmDialog';
 import RequireRole from '@/components/RequireRole';
 import { useToast } from '@/components/Toast';
 import { formatDate } from '@/lib/utils';
+import { ADMIN_ROLES } from '@/lib/constants';
 import Link from 'next/link';
 
 export default function RuleDetailPage() {
@@ -134,7 +135,7 @@ export default function RuleDetailPage() {
             <StatusBadge status={rule.active ? 'active' : 'inactive'} />
           </div>
           {!editMode && (
-            <RequireRole roles={['ADMIN']}>
+            <RequireRole roles={[ADMIN_ROLES.ADMIN]}>
               <div className="flex items-center gap-3 self-start">
                 <button
                   onClick={() => setShowDelete(true)}

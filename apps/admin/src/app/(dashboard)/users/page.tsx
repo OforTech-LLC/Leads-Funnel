@@ -21,6 +21,7 @@ import ErrorAlert from '@/components/ErrorAlert';
 import RequireRole from '@/components/RequireRole';
 import { useToast } from '@/components/Toast';
 import { formatDate } from '@/lib/utils';
+import { ADMIN_ROLES } from '@/lib/constants';
 
 export default function UsersPage() {
   const router = useRouter();
@@ -104,7 +105,7 @@ export default function UsersPage() {
             Manage platform users and their access
           </p>
         </div>
-        <RequireRole roles={['ADMIN']}>
+        <RequireRole roles={[ADMIN_ROLES.ADMIN]}>
           <button
             onClick={() => setShowCreate(true)}
             className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors self-start"

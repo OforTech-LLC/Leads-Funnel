@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromToken } from '@/lib/auth';
+import { AUTH_COOKIE_NAME } from '@/lib/constants';
 
 const COGNITO_DOMAIN = process.env.NEXT_PUBLIC_COGNITO_DOMAIN || '';
 const CLIENT_ID = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID || '';
 const CLIENT_SECRET = process.env.COGNITO_CLIENT_SECRET || '';
-const COOKIE_NAME = 'portal_token';
+const COOKIE_NAME = AUTH_COOKIE_NAME;
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
 
 // Security: Server-side constant for redirect_uri instead of accepting from client

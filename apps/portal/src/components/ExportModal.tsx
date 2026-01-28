@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   useCreateExport,
   useExportStatus,
@@ -9,6 +9,8 @@ import {
   type ExportFormat,
   type ExportRequest,
 } from '@/lib/exports';
+import { useFocusTrap } from '@/lib/useFocusTrap';
+import { ERROR_MESSAGES } from '@/lib/constants';
 import type { LeadStatus } from '@/lib/types';
 
 const FORMAT_OPTIONS: { value: ExportFormat; label: string; description: string }[] = [
@@ -43,8 +45,12 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
   );
   const [exportId, setExportId] = useState<string | null>(null);
 
+  const modalRef = useRef<HTMLDivElement>(null);
   const createExport = useCreateExport();
   const { data: exportJob } = useExportStatus(exportId);
+
+  // Focus trap
+  useFocusTrap(modalRef, isOpen);
 
   // Reset state when modal closes
   useEffect(() => {
@@ -60,6 +66,13 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
       downloadExportFile(exportJob.id);
     }
   }, [exportJob?.status, exportJob?.id]);
+
+  // Close on Escape
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (e.key === 'Escape') {
+      onClose();
+    }
+  }
 
   function handleFieldToggle(fieldKey: string) {
     setSelectedFields((prev) =>
@@ -96,7 +109,10 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
   const isFailed = exportJob?.status === 'failed';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      onKeyDown={handleKeyDown}
+    >
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
@@ -106,14 +122,17 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
 
       {/* Modal */}
       <div
+        ref={modalRef}
         className="relative w-full max-w-lg rounded-2xl border border-gray-200 bg-white shadow-2xl"
         role="dialog"
         aria-modal="true"
-        aria-label="Export leads"
+        aria-labelledby="export-modal-title"
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
-          <h2 className="text-lg font-semibold text-gray-900">Export Leads</h2>
+          <h2 id="export-modal-title" className="text-lg font-semibold text-gray-900">
+            Export Leads
+          </h2>
           <button
             type="button"
             onClick={handleClose}
@@ -285,7 +304,10 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
 
           {/* Completed state */}
           {isCompleted && (
-            <div className="mb-3 flex items-center gap-2 rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700">
+            <div
+              className="mb-3 flex items-center gap-2 rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700"
+              role="alert"
+            >
               <svg
                 className="h-4 w-4"
                 fill="none"
@@ -301,7 +323,10 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
 
           {/* Failed state */}
           {isFailed && (
-            <div className="mb-3 flex items-center gap-2 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+            <div
+              className="mb-3 flex items-center gap-2 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700"
+              role="alert"
+            >
               <svg
                 className="h-4 w-4"
                 fill="none"
@@ -311,13 +336,16 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
-              {exportJob?.errorMessage || 'Export failed. Please try again.'}
+              {exportJob?.errorMessage || ERROR_MESSAGES.EXPORT_FAILED}
             </div>
           )}
 
           {/* Error from mutation */}
           {createExport.isError && !exportId && (
-            <div className="mb-3 flex items-center gap-2 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+            <div
+              className="mb-3 flex items-center gap-2 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700"
+              role="alert"
+            >
               <svg
                 className="h-4 w-4"
                 fill="none"
@@ -327,7 +355,7 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
-              Failed to start export. Please try again.
+              {ERROR_MESSAGES.EXPORT_START_FAILED}
             </div>
           )}
 

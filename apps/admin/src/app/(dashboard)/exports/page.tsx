@@ -34,7 +34,7 @@ import Modal from '@/components/Modal';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import RequireRole from '@/components/RequireRole';
 import { useToast } from '@/components/Toast';
-import { EXPORT_FORMATS, LEAD_STATUSES } from '@/lib/constants';
+import { EXPORT_FORMATS, LEAD_STATUSES, ADMIN_ROLES } from '@/lib/constants';
 import type { ExportFormat } from '@/lib/constants';
 import { formatDateTime, formatDate } from '@/lib/utils';
 
@@ -274,7 +274,7 @@ export default function ExportsPage() {
             Export lead data and manage scheduled exports
           </p>
         </div>
-        <RequireRole roles={['ADMIN', 'VIEWER']}>
+        <RequireRole roles={[ADMIN_ROLES.ADMIN, ADMIN_ROLES.OPERATOR]}>
           <button
             onClick={() => setShowScheduleModal(true)}
             className="px-4 py-2 text-sm font-medium border border-[var(--border-color)] rounded-md hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-primary)]"
@@ -285,7 +285,7 @@ export default function ExportsPage() {
       </div>
 
       {/* Create Export */}
-      <RequireRole roles={['ADMIN', 'VIEWER']}>
+      <RequireRole roles={[ADMIN_ROLES.ADMIN, ADMIN_ROLES.OPERATOR]}>
         <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg p-6">
           <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-4">Create Export</h2>
           <form onSubmit={handleCreate} className="space-y-4">
@@ -358,7 +358,7 @@ export default function ExportsPage() {
           </div>
         ) : !schedulesData?.schedules?.length ? (
           <div className="px-6 py-12 text-center text-sm text-[var(--text-secondary)]">
-            No scheduled exports. Click "Schedule Export" to create one.
+            No scheduled exports. Click &quot;Schedule Export&quot; to create one.
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -412,7 +412,7 @@ export default function ExportsPage() {
                       <StatusBadge status={schedule.enabled ? 'active' : 'inactive'} />
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <RequireRole roles={['ADMIN']}>
+                      <RequireRole roles={[ADMIN_ROLES.ADMIN]}>
                         <button
                           onClick={() => setConfirmDeleteId(schedule.id)}
                           className="text-xs text-red-600 hover:text-red-700 dark:text-red-400"

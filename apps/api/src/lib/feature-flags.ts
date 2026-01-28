@@ -16,7 +16,7 @@
  * - If no cache exists (cold start + SSM down), safe defaults are used.
  */
 
-import { GetParametersByPathCommand } from '@aws-sdk/client-ssm';
+import { GetParametersByPathCommand, PutParameterCommand } from '@aws-sdk/client-ssm';
 import { getSsmClient } from './clients.js';
 import { createLogger } from './logging.js';
 
@@ -37,7 +37,21 @@ export type FeatureFlagName =
   | 'teams_enabled'
   | 'webhooks_enabled'
   | 'lead_scoring_enabled'
-  | 'round_robin_enabled';
+  | 'round_robin_enabled'
+  | 'enable_ai_analysis'
+  | 'enable_admin_console'
+  | 'enable_agent_portal'
+  | 'enable_assignment'
+  | 'enable_notifications'
+  | 'enable_email'
+  | 'enable_sms'
+  | 'enable_twilio'
+  | 'enable_waf'
+  | 'enable_rate_limiting'
+  | 'enable_deduplication'
+  | 'enable_debug'
+  | 'enable_elevenlabs'
+  | 'enable_sns_sms';
 
 /**
  * Fail-safe default values used when SSM is unavailable AND the cache
@@ -54,6 +68,20 @@ const DEFAULT_FLAGS: Readonly<Record<FeatureFlagName, boolean>> = {
   webhooks_enabled: true,
   lead_scoring_enabled: true,
   round_robin_enabled: true,
+  enable_ai_analysis: false,
+  enable_admin_console: false,
+  enable_agent_portal: false,
+  enable_assignment: true,
+  enable_notifications: true,
+  enable_email: true,
+  enable_sms: false,
+  enable_twilio: false,
+  enable_waf: true,
+  enable_rate_limiting: true,
+  enable_deduplication: true,
+  enable_debug: false,
+  enable_elevenlabs: false,
+  enable_sns_sms: false,
 } as const;
 
 /** Full set of recognised flag names for iteration. */
@@ -198,4 +226,24 @@ export async function getAllFlags(): Promise<Record<FeatureFlagName, boolean>> {
  */
 export function _resetCache(): void {
   _cache = null;
+}
+
+/**
+ * Update a feature flag in SSM and invalidate cache.
+ */
+export async function updateFeatureFlag(flag: FeatureFlagName, enabled: boolean): Promise<void> {
+  const prefix = ssmPrefix();
+  const ssm = getSsmClient();
+  const path = `${prefix}/${flag}`;
+
+  await ssm.send(
+    new PutParameterCommand({
+      Name: path,
+      Value: enabled ? 'true' : 'false',
+      Type: 'String',
+      Overwrite: true,
+    })
+  );
+
+  _resetCache();
 }

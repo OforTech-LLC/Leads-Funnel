@@ -35,6 +35,12 @@ export interface Logger {
 }
 
 // ---------------------------------------------------------------------------
+// Configuration
+// ---------------------------------------------------------------------------
+
+const SAMPLING_RATE = parseFloat(process.env.LOG_SAMPLING_RATE || '1.0');
+
+// ---------------------------------------------------------------------------
 // Implementation
 // ---------------------------------------------------------------------------
 
@@ -46,6 +52,12 @@ function emit(entry: LogEntry): void {
 
 function buildLogger(module: string, requestId?: string): Logger {
   function write(level: LogLevel, message: string, data?: Record<string, unknown>): void {
+    // Sampling: Always log errors, or if forced, but sample info/warn based on rate
+    const forceLog = data?.forceLog === true;
+    if (level !== 'error' && !forceLog && Math.random() > SAMPLING_RATE) {
+      return;
+    }
+
     const entry: LogEntry = {
       timestamp: new Date().toISOString(),
       level,

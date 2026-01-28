@@ -10,6 +10,7 @@
  *   - Cache-Control:         Prevents caching of API responses (security)
  *   - X-Content-Type-Options: nosniff (security)
  *   - X-Frame-Options:       DENY (security)
+ *   - Content-Security-Policy: default-src 'none'; frame-ancestors 'none' (security)
  *
  * All response helpers accept an optional `requestId` parameter.
  * When provided, it is included as an X-Request-Id header for end-to-end
@@ -18,15 +19,17 @@
 
 import type { APIGatewayProxyResultV2 } from 'aws-lambda';
 import { isFeatureEnabled, type FeatureFlags } from './config.js';
+import { HTTP_STATUS, HTTP_HEADERS, CONTENT_TYPES } from './constants.js';
 
 // ---------------------------------------------------------------------------
 // CORS + Security headers
 // ---------------------------------------------------------------------------
 
 const SECURITY_HEADERS = {
-  'X-Content-Type-Options': 'nosniff',
-  'X-Frame-Options': 'DENY',
-  'Cache-Control': 'no-store, no-cache, must-revalidate, private',
+  [HTTP_HEADERS.X_CONTENT_TYPE_OPTIONS]: 'nosniff',
+  [HTTP_HEADERS.X_FRAME_OPTIONS]: 'DENY',
+  [HTTP_HEADERS.CACHE_CONTROL]: 'no-store, no-cache, must-revalidate, private',
+  [HTTP_HEADERS.CONTENT_SECURITY_POLICY]: "default-src 'none'; frame-ancestors 'none'",
 } as const;
 
 const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || '').split(',').filter(Boolean);
@@ -36,16 +39,15 @@ const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || '').split(',').filter(Bo
  *
  * - If ALLOWED_ORIGINS is configured, only allows listed origins.
  * - In production, falls back to a safe default when ALLOWED_ORIGINS is empty.
- * - In non-production, falls back to '*' for development convenience.
+ * - In non-production, falls back to 'http://localhost:3000' for local dev.
  */
 export function getCorsOrigin(requestOrigin?: string): string {
   if (ALLOWED_ORIGINS.length === 0) {
-    // Fix 6: Fail closed in production when no origins are configured
     const nodeEnv = process.env.NODE_ENV || '';
     if (nodeEnv === 'production') {
       return 'https://kanjona.com'; // safe default
     }
-    return '*'; // fallback for dev
+    return 'http://localhost:3000'; // safe dev default (not wildcard)
   }
   if (requestOrigin && ALLOWED_ORIGINS.includes(requestOrigin)) return requestOrigin;
   return ALLOWED_ORIGINS[0];
@@ -54,11 +56,11 @@ export function getCorsOrigin(requestOrigin?: string): string {
 function buildCorsHeaders(requestOrigin?: string): Record<string, string> {
   return {
     ...SECURITY_HEADERS,
-    'Access-Control-Allow-Origin': getCorsOrigin(requestOrigin),
-    'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
-    'Access-Control-Allow-Headers': 'content-type,authorization',
-    'Content-Type': 'application/json',
-    ...(ALLOWED_ORIGINS.length > 0 ? { Vary: 'Origin' } : {}),
+    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_ORIGIN]: getCorsOrigin(requestOrigin),
+    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_METHODS]: 'GET,POST,PUT,DELETE,OPTIONS',
+    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_HEADERS]: 'content-type,authorization',
+    [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.JSON,
+    ...(ALLOWED_ORIGINS.length > 0 ? { [HTTP_HEADERS.VARY]: 'Origin' } : {}),
   };
 }
 
@@ -74,7 +76,7 @@ const DEFAULT_CORS_HEADERS = buildCorsHeaders();
  */
 function withRequestId(base: Record<string, string>, requestId?: string): Record<string, string> {
   if (!requestId) return base;
-  return { ...base, 'X-Request-Id': requestId };
+  return { ...base, [HTTP_HEADERS.X_REQUEST_ID]: requestId };
 }
 
 // ---------------------------------------------------------------------------
@@ -83,7 +85,7 @@ function withRequestId(base: Record<string, string>, requestId?: string): Record
 
 export function success<T>(
   data: T,
-  statusCode = 200,
+  statusCode: number = HTTP_STATUS.OK,
   requestOrigin?: string,
   requestId?: string
 ): APIGatewayProxyResultV2 {
@@ -100,13 +102,13 @@ export function created<T>(
   requestOrigin?: string,
   requestId?: string
 ): APIGatewayProxyResultV2 {
-  return success(data, 201, requestOrigin, requestId);
+  return success(data, HTTP_STATUS.CREATED, requestOrigin, requestId);
 }
 
 export function noContent(requestOrigin?: string, requestId?: string): APIGatewayProxyResultV2 {
   const headers = requestOrigin ? buildCorsHeaders(requestOrigin) : DEFAULT_CORS_HEADERS;
   return {
-    statusCode: 204,
+    statusCode: HTTP_STATUS.NO_CONTENT,
     headers: withRequestId(headers, requestId),
     body: '',
   };
@@ -129,7 +131,7 @@ export function paginated<T>(
 ): APIGatewayProxyResultV2 {
   const headers = requestOrigin ? buildCorsHeaders(requestOrigin) : DEFAULT_CORS_HEADERS;
   return {
-    statusCode: 200,
+    statusCode: HTTP_STATUS.OK,
     headers: withRequestId(headers, requestId),
     body: JSON.stringify({
       ok: true,
@@ -167,41 +169,52 @@ export function badRequest(
   details?: Record<string, unknown>,
   requestId?: string
 ): APIGatewayProxyResultV2 {
-  return error('BAD_REQUEST', message, 400, details, undefined, requestId);
+  return error('BAD_REQUEST', message, HTTP_STATUS.BAD_REQUEST, details, undefined, requestId);
 }
 
 export function unauthorized(
   message = 'Authentication required',
   requestId?: string
 ): APIGatewayProxyResultV2 {
-  return error('UNAUTHORIZED', message, 401, undefined, undefined, requestId);
+  return error('UNAUTHORIZED', message, HTTP_STATUS.UNAUTHORIZED, undefined, undefined, requestId);
 }
 
 export function forbidden(
   message = 'Insufficient permissions',
   requestId?: string
 ): APIGatewayProxyResultV2 {
-  return error('FORBIDDEN', message, 403, undefined, undefined, requestId);
+  return error('FORBIDDEN', message, HTTP_STATUS.FORBIDDEN, undefined, undefined, requestId);
 }
 
 export function notFound(
   message = 'Resource not found',
   requestId?: string
 ): APIGatewayProxyResultV2 {
-  return error('NOT_FOUND', message, 404, undefined, undefined, requestId);
+  return error('NOT_FOUND', message, HTTP_STATUS.NOT_FOUND, undefined, undefined, requestId);
 }
 
 export function conflict(message: string, requestId?: string): APIGatewayProxyResultV2 {
-  return error('CONFLICT', message, 409, undefined, undefined, requestId);
+  return error('CONFLICT', message, HTTP_STATUS.CONFLICT, undefined, undefined, requestId);
+}
+
+export function payloadTooLarge(requestId?: string): APIGatewayProxyResultV2 {
+  return error(
+    'PAYLOAD_TOO_LARGE',
+    'Request body exceeds the maximum allowed size',
+    HTTP_STATUS.PAYLOAD_TOO_LARGE,
+    undefined,
+    undefined,
+    requestId
+  );
 }
 
 export function rateLimited(retryAfter = 60, requestId?: string): APIGatewayProxyResultV2 {
   return {
-    statusCode: 429,
+    statusCode: HTTP_STATUS.RATE_LIMITED,
     headers: withRequestId(
       {
         ...DEFAULT_CORS_HEADERS,
-        'Retry-After': String(retryAfter),
+        [HTTP_HEADERS.RETRY_AFTER]: String(retryAfter),
       },
       requestId
     ),
@@ -216,7 +229,7 @@ export function internalError(requestId?: string): APIGatewayProxyResultV2 {
   return error(
     'INTERNAL_ERROR',
     'An unexpected error occurred',
-    500,
+    HTTP_STATUS.INTERNAL_ERROR,
     undefined,
     undefined,
     requestId
