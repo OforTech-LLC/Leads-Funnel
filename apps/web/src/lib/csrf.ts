@@ -21,11 +21,19 @@ const TOKEN_EXPIRY_MS = 60 * 60 * 1000; // 1 hour
 
 // Environment-based secret for signing tokens
 // Security: Must be set in production - fail loudly if missing
-const CSRF_SECRET = process.env.CSRF_SECRET;
-if (!CSRF_SECRET && process.env.NODE_ENV === 'production') {
-  throw new Error('CSRF_SECRET environment variable must be set in production');
+// Note: Using lazy initialization to avoid build-time errors during Next.js static builds
+let _secret: string | null = null;
+
+function getSecret(): string {
+  if (_secret) return _secret;
+
+  const csrfSecret = process.env.CSRF_SECRET;
+  if (!csrfSecret && process.env.NODE_ENV === 'production') {
+    throw new Error('CSRF_SECRET environment variable must be set in production');
+  }
+  _secret = csrfSecret || 'dev-only-csrf-secret';
+  return _secret;
 }
-const SECRET = CSRF_SECRET || 'dev-only-csrf-secret';
 
 /**
  * CSRF Token payload structure
@@ -56,7 +64,7 @@ function generateRandomToken(): string {
  * The signature includes token, timestamp, and secret to bind all values.
  */
 function signToken(token: string, timestamp: number): string {
-  const data = `${token}:${timestamp}:${SECRET}`;
+  const data = `${token}:${timestamp}:${getSecret()}`;
   return createHash('sha256').update(data).digest('hex');
 }
 
