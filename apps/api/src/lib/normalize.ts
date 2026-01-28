@@ -61,15 +61,41 @@ function normalizeUtm(utm: LeadUtm | undefined): LeadUtm | undefined {
 
 /**
  * Normalize the entire lead payload
+ * Supports all extended fields for comprehensive funnel coverage
  */
 export function normalizeLead(payload: LeadRequestPayload): NormalizedLead {
-  return {
+  const normalized: NormalizedLead = {
+    // Core fields
+    funnelId: payload.funnelId?.trim().toLowerCase() || '',
     name: normalizeWhitespace(payload.name || ''),
     email: normalizeEmail(payload.email),
     phone: normalizePhone(payload.phone),
     message: normalizeMessage(payload.notes),
+    firstName: payload.firstName?.trim(),
+    lastName: payload.lastName?.trim(),
+
+    // Tracking
     pageUrl: payload.metadata?.pageUrl?.trim(),
     referrer: payload.metadata?.referrer?.trim(),
     utm: normalizeUtm(payload.utm),
+
+    // Extended fields - pass through as-is (validated at form level)
+    address: payload.address,
+    property: payload.property,
+    vehicle: payload.vehicle,
+    business: payload.business,
+    healthcare: payload.healthcare,
+    legal: payload.legal,
+    financial: payload.financial,
+    project: payload.project,
+    contactPreferences: payload.contactPreferences,
+    scheduling: payload.scheduling,
+    customFields: payload.customFields,
+    tags: payload.tags,
   };
+
+  // Remove undefined fields to keep the object clean
+  return Object.fromEntries(
+    Object.entries(normalized).filter(([, v]) => v !== undefined)
+  ) as NormalizedLead;
 }

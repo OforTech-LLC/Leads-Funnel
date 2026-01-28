@@ -48,7 +48,7 @@ export async function checkRateLimit(config: EnvConfig, ipHash: string): Promise
     // Atomic increment using UpdateItem with ADD
     const result = await client.send(
       new UpdateCommand({
-        TableName: config.ddbTableName,
+        TableName: config.rateLimitsTableName,
         Key: { pk, sk },
         UpdateExpression: 'SET #count = if_not_exists(#count, :zero) + :inc, #ttl = :ttl',
         ExpressionAttributeNames: {
@@ -104,7 +104,7 @@ export async function checkIdempotency(
     // Try conditional write - only succeeds if item doesn't exist
     await client.send(
       new PutCommand({
-        TableName: config.ddbTableName,
+        TableName: config.idempotencyTableName,
         Item: {
           pk,
           sk,
@@ -131,7 +131,7 @@ export async function checkIdempotency(
       // Fetch the existing record
       const existing = await client.send(
         new GetCommand({
-          TableName: config.ddbTableName,
+          TableName: config.idempotencyTableName,
           Key: { pk, sk },
           // Only fetch needed attributes
           ProjectionExpression: 'leadId, #status',
@@ -164,6 +164,7 @@ export async function checkIdempotency(
  * Store a new lead record
  *
  * @param config - Environment configuration
+ * @param tableName - The funnel-specific DynamoDB table name
  * @param lead - Normalized lead data
  * @param security - Security analysis results
  * @param userAgent - Client user agent string
@@ -171,6 +172,7 @@ export async function checkIdempotency(
  */
 export async function storeLead(
   config: EnvConfig,
+  tableName: string,
   lead: NormalizedLead,
   security: SecurityAnalysis,
   userAgent: string | undefined,
@@ -182,22 +184,44 @@ export async function storeLead(
   const status = security.suspicious ? 'quarantined' : 'accepted';
 
   const record: LeadRecord = {
+    // DynamoDB keys
     pk: `${DB_PREFIXES.LEAD}${leadId}`,
     sk: DB_SORT_KEYS.META,
+    gsi1pk: `${GSI_KEYS.EMAIL}${lead.email}`,
+    gsi1sk: `${GSI_KEYS.CREATED}${createdAt}`,
+
+    // Core fields
     leadId,
+    funnelId: lead.funnelId,
     name: lead.name,
     email: lead.email,
     phone: lead.phone,
     message: lead.message,
+    firstName: lead.firstName,
+    lastName: lead.lastName,
     createdAt,
     status,
+
+    // Tracking
     pageUrl: lead.pageUrl,
     referrer: lead.referrer,
     utm: lead.utm,
     userAgent,
     ipHash: security.ipHash,
-    gsi1pk: `${GSI_KEYS.EMAIL}${lead.email}`,
-    gsi1sk: `${GSI_KEYS.CREATED}${createdAt}`,
+
+    // Extended fields
+    address: lead.address,
+    property: lead.property,
+    vehicle: lead.vehicle,
+    business: lead.business,
+    healthcare: lead.healthcare,
+    legal: lead.legal,
+    financial: lead.financial,
+    project: lead.project,
+    contactPreferences: lead.contactPreferences,
+    scheduling: lead.scheduling,
+    customFields: lead.customFields,
+    tags: lead.tags,
   };
 
   // Build the DynamoDB item, optionally including score from scoring engine
@@ -208,7 +232,7 @@ export async function storeLead(
 
   await client.send(
     new PutCommand({
-      TableName: config.ddbTableName,
+      TableName: tableName,
       Item: item,
     })
   );
@@ -221,6 +245,7 @@ export async function storeLead(
  */
 export async function updateLeadAnalysis(
   config: EnvConfig,
+  tableName: string,
   leadId: string,
   analysis: LeadAnalysis
 ): Promise<void> {
@@ -230,7 +255,7 @@ export async function updateLeadAnalysis(
 
   await client.send(
     new UpdateCommand({
-      TableName: config.ddbTableName,
+      TableName: tableName,
       Key: { pk, sk },
       UpdateExpression: 'SET analysis = :analysis, updatedAt = :updatedAt',
       ExpressionAttributeValues: {
@@ -244,14 +269,18 @@ export async function updateLeadAnalysis(
 /**
  * Get a lead by ID
  */
-export async function getLead(config: EnvConfig, leadId: string): Promise<LeadRecord | null> {
+export async function getLead(
+  config: EnvConfig,
+  tableName: string,
+  leadId: string
+): Promise<LeadRecord | null> {
   const client = getDocClient(config.awsRegion);
   const pk = `${DB_PREFIXES.LEAD}${leadId}`;
   const sk = DB_SORT_KEYS.META;
 
   const result = await client.send(
     new GetCommand({
-      TableName: config.ddbTableName,
+      TableName: tableName,
       Key: { pk, sk },
     })
   );

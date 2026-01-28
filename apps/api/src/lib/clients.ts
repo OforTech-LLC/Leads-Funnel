@@ -26,7 +26,7 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { EventBridgeClient } from '@aws-sdk/client-eventbridge';
 import { SESClient } from '@aws-sdk/client-ses';
 import { SNSClient } from '@aws-sdk/client-sns';
-import { SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
+import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import https from 'node:https';
 import http from 'node:http';
@@ -253,11 +253,57 @@ export function getSecretsManagerClient(region?: string): SecretsManagerClient {
 }
 
 // ---------------------------------------------------------------------------
-// Table Name Helper
+// Secrets Manager Helper
 // ---------------------------------------------------------------------------
 
 /**
- * Primary single-table name loaded from environment.
+ * Cache for secrets to avoid repeated API calls during Lambda invocation.
+ * Secrets are cached for the lifetime of the Lambda container.
+ */
+const secretsCache = new Map<string, string>();
+
+/**
+ * Fetch a secret value from Secrets Manager by ARN.
+ * Results are cached to avoid repeated API calls.
+ *
+ * @param secretArn - The ARN of the secret to fetch
+ * @param region - Optional region override
+ * @returns The secret value as a string
+ */
+export async function getSecretValue(secretArn: string, region?: string): Promise<string> {
+  // Check cache first
+  const cached = secretsCache.get(secretArn);
+  if (cached) {
+    return cached;
+  }
+
+  const client = getSecretsManagerClient(region);
+  const response = await client.send(
+    new GetSecretValueCommand({
+      SecretId: secretArn,
+    })
+  );
+
+  const secretValue = response.SecretString || '';
+
+  // Cache the result
+  secretsCache.set(secretArn, secretValue);
+
+  return secretValue;
+}
+
+// ---------------------------------------------------------------------------
+// Table Name Helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Get primary DynamoDB table name from environment.
+ * Used by admin/portal handlers that have their own table name configuration.
+ *
+ * @deprecated Use specific table name environment variables instead:
+ * - RATE_LIMITS_TABLE_NAME for rate limiting
+ * - IDEMPOTENCY_TABLE_NAME for idempotency
+ * - Funnel-specific tables for leads
  */
 export function tableName(): string {
   return process.env.DDB_TABLE_NAME || '';

@@ -12,7 +12,9 @@ import type { LeadInput, LeadUtm } from '@kanjona/shared';
 export interface EnvConfig {
   awsRegion: string;
   env: 'dev' | 'prod';
-  ddbTableName: string;
+  projectName: string;
+  rateLimitsTableName: string;
+  idempotencyTableName: string;
   eventBusName: string;
   rateLimitMax: number;
   rateLimitWindowMin: number;
@@ -26,25 +28,51 @@ export interface EnvConfig {
 
 /**
  * Lead META record in DynamoDB
+ * Extended to support all funnel types
  */
 export interface LeadRecord {
+  // DynamoDB keys
   pk: string;
   sk: string;
+  gsi1pk: string;
+  gsi1sk: string;
+
+  // Core fields
   leadId: string;
+  funnelId: string;
   name: string;
   email: string;
   phone?: string;
   message?: string;
+  firstName?: string;
+  lastName?: string;
   createdAt: string;
   status: 'accepted' | 'quarantined';
+
+  // Tracking
   pageUrl?: string;
   referrer?: string;
   utm?: LeadUtm;
   userAgent?: string;
   ipHash: string;
-  gsi1pk: string;
-  gsi1sk: string;
+
+  // Extended fields - stored as JSON
+  address?: import('@kanjona/shared').LeadAddress;
+  property?: import('@kanjona/shared').LeadProperty;
+  vehicle?: import('@kanjona/shared').LeadVehicle;
+  business?: import('@kanjona/shared').LeadBusiness;
+  healthcare?: import('@kanjona/shared').LeadHealthcare;
+  legal?: import('@kanjona/shared').LeadLegal;
+  financial?: import('@kanjona/shared').LeadFinancial;
+  project?: import('@kanjona/shared').LeadProject;
+  contactPreferences?: import('@kanjona/shared').LeadContactPreferences;
+  scheduling?: import('@kanjona/shared').LeadScheduling;
+  customFields?: Record<string, string>;
+  tags?: string[];
+
+  // AI/scoring
   analysis?: LeadAnalysis;
+  score?: number;
 }
 
 /**
@@ -84,15 +112,37 @@ export interface IdempotencyRecord {
 
 /**
  * Normalized and validated lead data
+ * Extended to support all funnel types
  */
 export interface NormalizedLead {
+  // Core fields
+  funnelId: string;
   name: string;
   email: string;
   phone?: string;
   message?: string;
+  firstName?: string;
+  lastName?: string;
+
+  // Tracking
   pageUrl?: string;
   referrer?: string;
   utm?: LeadUtm;
+
+  // Extended fields - stored as JSON in DynamoDB
+  // These are imported from @kanjona/shared but kept optional for backward compatibility
+  address?: import('@kanjona/shared').LeadAddress;
+  property?: import('@kanjona/shared').LeadProperty;
+  vehicle?: import('@kanjona/shared').LeadVehicle;
+  business?: import('@kanjona/shared').LeadBusiness;
+  healthcare?: import('@kanjona/shared').LeadHealthcare;
+  legal?: import('@kanjona/shared').LeadLegal;
+  financial?: import('@kanjona/shared').LeadFinancial;
+  project?: import('@kanjona/shared').LeadProject;
+  contactPreferences?: import('@kanjona/shared').LeadContactPreferences;
+  scheduling?: import('@kanjona/shared').LeadScheduling;
+  customFields?: Record<string, string>;
+  tags?: string[];
 }
 
 /**
@@ -129,6 +179,7 @@ export interface IdempotencyResult {
  */
 export interface LeadCreatedEventDetail {
   leadId: string;
+  funnelId: string;
   createdAt: string;
   status: 'accepted' | 'quarantined';
   suspicious: boolean;

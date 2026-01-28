@@ -20,14 +20,23 @@ const log = createLogger('lead-analyzer-worker');
 function loadEnvConfig(): EnvConfig {
   return {
     awsRegion: process.env.AWS_REGION || 'us-east-1',
-    env: (process.env.ENV as 'dev' | 'prod') || 'dev',
-    ddbTableName: process.env.DDB_TABLE_NAME || '',
+    env: (process.env.ENVIRONMENT as 'dev' | 'prod') || 'dev',
+    projectName: process.env.PROJECT_NAME || 'kanjona',
+    rateLimitsTableName: process.env.RATE_LIMITS_TABLE_NAME || '',
+    idempotencyTableName: process.env.IDEMPOTENCY_TABLE_NAME || '',
     eventBusName: process.env.EVENT_BUS_NAME || 'default',
     rateLimitMax: parseInt(process.env.RATE_LIMIT_MAX || '10', 10),
     rateLimitWindowMin: parseInt(process.env.RATE_LIMIT_WINDOW_MIN || '10', 10),
     idempotencyTtlHours: parseInt(process.env.IDEMPOTENCY_TTL_HOURS || '24', 10),
     ipHashSalt: process.env.IP_HASH_SALT || '',
   };
+}
+
+/**
+ * Get the funnel-specific table name
+ */
+function getFunnelTableName(config: EnvConfig, funnelId: string): string {
+  return `${config.projectName}-${config.env}-${funnelId}`;
 }
 
 // =============================================================================
@@ -40,15 +49,18 @@ export async function handler(
   const config = loadEnvConfig();
   const detail = event.detail;
 
-  log.info('Received Lead Created event', { leadId: detail.leadId });
+  log.info('Received Lead Created event', { leadId: detail.leadId, funnelId: detail.funnelId });
 
   if (detail.status !== 'accepted') {
     log.info('Skipping analysis for non-accepted lead', { status: detail.status });
     return;
   }
 
+  // Get the funnel-specific table name
+  const tableName = getFunnelTableName(config, detail.funnelId);
+
   try {
-    const lead = await getLead(config, detail.leadId);
+    const lead = await getLead(config, tableName, detail.leadId);
     if (!lead) {
       log.warn('Lead not found for analysis', { leadId: detail.leadId });
       return;
@@ -67,7 +79,7 @@ export async function handler(
     const analysis = await analyzeLead(textToAnalyze);
 
     if (analysis) {
-      await updateLeadAnalysis(config, detail.leadId, analysis);
+      await updateLeadAnalysis(config, tableName, detail.leadId, analysis);
       log.info('Lead analysis updated', { leadId: detail.leadId, urgency: analysis.urgency });
     }
   } catch (error) {

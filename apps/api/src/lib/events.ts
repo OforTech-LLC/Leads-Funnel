@@ -67,6 +67,7 @@ export async function publishLeadCreatedEvent(
 
   const detail: LeadCreatedEventDetail = {
     leadId: lead.leadId,
+    funnelId: lead.funnelId,
     createdAt: lead.createdAt,
     status: lead.status,
     suspicious: security.suspicious,

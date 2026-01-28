@@ -161,6 +161,26 @@ resource "aws_iam_role_policy" "health_handler_kms" {
   })
 }
 
+# DynamoDB permissions for health check connectivity test
+resource "aws_iam_role_policy" "health_handler_dynamodb" {
+  name = "${local.function_prefix}-health-handler-dynamodb-policy"
+  role = aws_iam_role.health_handler.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "DynamoDBDescribe"
+        Effect = "Allow"
+        Action = [
+          "dynamodb:DescribeTable"
+        ]
+        Resource = "arn:aws:dynamodb:*:*:table/${var.project_name}-${var.environment}-*"
+      }
+    ]
+  })
+}
+
 # -----------------------------------------------------------------------------
 # Voice Handler IAM Role (shared by voice-start and voice-webhook)
 # -----------------------------------------------------------------------------

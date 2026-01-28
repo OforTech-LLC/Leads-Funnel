@@ -94,9 +94,11 @@ const URL_REGEX = /https?:\/\/[^\s]+/gi;
  * @throws Error if EMAIL_HASH_SALT is not configured
  */
 function getEmailHashSalt(): string {
-  const salt = process.env.EMAIL_HASH_SALT;
+  // First try dedicated EMAIL_HASH_SALT, then fall back to IP_HASH_SALT
+  // (they serve the same purpose - hashing for privacy)
+  const salt = process.env.EMAIL_HASH_SALT || process.env.IP_HASH_SALT;
   if (!salt) {
-    throw new Error('EMAIL_HASH_SALT environment variable must be set');
+    throw new Error('EMAIL_HASH_SALT or IP_HASH_SALT environment variable must be set');
   }
   return salt;
 }
@@ -306,9 +308,9 @@ export function analyzeLeadSecurity(
 
   // Generate privacy-preserving hashes for rate limiting and deduplication
   // These allow abuse detection without storing PII
+  // Note: We use the same salt for both IP and email hashing for simplicity
   const ipHash = hashIp(clientIp, ipHashSalt);
-  const emailHashSalt = getEmailHashSalt();
-  const emailHash = hashEmailWithSalt(lead.email, emailHashSalt);
+  const emailHash = hashEmailWithSalt(lead.email, ipHashSalt);
 
   // Idempotency key prevents duplicate submissions from same email/page
   // within the time window (e.g., double-click, page refresh)
@@ -354,13 +356,12 @@ export function prepareAuditLogData(
   emailHash: string;
   timestamp: string;
 } {
-  const emailHashSalt = getEmailHashSalt();
-
+  // Use the same salt for both IP and email hashing for simplicity
   return {
     leadId,
     anonymizedIp: anonymizeIp(clientIp),
     ipHash: hashIp(clientIp, ipHashSalt),
-    emailHash: hashEmailWithSalt(email, emailHashSalt),
+    emailHash: hashEmailWithSalt(email, ipHashSalt),
     timestamp: new Date().toISOString(),
   };
 }

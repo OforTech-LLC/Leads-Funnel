@@ -334,6 +334,682 @@ export interface LeadUtm {
 }
 
 // =============================================================================
+// Address Types
+// =============================================================================
+
+/**
+ * Full address information for service location
+ * Used by home services, auto services, and business services
+ */
+export interface LeadAddress {
+  /** Street address line 1 */
+  street?: string;
+  /** Street address line 2 (apt, suite, unit) */
+  street2?: string;
+  /** City name */
+  city?: string;
+  /** State/Province (2-letter code preferred for US) */
+  state?: string;
+  /** ZIP/Postal code - critical for service area matching */
+  zipCode?: string;
+  /** Country (ISO 3166-1 alpha-2 code, defaults to US) */
+  country?: string;
+  /** County/Parish (useful for some services) */
+  county?: string;
+  /** Latitude for precise location services */
+  latitude?: number;
+  /** Longitude for precise location services */
+  longitude?: number;
+}
+
+// =============================================================================
+// Property Types (Home Services)
+// =============================================================================
+
+/**
+ * Property type enumeration
+ */
+export const PropertyTypeEnum = {
+  SINGLE_FAMILY: 'single_family',
+  MULTI_FAMILY: 'multi_family',
+  CONDO: 'condo',
+  TOWNHOUSE: 'townhouse',
+  APARTMENT: 'apartment',
+  MOBILE_HOME: 'mobile_home',
+  COMMERCIAL: 'commercial',
+  INDUSTRIAL: 'industrial',
+  LAND: 'land',
+  OTHER: 'other',
+} as const;
+
+export type PropertyType = (typeof PropertyTypeEnum)[keyof typeof PropertyTypeEnum];
+
+/**
+ * Roof type enumeration (for roofing services)
+ */
+export const RoofTypeEnum = {
+  ASPHALT_SHINGLE: 'asphalt_shingle',
+  METAL: 'metal',
+  TILE: 'tile',
+  SLATE: 'slate',
+  WOOD_SHAKE: 'wood_shake',
+  FLAT: 'flat',
+  TPO: 'tpo',
+  EPDM: 'epdm',
+  BUILT_UP: 'built_up',
+  UNKNOWN: 'unknown',
+} as const;
+
+export type RoofType = (typeof RoofTypeEnum)[keyof typeof RoofTypeEnum];
+
+/**
+ * HVAC system type enumeration
+ */
+export const HvacTypeEnum = {
+  CENTRAL_AC: 'central_ac',
+  HEAT_PUMP: 'heat_pump',
+  FURNACE: 'furnace',
+  BOILER: 'boiler',
+  DUCTLESS_MINI_SPLIT: 'ductless_mini_split',
+  WINDOW_UNIT: 'window_unit',
+  GEOTHERMAL: 'geothermal',
+  RADIANT: 'radiant',
+  UNKNOWN: 'unknown',
+} as const;
+
+export type HvacType = (typeof HvacTypeEnum)[keyof typeof HvacTypeEnum];
+
+/**
+ * Pool type enumeration (for pool services)
+ */
+export const PoolTypeEnum = {
+  INGROUND: 'inground',
+  ABOVE_GROUND: 'above_ground',
+  INFINITY: 'infinity',
+  LAP: 'lap',
+  NATURAL: 'natural',
+  HOT_TUB: 'hot_tub',
+  NONE: 'none',
+} as const;
+
+export type PoolType = (typeof PoolTypeEnum)[keyof typeof PoolTypeEnum];
+
+/**
+ * Property information for home service leads
+ * Used by: roofing, hvac, plumbing, electrician, cleaning, etc.
+ */
+export interface LeadProperty {
+  /** Type of property */
+  propertyType?: PropertyType;
+  /** Square footage of property */
+  squareFootage?: number;
+  /** Year the property was built */
+  yearBuilt?: number;
+  /** Number of stories/floors */
+  stories?: number;
+  /** Number of bedrooms */
+  bedrooms?: number;
+  /** Number of bathrooms */
+  bathrooms?: number;
+  /** Lot size in square feet */
+  lotSize?: number;
+  /** Whether the lead owns or rents */
+  ownershipStatus?: 'owner' | 'renter' | 'property_manager' | 'other';
+  /** How long they've owned/lived at property */
+  yearsAtProperty?: number;
+
+  // Roofing-specific
+  /** Type of roof */
+  roofType?: RoofType;
+  /** Age of roof in years */
+  roofAge?: number;
+  /** Roof square footage (may differ from home) */
+  roofSquareFootage?: number;
+  /** Number of roof layers */
+  roofLayers?: number;
+  /** Has the roof been inspected recently? */
+  recentRoofInspection?: boolean;
+
+  // HVAC-specific
+  /** Type of HVAC system */
+  hvacType?: HvacType;
+  /** Age of HVAC system in years */
+  hvacAge?: number;
+  /** HVAC brand if known */
+  hvacBrand?: string;
+  /** HVAC model if known */
+  hvacModel?: string;
+  /** Last service date */
+  hvacLastService?: string;
+
+  // Pool-specific
+  /** Type of pool */
+  poolType?: PoolType;
+  /** Pool size in gallons */
+  poolSize?: number;
+  /** Does the pool have a heater? */
+  poolHeated?: boolean;
+
+  // Solar-specific
+  /** Does the property already have solar? */
+  hasSolar?: boolean;
+  /** Average monthly electric bill */
+  averageElectricBill?: number;
+  /** Electric utility provider */
+  electricProvider?: string;
+  /** Roof orientation for solar (south-facing is ideal) */
+  roofOrientation?: 'north' | 'south' | 'east' | 'west' | 'flat' | 'unknown';
+
+  // General home details
+  /** Type of foundation */
+  foundationType?: 'slab' | 'crawlspace' | 'basement' | 'pier' | 'unknown';
+  /** Type of siding/exterior */
+  exteriorType?: string;
+  /** Has HOA restrictions? */
+  hasHoa?: boolean;
+  /** HOA name if applicable */
+  hoaName?: string;
+}
+
+// =============================================================================
+// Vehicle Types (Auto Services)
+// =============================================================================
+
+/**
+ * Vehicle information for auto service leads
+ * Used by: auto-repair, auto-detailing, towing, auto-glass
+ */
+export interface LeadVehicle {
+  /** Vehicle make (e.g., Toyota, Ford) */
+  make?: string;
+  /** Vehicle model (e.g., Camry, F-150) */
+  model?: string;
+  /** Model year */
+  year?: number;
+  /** Vehicle Identification Number */
+  vin?: string;
+  /** Current mileage */
+  mileage?: number;
+  /** License plate number */
+  licensePlate?: string;
+  /** License plate state */
+  licensePlateState?: string;
+  /** Exterior color */
+  color?: string;
+  /** Vehicle type */
+  vehicleType?:
+    | 'sedan'
+    | 'suv'
+    | 'truck'
+    | 'van'
+    | 'coupe'
+    | 'convertible'
+    | 'wagon'
+    | 'motorcycle'
+    | 'rv'
+    | 'commercial'
+    | 'other';
+  /** Transmission type */
+  transmission?: 'automatic' | 'manual' | 'cvt';
+  /** Fuel type */
+  fuelType?: 'gasoline' | 'diesel' | 'electric' | 'hybrid' | 'plugin_hybrid' | 'other';
+  /** Is the vehicle drivable? (for towing/repair) */
+  isDrivable?: boolean;
+  /** Current location if different from address (for towing) */
+  currentLocation?: string;
+  /** Towing destination if applicable */
+  towDestination?: string;
+  /** Insurance company */
+  insuranceCompany?: string;
+  /** Insurance policy number */
+  insurancePolicyNumber?: string;
+  /** Insurance claim number if applicable */
+  insuranceClaimNumber?: string;
+}
+
+// =============================================================================
+// Business Types (B2B Services)
+// =============================================================================
+
+/**
+ * Business size enumeration
+ */
+export const BusinessSizeEnum = {
+  SOLE_PROPRIETOR: 'sole_proprietor',
+  SMALL_1_10: 'small_1_10',
+  SMALL_11_50: 'small_11_50',
+  MEDIUM_51_200: 'medium_51_200',
+  MEDIUM_201_500: 'medium_201_500',
+  LARGE_501_1000: 'large_501_1000',
+  ENTERPRISE_1000_PLUS: 'enterprise_1000_plus',
+} as const;
+
+export type BusinessSize = (typeof BusinessSizeEnum)[keyof typeof BusinessSizeEnum];
+
+/**
+ * Business entity type enumeration
+ */
+export const BusinessEntityTypeEnum = {
+  SOLE_PROPRIETORSHIP: 'sole_proprietorship',
+  LLC: 'llc',
+  CORPORATION: 'corporation',
+  S_CORP: 's_corp',
+  PARTNERSHIP: 'partnership',
+  NONPROFIT: 'nonprofit',
+  OTHER: 'other',
+} as const;
+
+export type BusinessEntityType =
+  (typeof BusinessEntityTypeEnum)[keyof typeof BusinessEntityTypeEnum];
+
+/**
+ * Business information for B2B service leads
+ * Used by: commercial-cleaning, it-services, marketing-agency, business-consulting, security-systems
+ */
+export interface LeadBusiness {
+  /** Company/Business name */
+  companyName?: string;
+  /** Business entity type */
+  entityType?: BusinessEntityType;
+  /** Industry/sector */
+  industry?: string;
+  /** Number of employees */
+  employeeCount?: number;
+  /** Business size category */
+  businessSize?: BusinessSize;
+  /** Annual revenue range */
+  annualRevenue?: string;
+  /** Years in business */
+  yearsInBusiness?: number;
+  /** Website URL */
+  website?: string;
+  /** Job title of the contact */
+  contactTitle?: string;
+  /** Department of the contact */
+  contactDepartment?: string;
+  /** Decision maker? */
+  isDecisionMaker?: boolean;
+  /** EIN/Tax ID (for tax services) */
+  taxId?: string;
+  /** Number of locations */
+  locationCount?: number;
+  /** Square footage of facility (for commercial cleaning) */
+  facilitySquareFootage?: number;
+  /** Type of facility */
+  facilityType?: string;
+  /** Current service provider (competitor) */
+  currentProvider?: string;
+  /** Contract end date with current provider */
+  contractEndDate?: string;
+}
+
+// =============================================================================
+// Healthcare Types
+// =============================================================================
+
+/**
+ * Healthcare/medical information for healthcare service leads
+ * Used by: dentist, plastic-surgeon, orthodontist, dermatology, medspa, chiropractic, physical-therapy, hair-transplant, cosmetic-dentistry
+ */
+export interface LeadHealthcare {
+  /** Date of birth (for age verification, insurance) */
+  dateOfBirth?: string;
+  /** Gender (for relevant treatments) */
+  gender?: 'male' | 'female' | 'non_binary' | 'prefer_not_to_say';
+  /** Primary concern/condition */
+  primaryConcern?: string;
+  /** How long has the issue been present? */
+  conditionDuration?: string;
+  /** Previous treatments tried */
+  previousTreatments?: string;
+  /** Current medications */
+  currentMedications?: string;
+  /** Known allergies */
+  allergies?: string;
+  /** Insurance provider name */
+  insuranceProvider?: string;
+  /** Insurance member ID */
+  insuranceMemberId?: string;
+  /** Insurance group number */
+  insuranceGroupNumber?: string;
+  /** Is this for self or dependent? */
+  patientRelationship?: 'self' | 'spouse' | 'child' | 'parent' | 'other';
+  /** Dependent/patient name if not self */
+  patientName?: string;
+  /** Dependent/patient date of birth if not self */
+  patientDateOfBirth?: string;
+  /** Current dentist/doctor name */
+  currentProviderName?: string;
+  /** Reason for switching providers */
+  switchReason?: string;
+  /** Has had consultation before for this? */
+  previousConsultation?: boolean;
+  /** Procedure(s) of interest */
+  proceduresOfInterest?: string[];
+  /** Cosmetic vs medical need */
+  treatmentType?: 'cosmetic' | 'medical' | 'both';
+  /** Financing needed? */
+  needsFinancing?: boolean;
+}
+
+// =============================================================================
+// Legal Types
+// =============================================================================
+
+/**
+ * Case type enumeration for legal services
+ */
+export const LegalCaseTypeEnum = {
+  // Personal Injury
+  AUTO_ACCIDENT: 'auto_accident',
+  TRUCK_ACCIDENT: 'truck_accident',
+  MOTORCYCLE_ACCIDENT: 'motorcycle_accident',
+  SLIP_AND_FALL: 'slip_and_fall',
+  MEDICAL_MALPRACTICE: 'medical_malpractice',
+  PRODUCT_LIABILITY: 'product_liability',
+  WORKPLACE_INJURY: 'workplace_injury',
+  WRONGFUL_DEATH: 'wrongful_death',
+  // Criminal Defense
+  DUI_DWI: 'dui_dwi',
+  DRUG_CHARGES: 'drug_charges',
+  ASSAULT: 'assault',
+  THEFT: 'theft',
+  DOMESTIC_VIOLENCE: 'domestic_violence',
+  WHITE_COLLAR: 'white_collar',
+  FEDERAL_CRIME: 'federal_crime',
+  // Immigration
+  GREEN_CARD: 'green_card',
+  CITIZENSHIP: 'citizenship',
+  VISA: 'visa',
+  DEPORTATION_DEFENSE: 'deportation_defense',
+  ASYLUM: 'asylum',
+  WORK_PERMIT: 'work_permit',
+  FAMILY_IMMIGRATION: 'family_immigration',
+  // Other
+  OTHER: 'other',
+} as const;
+
+export type LegalCaseType = (typeof LegalCaseTypeEnum)[keyof typeof LegalCaseTypeEnum];
+
+/**
+ * Legal case information for legal service leads
+ * Used by: personal-injury-attorney, immigration-attorney, criminal-defense-attorney
+ */
+export interface LeadLegal {
+  /** Type of legal case */
+  caseType?: LegalCaseType;
+  /** Date of incident/issue */
+  incidentDate?: string;
+  /** Location of incident */
+  incidentLocation?: string;
+  /** Description of incident/case */
+  caseDescription?: string;
+  /** Have they filed a police report? */
+  policeReportFiled?: boolean;
+  /** Police report number */
+  policeReportNumber?: string;
+  /** Have they sought medical treatment? (injury cases) */
+  medicalTreatmentSought?: boolean;
+  /** Are they currently represented? */
+  hasExistingAttorney?: boolean;
+  /** Statute of limitations concern? */
+  statuteOfLimitationsConcern?: boolean;
+  /** Court date if applicable */
+  courtDate?: string;
+  /** Jurisdiction/court */
+  jurisdiction?: string;
+  /** Bail amount if applicable */
+  bailAmount?: number;
+  /** Currently in custody? */
+  inCustody?: boolean;
+  /** Immigration status (for immigration cases) */
+  immigrationStatus?: string;
+  /** Country of origin (for immigration) */
+  countryOfOrigin?: string;
+  /** Visa type if applicable */
+  visaType?: string;
+  /** Visa expiration date */
+  visaExpirationDate?: string;
+  /** At fault party (for injury cases) */
+  atFaultParty?: string;
+  /** At fault party insurance */
+  atFaultInsurance?: string;
+  /** Estimated damages/losses */
+  estimatedDamages?: string;
+  /** Injuries sustained */
+  injuriesDescription?: string;
+  /** Witnesses available? */
+  hasWitnesses?: boolean;
+  /** Evidence/documentation available? */
+  hasDocumentation?: boolean;
+}
+
+// =============================================================================
+// Financial/Insurance Types
+// =============================================================================
+
+/**
+ * Financial information for insurance and financial service leads
+ * Used by: life-insurance, tax-accounting
+ */
+export interface LeadFinancial {
+  /** Annual household income range */
+  annualIncome?: string;
+  /** Employment status */
+  employmentStatus?: 'employed' | 'self_employed' | 'unemployed' | 'retired' | 'student' | 'other';
+  /** Employer name */
+  employerName?: string;
+  /** Marital status */
+  maritalStatus?: 'single' | 'married' | 'divorced' | 'widowed' | 'domestic_partnership';
+  /** Number of dependents */
+  numberOfDependents?: number;
+  /** Smoker status (for life insurance) */
+  smokerStatus?: 'never' | 'former' | 'current';
+  /** Health conditions (for life insurance) */
+  healthConditions?: string;
+  /** Coverage amount desired */
+  desiredCoverage?: string;
+  /** Current coverage amount if any */
+  currentCoverage?: string;
+  /** Current provider */
+  currentProvider?: string;
+  /** Tax filing status */
+  taxFilingStatus?: 'single' | 'married_joint' | 'married_separate' | 'head_of_household' | 'widow';
+  /** Business owner? */
+  isBusinessOwner?: boolean;
+  /** Has rental property? */
+  hasRentalProperty?: boolean;
+  /** Has investments? */
+  hasInvestments?: boolean;
+  /** Needs audit representation? (tax) */
+  needsAuditHelp?: boolean;
+  /** Tax year(s) needing help */
+  taxYears?: string;
+}
+
+// =============================================================================
+// Project/Service Request Types
+// =============================================================================
+
+/**
+ * Urgency level enumeration
+ */
+export const UrgencyLevelEnum = {
+  EMERGENCY: 'emergency',
+  URGENT: 'urgent',
+  WITHIN_WEEK: 'within_week',
+  WITHIN_MONTH: 'within_month',
+  FLEXIBLE: 'flexible',
+  JUST_RESEARCHING: 'just_researching',
+} as const;
+
+export type UrgencyLevel = (typeof UrgencyLevelEnum)[keyof typeof UrgencyLevelEnum];
+
+/**
+ * Budget range enumeration
+ */
+export const BudgetRangeEnum = {
+  UNDER_500: 'under_500',
+  RANGE_500_1000: '500_1000',
+  RANGE_1000_2500: '1000_2500',
+  RANGE_2500_5000: '2500_5000',
+  RANGE_5000_10000: '5000_10000',
+  RANGE_10000_25000: '10000_25000',
+  RANGE_25000_50000: '25000_50000',
+  RANGE_50000_100000: '50000_100000',
+  OVER_100000: 'over_100000',
+  NOT_SURE: 'not_sure',
+  FLEXIBLE: 'flexible',
+} as const;
+
+export type BudgetRange = (typeof BudgetRangeEnum)[keyof typeof BudgetRangeEnum];
+
+/**
+ * Project/service request details
+ * Universal across all service types
+ */
+export interface LeadProject {
+  /** How urgent is the need? */
+  urgency?: UrgencyLevel;
+  /** Budget range */
+  budgetRange?: BudgetRange;
+  /** Specific budget amount if known */
+  budgetAmount?: number;
+  /** Preferred start date */
+  preferredStartDate?: string;
+  /** Project deadline if any */
+  deadline?: string;
+  /** Detailed project/service description */
+  projectDescription?: string;
+  /** Current issues or problems to solve */
+  currentIssues?: string;
+  /** Specific services requested */
+  servicesRequested?: string[];
+  /** How did they hear about us? */
+  howHeardAboutUs?: string;
+  /** Have they gotten other quotes? */
+  hasOtherQuotes?: boolean;
+  /** Number of other quotes received */
+  numberOfQuotes?: number;
+  /** Are they comparing providers? */
+  comparingProviders?: boolean;
+  /** Decision timeline */
+  decisionTimeline?: string;
+  /** Who else is involved in decision? */
+  otherDecisionMakers?: string;
+  /** Special requirements or requests */
+  specialRequirements?: string;
+  /** Accessibility needs */
+  accessibilityNeeds?: string;
+  /** Preferred language for service */
+  preferredLanguage?: string;
+}
+
+// =============================================================================
+// Contact Preferences Types
+// =============================================================================
+
+/**
+ * Contact method enumeration
+ */
+export const ContactMethodEnum = {
+  PHONE_CALL: 'phone_call',
+  TEXT_SMS: 'text_sms',
+  EMAIL: 'email',
+  WHATSAPP: 'whatsapp',
+  VIDEO_CALL: 'video_call',
+  IN_PERSON: 'in_person',
+  NO_PREFERENCE: 'no_preference',
+} as const;
+
+export type ContactMethod = (typeof ContactMethodEnum)[keyof typeof ContactMethodEnum];
+
+/**
+ * Time of day preference enumeration
+ */
+export const TimePreferenceEnum = {
+  EARLY_MORNING: 'early_morning',
+  MORNING: 'morning',
+  AFTERNOON: 'afternoon',
+  EVENING: 'evening',
+  ANYTIME: 'anytime',
+} as const;
+
+export type TimePreference = (typeof TimePreferenceEnum)[keyof typeof TimePreferenceEnum];
+
+/**
+ * Contact preferences for the lead
+ */
+export interface LeadContactPreferences {
+  /** Preferred method of contact */
+  preferredContactMethod?: ContactMethod;
+  /** Best time to call */
+  bestTimeToCall?: TimePreference;
+  /** Specific time window (e.g., "2pm-4pm") */
+  specificTimeWindow?: string;
+  /** Best days to contact */
+  bestDaysToContact?: (
+    | 'monday'
+    | 'tuesday'
+    | 'wednesday'
+    | 'thursday'
+    | 'friday'
+    | 'saturday'
+    | 'sunday'
+  )[];
+  /** Timezone */
+  timezone?: string;
+  /** Alternate phone number */
+  alternatePhone?: string;
+  /** Alternate email */
+  alternateEmail?: string;
+  /** OK to leave voicemail? */
+  okToLeaveVoicemail?: boolean;
+  /** OK to send text messages? */
+  okToText?: boolean;
+  /** Do not contact before (time) */
+  doNotContactBefore?: string;
+  /** Do not contact after (time) */
+  doNotContactAfter?: string;
+  /** Language preference */
+  languagePreference?: string;
+  /** Has interpreter needs? */
+  needsInterpreter?: boolean;
+}
+
+// =============================================================================
+// Scheduling Types
+// =============================================================================
+
+/**
+ * Scheduling/appointment preferences
+ */
+export interface LeadScheduling {
+  /** Preferred appointment date */
+  preferredDate?: string;
+  /** Preferred appointment time */
+  preferredTime?: string;
+  /** Alternative date 1 */
+  alternativeDate1?: string;
+  /** Alternative time 1 */
+  alternativeTime1?: string;
+  /** Alternative date 2 */
+  alternativeDate2?: string;
+  /** Alternative time 2 */
+  alternativeTime2?: string;
+  /** Appointment type */
+  appointmentType?: 'consultation' | 'estimate' | 'service' | 'follow_up' | 'other';
+  /** Estimated duration needed */
+  estimatedDuration?: string;
+  /** Virtual/remote option preferred? */
+  prefersVirtual?: boolean;
+  /** On-site visit required? */
+  requiresOnsiteVisit?: boolean;
+  /** Special scheduling notes */
+  schedulingNotes?: string;
+}
+
+// =============================================================================
 // Consent Types (GDPR/CCPA Compliance)
 // =============================================================================
 
@@ -378,7 +1054,7 @@ export interface ConsentUpdate {
 // =============================================================================
 
 /**
- * Lead input data from form submission
+ * Lead input data from form submission (basic fields)
  */
 export interface LeadInput {
   name: string;
@@ -396,22 +1072,116 @@ export interface LeadMetadata {
   userAgent?: string;
   ipHash?: string;
   timestamp?: string;
+  /** Device type detected */
+  deviceType?: 'desktop' | 'mobile' | 'tablet';
+  /** Browser name */
+  browser?: string;
+  /** Operating system */
+  operatingSystem?: string;
+  /** Screen resolution */
+  screenResolution?: string;
+  /** Session ID for tracking */
+  sessionId?: string;
+  /** Landing page variant (for A/B testing) */
+  pageVariant?: string;
+  /** Form ID if multiple forms on page */
+  formId?: string;
+  /** Time spent on page before submission (seconds) */
+  timeOnPage?: number;
+  /** Number of page visits before conversion */
+  pageViews?: number;
+  /** Conversion path */
+  conversionPath?: string[];
 }
 
 /**
  * API request payload for lead submission
+ * Comprehensive schema supporting all funnel types
  */
 export interface LeadRequestPayload {
+  // ==========================================================================
+  // Core Fields (Required)
+  // ==========================================================================
+  /** Funnel/service identifier */
   funnelId?: string;
+  /** Full name */
   name: string;
+  /** Email address */
   email: string;
+
+  // ==========================================================================
+  // Basic Contact Fields (Optional)
+  // ==========================================================================
+  /** Primary phone number */
   phone?: string;
+  /** Message/notes/special request */
   notes?: string;
+  /** First name (if collected separately) */
+  firstName?: string;
+  /** Last name (if collected separately) */
+  lastName?: string;
+
+  // ==========================================================================
+  // Address Information
+  // ==========================================================================
+  /** Service/property address */
+  address?: LeadAddress;
+
+  // ==========================================================================
+  // Domain-Specific Information
+  // ==========================================================================
+  /** Property details (for home services) */
+  property?: LeadProperty;
+  /** Vehicle details (for auto services) */
+  vehicle?: LeadVehicle;
+  /** Business details (for B2B services) */
+  business?: LeadBusiness;
+  /** Healthcare details (for medical services) */
+  healthcare?: LeadHealthcare;
+  /** Legal case details (for legal services) */
+  legal?: LeadLegal;
+  /** Financial details (for insurance/tax services) */
+  financial?: LeadFinancial;
+
+  // ==========================================================================
+  // Project/Service Request
+  // ==========================================================================
+  /** Project/service request details */
+  project?: LeadProject;
+
+  // ==========================================================================
+  // Contact & Scheduling Preferences
+  // ==========================================================================
+  /** Contact preferences */
+  contactPreferences?: LeadContactPreferences;
+  /** Scheduling/appointment preferences */
+  scheduling?: LeadScheduling;
+
+  // ==========================================================================
+  // Tracking & Attribution
+  // ==========================================================================
+  /** UTM tracking parameters */
   utm: LeadUtm;
+  /** Page/session metadata */
   metadata?: LeadMetadata;
-  customFields?: Record<string, string>;
+
+  // ==========================================================================
+  // Compliance & Consent
+  // ==========================================================================
   /** Consent information (required for GDPR compliance) */
   consent?: LeadConsentInput;
+
+  // ==========================================================================
+  // Extensibility
+  // ==========================================================================
+  /** Custom fields for funnel-specific data */
+  customFields?: Record<string, string>;
+  /** Tags for categorization */
+  tags?: string[];
+  /** Source system if imported */
+  sourceSystem?: string;
+  /** External/legacy ID if imported */
+  externalId?: string;
 }
 
 /**
@@ -430,24 +1200,124 @@ export interface LeadConsentInput {
 
 /**
  * Lead data stored in database
+ * Comprehensive schema supporting all funnel types
  */
 export interface Lead {
+  // ==========================================================================
+  // System Fields
+  // ==========================================================================
+  /** Unique lead identifier */
   id: string;
+  /** Funnel/service identifier */
   funnelId: string;
-  name: string;
-  email: string;
-  phone?: string;
-  notes?: string;
-  utm: LeadUtm;
-  metadata: LeadMetadata;
-  customFields?: Record<string, string>;
+  /** Lead creation timestamp */
   createdAt: string;
+  /** Last update timestamp */
   updatedAt: string;
+  /** Lead status in pipeline */
   status: LeadStatus;
+
+  // ==========================================================================
+  // Core Contact Fields
+  // ==========================================================================
+  /** Full name */
+  name: string;
+  /** Email address */
+  email: string;
+  /** Primary phone number */
+  phone?: string;
+  /** Message/notes/special request */
+  notes?: string;
+  /** First name (if collected separately) */
+  firstName?: string;
+  /** Last name (if collected separately) */
+  lastName?: string;
+
+  // ==========================================================================
+  // Address Information
+  // ==========================================================================
+  /** Service/property address */
+  address?: LeadAddress;
+
+  // ==========================================================================
+  // Domain-Specific Information
+  // ==========================================================================
+  /** Property details (for home services) */
+  property?: LeadProperty;
+  /** Vehicle details (for auto services) */
+  vehicle?: LeadVehicle;
+  /** Business details (for B2B services) */
+  business?: LeadBusiness;
+  /** Healthcare details (for medical services) */
+  healthcare?: LeadHealthcare;
+  /** Legal case details (for legal services) */
+  legal?: LeadLegal;
+  /** Financial details (for insurance/tax services) */
+  financial?: LeadFinancial;
+
+  // ==========================================================================
+  // Project/Service Request
+  // ==========================================================================
+  /** Project/service request details */
+  project?: LeadProject;
+
+  // ==========================================================================
+  // Contact & Scheduling Preferences
+  // ==========================================================================
+  /** Contact preferences */
+  contactPreferences?: LeadContactPreferences;
+  /** Scheduling/appointment preferences */
+  scheduling?: LeadScheduling;
+
+  // ==========================================================================
+  // Tracking & Attribution
+  // ==========================================================================
+  /** UTM tracking parameters */
+  utm: LeadUtm;
+  /** Page/session metadata */
+  metadata: LeadMetadata;
+
+  // ==========================================================================
+  // Compliance & Consent
+  // ==========================================================================
   /** Consent tracking information */
   consent?: LeadConsent;
   /** History of consent updates for audit trail */
   consentHistory?: ConsentUpdate[];
+
+  // ==========================================================================
+  // Extensibility
+  // ==========================================================================
+  /** Custom fields for funnel-specific data */
+  customFields?: Record<string, string>;
+  /** Tags for categorization */
+  tags?: string[];
+  /** Source system if imported */
+  sourceSystem?: string;
+  /** External/legacy ID if imported */
+  externalId?: string;
+
+  // ==========================================================================
+  // Assignment & Workflow
+  // ==========================================================================
+  /** Assigned organization ID */
+  assignedOrgId?: string;
+  /** Assigned user ID */
+  assignedUserId?: string;
+  /** Assignment rule that matched */
+  assignmentRuleId?: string;
+  /** When the lead was assigned */
+  assignedAt?: string;
+  /** Lead quality score (0-100) */
+  qualityScore?: number;
+  /** AI-generated analysis */
+  analysis?: {
+    urgency?: 'high' | 'medium' | 'low';
+    intent?: 'ready_to_buy' | 'researching' | 'price_shopping' | 'complaint' | 'other';
+    sentiment?: 'positive' | 'neutral' | 'negative';
+    summary?: string;
+    keywords?: string[];
+  };
 }
 
 // =============================================================================

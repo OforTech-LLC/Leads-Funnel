@@ -194,8 +194,9 @@ resource "aws_lambda_function" "health_handler" {
   role = aws_iam_role.health_handler.arn
 
   environment {
-    variables = merge(local.common_env_vars, {
-      VERSION = var.app_version
+    variables = merge(local.common_env_vars, local.dynamodb_env_vars, {
+      VERSION        = var.app_version
+      DDB_TABLE_NAME = var.rate_limits_table_name # For health check connectivity test
     })
   }
 

@@ -201,6 +201,7 @@ export function generateLeadPayload(
  */
 export function generateNormalizedLead(overrides: Partial<NormalizedLead> = {}): NormalizedLead {
   return {
+    funnelId: 'roofing',
     name: 'John Doe',
     email: 'john.doe@example.com',
     phone: '+15551234567',
@@ -253,7 +254,9 @@ export function generateEnvConfig(overrides: Partial<EnvConfig> = {}): EnvConfig
   return {
     awsRegion: 'us-east-1',
     env: 'dev',
-    ddbTableName: 'test-leads-table',
+    projectName: 'kanjona',
+    rateLimitsTableName: 'test-rate-limits-table',
+    idempotencyTableName: 'test-idempotency-table',
     eventBusName: 'test-event-bus',
     rateLimitMax: 10,
     rateLimitWindowMin: 60,

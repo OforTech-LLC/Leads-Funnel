@@ -10,6 +10,7 @@ import { parseJsonBody, validateLeadPayload } from './lib/validate.js';
 import { normalizeLead } from './lib/normalize.js';
 import { extractClientIp, analyzeLeadSecurity } from './lib/security.js';
 import { checkRateLimit, checkIdempotency, storeLead } from './lib/dynamo.js';
+import { getSecretValue } from './lib/clients.js';
 import { publishLeadCreatedEvent } from './lib/events.js';
 import { getElapsedMs } from './lib/time.js';
 import * as http from './lib/http.js';
@@ -20,17 +21,62 @@ import { MAX_LEAD_PAYLOAD_SIZE } from './lib/constants.js';
 // Environment Configuration
 // =============================================================================
 
-function loadConfig(): EnvConfig {
+// Cached IP hash salt (fetched from Secrets Manager on first use)
+let cachedIpHashSalt: string = '';
+
+/**
+ * Load base configuration from environment variables
+ */
+function loadBaseConfig(): Omit<EnvConfig, 'ipHashSalt'> {
   return {
     awsRegion: process.env.AWS_REGION || 'us-east-1',
-    env: (process.env.ENV as 'dev' | 'prod') || 'dev',
-    ddbTableName: process.env.DDB_TABLE_NAME || '',
+    env: (process.env.ENVIRONMENT as 'dev' | 'prod') || 'dev',
+    projectName: process.env.PROJECT_NAME || 'kanjona',
+    rateLimitsTableName: process.env.RATE_LIMITS_TABLE_NAME || '',
+    idempotencyTableName: process.env.IDEMPOTENCY_TABLE_NAME || '',
     eventBusName: process.env.EVENT_BUS_NAME || 'default',
     rateLimitMax: parseInt(process.env.RATE_LIMIT_MAX || '10', 10),
     rateLimitWindowMin: parseInt(process.env.RATE_LIMIT_WINDOW_MIN || '10', 10),
     idempotencyTtlHours: parseInt(process.env.IDEMPOTENCY_TTL_HOURS || '24', 10),
-    ipHashSalt: process.env.IP_HASH_SALT || '',
   };
+}
+
+/**
+ * Load full configuration including secrets from Secrets Manager
+ */
+async function loadConfig(): Promise<EnvConfig> {
+  const baseConfig = loadBaseConfig();
+
+  // Fetch IP hash salt from Secrets Manager if not cached
+  if (cachedIpHashSalt === '') {
+    const saltArn = process.env.IP_HASH_SALT_ARN;
+    if (saltArn) {
+      const secretJson = await getSecretValue(saltArn, baseConfig.awsRegion);
+      try {
+        // Secret is stored as JSON: {"salt": "..."}
+        const parsed = JSON.parse(secretJson);
+        cachedIpHashSalt = parsed.salt || '';
+      } catch {
+        // Fallback to using raw value if not JSON
+        cachedIpHashSalt = secretJson;
+      }
+    } else {
+      // Fallback to direct environment variable (for local dev)
+      cachedIpHashSalt = process.env.IP_HASH_SALT || '';
+    }
+  }
+
+  return {
+    ...baseConfig,
+    ipHashSalt: cachedIpHashSalt,
+  };
+}
+
+/**
+ * Get the funnel-specific table name for storing leads
+ */
+function getFunnelTableName(config: EnvConfig, funnelId: string): string {
+  return `${config.projectName}-${config.env}-${funnelId}`;
 }
 
 // =============================================================================
@@ -197,14 +243,14 @@ export async function handler(
     return addRequestIdHeader(http.payloadTooLarge(MAX_LEAD_PAYLOAD_SIZE), requestId);
   }
 
-  const config = loadConfig();
+  const config = await loadConfig();
 
   // Validate configuration
-  if (!config.ddbTableName) {
+  if (!config.rateLimitsTableName || !config.idempotencyTableName) {
     log({
       requestId,
       level: 'error',
-      message: 'DDB_TABLE_NAME not configured',
+      message: 'DynamoDB table names not configured',
       errorCode: 'CONFIG_ERROR',
     });
     return addRequestIdHeader(http.internalError(), requestId);
@@ -239,6 +285,38 @@ export async function handler(
 
     // Normalize lead data
     const normalizedLead: NormalizedLead = normalizeLead(payload);
+
+    // Validate funnelId is present and valid
+    if (!normalizedLead.funnelId) {
+      log({
+        requestId,
+        level: 'warn',
+        message: 'Missing funnelId',
+        errorCode: 'VALIDATION_ERROR',
+      });
+      return addRequestIdHeader(
+        http.validationError({ funnelId: 'funnelId is required' }),
+        requestId
+      );
+    }
+
+    // Get allowed funnel IDs from environment
+    const allowedFunnels = new Set(
+      (process.env.FUNNEL_IDS || '').split(',').map((id) => id.trim().toLowerCase())
+    );
+
+    if (!allowedFunnels.has(normalizedLead.funnelId)) {
+      log({
+        requestId,
+        level: 'warn',
+        message: 'Invalid funnelId',
+        errorCode: 'VALIDATION_ERROR',
+      });
+      return addRequestIdHeader(http.validationError({ funnelId: 'Invalid funnel ID' }), requestId);
+    }
+
+    // Get the funnel-specific table name
+    const funnelTableName = getFunnelTableName(config, normalizedLead.funnelId);
 
     // Extract client IP and analyze security
     const headers = event.headers || {};
@@ -307,7 +385,14 @@ export async function handler(
     const scoring = await maybeScoreLead(normalizedLead, security, userAgent, requestId);
 
     // Store lead (with score if available)
-    const lead = await storeLead(config, normalizedLead, security, userAgent, scoring.score);
+    const lead = await storeLead(
+      config,
+      funnelTableName,
+      normalizedLead,
+      security,
+      userAgent,
+      scoring.score
+    );
 
     // Publish event (fire-and-forget with error logging)
     try {
@@ -340,7 +425,10 @@ export async function handler(
 
     return addRequestIdHeader(http.created(lead.leadId, lead.status), requestId);
   } catch (error) {
-    // Catch-all error handler - never expose stack traces
+    // Catch-all error handler - log details for debugging but never expose to client
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorStack = error instanceof Error ? error.stack : undefined;
+    console.error('Unhandled error details:', { errorMessage, errorStack });
     log({
       requestId,
       level: 'error',
