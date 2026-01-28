@@ -148,117 +148,92 @@ resource "aws_iam_role_policy_attachment" "xray" {
 # -----------------------------------------------------------------------------
 # Worker Policy - DynamoDB, SSM, SQS, EventBridge, KMS
 # -----------------------------------------------------------------------------
+# Build policy statements as locals to avoid concat type mismatches
+locals {
+  dynamodb_statement = length(var.dynamodb_table_arns) > 0 ? [{
+    Sid      = "DynamoDBAccess"
+    Effect   = "Allow"
+    Action   = ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:DeleteItem", "dynamodb:Query", "dynamodb:BatchWriteItem", "dynamodb:BatchGetItem"]
+    Resource = concat(var.dynamodb_table_arns, [for arn in var.dynamodb_table_arns : "${arn}/index/*"])
+  }] : []
+
+  ssm_statement = length(var.ssm_parameter_arns) > 0 ? [{
+    Sid      = "SSMParameterRead"
+    Effect   = "Allow"
+    Action   = ["ssm:GetParameter", "ssm:GetParameters", "ssm:GetParametersByPath"]
+    Resource = var.ssm_parameter_arns
+  }] : []
+
+  sqs_receive_statement = var.sqs_queue_arn != null ? [{
+    Sid      = "SQSReceive"
+    Effect   = "Allow"
+    Action   = ["sqs:ReceiveMessage", "sqs:DeleteMessage", "sqs:GetQueueAttributes", "sqs:ChangeMessageVisibility"]
+    Resource = [var.sqs_queue_arn]
+  }] : []
+
+  sqs_send_statement = length(var.sqs_send_queue_arns) > 0 ? [{
+    Sid      = "SQSSend"
+    Effect   = "Allow"
+    Action   = ["sqs:SendMessage"]
+    Resource = var.sqs_send_queue_arns
+  }] : []
+
+  eventbridge_statement = var.event_bus_arn != null ? [{
+    Sid      = "EventBridgePutEvents"
+    Effect   = "Allow"
+    Action   = ["events:PutEvents"]
+    Resource = [var.event_bus_arn]
+  }] : []
+
+  secrets_statement = length(var.secrets_arns) > 0 ? [{
+    Sid      = "SecretsManagerRead"
+    Effect   = "Allow"
+    Action   = ["secretsmanager:GetSecretValue"]
+    Resource = var.secrets_arns
+  }] : []
+
+  ses_statement = var.enable_ses ? [{
+    Sid      = "SESSendEmail"
+    Effect   = "Allow"
+    Action   = ["ses:SendEmail", "ses:SendRawEmail"]
+    Resource = var.ses_identity_arns
+  }] : []
+
+  sns_statement = var.enable_sns ? [{
+    Sid      = "SNSPublish"
+    Effect   = "Allow"
+    Action   = ["sns:Publish"]
+    Resource = var.sns_topic_arns
+  }] : []
+
+  kms_statement = var.kms_key_arn != null ? [{
+    Sid      = "KMSDecryptLogs"
+    Effect   = "Allow"
+    Action   = ["kms:Decrypt", "kms:GenerateDataKey"]
+    Resource = [var.kms_key_arn]
+  }] : []
+
+  # Combine all statements - use flatten to handle nested lists properly
+  all_policy_statements = flatten([
+    local.dynamodb_statement,
+    local.ssm_statement,
+    local.sqs_receive_statement,
+    local.sqs_send_statement,
+    local.eventbridge_statement,
+    local.secrets_statement,
+    local.ses_statement,
+    local.sns_statement,
+    local.kms_statement,
+    var.additional_policy_statements,
+  ])
+}
+
 resource "aws_iam_role_policy" "worker" {
   name = "${var.function_name}-policy"
   role = aws_iam_role.worker.id
 
   policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = concat(
-      # DynamoDB access
-      length(var.dynamodb_table_arns) > 0 ? [{
-        Sid    = "DynamoDBAccess"
-        Effect = "Allow"
-        Action = [
-          "dynamodb:GetItem",
-          "dynamodb:PutItem",
-          "dynamodb:UpdateItem",
-          "dynamodb:DeleteItem",
-          "dynamodb:Query",
-          "dynamodb:BatchWriteItem",
-          "dynamodb:BatchGetItem",
-        ]
-        Resource = concat(
-          var.dynamodb_table_arns,
-          [for arn in var.dynamodb_table_arns : "${arn}/index/*"]
-        )
-      }] : [],
-
-      # SSM Parameter Store access
-      length(var.ssm_parameter_arns) > 0 ? [{
-        Sid    = "SSMParameterRead"
-        Effect = "Allow"
-        Action = [
-          "ssm:GetParameter",
-          "ssm:GetParameters",
-          "ssm:GetParametersByPath",
-        ]
-        Resource = var.ssm_parameter_arns
-      }] : [],
-
-      # SQS access (for receiving from queue)
-      var.sqs_queue_arn != null ? [{
-        Sid    = "SQSReceive"
-        Effect = "Allow"
-        Action = [
-          "sqs:ReceiveMessage",
-          "sqs:DeleteMessage",
-          "sqs:GetQueueAttributes",
-          "sqs:ChangeMessageVisibility",
-        ]
-        Resource = var.sqs_queue_arn
-      }] : [],
-
-      # SQS send access (for sending to other queues)
-      length(var.sqs_send_queue_arns) > 0 ? [{
-        Sid    = "SQSSend"
-        Effect = "Allow"
-        Action = [
-          "sqs:SendMessage",
-        ]
-        Resource = var.sqs_send_queue_arns
-      }] : [],
-
-      # EventBridge access
-      var.event_bus_arn != null ? [{
-        Sid      = "EventBridgePutEvents"
-        Effect   = "Allow"
-        Action   = ["events:PutEvents"]
-        Resource = var.event_bus_arn
-      }] : [],
-
-      # Secrets Manager access
-      length(var.secrets_arns) > 0 ? [{
-        Sid      = "SecretsManagerRead"
-        Effect   = "Allow"
-        Action   = ["secretsmanager:GetSecretValue"]
-        Resource = var.secrets_arns
-      }] : [],
-
-      # SES access (for sending emails) - scoped to specific identities
-      var.enable_ses ? [{
-        Sid    = "SESSendEmail"
-        Effect = "Allow"
-        Action = [
-          "ses:SendEmail",
-          "ses:SendRawEmail",
-        ]
-        Resource = var.ses_identity_arns
-      }] : [],
-
-      # SNS access (for sending SMS) - scoped to specific topics
-      var.enable_sns ? [{
-        Sid    = "SNSPublish"
-        Effect = "Allow"
-        Action = [
-          "sns:Publish",
-        ]
-        Resource = var.sns_topic_arns
-      }] : [],
-
-      # KMS access for CloudWatch Logs encryption
-      var.kms_key_arn != null ? [{
-        Sid    = "KMSDecryptLogs"
-        Effect = "Allow"
-        Action = [
-          "kms:Decrypt",
-          "kms:GenerateDataKey",
-        ]
-        Resource = var.kms_key_arn
-      }] : [],
-
-      # Additional custom policy statements
-      var.additional_policy_statements,
-    )
+    Version   = "2012-10-17"
+    Statement = local.all_policy_statements
   })
 }

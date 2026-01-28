@@ -173,7 +173,8 @@ export type AuditAction =
   | 'BULK_UPDATE_LEADS'
   | 'CREATE_EXPORT'
   | 'DOWNLOAD_EXPORT'
-  | 'VIEW_STATS';
+  | 'VIEW_STATS'
+  | 'flag.update';
 
 export interface FunnelStats {
   funnelId: string;

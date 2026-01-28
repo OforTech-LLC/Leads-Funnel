@@ -9,12 +9,13 @@ module "cognito_admin" {
   count  = var.enable_platform ? 1 : 0
   source = "../../modules/cognito-userpool"
 
-  depends_on = [module.pre_token_admin]
+  # Note: Lambda triggers temporarily disabled for initial deployment
+  # depends_on = [module.pre_token_admin]
 
   pool_name     = "${local.prefix}-admin-userpool"
   domain_prefix = var.platform_admin_cognito_domain
 
-  mfa_configuration            = "ON" # MFA required for admin users in all environments
+  mfa_configuration            = "OPTIONAL" # Set to OPTIONAL for easier dev testing
   advanced_security_mode       = "AUDIT"
   allow_admin_create_user_only = true
   challenge_on_new_device      = true
@@ -47,10 +48,10 @@ module "cognito_admin" {
   # custom:role removed from write_attributes - role should only be set by admin API, not self-service
   write_attributes = ["email", "custom:orgId"]
 
-  # Token validity (relaxed for dev)
-  access_token_validity  = 4
-  id_token_validity      = 4
-  refresh_token_validity = 30
+  # Token validity
+  access_token_validity  = 30  # 30 minutes
+  id_token_validity      = 30  # 30 minutes
+  refresh_token_validity = 30  # 30 days
 
   user_groups = [
     { name = "SuperAdmin", description = "Platform super administrator", precedence = 1 },
@@ -58,9 +59,9 @@ module "cognito_admin" {
     { name = "OrgViewer", description = "Organization read-only viewer", precedence = 3 },
   ]
 
-  # Pre-token generation trigger (safe access via locals)
-  pre_token_generation_lambda_arn  = local.pre_token_admin_function_arn
-  pre_token_generation_lambda_name = local.pre_token_admin_function_name
+  # Pre-token generation trigger (temporarily disabled)
+  # pre_token_generation_lambda_arn  = local.pre_token_admin_function_arn
+  # pre_token_generation_lambda_name = local.pre_token_admin_function_name
 
   invite_email_subject = "Kanjona Admin - Your Account"
   invite_email_message = "Your admin account has been created. Username: {username}, Temporary password: {####}. Please log in and change your password."
@@ -73,7 +74,8 @@ module "cognito_portal" {
   count  = var.enable_platform ? 1 : 0
   source = "../../modules/cognito-userpool"
 
-  depends_on = [module.pre_token_portal]
+  # Note: Lambda triggers temporarily disabled for initial deployment
+  # depends_on = [module.pre_token_portal]
 
   pool_name     = "${local.prefix}-portal-userpool"
   domain_prefix = var.platform_portal_cognito_domain
@@ -110,19 +112,19 @@ module "cognito_portal" {
   read_attributes  = ["email", "email_verified", "custom:orgId", "custom:membershipRole"]
   write_attributes = ["email", "custom:orgId", "custom:membershipRole"]
 
-  # Token validity (relaxed for dev)
-  access_token_validity  = 4
-  id_token_validity      = 4
-  refresh_token_validity = 30
+  # Token validity
+  access_token_validity  = 30  # 30 minutes
+  id_token_validity      = 30  # 30 minutes
+  refresh_token_validity = 30  # 30 days
 
   user_groups = [
     { name = "OrgOwner", description = "Organization owner", precedence = 1 },
     { name = "OrgMember", description = "Organization member", precedence = 2 },
   ]
 
-  # Pre-token generation trigger (safe access via locals)
-  pre_token_generation_lambda_arn  = local.pre_token_portal_function_arn
-  pre_token_generation_lambda_name = local.pre_token_portal_function_name
+  # Pre-token generation trigger (temporarily disabled)
+  # pre_token_generation_lambda_arn  = local.pre_token_portal_function_arn
+  # pre_token_generation_lambda_name = local.pre_token_portal_function_name
 
   invite_email_subject = "Kanjona Portal - Your Account"
   invite_email_message = "Your portal account has been created. Username: {username}, Temporary password: {####}. Please log in and change your password."

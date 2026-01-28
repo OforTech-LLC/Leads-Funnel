@@ -68,6 +68,18 @@ notification_email = ""
 # Protects the site during development. Disable when ready for public release.
 # =============================================================================
 
-enable_basic_auth = true
-# basic_auth_username - Set via TF_VAR_basic_auth_username environment variable
-# basic_auth_password - Set via TF_VAR_basic_auth_password environment variable
+enable_basic_auth    = true
+basic_auth_username  = "admin"
+basic_auth_password  = "adminadmin12"
+
+# =============================================================================
+# PLATFORM FEATURES (Admin Console & Customer Portal)
+# =============================================================================
+# Enables Cognito user pools, CloudFront apps, DynamoDB tables for platform
+# =============================================================================
+
+enable_platform = true
+
+# Cognito domain prefixes (must be globally unique)
+platform_admin_cognito_domain  = "kanjona-admin-dev"
+platform_portal_cognito_domain = "kanjona-portal-dev"

@@ -121,7 +121,12 @@ module "acm" {
   environment  = var.environment
   root_domain  = var.root_domain
 
-  # Dev now uses dev.kanjona.com as primary domain (no additional SANs needed)
+  # Include admin and portal subdomains for platform apps
+  additional_sans = var.enable_platform ? [
+    "${var.admin_subdomain}.${var.root_domain}",
+    "${var.portal_subdomain}.${var.root_domain}",
+  ] : []
+
   tags = local.common_tags
 }
 

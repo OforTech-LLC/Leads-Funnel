@@ -646,17 +646,59 @@ Access the CloudWatch dashboard in the AWS Console:
 
 ### Health Check Endpoints
 
-- API Health: `https://api.kanjona.com/health` (prod)
-- API Health: `https://api-dev.kanjona.com/health` (dev)
+- API Health (prod): `https://api.kanjona.com/health`
+- API Health (dev): `https://4wzl56th39.execute-api.us-east-1.amazonaws.com/health`
+
+### Platform URLs (Dev)
+
+- Landing Pages: `https://dev.kanjona.com` (basic auth required)
+- Admin Console: `https://admin.dev.kanjona.com`
+- Customer Portal: `https://portal.dev.kanjona.com`
 
 ### Deployment Information
 
 - Infrastructure: Terraform in `/infra/terraform`
 - Environment configs: `/infra/terraform/envs/{dev,prod}`
 - CI/CD: GitHub Actions in `.github/workflows`
+  - `deploy-lambda.yml` - Lambda function deployment (auto-deploys on `apps/api/src/**` changes)
+  - `deploy-frontend.yml` - Frontend apps deployment (auto-deploys on `apps/web/**`,
+    `apps/admin/**`, `apps/portal/**` changes)
+  - `toggle-features.yml` - Infrastructure feature toggles (WAF, logging, etc.)
+
+### Manual Deployment Commands
+
+**Lambda Functions:**
+
+```bash
+# Build and package
+cd apps/api
+npm run build
+npx esbuild dist/handler.js --bundle --platform=node --target=node22 --external:@aws-sdk/* --outfile=lambda-dist/lead-handler/index.js --minify
+cd lambda-dist/lead-handler && zip -r ../lead-handler.zip .
+
+# Deploy
+aws lambda update-function-code --function-name kanjona-{env}-lead-handler --zip-file fileb://lambda-dist/lead-handler.zip --publish
+```
+
+**Frontend Apps:**
+
+```bash
+# Build
+cd apps/web && npm run build
+cd apps/admin && npm run build
+cd apps/portal && npm run build
+
+# Deploy
+aws s3 sync apps/web/out/ s3://kanjona-{env}-site-origin --delete
+aws s3 sync apps/admin/out/ s3://kanjona-{env}-admin-app-origin --delete
+aws s3 sync apps/portal/out/ s3://kanjona-{env}-portal-app-origin --delete
+
+# Invalidate CloudFront cache
+aws cloudfront create-invalidation --distribution-id {distribution-id} --paths "/*"
+```
 
 ---
 
-_Last Updated: 2024-01_
+_Last Updated: 2026-01_
 
 _Maintained by: Platform Team_

@@ -235,6 +235,9 @@ local.yml
 # Lambda deployment packages
 lambda/
 lambda-*.zip
+lambda-dist/
+# Terraform-generated placeholder archives
+**/placeholder.zip
 # Allow Terraform lambda module
 !infra/terraform/modules/lambda/
 !infra/terraform/modules/lambda/**

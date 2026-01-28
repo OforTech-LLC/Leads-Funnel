@@ -313,7 +313,11 @@ export function analyzeLeadSecurity(
   // Idempotency key prevents duplicate submissions from same email/page
   // within the time window (e.g., double-click, page refresh)
   const windowBucket = getWindowBucket(windowMinutes);
-  const idempotencyKey = generateIdempotencyKey(lead.email, lead.pageUrl, windowBucket);
+  const idempotencyKey = generateIdempotencyKey(
+    lead.email,
+    lead.pageUrl ?? 'unknown',
+    windowBucket
+  );
 
   return {
     suspicious: reasons.length > 0,

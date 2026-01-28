@@ -70,23 +70,23 @@ variable "env_subdomain" {
 
 variable "admin_subdomain" {
   type        = string
-  default     = "admin-dev"
-  description = "Subdomain prefix for the admin app (e.g., 'admin-dev' for admin-dev.kanjona.com)"
+  default     = "admin.dev"
+  description = "Subdomain prefix for the admin app (e.g., 'admin.dev' for admin.dev.kanjona.com)"
 
   validation {
-    condition     = can(regex("^[a-z0-9-]+$", var.admin_subdomain))
-    error_message = "Subdomain must contain only lowercase letters, numbers, and hyphens."
+    condition     = can(regex("^[a-z0-9.-]+$", var.admin_subdomain))
+    error_message = "Subdomain must contain only lowercase letters, numbers, hyphens, and periods."
   }
 }
 
 variable "portal_subdomain" {
   type        = string
-  default     = "portal-dev"
-  description = "Subdomain prefix for the portal app (e.g., 'portal-dev' for portal-dev.kanjona.com)"
+  default     = "portal.dev"
+  description = "Subdomain prefix for the portal app (e.g., 'portal.dev' for portal.dev.kanjona.com)"
 
   validation {
-    condition     = can(regex("^[a-z0-9-]+$", var.portal_subdomain))
-    error_message = "Subdomain must contain only lowercase letters, numbers, and hyphens."
+    condition     = can(regex("^[a-z0-9.-]+$", var.portal_subdomain))
+    error_message = "Subdomain must contain only lowercase letters, numbers, hyphens, and periods."
   }
 }
 

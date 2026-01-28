@@ -1,0 +1,339 @@
+name: Deploy Lambda Functions
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        type: choice
+        options:
+          - dev
+          - prod
+      functions:
+        description: 'Functions to deploy'
+        required: true
+        type: choice
+        options:
+          - all
+          - lead-handler
+          - health-handler
+          - assignment-worker
+          - notification-worker
+          - pre-token-admin
+          - pre-token-portal
+      skip_tests:
+        description: 'Skip tests before deployment'
+        type: boolean
+        default: false
+
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/api/src/**'
+      - 'packages/shared/**'
+      - '.github/workflows/deploy-lambda.yml'
+
+env:
+  AWS_REGION: us-east-1
+  NODE_VERSION: '22'
+
+jobs:
+  # =============================================================================
+  # Build and Test
+  # =============================================================================
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      artifact_name: ${{ steps.package.outputs.artifact_name }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: |
+            package-lock.json
+            apps/api/package-lock.json
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Install API dependencies
+        working-directory: apps/api
+        run: npm ci
+
+      - name: Build shared package
+        working-directory: packages/shared
+        run: npm run build
+
+      - name: Type check
+        working-directory: apps/api
+        run: npm run typecheck
+
+      - name: Run tests
+        if: ${{ github.event.inputs.skip_tests != 'true' }}
+        working-directory: apps/api
+        run: npm run test:run
+
+      - name: Build API
+        working-directory: apps/api
+        run: npm run build
+
+      - name: Package Lambda functions with esbuild
+        id: package
+        run: |
+          cd apps/api
+
+          # Create directories for bundled functions
+          mkdir -p lambda-dist/{lead-handler,health-handler,assignment-worker,notification-worker,pre-token-admin,pre-token-portal}
+
+          # Bundle each handler with esbuild (externalize AWS SDK as it's provided by Lambda runtime)
+          npx esbuild dist/handler.js --bundle --platform=node --target=node22 --external:@aws-sdk/* --outfile=lambda-dist/lead-handler/index.js --minify
+          npx esbuild dist/health/handler.js --bundle --platform=node --target=node22 --external:@aws-sdk/* --outfile=lambda-dist/health-handler/index.js --minify
+          npx esbuild dist/workers/assignment-worker.js --bundle --platform=node --target=node22 --external:@aws-sdk/* --outfile=lambda-dist/assignment-worker/index.js --minify
+          npx esbuild dist/workers/notification-worker.js --bundle --platform=node --target=node22 --external:@aws-sdk/* --outfile=lambda-dist/notification-worker/index.js --minify
+          npx esbuild dist/workers/pre-token-admin.js --bundle --platform=node --target=node22 --external:@aws-sdk/* --outfile=lambda-dist/pre-token-admin/index.js --minify
+          npx esbuild dist/workers/pre-token-portal.js --bundle --platform=node --target=node22 --external:@aws-sdk/* --outfile=lambda-dist/pre-token-portal/index.js --minify
+
+          # Create zip files
+          for dir in lambda-dist/*/; do
+            func_name=$(basename "$dir")
+            cd "$dir"
+            zip -r "../${func_name}.zip" .
+            cd ../..
+          done
+
+          # Set output
+          echo "artifact_name=lambda-functions-${{ github.sha }}" >> $GITHUB_OUTPUT
+
+      - name: Upload Lambda artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: lambda-functions-${{ github.sha }}
+          path: apps/api/lambda-dist/*.zip
+          retention-days: 7
+
+  # =============================================================================
+  # Deploy to Dev
+  # =============================================================================
+  deploy-dev:
+    needs: build
+    if: |
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev')
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Lambda artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: lambda-functions-${{ github.sha }}
+          path: lambda-zips
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy Lambda functions
+        env:
+          FUNCTIONS: ${{ github.event.inputs.functions || 'all' }}
+          PROJECT_NAME: kanjona
+          ENVIRONMENT: dev
+        run: |
+          deploy_function() {
+            local func_name=$1
+            local lambda_name=$2
+
+            echo "Deploying $func_name to $lambda_name..."
+
+            # Check if function exists
+            if aws lambda get-function --function-name "$lambda_name" 2>/dev/null; then
+              aws lambda update-function-code \
+                --function-name "$lambda_name" \
+                --zip-file "fileb://lambda-zips/${func_name}.zip" \
+                --publish
+
+              # Update handler to use bundled format
+              aws lambda update-function-configuration \
+                --function-name "$lambda_name" \
+                --handler index.handler
+
+              echo "Successfully deployed $func_name"
+            else
+              echo "Function $lambda_name does not exist, skipping..."
+            fi
+          }
+
+          # Deploy based on selection
+          case "$FUNCTIONS" in
+            "all")
+              deploy_function "lead-handler" "${PROJECT_NAME}-${ENVIRONMENT}-lead-handler"
+              deploy_function "health-handler" "${PROJECT_NAME}-${ENVIRONMENT}-health-handler"
+              deploy_function "assignment-worker" "${PROJECT_NAME}-${ENVIRONMENT}-assignment-worker"
+              deploy_function "notification-worker" "${PROJECT_NAME}-${ENVIRONMENT}-notification-worker"
+              deploy_function "pre-token-admin" "${PROJECT_NAME}-${ENVIRONMENT}-pre-token-admin"
+              deploy_function "pre-token-portal" "${PROJECT_NAME}-${ENVIRONMENT}-pre-token-portal"
+              ;;
+            *)
+              # Map function selection to Lambda name
+              case "$FUNCTIONS" in
+                "lead-handler")
+                  deploy_function "lead-handler" "${PROJECT_NAME}-${ENVIRONMENT}-lead-handler"
+                  ;;
+                "health-handler")
+                  deploy_function "health-handler" "${PROJECT_NAME}-${ENVIRONMENT}-health-handler"
+                  ;;
+                "assignment-worker")
+                  deploy_function "assignment-worker" "${PROJECT_NAME}-${ENVIRONMENT}-assignment-worker"
+                  ;;
+                "notification-worker")
+                  deploy_function "notification-worker" "${PROJECT_NAME}-${ENVIRONMENT}-notification-worker"
+                  ;;
+                "pre-token-admin")
+                  deploy_function "pre-token-admin" "${PROJECT_NAME}-${ENVIRONMENT}-pre-token-admin"
+                  ;;
+                "pre-token-portal")
+                  deploy_function "pre-token-portal" "${PROJECT_NAME}-${ENVIRONMENT}-pre-token-portal"
+                  ;;
+              esac
+              ;;
+          esac
+
+      - name: Verify deployment
+        env:
+          PROJECT_NAME: kanjona
+          ENVIRONMENT: dev
+        run: |
+          echo "### Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Function | Status | Version |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|--------|---------|" >> $GITHUB_STEP_SUMMARY
+
+          for func in lead-handler health-handler admin-api assignment-worker notification-worker; do
+            lambda_name="${PROJECT_NAME}-${ENVIRONMENT}-${func}"
+            if version=$(aws lambda get-function --function-name "$lambda_name" --query 'Configuration.Version' --output text 2>/dev/null); then
+              echo "| $func | Deployed | $version |" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "| $func | Not Found | - |" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
+
+  # =============================================================================
+  # Deploy to Prod (Manual approval required)
+  # =============================================================================
+  deploy-prod:
+    needs: [build, deploy-dev]
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'prod'
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Lambda artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: lambda-functions-${{ github.sha }}
+          path: lambda-zips
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_PROD }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_PROD }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy Lambda functions
+        env:
+          FUNCTIONS: ${{ github.event.inputs.functions }}
+          PROJECT_NAME: kanjona
+          ENVIRONMENT: prod
+        run: |
+          deploy_function() {
+            local func_name=$1
+            local lambda_name=$2
+
+            echo "Deploying $func_name to $lambda_name..."
+
+            if aws lambda get-function --function-name "$lambda_name" 2>/dev/null; then
+              aws lambda update-function-code \
+                --function-name "$lambda_name" \
+                --zip-file "fileb://lambda-zips/${func_name}.zip" \
+                --publish
+
+              # Update handler to use bundled format
+              aws lambda update-function-configuration \
+                --function-name "$lambda_name" \
+                --handler index.handler
+
+              echo "Successfully deployed $func_name"
+            else
+              echo "Function $lambda_name does not exist, skipping..."
+            fi
+          }
+
+          case "$FUNCTIONS" in
+            "all")
+              deploy_function "lead-handler" "${PROJECT_NAME}-${ENVIRONMENT}-lead-handler"
+              deploy_function "health-handler" "${PROJECT_NAME}-${ENVIRONMENT}-health-handler"
+              deploy_function "assignment-worker" "${PROJECT_NAME}-${ENVIRONMENT}-assignment-worker"
+              deploy_function "notification-worker" "${PROJECT_NAME}-${ENVIRONMENT}-notification-worker"
+              deploy_function "pre-token-admin" "${PROJECT_NAME}-${ENVIRONMENT}-pre-token-admin"
+              deploy_function "pre-token-portal" "${PROJECT_NAME}-${ENVIRONMENT}-pre-token-portal"
+              ;;
+            *)
+              case "$FUNCTIONS" in
+                "lead-handler")
+                  deploy_function "lead-handler" "${PROJECT_NAME}-${ENVIRONMENT}-lead-handler"
+                  ;;
+                "health-handler")
+                  deploy_function "health-handler" "${PROJECT_NAME}-${ENVIRONMENT}-health-handler"
+                  ;;
+                "assignment-worker")
+                  deploy_function "assignment-worker" "${PROJECT_NAME}-${ENVIRONMENT}-assignment-worker"
+                  ;;
+                "notification-worker")
+                  deploy_function "notification-worker" "${PROJECT_NAME}-${ENVIRONMENT}-notification-worker"
+                  ;;
+                "pre-token-admin")
+                  deploy_function "pre-token-admin" "${PROJECT_NAME}-${ENVIRONMENT}-pre-token-admin"
+                  ;;
+                "pre-token-portal")
+                  deploy_function "pre-token-portal" "${PROJECT_NAME}-${ENVIRONMENT}-pre-token-portal"
+                  ;;
+              esac
+              ;;
+          esac
+
+      - name: Verify production deployment
+        env:
+          PROJECT_NAME: kanjona
+          ENVIRONMENT: prod
+        run: |
+          echo "### Production Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Function | Status | Version |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|--------|---------|" >> $GITHUB_STEP_SUMMARY
+
+          for func in lead-handler health-handler admin-api assignment-worker notification-worker; do
+            lambda_name="${PROJECT_NAME}-${ENVIRONMENT}-${func}"
+            if version=$(aws lambda get-function --function-name "$lambda_name" --query 'Configuration.Version' --output text 2>/dev/null); then
+              echo "| $func | Deployed | $version |" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "| $func | Not Found | - |" >> $GITHUB_STEP_SUMMARY
+            fi
+          done

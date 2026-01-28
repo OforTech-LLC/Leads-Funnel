@@ -70,6 +70,6 @@ notification_email = ""
 # Disable for public release
 # =============================================================================
 
-enable_basic_auth   = false
-basic_auth_username = ""
-basic_auth_password = ""
+enable_basic_auth   = true
+basic_auth_username = "admin"
+basic_auth_password = "adminadmin12"

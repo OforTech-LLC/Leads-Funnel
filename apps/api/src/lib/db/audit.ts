@@ -48,7 +48,8 @@ export type AuditAction =
   | 'calendar.book'
   | 'calendar.disconnect'
   | 'integration.configure'
-  | 'integration.remove';
+  | 'integration.remove'
+  | 'flag.update';
 
 export interface AuditEntry {
   pk: string;

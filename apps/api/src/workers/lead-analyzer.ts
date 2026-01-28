@@ -55,7 +55,7 @@ export async function handler(
     }
 
     // Combine relevant text fields for analysis
-    const textToAnalyze = [lead.message, lead.utm?.term, lead.utm?.content]
+    const textToAnalyze = [lead.message, lead.utm?.utm_term, lead.utm?.utm_content]
       .filter(Boolean)
       .join('\n');
 

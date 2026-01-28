@@ -214,14 +214,14 @@ variable "generate_client_secret" {
 # -----------------------------------------------------------------------------
 variable "access_token_validity" {
   type        = number
-  description = "Access token validity in hours"
-  default     = 1
+  description = "Access token validity in minutes"
+  default     = 60
 }
 
 variable "id_token_validity" {
   type        = number
-  description = "ID token validity in hours"
-  default     = 1
+  description = "ID token validity in minutes"
+  default     = 60
 }
 
 variable "refresh_token_validity" {

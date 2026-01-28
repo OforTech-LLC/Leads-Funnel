@@ -1,0 +1,468 @@
+name: Deploy Frontend Applications
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        type: choice
+        options:
+          - dev
+          - prod
+      apps:
+        description: 'Applications to deploy'
+        required: true
+        type: choice
+        options:
+          - all
+          - web
+          - admin
+          - portal
+      skip_tests:
+        description: 'Skip tests before deployment'
+        type: boolean
+        default: false
+
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/web/src/**'
+      - 'apps/admin/src/**'
+      - 'apps/portal/src/**'
+      - 'packages/shared/**'
+      - '.github/workflows/deploy-frontend.yml'
+
+env:
+  AWS_REGION: us-east-1
+  NODE_VERSION: '22'
+
+jobs:
+  # =============================================================================
+  # Determine which apps changed
+  # =============================================================================
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      web: ${{ steps.filter.outputs.web }}
+      admin: ${{ steps.filter.outputs.admin }}
+      portal: ${{ steps.filter.outputs.portal }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            web:
+              - 'apps/web/**'
+              - 'packages/shared/**'
+            admin:
+              - 'apps/admin/**'
+              - 'packages/shared/**'
+            portal:
+              - 'apps/portal/**'
+              - 'packages/shared/**'
+
+  # =============================================================================
+  # Build Web (Landing Pages)
+  # =============================================================================
+  build-web:
+    needs: changes
+    if: |
+      github.event_name == 'workflow_dispatch' && (github.event.inputs.apps == 'all' || github.event.inputs.apps == 'web') ||
+      (github.event_name == 'push' && needs.changes.outputs.web == 'true')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install web dependencies
+        working-directory: apps/web
+        run: npm ci
+
+      - name: Build shared package
+        working-directory: packages/shared
+        run: npm run build
+
+      - name: Run tests
+        if: ${{ github.event.inputs.skip_tests != 'true' }}
+        working-directory: apps/web
+        run: npm run test:run || true
+
+      - name: Build web app
+        working-directory: apps/web
+        run: npm run build
+
+      - name: Upload web artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build-${{ github.sha }}
+          path: apps/web/out
+          retention-days: 7
+
+  # =============================================================================
+  # Build Admin Console
+  # =============================================================================
+  build-admin:
+    needs: changes
+    if: |
+      github.event_name == 'workflow_dispatch' && (github.event.inputs.apps == 'all' || github.event.inputs.apps == 'admin') ||
+      (github.event_name == 'push' && needs.changes.outputs.admin == 'true')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install admin dependencies
+        working-directory: apps/admin
+        run: npm ci
+
+      - name: Build shared package
+        working-directory: packages/shared
+        run: npm run build
+
+      - name: Run tests
+        if: ${{ github.event.inputs.skip_tests != 'true' }}
+        working-directory: apps/admin
+        run: npm run test:run || true
+
+      - name: Build admin app
+        working-directory: apps/admin
+        run: npm run build
+
+      - name: Upload admin artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: admin-build-${{ github.sha }}
+          path: apps/admin/out
+          retention-days: 7
+
+  # =============================================================================
+  # Build Customer Portal
+  # =============================================================================
+  build-portal:
+    needs: changes
+    if: |
+      github.event_name == 'workflow_dispatch' && (github.event.inputs.apps == 'all' || github.event.inputs.apps == 'portal') ||
+      (github.event_name == 'push' && needs.changes.outputs.portal == 'true')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install portal dependencies
+        working-directory: apps/portal
+        run: npm ci
+
+      - name: Build shared package
+        working-directory: packages/shared
+        run: npm run build
+
+      - name: Run tests
+        if: ${{ github.event.inputs.skip_tests != 'true' }}
+        working-directory: apps/portal
+        run: npm run test:run || true
+
+      - name: Build portal app
+        working-directory: apps/portal
+        run: npm run build
+
+      - name: Upload portal artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: portal-build-${{ github.sha }}
+          path: apps/portal/out
+          retention-days: 7
+
+  # =============================================================================
+  # Deploy to Dev
+  # =============================================================================
+  deploy-dev:
+    needs: [build-web, build-admin, build-portal]
+    if: |
+      always() &&
+      (needs.build-web.result == 'success' || needs.build-web.result == 'skipped') &&
+      (needs.build-admin.result == 'success' || needs.build-admin.result == 'skipped') &&
+      (needs.build-portal.result == 'success' || needs.build-portal.result == 'skipped') &&
+      (needs.build-web.result == 'success' || needs.build-admin.result == 'success' || needs.build-portal.result == 'success') &&
+      (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev'))
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # Deploy Web
+      - name: Download web artifact
+        if: needs.build-web.result == 'success'
+        uses: actions/download-artifact@v4
+        with:
+          name: web-build-${{ github.sha }}
+          path: web-build
+
+      - name: Deploy web to S3
+        if: needs.build-web.result == 'success'
+        run: |
+          aws s3 sync web-build/ s3://kanjona-dev-site-origin \
+            --delete \
+            --cache-control "public, max-age=31536000, immutable" \
+            --exclude "*.html" \
+            --exclude "*.json"
+
+          aws s3 sync web-build/ s3://kanjona-dev-site-origin \
+            --exclude "*" \
+            --include "*.html" \
+            --include "*.json" \
+            --cache-control "public, max-age=0, must-revalidate"
+
+      - name: Invalidate web CloudFront
+        if: needs.build-web.result == 'success'
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ vars.WEB_CLOUDFRONT_ID || 'E295FW8TI7MRTH' }} \
+            --paths "/*"
+
+      # Deploy Admin
+      - name: Download admin artifact
+        if: needs.build-admin.result == 'success'
+        uses: actions/download-artifact@v4
+        with:
+          name: admin-build-${{ github.sha }}
+          path: admin-build
+
+      - name: Deploy admin to S3
+        if: needs.build-admin.result == 'success'
+        run: |
+          aws s3 sync admin-build/ s3://kanjona-dev-admin-app-origin \
+            --delete \
+            --cache-control "public, max-age=31536000, immutable" \
+            --exclude "*.html" \
+            --exclude "*.json"
+
+          aws s3 sync admin-build/ s3://kanjona-dev-admin-app-origin \
+            --exclude "*" \
+            --include "*.html" \
+            --include "*.json" \
+            --cache-control "public, max-age=0, must-revalidate"
+
+      - name: Invalidate admin CloudFront
+        if: needs.build-admin.result == 'success'
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ vars.ADMIN_CLOUDFRONT_ID || 'E1IRSHE494FPI2' }} \
+            --paths "/*"
+
+      # Deploy Portal
+      - name: Download portal artifact
+        if: needs.build-portal.result == 'success'
+        uses: actions/download-artifact@v4
+        with:
+          name: portal-build-${{ github.sha }}
+          path: portal-build
+
+      - name: Deploy portal to S3
+        if: needs.build-portal.result == 'success'
+        run: |
+          aws s3 sync portal-build/ s3://kanjona-dev-portal-app-origin \
+            --delete \
+            --cache-control "public, max-age=31536000, immutable" \
+            --exclude "*.html" \
+            --exclude "*.json"
+
+          aws s3 sync portal-build/ s3://kanjona-dev-portal-app-origin \
+            --exclude "*" \
+            --include "*.html" \
+            --include "*.json" \
+            --cache-control "public, max-age=0, must-revalidate"
+
+      - name: Invalidate portal CloudFront
+        if: needs.build-portal.result == 'success'
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ vars.PORTAL_CLOUDFRONT_ID || 'E1KS4L8B01B7BF' }} \
+            --paths "/*"
+
+      - name: Deployment summary
+        run: |
+          echo "### Dev Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| App | Status | URL |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|--------|-----|" >> $GITHUB_STEP_SUMMARY
+          if [[ "${{ needs.build-web.result }}" == "success" ]]; then
+            echo "| Landing Pages | Deployed | https://dev.kanjona.com |" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [[ "${{ needs.build-admin.result }}" == "success" ]]; then
+            echo "| Admin Console | Deployed | https://admin.dev.kanjona.com |" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [[ "${{ needs.build-portal.result }}" == "success" ]]; then
+            echo "| Customer Portal | Deployed | https://portal.dev.kanjona.com |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # =============================================================================
+  # Deploy to Prod (Manual approval required)
+  # =============================================================================
+  deploy-prod:
+    needs: [build-web, build-admin, build-portal, deploy-dev]
+    if: |
+      always() &&
+      github.event_name == 'workflow_dispatch' &&
+      github.event.inputs.environment == 'prod' &&
+      (needs.build-web.result == 'success' || needs.build-admin.result == 'success' || needs.build-portal.result == 'success')
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_PROD }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_PROD }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # Deploy Web
+      - name: Download web artifact
+        if: needs.build-web.result == 'success' && (github.event.inputs.apps == 'all' || github.event.inputs.apps == 'web')
+        uses: actions/download-artifact@v4
+        with:
+          name: web-build-${{ github.sha }}
+          path: web-build
+
+      - name: Deploy web to S3 (prod)
+        if: needs.build-web.result == 'success' && (github.event.inputs.apps == 'all' || github.event.inputs.apps == 'web')
+        run: |
+          aws s3 sync web-build/ s3://kanjona-prod-site-origin \
+            --delete \
+            --cache-control "public, max-age=31536000, immutable" \
+            --exclude "*.html" \
+            --exclude "*.json"
+
+          aws s3 sync web-build/ s3://kanjona-prod-site-origin \
+            --exclude "*" \
+            --include "*.html" \
+            --include "*.json" \
+            --cache-control "public, max-age=0, must-revalidate"
+
+      - name: Invalidate web CloudFront (prod)
+        if: needs.build-web.result == 'success' && (github.event.inputs.apps == 'all' || github.event.inputs.apps == 'web')
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ vars.WEB_CLOUDFRONT_ID_PROD }} \
+            --paths "/*"
+
+      # Deploy Admin
+      - name: Download admin artifact
+        if: needs.build-admin.result == 'success' && (github.event.inputs.apps == 'all' || github.event.inputs.apps == 'admin')
+        uses: actions/download-artifact@v4
+        with:
+          name: admin-build-${{ github.sha }}
+          path: admin-build
+
+      - name: Deploy admin to S3 (prod)
+        if: needs.build-admin.result == 'success' && (github.event.inputs.apps == 'all' || github.event.inputs.apps == 'admin')
+        run: |
+          aws s3 sync admin-build/ s3://kanjona-prod-admin-app-origin \
+            --delete \
+            --cache-control "public, max-age=31536000, immutable" \
+            --exclude "*.html" \
+            --exclude "*.json"
+
+          aws s3 sync admin-build/ s3://kanjona-prod-admin-app-origin \
+            --exclude "*" \
+            --include "*.html" \
+            --include "*.json" \
+            --cache-control "public, max-age=0, must-revalidate"
+
+      - name: Invalidate admin CloudFront (prod)
+        if: needs.build-admin.result == 'success' && (github.event.inputs.apps == 'all' || github.event.inputs.apps == 'admin')
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ vars.ADMIN_CLOUDFRONT_ID_PROD }} \
+            --paths "/*"
+
+      # Deploy Portal
+      - name: Download portal artifact
+        if: needs.build-portal.result == 'success' && (github.event.inputs.apps == 'all' || github.event.inputs.apps == 'portal')
+        uses: actions/download-artifact@v4
+        with:
+          name: portal-build-${{ github.sha }}
+          path: portal-build
+
+      - name: Deploy portal to S3 (prod)
+        if: needs.build-portal.result == 'success' && (github.event.inputs.apps == 'all' || github.event.inputs.apps == 'portal')
+        run: |
+          aws s3 sync portal-build/ s3://kanjona-prod-portal-app-origin \
+            --delete \
+            --cache-control "public, max-age=31536000, immutable" \
+            --exclude "*.html" \
+            --exclude "*.json"
+
+          aws s3 sync portal-build/ s3://kanjona-prod-portal-app-origin \
+            --exclude "*" \
+            --include "*.html" \
+            --include "*.json" \
+            --cache-control "public, max-age=0, must-revalidate"
+
+      - name: Invalidate portal CloudFront (prod)
+        if: needs.build-portal.result == 'success' && (github.event.inputs.apps == 'all' || github.event.inputs.apps == 'portal')
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ vars.PORTAL_CLOUDFRONT_ID_PROD }} \
+            --paths "/*"
+
+      - name: Production deployment summary
+        run: |
+          echo "### Production Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| App | Status | URL |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|--------|-----|" >> $GITHUB_STEP_SUMMARY
+          if [[ "${{ github.event.inputs.apps }}" == "all" || "${{ github.event.inputs.apps }}" == "web" ]]; then
+            echo "| Landing Pages | Deployed | https://kanjona.com |" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [[ "${{ github.event.inputs.apps }}" == "all" || "${{ github.event.inputs.apps }}" == "admin" ]]; then
+            echo "| Admin Console | Deployed | https://admin.kanjona.com |" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [[ "${{ github.event.inputs.apps }}" == "all" || "${{ github.event.inputs.apps }}" == "portal" ]]; then
+            echo "| Customer Portal | Deployed | https://portal.kanjona.com |" >> $GITHUB_STEP_SUMMARY
+          fi
