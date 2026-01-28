@@ -51,7 +51,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: backend/.build
-          key: ${{ runner.os }}-swift-${{ hashFiles('backend/Package.resolved') }}
+          key: ${{ runner.os }}-swift-${{ hashFiles('backend/Package.swift') }}
           restore-keys: |
             ${{ runner.os }}-swift-
 
@@ -79,7 +79,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: backend/.build
-          key: ${{ runner.os }}-swift-${{ hashFiles('backend/Package.resolved') }}
+          key: ${{ runner.os }}-swift-${{ hashFiles('backend/Package.swift') }}
           restore-keys: |
             ${{ runner.os }}-swift-
 
