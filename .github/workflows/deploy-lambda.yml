@@ -67,7 +67,7 @@ jobs:
 
       - name: Install API dependencies
         working-directory: apps/api
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Build shared package
         working-directory: packages/shared
