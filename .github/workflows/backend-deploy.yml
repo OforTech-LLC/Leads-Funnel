@@ -51,9 +51,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: backend/.build
-          key: ${{ runner.os }}-swift-${{ hashFiles('backend/Package.swift') }}
+          key: ${{ runner.os }}-swiftpkg-v2-${{ hashFiles('backend/Package.swift') }}
           restore-keys: |
-            ${{ runner.os }}-swift-
+            ${{ runner.os }}-swiftpkg-v2-
 
       - name: Run tests
         working-directory: backend
@@ -79,9 +79,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: backend/.build
-          key: ${{ runner.os }}-swift-${{ hashFiles('backend/Package.swift') }}
+          key: ${{ runner.os }}-swiftpkg-v2-${{ hashFiles('backend/Package.swift') }}
           restore-keys: |
-            ${{ runner.os }}-swift-
+            ${{ runner.os }}-swiftpkg-v2-
 
       - name: Build release binary
         working-directory: backend
