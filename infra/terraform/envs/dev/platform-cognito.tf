@@ -49,9 +49,9 @@ module "cognito_admin" {
   write_attributes = ["email", "custom:orgId"]
 
   # Token validity
-  access_token_validity  = 30  # 30 minutes
-  id_token_validity      = 30  # 30 minutes
-  refresh_token_validity = 30  # 30 days
+  access_token_validity  = 30 # 30 minutes
+  id_token_validity      = 30 # 30 minutes
+  refresh_token_validity = 30 # 30 days
 
   user_groups = [
     { name = "SuperAdmin", description = "Platform super administrator", precedence = 1 },
@@ -113,9 +113,9 @@ module "cognito_portal" {
   write_attributes = ["email", "custom:orgId", "custom:membershipRole"]
 
   # Token validity
-  access_token_validity  = 30  # 30 minutes
-  id_token_validity      = 30  # 30 minutes
-  refresh_token_validity = 30  # 30 days
+  access_token_validity  = 30 # 30 minutes
+  id_token_validity      = 30 # 30 minutes
+  refresh_token_validity = 30 # 30 days
 
   user_groups = [
     { name = "OrgOwner", description = "Organization owner", precedence = 1 },

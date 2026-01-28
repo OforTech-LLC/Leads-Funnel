@@ -68,9 +68,9 @@ notification_email = ""
 # Protects the site during development. Disable when ready for public release.
 # =============================================================================
 
-enable_basic_auth    = true
-basic_auth_username  = "admin"
-basic_auth_password  = "adminadmin12"
+enable_basic_auth   = true
+basic_auth_username = "admin"
+basic_auth_password = "adminadmin12"
 
 # =============================================================================
 # PLATFORM FEATURES (Admin Console & Customer Portal)
