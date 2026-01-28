@@ -7,7 +7,7 @@
 
 import Foundation
 import Vapor
-import CryptoKit
+import Crypto
 
 // MARK: - API Key Middleware
 

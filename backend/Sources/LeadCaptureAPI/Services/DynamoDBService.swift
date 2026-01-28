@@ -9,7 +9,7 @@ import Foundation
 import SotoDynamoDB
 import SotoCore
 import Shared
-import CryptoKit
+import Crypto
 
 // MARK: - DynamoDB Service
 
