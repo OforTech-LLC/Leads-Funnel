@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  output: 'export',
+  // SSR mode for server-side features (auth)
 
   images: {
     remotePatterns: [

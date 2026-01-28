@@ -119,8 +119,8 @@ const cacheHeaders = [
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Static export for S3/CloudFront deployment
-  output: 'export',
+  // SSR mode - these apps have API routes and middleware that require a server
+  // Deploy via containerized approach (Fargate, Lambda@Edge) rather than static S3
 
   // Enable strict mode for React
   reactStrictMode: true,

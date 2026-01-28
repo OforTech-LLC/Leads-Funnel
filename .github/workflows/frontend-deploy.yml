@@ -198,8 +198,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: admin-build-${{ github.sha }}
-          path: apps/admin/out
+          path: apps/admin/.next
           retention-days: 7
+          if-no-files-found: warn
 
   deploy-admin-dev:
     name: Deploy Admin to Dev
@@ -327,8 +328,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: portal-build-${{ github.sha }}
-          path: apps/portal/out
+          path: apps/portal/.next
           retention-days: 7
+          if-no-files-found: warn
 
   deploy-portal-dev:
     name: Deploy Portal to Dev
