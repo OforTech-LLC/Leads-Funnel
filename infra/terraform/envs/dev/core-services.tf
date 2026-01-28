@@ -286,12 +286,12 @@ module "synthetics" {
   # API Health Check Canary
   enable_api_canary   = true
   api_health_endpoint = "https://${local.api_subdomain}.${var.root_domain}/health"
-  api_canary_schedule = "rate(10 minutes)" # Less frequent in dev
+  api_canary_schedule = "rate(1 hour)" # Hourly in dev to save ~$20/mo
 
   # Website Availability Canary
   enable_website_canary   = true
   website_url             = "https://${local.env_subdomain}.${var.root_domain}"
-  website_canary_schedule = "rate(10 minutes)" # Less frequent in dev
+  website_canary_schedule = "rate(1 hour)" # Hourly in dev to save ~$20/mo
 
   # Alerting (safe access via locals)
   sns_topic_arn = local.monitoring_sns_topic_arn
