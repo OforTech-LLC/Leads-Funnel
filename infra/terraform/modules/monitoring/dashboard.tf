@@ -438,70 +438,72 @@ resource "aws_cloudwatch_dashboard" "main" {
       # =======================================================================
       # Row 6: SQS Metrics (conditional)
       # =======================================================================
-      var.sqs_queue_name != "" ? [
-        {
-          type   = "text"
-          x      = 0
-          y      = 38
-          width  = 24
-          height = 1
-          properties = {
-            markdown = "## SQS Queue Metrics"
-          }
-        },
-        {
-          type   = "metric"
-          x      = 0
-          y      = 39
-          width  = 8
-          height = 6
-          properties = {
-            title  = "SQS Queue Depth"
-            region = var.aws_region
-            metrics = [
-              ["AWS/SQS", "ApproximateNumberOfMessagesVisible", "QueueName", var.sqs_queue_name, { stat = "Average", period = 60, label = "Visible" }],
-              ["AWS/SQS", "ApproximateNumberOfMessagesNotVisible", "QueueName", var.sqs_queue_name, { stat = "Average", period = 60, label = "In Flight" }]
-            ]
-            view    = "timeSeries"
-            stacked = true
-            period  = 60
-          }
-        },
-        {
-          type   = "metric"
-          x      = 8
-          y      = 39
-          width  = 8
-          height = 6
-          properties = {
-            title  = "SQS Message Age"
-            region = var.aws_region
-            metrics = [
-              ["AWS/SQS", "ApproximateAgeOfOldestMessage", "QueueName", var.sqs_queue_name, { stat = "Maximum", period = 60, label = "Oldest Message Age (s)" }]
-            ]
-            view    = "timeSeries"
-            stacked = false
-            period  = 60
-          }
-        },
-        {
-          type   = "metric"
-          x      = 16
-          y      = 39
-          width  = 8
-          height = 6
-          properties = {
-            title  = "SQS DLQ Messages"
-            region = var.aws_region
-            metrics = var.sqs_dlq_name != "" ? [
-              ["AWS/SQS", "ApproximateNumberOfMessagesVisible", "QueueName", var.sqs_dlq_name, { stat = "Sum", period = 60, color = "#d62728", label = "DLQ Messages" }]
-            ] : []
-            view    = "timeSeries"
-            stacked = false
-            period  = 60
-          }
+      # SQS header
+      var.sqs_queue_name != "" ? [{
+        type   = "text"
+        x      = 0
+        y      = 38
+        width  = 24
+        height = 1
+        properties = {
+          markdown = "## SQS Queue Metrics"
         }
-      ] : []
+      }] : [],
+      # SQS Queue Depth
+      var.sqs_queue_name != "" ? [{
+        type   = "metric"
+        x      = 0
+        y      = 39
+        width  = 8
+        height = 6
+        properties = {
+          title  = "SQS Queue Depth"
+          region = var.aws_region
+          metrics = [
+            ["AWS/SQS", "ApproximateNumberOfMessagesVisible", "QueueName", var.sqs_queue_name, { stat = "Average", period = 60, label = "Visible" }],
+            ["AWS/SQS", "ApproximateNumberOfMessagesNotVisible", "QueueName", var.sqs_queue_name, { stat = "Average", period = 60, label = "In Flight" }]
+          ]
+          view    = "timeSeries"
+          stacked = true
+          period  = 60
+        }
+      }] : [],
+      # SQS Message Age
+      var.sqs_queue_name != "" ? [{
+        type   = "metric"
+        x      = 8
+        y      = 39
+        width  = 8
+        height = 6
+        properties = {
+          title  = "SQS Message Age"
+          region = var.aws_region
+          metrics = [
+            ["AWS/SQS", "ApproximateAgeOfOldestMessage", "QueueName", var.sqs_queue_name, { stat = "Maximum", period = 60, label = "Oldest Message Age (s)" }]
+          ]
+          view    = "timeSeries"
+          stacked = false
+          period  = 60
+        }
+      }] : [],
+      # SQS DLQ Messages
+      var.sqs_queue_name != "" ? [{
+        type   = "metric"
+        x      = 16
+        y      = 39
+        width  = 8
+        height = 6
+        properties = {
+          title  = "SQS DLQ Messages"
+          region = var.aws_region
+          metrics = var.sqs_dlq_name != "" ? [
+            ["AWS/SQS", "ApproximateNumberOfMessagesVisible", "QueueName", var.sqs_dlq_name, { stat = "Sum", period = 60, color = "#d62728", label = "DLQ Messages" }]
+          ] : []
+          view    = "timeSeries"
+          stacked = false
+          period  = 60
+        }
+      }] : []
     ...)
   })
 }

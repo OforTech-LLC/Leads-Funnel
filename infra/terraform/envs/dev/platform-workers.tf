@@ -115,6 +115,11 @@ module "notification_worker" {
 }
 
 # --- Pre-Token Generation (Admin) ---
+# NOTE: Pre-token lambdas only receive core SSM params (module.ssm), NOT
+# platform SSM params (module.platform_ssm). Adding platform_ssm_parameter_arns
+# here would create a circular dependency:
+#   pre_token_admin -> platform_ssm -> cognito_admin -> pre_token_admin
+# These lambdas only need feature flags and basic config to enrich tokens.
 module "pre_token_admin" {
   count  = var.enable_platform ? 1 : 0
   source = "../../modules/lambda-worker"
@@ -134,10 +139,7 @@ module "pre_token_admin" {
     local.platform_memberships_table_arn,
   ])
 
-  ssm_parameter_arns = concat(
-    module.ssm.all_parameter_arns,
-    local.platform_ssm_parameter_arns,
-  )
+  ssm_parameter_arns = module.ssm.all_parameter_arns
 
   environment_variables = {
     ENVIRONMENT            = var.environment
@@ -154,6 +156,11 @@ module "pre_token_admin" {
 }
 
 # --- Pre-Token Generation (Portal) ---
+# NOTE: Pre-token lambdas only receive core SSM params (module.ssm), NOT
+# platform SSM params (module.platform_ssm). Adding platform_ssm_parameter_arns
+# here would create a circular dependency:
+#   pre_token_portal -> platform_ssm -> cognito_portal -> pre_token_portal
+# These lambdas only need feature flags and basic config to enrich tokens.
 module "pre_token_portal" {
   count  = var.enable_platform ? 1 : 0
   source = "../../modules/lambda-worker"
@@ -175,10 +182,7 @@ module "pre_token_portal" {
     local.platform_orgs_table_arn,
   ])
 
-  ssm_parameter_arns = concat(
-    module.ssm.all_parameter_arns,
-    local.platform_ssm_parameter_arns,
-  )
+  ssm_parameter_arns = module.ssm.all_parameter_arns
 
   environment_variables = {
     ENVIRONMENT            = var.environment

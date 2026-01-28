@@ -18,17 +18,17 @@ output "cognito_user_pool_arn" {
 
 output "cognito_client_id" {
   description = "Cognito App Client ID"
-  value       = module.cognito.client_id
+  value       = module.cognito.web_client_id
 }
 
 output "cognito_hosted_ui_domain" {
   description = "Cognito Hosted UI domain"
-  value       = module.cognito.hosted_ui_domain
+  value       = module.cognito.user_pool_domain_url
 }
 
 output "cognito_issuer_url" {
   description = "Cognito JWT issuer URL"
-  value       = module.cognito.issuer_url
+  value       = "https://${module.cognito.user_pool_endpoint}"
 }
 
 output "cognito_admin_group_name" {

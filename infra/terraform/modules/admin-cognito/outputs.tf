@@ -41,6 +41,3 @@ output "viewer_group_name" {
   description = "Viewer group name"
   value       = aws_cognito_user_group.viewer.name
 }
-
-# Data source for current region
-data "aws_region" "current" {}

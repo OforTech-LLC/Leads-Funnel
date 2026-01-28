@@ -40,6 +40,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "canary_artifacts" {
     id     = "cleanup-old-artifacts"
     status = "Enabled"
 
+    filter {}
+
     expiration {
       days = var.artifact_retention_days
     }
