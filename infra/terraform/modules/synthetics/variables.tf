@@ -23,7 +23,7 @@ variable "environment" {
 variable "canary_runtime_version" {
   type        = string
   description = "Runtime version for synthetics canaries"
-  default     = "syn-nodejs-puppeteer-7.0"
+  default     = "syn-nodejs-puppeteer-9.1"
 }
 
 variable "canary_timeout_seconds" {

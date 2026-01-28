@@ -487,7 +487,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         }
       }] : [],
       # SQS DLQ Messages
-      var.sqs_queue_name != "" ? [{
+      var.sqs_dlq_name != "" ? [{
         type   = "metric"
         x      = 16
         y      = 39
@@ -496,14 +496,14 @@ resource "aws_cloudwatch_dashboard" "main" {
         properties = {
           title  = "SQS DLQ Messages"
           region = var.aws_region
-          metrics = var.sqs_dlq_name != "" ? [
+          metrics = [
             ["AWS/SQS", "ApproximateNumberOfMessagesVisible", "QueueName", var.sqs_dlq_name, { stat = "Sum", period = 60, color = "#d62728", label = "DLQ Messages" }]
-          ] : []
+          ]
           view    = "timeSeries"
           stacked = false
           period  = 60
         }
       }] : []
-    ...)
+    )
   })
 }
