@@ -156,6 +156,7 @@ public struct HealthController: RouteCollection {
     }
 
     private func getMemoryUsage() -> (used: Int, total: Int, percentUsed: Double) {
+        #if canImport(Darwin)
         var info = mach_task_basic_info()
         var count = mach_msg_type_number_t(MemoryLayout<mach_task_basic_info>.size) / 4
 
@@ -167,12 +168,28 @@ public struct HealthController: RouteCollection {
 
         if result == KERN_SUCCESS {
             let usedMB = Int(info.resident_size) / (1024 * 1024)
-            // Estimate total available memory (this is approximate)
-            let totalMB = 512 // Assume 512MB container
+            let totalMB = 512
             let percent = Double(usedMB) / Double(totalMB) * 100
             return (usedMB, totalMB, percent)
         }
 
         return (0, 512, 0)
+        #else
+        // Linux: read from /proc/self/status
+        let totalMB = 512
+        if let status = try? String(contentsOfFile: "/proc/self/status", encoding: .utf8) {
+            for line in status.split(separator: "\n") {
+                if line.hasPrefix("VmRSS:") {
+                    let parts = line.split(separator: " ").compactMap { Int($0) }
+                    if let kb = parts.first {
+                        let usedMB = kb / 1024
+                        let percent = Double(usedMB) / Double(totalMB) * 100
+                        return (usedMB, totalMB, percent)
+                    }
+                }
+            }
+        }
+        return (0, totalMB, 0)
+        #endif
     }
 }
