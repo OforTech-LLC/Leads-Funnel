@@ -119,8 +119,8 @@ const cacheHeaders = [
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Note: 'output: export' removed - incompatible with next-intl middleware
-  // For static export, use `next build` without middleware or configure i18n differently
+  // Static export for S3/CloudFront deployment
+  output: 'export',
 
   // Enable strict mode for React
   reactStrictMode: true,

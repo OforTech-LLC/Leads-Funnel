@@ -205,7 +205,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: admin-build-${{ github.sha }}
-          path: apps/admin/.next
+          path: apps/admin/out
           retention-days: 7
 
   deploy-admin-dev:
@@ -334,7 +334,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: portal-build-${{ github.sha }}
-          path: apps/portal/.next
+          path: apps/portal/out
           retention-days: 7
 
   deploy-portal-dev:
