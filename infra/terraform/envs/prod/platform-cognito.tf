@@ -37,10 +37,10 @@ module "cognito_admin" {
 
   # Production callback URLs only - NO localhost
   callback_urls = [
-    "https://${local.admin_subdomain}.${var.root_domain}/auth/callback",
+    "https://${local.admin_subdomain}.${var.root_domain}/callback",
   ]
   logout_urls = [
-    "https://${local.admin_subdomain}.${var.root_domain}",
+    "https://${local.admin_subdomain}.${var.root_domain}/login",
   ]
 
   read_attributes = ["email", "email_verified", "custom:role", "custom:orgId"]
@@ -100,10 +100,10 @@ module "cognito_portal" {
 
   # Production callback URLs only - NO localhost
   callback_urls = [
-    "https://${local.portal_subdomain}.${var.root_domain}/auth/callback",
+    "https://${local.portal_subdomain}.${var.root_domain}/callback",
   ]
   logout_urls = [
-    "https://${local.portal_subdomain}.${var.root_domain}",
+    "https://${local.portal_subdomain}.${var.root_domain}/login",
   ]
 
   read_attributes  = ["email", "email_verified", "custom:orgId", "custom:membershipRole"]

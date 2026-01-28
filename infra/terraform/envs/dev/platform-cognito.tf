@@ -35,12 +35,12 @@ module "cognito_admin" {
   ]
 
   callback_urls = concat(
-    ["https://${local.admin_subdomain}.${var.root_domain}/auth/callback"],
-    ["http://localhost:3001/auth/callback"]
+    ["https://${local.admin_subdomain}.${var.root_domain}/callback"],
+    ["http://localhost:3001/callback"]
   )
   logout_urls = concat(
-    ["https://${local.admin_subdomain}.${var.root_domain}"],
-    ["http://localhost:3001"]
+    ["https://${local.admin_subdomain}.${var.root_domain}/login"],
+    ["http://localhost:3001/login"]
   )
 
   read_attributes = ["email", "email_verified", "custom:role", "custom:orgId"]
@@ -99,12 +99,12 @@ module "cognito_portal" {
   ]
 
   callback_urls = concat(
-    ["https://${local.portal_subdomain}.${var.root_domain}/auth/callback"],
-    ["http://localhost:3002/auth/callback"]
+    ["https://${local.portal_subdomain}.${var.root_domain}/callback"],
+    ["http://localhost:3002/callback"]
   )
   logout_urls = concat(
-    ["https://${local.portal_subdomain}.${var.root_domain}"],
-    ["http://localhost:3002"]
+    ["https://${local.portal_subdomain}.${var.root_domain}/login"],
+    ["http://localhost:3002/login"]
   )
 
   read_attributes  = ["email", "email_verified", "custom:orgId", "custom:membershipRole"]
