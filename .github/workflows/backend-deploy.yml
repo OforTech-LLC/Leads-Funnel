@@ -63,7 +63,8 @@ jobs:
 
       - name: Run tests
         working-directory: backend
-        run: swift test --parallel
+        # Note: Not using --parallel due to ISO8601DateFormatter thread-safety issues on Linux
+        run: swift test
 
   build:
     name: Build for Lambda
