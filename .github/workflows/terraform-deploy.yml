@@ -7,15 +7,7 @@
 name: Terraform Deploy
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'infra/terraform/**'
-      - '.github/workflows/terraform-deploy.yml'
-  pull_request:
-    branches: [main]
-    paths:
-      - 'infra/terraform/**'
+  # Manual trigger only - no automatic deployments on push
   workflow_dispatch:
     inputs:
       environment:

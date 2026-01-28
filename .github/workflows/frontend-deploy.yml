@@ -7,14 +7,7 @@
 name: Frontend Deploy
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'apps/web/**'
-      - 'apps/admin/**'
-      - 'apps/portal/**'
-      - 'packages/**'
-      - '.github/workflows/frontend-deploy.yml'
+  # Manual trigger only - no automatic deployments on push
   workflow_dispatch:
     inputs:
       environment:
