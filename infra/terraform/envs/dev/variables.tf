@@ -346,15 +346,17 @@ variable "basic_auth_username" {
   type        = string
   description = "Username for basic authentication. Set via TF_VAR_basic_auth_username"
   sensitive   = true
+  default     = ""
 }
 
 variable "basic_auth_password" {
   type        = string
   description = "Password for basic authentication. Set via TF_VAR_basic_auth_password"
   sensitive   = true
+  default     = ""
 
   validation {
-    condition     = length(var.basic_auth_password) >= 12
+    condition     = var.basic_auth_password == "" || length(var.basic_auth_password) >= 12
     error_message = "basic_auth_password must be at least 12 characters."
   }
 }

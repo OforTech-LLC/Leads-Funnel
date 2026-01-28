@@ -107,9 +107,12 @@ jobs:
         run: |
           mkdir -p lambda-package
           cp .build/release/LeadCaptureAPI lambda-package/bootstrap
+          strip lambda-package/bootstrap
           chmod +x lambda-package/bootstrap
+          ls -lh lambda-package/bootstrap
           cd lambda-package
           zip -r ../lambda-deployment.zip .
+          ls -lh ../lambda-deployment.zip
 
       - name: Upload Lambda package
         id: upload
