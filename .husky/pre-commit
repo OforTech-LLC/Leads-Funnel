@@ -2,12 +2,14 @@
 # =============================================================================
 # Git Pre-commit Hook
 # =============================================================================
-# This hook runs lint-staged to fix and format files before committing.
-# It handles:
-# - TypeScript/JavaScript: ESLint + Prettier
-# - JSON/Markdown/CSS: Prettier
-# - Terraform: terraform fmt
-# - Swift: swift-format (if available)
+# This hook runs pre-commit (if available) and lint-staged for formatting.
 # =============================================================================
+
+if command -v pre-commit >/dev/null 2>&1; then
+  PRE_COMMIT_HOME="${PRE_COMMIT_HOME:-.cache/pre-commit}"
+  export PRE_COMMIT_HOME
+  mkdir -p "${PRE_COMMIT_HOME}"
+  pre-commit run --all-files
+fi
 
 npx lint-staged

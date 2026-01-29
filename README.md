@@ -496,6 +496,27 @@ Each funnel is available in English and Spanish in both environments. Source of 
 Feature flags are managed via SSM Parameter Store. The full, authoritative flag map and defaults
 live in `docs/PRODUCT_ENGINEERING_SPEC.md`.
 
+### Auto-Assignment Logic (Lead Routing)
+
+Auto-assignment is handled by the assignment-worker Lambda and is gated by
+`enable_assignment_service` (and the `enable_auto_assignment` flag for feature rollout). The
+worker consumes `lead.created` events from SQS and performs the following steps:
+
+1. Load the lead from DynamoDB and skip if the lead is no longer in `new` status.
+2. Load assignment rules (DynamoDB first, SSM fallback) and filter to active rules that match the
+   funnel (`funnelId` or `*`).
+3. Choose the best rule via ZIP longest-prefix matching, then sort by priority and fall back
+   through remaining rules if needed.
+4. For each candidate rule:
+   - Verify the target org/user is active and (if a user) is a member of the org.
+   - Enforce daily/monthly caps using atomic counters.
+   - Assign the lead with a conditional update (`status == "new"`) for idempotency.
+5. Emit `lead.assigned` on success, or mark the lead unassigned and emit `lead.unassigned` with a
+   reason if all rules are exhausted.
+
+Rules are created and managed in the admin app, and are cached in-memory for 60 seconds by the
+worker to reduce DynamoDB/SSM calls.
+
 ## Security
 
 See [SECURITY.md](./SECURITY.md) for comprehensive security documentation.

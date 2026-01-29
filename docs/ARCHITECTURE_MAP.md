@@ -1,7 +1,7 @@
 # Architecture Map: Kanjona Lead Generation Platform
 
 > Last Updated: 2026-01-29  
-> Map Version: 8
+> Map Version: 9
 
 ## 1. System Overview
 
@@ -353,7 +353,7 @@ Infrastructure (Terraform)
 
 ---
 
-## 8. Feature Flags (SSM Parameter Store)
+## 8. Feature Flags (SSM Parameter Store) [Updated: 2026-01-29]
 
 - Canonical path: `/{project}/{env}/features/*` (string `true` | `false`)
 - Legacy fallbacks supported: `/{project}/{env}/feature-flags/*` and `/{project}/{env}/flags/*`
@@ -361,9 +361,12 @@ Infrastructure (Terraform)
 
 | Flag                        | Default Dev | Default Prod |
 | --------------------------- | ----------- | ------------ |
-| enable_portal               | false       | false        |
-| enable_assignment_service   | false       | false        |
-| enable_notification_service | false       | false        |
+| enable_portal               | true        | true         |
+| enable_assignment_service   | true        | true         |
+| enable_notification_service | true        | true         |
+| enable_multi_tenant         | true        | true         |
+| enable_auto_assignment      | true        | true         |
+| enable_org_management       | true        | true         |
 | enable_twilio_sms           | false       | false        |
 | enable_bedrock_ai           | false       | false        |
 | enable_waf                  | false       | true         |

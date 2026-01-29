@@ -271,16 +271,16 @@ module "platform_ssm" {
   project_name = var.project_name
   environment  = var.environment
 
-  # Feature flags (all default false in dev)
-  enable_assignment_engine   = false
-  enable_portal              = false
-  enable_multi_tenant        = false
-  enable_auto_assignment     = false
-  enable_lead_notifications  = false
-  enable_org_management      = false
-  enable_exports             = false
-  enable_audit_logging       = false
-  enable_email_notifications = false
+  # Feature flags (explicitly enabled)
+  enable_assignment_engine   = true
+  enable_portal              = true
+  enable_multi_tenant        = true
+  enable_auto_assignment     = true
+  enable_lead_notifications  = true
+  enable_org_management      = true
+  enable_exports             = true
+  enable_audit_logging       = true
+  enable_email_notifications = true
   enable_sms_notifications   = false
   enable_twilio_sms          = false
   enable_sns_sms             = false
