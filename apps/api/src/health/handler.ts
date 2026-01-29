@@ -13,6 +13,7 @@
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Context } from 'aws-lambda';
 import { DynamoDBClient, DescribeTableCommand } from '@aws-sdk/client-dynamodb';
 import { createLogger } from '../lib/logging.js';
+import { getPlatformLeadsTableName } from '../lib/db/table-names.js';
 import { getCorsOrigin } from '../lib/response.js';
 import { HTTP_STATUS, HTTP_HEADERS, CONTENT_TYPES } from '../lib/constants.js';
 
@@ -65,12 +66,12 @@ function getDynamoClient(): DynamoDBClient {
  * Check DynamoDB connectivity
  */
 async function checkDynamoDB(): Promise<DependencyStatus> {
-  const tableName = process.env.DDB_TABLE_NAME;
+  const tableName = getPlatformLeadsTableName();
 
   if (!tableName) {
     return {
       status: 'unhealthy',
-      error: 'DDB_TABLE_NAME not configured',
+      error: 'DynamoDB table not configured',
     };
   }
 

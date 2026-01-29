@@ -96,6 +96,14 @@ module "api" {
   export_jobs_table_name = module.exports.export_jobs_table_name
   export_jobs_table_arn  = module.exports.export_jobs_table_arn
 
+  platform_orgs_table_name             = var.platform_orgs_table_name
+  platform_users_table_name            = var.platform_users_table_name
+  platform_memberships_table_name      = var.platform_memberships_table_name
+  platform_assignment_rules_table_name = var.platform_assignment_rules_table_name
+  platform_leads_table_name            = var.platform_leads_table_name
+  platform_notifications_table_name    = var.platform_notifications_table_name
+  platform_unassigned_table_name       = var.platform_unassigned_table_name
+
   api_gateway_id            = var.api_gateway_id
   api_gateway_execution_arn = var.api_gateway_execution_arn
 

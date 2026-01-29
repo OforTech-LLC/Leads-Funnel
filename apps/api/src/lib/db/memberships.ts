@@ -13,7 +13,8 @@ import {
   DeleteCommand,
   QueryCommand,
 } from '@aws-sdk/lib-dynamodb';
-import { getDocClient, tableName } from './client.js';
+import { getDocClient } from './client.js';
+import { getMembershipsTableName } from './table-names.js';
 import { signCursor, verifyCursor } from '../cursor.js';
 import { DB_PREFIXES, GSI_KEYS, GSI_INDEX_NAMES } from '../constants.js';
 import { ulid } from '../../lib/id.js';
@@ -103,7 +104,7 @@ export async function addMember(input: AddMemberInput): Promise<Membership> {
 
   await doc.send(
     new PutCommand({
-      TableName: tableName(),
+      TableName: getMembershipsTableName(),
       Item: membership,
       ConditionExpression: 'attribute_not_exists(pk) OR attribute_not_exists(sk)',
     })
@@ -116,7 +117,7 @@ export async function getMember(orgId: string, userId: string): Promise<Membersh
   const doc = getDocClient();
   const result = await doc.send(
     new GetCommand({
-      TableName: tableName(),
+      TableName: getMembershipsTableName(),
       Key: { pk: `${DB_PREFIXES.ORG}${orgId}`, sk: `${GSI_KEYS.MEMBER}${userId}` },
     })
   );
@@ -147,7 +148,7 @@ export async function updateMember(input: UpdateMemberInput): Promise<Membership
 
   const result = await doc.send(
     new UpdateCommand({
-      TableName: tableName(),
+      TableName: getMembershipsTableName(),
       Key: { pk: `${DB_PREFIXES.ORG}${input.orgId}`, sk: `${GSI_KEYS.MEMBER}${input.userId}` },
       UpdateExpression: `SET ${parts.join(', ')}`,
       ExpressionAttributeNames: names,
@@ -164,7 +165,7 @@ export async function removeMember(orgId: string, userId: string): Promise<void>
   const doc = getDocClient();
   await doc.send(
     new DeleteCommand({
-      TableName: tableName(),
+      TableName: getMembershipsTableName(),
       Key: { pk: `${DB_PREFIXES.ORG}${orgId}`, sk: `${GSI_KEYS.MEMBER}${userId}` },
       ConditionExpression: 'attribute_exists(pk)',
     })
@@ -194,7 +195,7 @@ export async function listOrgMembers(
 
   const result = await doc.send(
     new QueryCommand({
-      TableName: tableName(),
+      TableName: getMembershipsTableName(),
       KeyConditionExpression: 'pk = :pk AND begins_with(sk, :skPrefix)',
       ExpressionAttributeValues: {
         ':pk': `${DB_PREFIXES.ORG}${orgId}`,
@@ -232,7 +233,7 @@ export async function listUserOrgs(
 
   const result = await doc.send(
     new QueryCommand({
-      TableName: tableName(),
+      TableName: getMembershipsTableName(),
       IndexName: GSI_INDEX_NAMES.GSI1,
       KeyConditionExpression: 'gsi1pk = :pk AND begins_with(gsi1sk, :skPrefix)',
       ExpressionAttributeValues: {
@@ -285,7 +286,7 @@ export async function createInvite(input: CreateInviteInput): Promise<OrgInvite>
 
   await doc.send(
     new PutCommand({
-      TableName: tableName(),
+      TableName: getMembershipsTableName(),
       Item: invite,
       ConditionExpression: 'attribute_not_exists(pk) OR attribute_not_exists(sk)',
     })
@@ -311,7 +312,7 @@ export async function listInvites(
 
   const result = await doc.send(
     new QueryCommand({
-      TableName: tableName(),
+      TableName: getMembershipsTableName(),
       KeyConditionExpression: 'pk = :pk AND begins_with(sk, :skPrefix)',
       ExpressionAttributeValues: {
         ':pk': `${DB_PREFIXES.ORG}${orgId}`,
@@ -342,7 +343,7 @@ export async function getOrgNotifyRecipients(orgId: string): Promise<Membership[
   do {
     const result = await doc.send(
       new QueryCommand({
-        TableName: tableName(),
+        TableName: getMembershipsTableName(),
         KeyConditionExpression: 'pk = :pk AND begins_with(sk, :skPrefix)',
         FilterExpression: 'notifyEmail = :yes OR notifySms = :yes',
         ExpressionAttributeValues: {

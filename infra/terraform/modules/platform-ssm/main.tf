@@ -13,6 +13,14 @@
 
 locals {
   parameter_prefix = "/${var.project_name}/${var.environment}"
+  worker_feature_flags = {
+    enable_assignment_service   = var.enable_assignment_engine
+    enable_notification_service = var.enable_lead_notifications
+    enable_email_notifications  = var.enable_email_notifications
+    enable_sms_notifications    = var.enable_sms_notifications
+    enable_twilio               = var.enable_twilio_sms
+    enable_sns_sms              = var.enable_sns_sms
+  }
 }
 
 # =============================================================================
@@ -113,4 +121,52 @@ resource "aws_ssm_parameter" "enable_audit_logging" {
     Name = "enable-audit-logging"
     Type = "feature-flag"
   })
+}
+
+# =============================================================================
+# Worker Configuration (JSON)
+# =============================================================================
+
+resource "aws_ssm_parameter" "worker_feature_flags" {
+  name        = "${local.parameter_prefix}/config/worker-feature-flags"
+  description = "JSON feature flags for assignment/notification workers"
+  type        = "String"
+  value       = jsonencode(local.worker_feature_flags)
+
+  tags = merge(var.tags, {
+    Name = "worker-feature-flags"
+    Type = "config"
+  })
+}
+
+resource "aws_ssm_parameter" "assignment_rules" {
+  name        = "${local.parameter_prefix}/config/assignment-rules"
+  description = "JSON array of assignment rules for lead assignment"
+  type        = "String"
+  value       = var.assignment_rules_json
+
+  tags = merge(var.tags, {
+    Name = "assignment-rules"
+    Type = "config"
+  })
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+resource "aws_ssm_parameter" "internal_recipients" {
+  name        = "${local.parameter_prefix}/config/internal-recipients"
+  description = "JSON array of internal notification recipients"
+  type        = "String"
+  value       = var.internal_recipients_json
+
+  tags = merge(var.tags, {
+    Name = "internal-recipients"
+    Type = "config"
+  })
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }

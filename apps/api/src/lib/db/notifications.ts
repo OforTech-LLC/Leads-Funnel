@@ -7,7 +7,8 @@
  */
 
 import { PutCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
-import { getDocClient, tableName } from './client.js';
+import { getDocClient } from './client.js';
+import { getNotificationsTableName } from './table-names.js';
 import { ulid } from '../../lib/id.js';
 import { signCursor, verifyCursor } from '../cursor.js';
 import { DB_PREFIXES, GSI_KEYS, GSI_INDEX_NAMES } from '../constants.js';
@@ -77,7 +78,7 @@ export async function recordNotification(
 
   await doc.send(
     new PutCommand({
-      TableName: tableName(),
+      TableName: getNotificationsTableName(),
       Item: record,
     })
   );
@@ -111,7 +112,7 @@ export async function listNotificationsByLead(
 
   const result = await doc.send(
     new QueryCommand({
-      TableName: tableName(),
+      TableName: getNotificationsTableName(),
       KeyConditionExpression: 'pk = :pk',
       ExpressionAttributeValues: { ':pk': `${DB_PREFIXES.NOTIFY}${leadId}` },
       Limit: limit,
@@ -160,7 +161,7 @@ export async function listNotifications(
 
   const result = await doc.send(
     new QueryCommand({
-      TableName: tableName(),
+      TableName: getNotificationsTableName(),
       IndexName: GSI_INDEX_NAMES.GSI1,
       KeyConditionExpression: keyCondition,
       ExpressionAttributeValues: exprValues,

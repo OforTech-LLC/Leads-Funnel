@@ -48,6 +48,7 @@ out/
 # ===========================
 
 dist/
+lambda-bundles/
 build/
 *.tsbuildinfo
 

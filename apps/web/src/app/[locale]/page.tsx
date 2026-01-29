@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
-import { routing, type Locale } from '@/i18n/routing';
+import { routing } from '@/i18n/routing';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import LeadForm from '@/components/LeadForm';
 import { Footer } from '@/components/Footer';

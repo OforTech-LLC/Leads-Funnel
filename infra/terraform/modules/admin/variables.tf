@@ -165,6 +165,52 @@ variable "api_gateway_execution_arn" {
 }
 
 # =====================================================
+# Platform Table Configuration
+# =====================================================
+
+variable "platform_orgs_table_name" {
+  description = "DynamoDB orgs table name for platform admin"
+  type        = string
+  default     = ""
+}
+
+variable "platform_users_table_name" {
+  description = "DynamoDB users table name for platform admin"
+  type        = string
+  default     = ""
+}
+
+variable "platform_memberships_table_name" {
+  description = "DynamoDB memberships table name for platform admin"
+  type        = string
+  default     = ""
+}
+
+variable "platform_assignment_rules_table_name" {
+  description = "DynamoDB assignment rules table name for platform admin"
+  type        = string
+  default     = ""
+}
+
+variable "platform_leads_table_name" {
+  description = "DynamoDB leads table name for platform admin"
+  type        = string
+  default     = ""
+}
+
+variable "platform_notifications_table_name" {
+  description = "DynamoDB notifications table name for platform admin"
+  type        = string
+  default     = ""
+}
+
+variable "platform_unassigned_table_name" {
+  description = "DynamoDB unassigned table name for platform admin"
+  type        = string
+  default     = ""
+}
+
+# =====================================================
 # Data Retention & Protection
 # =====================================================
 

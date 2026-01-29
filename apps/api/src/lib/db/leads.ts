@@ -9,7 +9,8 @@
  */
 
 import { GetCommand, PutCommand, UpdateCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
-import { getDocClient, tableName } from './client.js';
+import { getDocClient } from './client.js';
+import { getPlatformLeadsTableName } from './table-names.js';
 import { signCursor, verifyCursor } from '../cursor.js';
 import { ValidationError } from '../errors.js';
 import { v4 as uuidv4 } from 'uuid';
@@ -250,7 +251,7 @@ export async function createLead(input: CreateLeadInput): Promise<PlatformLead> 
 
   await doc.send(
     new PutCommand({
-      TableName: tableName(),
+      TableName: getPlatformLeadsTableName(),
       Item: lead,
     })
   );
@@ -302,7 +303,7 @@ export async function ingestLead(
 
   await doc.send(
     new PutCommand({
-      TableName: tableOverride || tableName(),
+      TableName: tableOverride || getPlatformLeadsTableName(),
       Item: lead,
       ConditionExpression: 'attribute_not_exists(pk)',
     })
@@ -315,7 +316,7 @@ export async function getLead(funnelId: string, leadId: string): Promise<Platfor
   const doc = getDocClient();
   const result = await doc.send(
     new GetCommand({
-      TableName: tableName(),
+      TableName: getPlatformLeadsTableName(),
       Key: { pk: `${DB_PREFIXES.LEAD}${funnelId}#${leadId}`, sk: DB_SORT_KEYS.META },
     })
   );
@@ -396,7 +397,7 @@ export async function updateLead(input: UpdateLeadInput): Promise<PlatformLead> 
 
   const result = await doc.send(
     new UpdateCommand({
-      TableName: tableName(),
+      TableName: getPlatformLeadsTableName(),
       Key: { pk: `${DB_PREFIXES.LEAD}${input.funnelId}#${input.leadId}`, sk: DB_SORT_KEYS.META },
       UpdateExpression: `SET ${parts.join(', ')}`,
       ExpressionAttributeNames: names,
@@ -417,23 +418,38 @@ export async function assignLead(
   funnelId: string,
   leadId: string,
   orgId: string,
-  ruleId: string
+  ruleId: string,
+  options?: { assignedUserId?: string }
 ): Promise<PlatformLead | null> {
   const doc = getDocClient();
   const now = new Date().toISOString();
+  const assignedUserId = options?.assignedUserId;
 
   try {
     const result = await doc.send(
       new UpdateCommand({
-        TableName: tableName(),
+        TableName: getPlatformLeadsTableName(),
         Key: { pk: `${DB_PREFIXES.LEAD}${funnelId}#${leadId}`, sk: DB_SORT_KEYS.META },
-        UpdateExpression: `SET #status = :assigned, orgId = :orgId, ruleId = :ruleId,
-          assignedAt = :now, #updatedAt = :now,
-          gsi2pk = :gsi2pk, gsi2sk = :gsi2sk,
-          gsi3pk = :gsi3pk`,
+        UpdateExpression: [
+          'SET #status = :assigned',
+          'orgId = :orgId',
+          'ruleId = :ruleId',
+          'assignedAt = :now',
+          '#updatedAt = :now',
+          'gsi2pk = :gsi2pk',
+          'gsi2sk = :gsi2sk',
+          'gsi3pk = :gsi3pk',
+          assignedUserId ? 'assignedUserId = :assignedUserId' : undefined,
+          '#evidencePack = if_not_exists(#evidencePack, :emptyEvidence)',
+          '#evidencePack.#assignment = :assignment',
+        ]
+          .filter(Boolean)
+          .join(', '),
         ExpressionAttributeNames: {
           '#status': 'status',
           '#updatedAt': 'updatedAt',
+          '#evidencePack': 'evidencePack',
+          '#assignment': 'assignment',
         },
         ExpressionAttributeValues: {
           ':assigned': 'assigned',
@@ -444,6 +460,14 @@ export async function assignLead(
           ':gsi2sk': `${GSI_KEYS.CREATED}${now}`,
           ':gsi3pk': `${GSI_KEYS.STATUS}${funnelId}#assigned`,
           ':new': 'new',
+          ...(assignedUserId ? { ':assignedUserId': assignedUserId } : {}),
+          ':emptyEvidence': {},
+          ':assignment': {
+            ruleId,
+            assignedOrgId: orgId,
+            assignedUserId,
+            assignedAt: now,
+          },
         },
         ConditionExpression: 'attribute_exists(pk) AND #status = :new',
         ReturnValues: 'ALL_NEW',
@@ -477,7 +501,7 @@ export async function markUnassigned(
   try {
     const result = await doc.send(
       new UpdateCommand({
-        TableName: tableName(),
+        TableName: getPlatformLeadsTableName(),
         Key: { pk: `${DB_PREFIXES.LEAD}${funnelId}#${leadId}`, sk: DB_SORT_KEYS.META },
         UpdateExpression: `SET #status = :unassigned, #updatedAt = :now,
           gsi3pk = :gsi3pk`,
@@ -523,7 +547,7 @@ export async function reassignLead(
 
   const result = await doc.send(
     new UpdateCommand({
-      TableName: tableName(),
+      TableName: getPlatformLeadsTableName(),
       Key: { pk: `${DB_PREFIXES.LEAD}${funnelId}#${leadId}`, sk: DB_SORT_KEYS.META },
       UpdateExpression: `SET orgId = :orgId, ruleId = :ruleId, assignedAt = :now,
         #status = :assigned, #updatedAt = :now,
@@ -595,7 +619,7 @@ export async function queryLeads(input: QueryLeadsInput): Promise<PaginatedLeads
 
     const result = await doc.send(
       new QueryCommand({
-        TableName: tableName(),
+        TableName: getPlatformLeadsTableName(),
         IndexName: GSI_INDEX_NAMES.GSI2,
         KeyConditionExpression: keyCondition,
         ExpressionAttributeValues: exprValues,
@@ -629,7 +653,7 @@ export async function queryLeads(input: QueryLeadsInput): Promise<PaginatedLeads
 
     const result = await doc.send(
       new QueryCommand({
-        TableName: tableName(),
+        TableName: getPlatformLeadsTableName(),
         IndexName: GSI_INDEX_NAMES.GSI3,
         KeyConditionExpression: keyCondition,
         ExpressionAttributeValues: exprValues,
@@ -661,7 +685,7 @@ export async function queryLeads(input: QueryLeadsInput): Promise<PaginatedLeads
 
     const result = await doc.send(
       new QueryCommand({
-        TableName: tableName(),
+        TableName: getPlatformLeadsTableName(),
         IndexName: GSI_INDEX_NAMES.GSI1,
         KeyConditionExpression: keyCondition,
         ExpressionAttributeValues: exprValues,

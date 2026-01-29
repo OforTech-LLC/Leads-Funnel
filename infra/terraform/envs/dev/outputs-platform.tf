@@ -31,6 +31,11 @@ output "platform_assignment_rules_table" {
   value       = try(module.dynamodb_assignment_rules[0].table_name, null)
 }
 
+output "platform_leads_table" {
+  description = "Platform leads DynamoDB table name"
+  value       = try(module.dynamodb_leads[0].table_name, null)
+}
+
 output "platform_unassigned_table" {
   description = "Unassigned leads DynamoDB table name"
   value       = try(module.dynamodb_unassigned[0].table_name, null)

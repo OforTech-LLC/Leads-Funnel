@@ -80,7 +80,7 @@ module "cognito_portal" {
 
   mfa_configuration            = "OPTIONAL" # Optional for portal users
   advanced_security_mode       = "ENFORCED"
-  allow_admin_create_user_only = false # Allow self-registration for portal
+  allow_admin_create_user_only = true # Admin-only portal provisioning
   challenge_on_new_device      = true
 
   custom_attributes = [

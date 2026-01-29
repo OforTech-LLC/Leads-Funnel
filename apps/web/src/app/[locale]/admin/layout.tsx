@@ -8,6 +8,7 @@
  */
 
 import { Suspense, useEffect, useState, useCallback } from 'react';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   isAuthenticated,
@@ -216,7 +217,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </div>
 
           <nav className="admin-nav">
-            <a
+            <Link
               href="/admin"
               className={`admin-nav-item ${pathname === '/admin' || pathname.endsWith('/admin') ? 'active' : ''}`}
             >
@@ -234,8 +235,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 <rect x="14" y="14" width="7" height="7" rx="1" />
               </svg>
               Dashboard
-            </a>
-            <a
+            </Link>
+            <Link
               href="/admin/leads"
               className={`admin-nav-item ${pathname.includes('/admin/leads') ? 'active' : ''}`}
             >
@@ -253,8 +254,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 <path d="M16 3.13a4 4 0 0 1 0 7.75" />
               </svg>
               Leads
-            </a>
-            <a
+            </Link>
+            <Link
               href="/admin/exports"
               className={`admin-nav-item ${pathname.includes('/admin/exports') ? 'active' : ''}`}
             >
@@ -271,8 +272,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 <line x1="12" y1="15" x2="12" y2="3" />
               </svg>
               Exports
-            </a>
-            <a
+            </Link>
+            <Link
               href="/admin/settings"
               className={`admin-nav-item ${pathname.includes('/admin/settings') ? 'active' : ''}`}
             >
@@ -288,7 +289,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
               </svg>
               Settings
-            </a>
+            </Link>
           </nav>
 
           {/* User Info */}

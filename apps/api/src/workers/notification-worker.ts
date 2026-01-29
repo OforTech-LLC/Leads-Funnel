@@ -26,7 +26,7 @@
  */
 
 import type { SQSEvent, SQSBatchResponse, SQSBatchItemFailure } from 'aws-lambda';
-import { GetCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
+import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import { GetParameterCommand } from '@aws-sdk/client-ssm';
 import type {
   NotificationWorkerConfig,
@@ -38,7 +38,8 @@ import type {
 import { getDocClient, getSsmClient } from '../lib/clients.js';
 import { createLogger } from '../lib/logging.js';
 import { dispatchNotifications } from '../lib/notifications/dispatcher.js';
-import { DB_PREFIXES, GSI_KEYS } from '../lib/constants.js';
+import * as leadsDb from '../lib/db/leads.js';
+import { DB_PREFIXES, DB_SORT_KEYS } from '../lib/constants.js';
 
 const log = createLogger('notification-worker');
 
@@ -47,10 +48,17 @@ const log = createLogger('notification-worker');
 // =============================================================================
 
 function loadConfig(): NotificationWorkerConfig {
+  const fallbackTable = process.env.DDB_TABLE_NAME || '';
+
   return {
     awsRegion: process.env.AWS_REGION || 'us-east-1',
     env: (process.env.ENV as 'dev' | 'prod') || 'dev',
-    ddbTableName: process.env.DDB_TABLE_NAME || '',
+    leadsTableName: process.env.PLATFORM_LEADS_TABLE_NAME || fallbackTable,
+    orgsTableName: process.env.ORGS_TABLE_NAME || fallbackTable,
+    usersTableName: process.env.USERS_TABLE_NAME || fallbackTable,
+    membershipsTableName: process.env.MEMBERSHIPS_TABLE_NAME || fallbackTable,
+    notificationsTableName:
+      process.env.NOTIFICATIONS_TABLE || process.env.NOTIFICATIONS_TABLE_NAME || fallbackTable,
     featureFlagSsmPath: process.env.FEATURE_FLAG_SSM_PATH || '',
     internalRecipientsSsmPath: process.env.INTERNAL_RECIPIENTS_SSM_PATH || '',
     sesFromAddress: process.env.SES_FROM_ADDRESS || 'noreply@kanjona.com',
@@ -137,24 +145,12 @@ async function loadFeatureFlags(config: NotificationWorkerConfig): Promise<Featu
  * Load a lead record from DynamoDB.
  */
 async function getLead(
-  config: NotificationWorkerConfig,
+  _config: NotificationWorkerConfig,
   leadId: string,
   funnelId: string
 ): Promise<LeadRecord | null> {
-  const client = getDocClient(config.awsRegion);
-
   try {
-    const result = await client.send(
-      new GetCommand({
-        TableName: config.ddbTableName,
-        Key: {
-          pk: `${DB_PREFIXES.LEAD}${leadId}`,
-          sk: `${GSI_KEYS.FUNNEL}${funnelId}`,
-        },
-      })
-    );
-
-    return (result.Item as LeadRecord) || null;
+    return (await leadsDb.getLead(funnelId, leadId)) as LeadRecord | null;
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     log.error('Failed to get lead', {
@@ -186,10 +182,10 @@ async function claimNotificationLock(
   try {
     await client.send(
       new UpdateCommand({
-        TableName: config.ddbTableName,
+        TableName: config.leadsTableName,
         Key: {
-          pk: `${DB_PREFIXES.LEAD}${leadId}`,
-          sk: `${GSI_KEYS.FUNNEL}${funnelId}`,
+          pk: `${DB_PREFIXES.LEAD}${funnelId}#${leadId}`,
+          sk: DB_SORT_KEYS.META,
         },
         UpdateExpression: 'SET notifiedAt = :now',
         ConditionExpression: 'attribute_not_exists(notifiedAt)',
@@ -352,8 +348,8 @@ export async function handler(event: SQSEvent): Promise<SQSBatchResponse> {
   }
 
   // Validate configuration
-  if (!config.ddbTableName) {
-    log.error('DDB_TABLE_NAME not configured', { errorCode: 'CONFIG_ERROR' });
+  if (!config.leadsTableName) {
+    log.error('PLATFORM_LEADS_TABLE_NAME not configured', { errorCode: 'CONFIG_ERROR' });
 
     // Fail all records so they are retried after config fix
     return {

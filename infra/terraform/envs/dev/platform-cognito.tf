@@ -59,9 +59,9 @@ module "cognito_admin" {
     { name = "OrgViewer", description = "Organization read-only viewer", precedence = 3 },
   ]
 
-  # Pre-token generation trigger (temporarily disabled)
-  # pre_token_generation_lambda_arn  = local.pre_token_admin_function_arn
-  # pre_token_generation_lambda_name = local.pre_token_admin_function_name
+  # Pre-token generation trigger (adds custom claims)
+  pre_token_generation_lambda_arn  = local.pre_token_admin_function_arn
+  pre_token_generation_lambda_name = local.pre_token_admin_function_name
 
   invite_email_subject = "Kanjona Admin - Your Account"
   invite_email_message = "Your admin account has been created. Username: {username}, Temporary password: {####}. Please log in and change your password."
@@ -74,15 +74,14 @@ module "cognito_portal" {
   count  = var.enable_platform ? 1 : 0
   source = "../../modules/cognito-userpool"
 
-  # Note: Lambda triggers temporarily disabled for initial deployment
-  # depends_on = [module.pre_token_portal]
+  depends_on = [module.pre_token_portal]
 
   pool_name     = "${local.prefix}-portal-userpool"
   domain_prefix = var.platform_portal_cognito_domain
 
   mfa_configuration            = "OPTIONAL"
   advanced_security_mode       = "AUDIT"
-  allow_admin_create_user_only = false # Allow self-registration for portal
+  allow_admin_create_user_only = true # Admin-only portal provisioning
   challenge_on_new_device      = true
 
   custom_attributes = [
@@ -112,6 +111,10 @@ module "cognito_portal" {
   read_attributes  = ["email", "email_verified", "custom:orgId", "custom:membershipRole"]
   write_attributes = ["email", "custom:orgId", "custom:membershipRole"]
 
+  # Pre-token generation trigger (adds org/user claims)
+  pre_token_generation_lambda_arn  = local.pre_token_portal_function_arn
+  pre_token_generation_lambda_name = local.pre_token_portal_function_name
+
   # Token validity
   access_token_validity  = 30 # 30 minutes
   id_token_validity      = 30 # 30 minutes
@@ -121,10 +124,6 @@ module "cognito_portal" {
     { name = "OrgOwner", description = "Organization owner", precedence = 1 },
     { name = "OrgMember", description = "Organization member", precedence = 2 },
   ]
-
-  # Pre-token generation trigger (temporarily disabled)
-  # pre_token_generation_lambda_arn  = local.pre_token_portal_function_arn
-  # pre_token_generation_lambda_name = local.pre_token_portal_function_name
 
   invite_email_subject = "Kanjona Portal - Your Account"
   invite_email_message = "Your portal account has been created. Username: {username}, Temporary password: {####}. Please log in and change your password."

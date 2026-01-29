@@ -69,7 +69,7 @@ variable "admin_exports_bucket_name" {
 
 variable "admin_lambda_zip_path" {
   type        = string
-  default     = "../../../apps/api/dist/admin-handler.zip"
+  default     = "../../../../apps/api/dist/admin-handler.zip"
   description = "Path to admin Lambda deployment package"
 }
 
@@ -77,6 +77,33 @@ variable "admin_lambda_zip_hash" {
   type        = string
   default     = ""
   description = "Base64-encoded SHA256 hash of admin Lambda package"
+}
+
+# -----------------------------------------------------------------------------
+# Platform Worker Lambda Packages
+# -----------------------------------------------------------------------------
+variable "assignment_worker_zip_path" {
+  type        = string
+  default     = "../../../../apps/api/dist/assignment-worker.zip"
+  description = "Path to assignment worker Lambda deployment package"
+}
+
+variable "notification_worker_zip_path" {
+  type        = string
+  default     = "../../../../apps/api/dist/notification-worker.zip"
+  description = "Path to notification worker Lambda deployment package"
+}
+
+variable "pre_token_admin_zip_path" {
+  type        = string
+  default     = "../../../../apps/api/dist/pre-token-admin.zip"
+  description = "Path to admin pre-token Lambda deployment package"
+}
+
+variable "pre_token_portal_zip_path" {
+  type        = string
+  default     = "../../../../apps/api/dist/pre-token-portal.zip"
+  description = "Path to portal pre-token Lambda deployment package"
 }
 
 # -----------------------------------------------------------------------------

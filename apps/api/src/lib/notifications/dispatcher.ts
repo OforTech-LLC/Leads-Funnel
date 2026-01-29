@@ -13,13 +13,12 @@
  * - Errors are logged but never propagated to fail the entire worker
  */
 
-import { PutCommand, QueryCommand, GetCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
+import { PutCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import { GetParameterCommand } from '@aws-sdk/client-ssm';
 import { v4 as uuidv4 } from 'uuid';
 import type {
   FeatureFlags,
   LeadRecord,
-  OrgRecord,
   MembershipRecord,
   NotificationRecord,
   InternalRecipient,
@@ -28,9 +27,12 @@ import type {
   NotificationWorkerConfig,
 } from '../types/events.js';
 import { getDocClient, getSsmClient } from '../clients.js';
+import * as orgsDb from '../db/orgs.js';
+import * as membershipsDb from '../db/memberships.js';
+import * as usersDb from '../db/users.js';
 import { sendEmail, buildLeadAssignedEmail, buildLeadUnassignedEmail } from './email.js';
 import { sendSms, buildLeadAssignedSms, buildLeadUnassignedSms } from './sms.js';
-import { DB_PREFIXES, DB_SORT_KEYS, GSI_KEYS, GSI_INDEX_NAMES } from '../constants.js';
+import { DB_PREFIXES, DB_SORT_KEYS } from '../constants.js';
 
 // =============================================================================
 // SSM Parameter Cache
@@ -104,70 +106,29 @@ async function loadInternalRecipients(
 // DynamoDB Helpers
 // =============================================================================
 
-/**
- * Load an organization record from DynamoDB.
- */
-async function loadOrg(
-  region: string,
-  tableName: string,
-  orgId: string
-): Promise<OrgRecord | null> {
-  const client = getDocClient(region);
-
-  try {
-    const result = await client.send(
-      new GetCommand({
-        TableName: tableName,
-        Key: {
-          pk: `${DB_PREFIXES.ORG}${orgId}`,
-          sk: DB_SORT_KEYS.META,
-        },
-      })
-    );
-
-    return (result.Item as OrgRecord) || null;
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.log(
-      JSON.stringify({
-        level: 'error',
-        message: 'Failed to load org',
-        orgId,
-        error: errorMessage,
-      })
-    );
-    return null;
-  }
+interface MemberWithUser {
+  member: MembershipRecord;
+  user: usersDb.User | null;
 }
 
-/**
- * Load org memberships with notification preferences.
- *
- * Uses GSI1 to query memberships by org:
- *   GSI1PK = ORG#<orgId>#MEMBERS
- *   GSI1SK starts with MEMBER#
- */
-async function loadOrgMembers(
-  region: string,
-  tableName: string,
-  orgId: string
-): Promise<MembershipRecord[]> {
-  const client = getDocClient(region);
-
+async function loadOrgMembersWithUsers(orgId: string): Promise<MemberWithUser[]> {
   try {
-    const result = await client.send(
-      new QueryCommand({
-        TableName: tableName,
-        IndexName: GSI_INDEX_NAMES.GSI1,
-        KeyConditionExpression: 'gsi1pk = :pk AND begins_with(gsi1sk, :skPrefix)',
-        ExpressionAttributeValues: {
-          ':pk': `${DB_PREFIXES.ORG}${orgId}#MEMBERS`,
-          ':skPrefix': GSI_KEYS.MEMBER,
-        },
+    const result = await membershipsDb.listOrgMembers(orgId, undefined, 200);
+    const members = result.items;
+    const userCache = new Map<string, usersDb.User | null>();
+
+    await Promise.all(
+      members.map(async (member) => {
+        if (!userCache.has(member.userId)) {
+          userCache.set(member.userId, await usersDb.getUser(member.userId));
+        }
       })
     );
 
-    return (result.Items as MembershipRecord[]) || [];
+    return members.map((member) => ({
+      member,
+      user: userCache.get(member.userId) || null,
+    }));
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.log(
@@ -194,6 +155,17 @@ async function recordNotification(
   record: NotificationRecord
 ): Promise<void> {
   const client = getDocClient(region);
+
+  if (!tableName) {
+    console.log(
+      JSON.stringify({
+        level: 'warn',
+        message: 'Notifications table not configured',
+        notificationId: record.notificationId,
+      })
+    );
+    return;
+  }
 
   try {
     await client.send(
@@ -233,8 +205,8 @@ async function updateLeadNotificationTimestamp(
       new UpdateCommand({
         TableName: tableName,
         Key: {
-          pk: `${DB_PREFIXES.LEAD}${leadId}`,
-          sk: `${GSI_KEYS.FUNNEL}${funnelId}`,
+          pk: `${DB_PREFIXES.LEAD}${funnelId}#${leadId}`,
+          sk: DB_SORT_KEYS.META,
         },
         UpdateExpression: 'SET #field = :now',
         ExpressionAttributeNames: {
@@ -324,7 +296,7 @@ async function notifyInternal(
         region: config.awsRegion,
       });
 
-      await recordNotification(config.awsRegion, config.ddbTableName, {
+      await recordNotification(config.awsRegion, config.notificationsTableName, {
         pk: `${DB_PREFIXES.NOTIFY}${lead.leadId}`,
         sk: `EMAIL#internal#${recipient.email}`,
         notificationId: uuidv4(),
@@ -356,7 +328,7 @@ async function notifyInternal(
         twilioSecretArn: config.twilioSecretArn,
       });
 
-      await recordNotification(config.awsRegion, config.ddbTableName, {
+      await recordNotification(config.awsRegion, config.notificationsTableName, {
         pk: `${DB_PREFIXES.NOTIFY}${lead.leadId}`,
         sk: `SMS#internal#${recipient.phone}`,
         notificationId: uuidv4(),
@@ -401,7 +373,7 @@ async function notifyOrgMembers(
   const orgId = event.assignedOrgId;
 
   // Load org to get notification policy
-  const org = await loadOrg(config.awsRegion, config.ddbTableName, orgId);
+  const org = await orgsDb.getOrg(orgId);
 
   if (!org) {
     console.log(
@@ -414,20 +386,13 @@ async function notifyOrgMembers(
     return;
   }
 
-  if (org.status !== 'active') {
-    console.log(
-      JSON.stringify({
-        level: 'info',
-        message: 'Skipping notification for inactive org',
-        orgId,
-      })
-    );
-    return;
-  }
+  const policyRaw = org.settings?.notificationPolicy;
+  const notificationPolicy =
+    policyRaw === 'org_all' || policyRaw === 'assigned_only' ? policyRaw : 'assigned_only';
 
-  // Load all org members
-  const allMembers = await loadOrgMembers(config.awsRegion, config.ddbTableName, orgId);
-  const activeMembers = allMembers.filter((m) => m.status === 'active');
+  // Load all org members + user profiles
+  const allMembers = await loadOrgMembersWithUsers(orgId);
+  const activeMembers = allMembers.filter((entry) => entry.user?.status === 'active');
 
   if (activeMembers.length === 0) {
     console.log(
@@ -441,29 +406,37 @@ async function notifyOrgMembers(
   }
 
   // Determine which members to notify based on org policy
-  let membersToNotify: MembershipRecord[];
+  let membersToNotify: MemberWithUser[];
+  const isLeadership = (role: MembershipRecord['role']) =>
+    role === 'ORG_OWNER' || role === 'MANAGER';
 
-  if (org.notificationPolicy === 'org_all') {
+  if (notificationPolicy === 'org_all') {
     // Notify all active members with notification flags
-    membersToNotify = activeMembers.filter((m) => m.notifyEmail || m.notifySms);
+    membersToNotify = activeMembers.filter(
+      (entry) => entry.member.notifyEmail || entry.member.notifySms
+    );
   } else {
     // assigned_only policy
     if (event.assignedUserId) {
       // Notify the specifically assigned user
-      const assignedMember = activeMembers.find((m) => m.userId === event.assignedUserId);
+      const assignedMember = activeMembers.find(
+        (entry) => entry.member.userId === event.assignedUserId
+      );
 
       if (assignedMember) {
         membersToNotify = [assignedMember];
       } else {
         // Assigned user not found in members - fall back to owners/managers
         membersToNotify = activeMembers.filter(
-          (m) => (m.role === 'owner' || m.role === 'manager') && (m.notifyEmail || m.notifySms)
+          (entry) =>
+            isLeadership(entry.member.role) && (entry.member.notifyEmail || entry.member.notifySms)
         );
       }
     } else {
       // No specific user assigned - notify owners and managers
       membersToNotify = activeMembers.filter(
-        (m) => (m.role === 'owner' || m.role === 'manager') && (m.notifyEmail || m.notifySms)
+        (entry) =>
+          isLeadership(entry.member.role) && (entry.member.notifyEmail || entry.member.notifySms)
       );
     }
   }
@@ -474,7 +447,7 @@ async function notifyOrgMembers(
         level: 'info',
         message: 'No members to notify after policy filter',
         orgId,
-        policy: org.notificationPolicy,
+        policy: notificationPolicy,
       })
     );
     return;
@@ -483,13 +456,17 @@ async function notifyOrgMembers(
   const ttl = getNotificationTtl();
 
   // Send notifications to each member
-  for (const member of membersToNotify) {
+  for (const entry of membersToNotify) {
+    const member = entry.member;
+    const user = entry.user;
+    const displayName = user?.name || user?.email || 'Team member';
+
     // Send email if member has email notifications enabled
-    if (featureFlags.enable_email_notifications && member.notifyEmail && member.email) {
-      const emailContent = buildLeadAssignedEmail(lead, member.name);
+    if (featureFlags.enable_email_notifications && member.notifyEmail && user?.email) {
+      const emailContent = buildLeadAssignedEmail(lead, displayName);
 
       const emailResult = await sendEmail({
-        to: member.email,
+        to: user.email,
         subject: emailContent.subject,
         htmlBody: emailContent.htmlBody,
         textBody: emailContent.textBody,
@@ -497,14 +474,14 @@ async function notifyOrgMembers(
         region: config.awsRegion,
       });
 
-      await recordNotification(config.awsRegion, config.ddbTableName, {
+      await recordNotification(config.awsRegion, config.notificationsTableName, {
         pk: `${DB_PREFIXES.NOTIFY}${lead.leadId}`,
         sk: `EMAIL#org_member#${member.userId}`,
         notificationId: uuidv4(),
         leadId: lead.leadId,
         funnelId: lead.funnelId,
         recipientType: 'org_member',
-        recipientId: member.email,
+        recipientId: user.email,
         channel: 'email',
         status: emailResult.success ? 'sent' : 'failed',
         messageId: emailResult.messageId,
@@ -515,25 +492,25 @@ async function notifyOrgMembers(
     }
 
     // Send SMS if member has SMS notifications enabled
-    if (featureFlags.enable_sms_notifications && member.notifySms && member.phone) {
+    if (featureFlags.enable_sms_notifications && member.notifySms && user?.phone) {
       const smsBody = buildLeadAssignedSms(lead);
 
       const smsResult = await sendSms({
-        to: member.phone,
+        to: user.phone,
         body: smsBody,
         region: config.awsRegion,
         featureFlags,
         twilioSecretArn: config.twilioSecretArn,
       });
 
-      await recordNotification(config.awsRegion, config.ddbTableName, {
+      await recordNotification(config.awsRegion, config.notificationsTableName, {
         pk: `${DB_PREFIXES.NOTIFY}${lead.leadId}`,
         sk: `SMS#org_member#${member.userId}`,
         notificationId: uuidv4(),
         leadId: lead.leadId,
         funnelId: lead.funnelId,
         recipientType: 'org_member',
-        recipientId: member.phone,
+        recipientId: user.phone,
         channel: 'sms',
         status: smsResult.success ? 'sent' : 'failed',
         messageId: smsResult.messageId,
@@ -588,7 +565,7 @@ export async function dispatchNotifications(
       // Update lead internal notification timestamp
       await updateLeadNotificationTimestamp(
         config.awsRegion,
-        config.ddbTableName,
+        config.leadsTableName,
         lead.leadId,
         lead.funnelId,
         'notifiedInternalAt'
@@ -600,7 +577,7 @@ export async function dispatchNotifications(
       // Update lead org notification timestamp
       await updateLeadNotificationTimestamp(
         config.awsRegion,
-        config.ddbTableName,
+        config.leadsTableName,
         lead.leadId,
         lead.funnelId,
         'notifiedOrgAt'
@@ -614,7 +591,7 @@ export async function dispatchNotifications(
       // Update lead internal notification timestamp
       await updateLeadNotificationTimestamp(
         config.awsRegion,
-        config.ddbTableName,
+        config.leadsTableName,
         lead.leadId,
         lead.funnelId,
         'notifiedInternalAt'

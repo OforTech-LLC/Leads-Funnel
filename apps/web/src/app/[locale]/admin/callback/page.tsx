@@ -6,7 +6,8 @@
  * Handles the redirect from Cognito Hosted UI after authentication.
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { exchangeCodeForTokens, verifyState } from '@/lib/admin/auth';
 
@@ -14,13 +15,8 @@ export default function AdminCallback() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    handleCallback();
-  }, []);
-
-  async function handleCallback() {
+  const handleCallback = useCallback(async () => {
     // Get authorization code and state from URL
     const code = searchParams.get('code');
     const state = searchParams.get('state');
@@ -30,21 +26,18 @@ export default function AdminCallback() {
     // Handle error from Cognito
     if (errorParam) {
       setError(errorDescription || errorParam);
-      setLoading(false);
       return;
     }
 
     // Validate required parameters
     if (!code) {
       setError('Missing authorization code');
-      setLoading(false);
       return;
     }
 
     // Security: State parameter is mandatory for CSRF protection
     if (!state || !verifyState(state)) {
       setError('Invalid or missing state parameter. Please try logging in again.');
-      setLoading(false);
       return;
     }
 
@@ -56,9 +49,12 @@ export default function AdminCallback() {
       router.replace('/admin');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Authentication failed');
-      setLoading(false);
     }
-  }
+  }, [router, searchParams]);
+
+  useEffect(() => {
+    handleCallback();
+  }, [handleCallback]);
 
   return (
     <div className="callback-page">
@@ -66,9 +62,9 @@ export default function AdminCallback() {
         <div className="callback-error">
           <h1>Authentication Error</h1>
           <p>{error}</p>
-          <a href="/admin" className="callback-link">
+          <Link href="/admin" className="callback-link">
             Try Again
-          </a>
+          </Link>
         </div>
       ) : (
         <div className="callback-loading">

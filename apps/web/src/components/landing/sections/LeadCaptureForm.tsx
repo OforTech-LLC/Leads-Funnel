@@ -119,8 +119,9 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
     // Clear error immediately for better UX
     setErrors((prev) => {
       if (prev[name]) {
-        const { [name]: _, ...rest } = prev;
-        return rest;
+        const next = { ...prev };
+        delete next[name];
+        return next;
       }
       return prev;
     });
@@ -230,7 +231,7 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
 
         setIsSuccess(true);
         onSuccess?.(sanitizedData);
-      } catch (error) {
+      } catch {
         setErrors({ submit: 'Something went wrong. Please try again.' });
       } finally {
         setIsSubmitting(false);
@@ -250,6 +251,13 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
       },
     }),
     []
+  );
+
+  const submitButtonStyle = useMemo(
+    () => ({
+      border: `1px solid ${accentColor}`,
+    }),
+    [accentColor]
   );
 
   if (isSuccess) {
@@ -363,7 +371,14 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
           )}
 
           {/* Submit button */}
-          <GlassButton type="submit" variant="primary" size="lg" fullWidth loading={isSubmitting}>
+          <GlassButton
+            type="submit"
+            variant="primary"
+            size="lg"
+            fullWidth
+            loading={isSubmitting}
+            style={submitButtonStyle}
+          >
             {submitText}
           </GlassButton>
 

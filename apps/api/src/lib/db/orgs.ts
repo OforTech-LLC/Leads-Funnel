@@ -7,7 +7,8 @@
  */
 
 import { PutCommand, GetCommand, UpdateCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
-import { getDocClient, tableName } from './client.js';
+import { getDocClient } from './client.js';
+import { getOrgsTableName } from './table-names.js';
 import { ulid } from '../../lib/id.js';
 import { sha256 } from '../hash.js';
 import { signCursor, verifyCursor } from '../cursor.js';
@@ -94,7 +95,7 @@ export async function createOrg(input: CreateOrgInput): Promise<Org> {
 
   await doc.send(
     new PutCommand({
-      TableName: tableName(),
+      TableName: getOrgsTableName(),
       Item: org,
       ConditionExpression: 'attribute_not_exists(pk)',
     })
@@ -116,7 +117,7 @@ export async function getOrg(orgId: string): Promise<Org | null> {
   const doc = getDocClient();
   const result = await doc.send(
     new GetCommand({
-      TableName: tableName(),
+      TableName: getOrgsTableName(),
       Key: { pk: `${DB_PREFIXES.ORG}${orgId}`, sk: DB_SORT_KEYS.META },
     })
   );
@@ -172,7 +173,7 @@ export async function updateOrg(input: UpdateOrgInput): Promise<Org> {
 
   const result = await doc.send(
     new UpdateCommand({
-      TableName: tableName(),
+      TableName: getOrgsTableName(),
       Key: { pk: `${DB_PREFIXES.ORG}${input.orgId}`, sk: DB_SORT_KEYS.META },
       UpdateExpression: `SET ${parts.join(', ')}`,
       ExpressionAttributeNames: names,
@@ -191,7 +192,7 @@ export async function softDeleteOrg(orgId: string): Promise<void> {
 
   await doc.send(
     new UpdateCommand({
-      TableName: tableName(),
+      TableName: getOrgsTableName(),
       Key: { pk: `${DB_PREFIXES.ORG}${orgId}`, sk: DB_SORT_KEYS.META },
       UpdateExpression: 'SET deletedAt = :d, #updatedAt = :u',
       ExpressionAttributeNames: { '#updatedAt': 'updatedAt' },
@@ -243,7 +244,7 @@ export async function listOrgs(
 
   const result = await doc.send(
     new QueryCommand({
-      TableName: tableName(),
+      TableName: getOrgsTableName(),
       IndexName: GSI_INDEX_NAMES.GSI1,
       KeyConditionExpression: 'gsi1pk = :pk',
       FilterExpression: filterExpressions.join(' AND '),

@@ -16,7 +16,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter, usePathname } from '@/i18n/navigation';
-import { tokens, GlassButton } from '@/design-system';
+import { tokens } from '@/design-system';
 import {
   HeroSection,
   BenefitsSection,

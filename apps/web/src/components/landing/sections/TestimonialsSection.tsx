@@ -13,6 +13,7 @@
  */
 
 import React from 'react';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { TestimonialCard, tokens } from '@/design-system';
 
@@ -169,13 +170,13 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
               }}
             >
               {featured.avatar && (
-                <img
+                <Image
                   src={featured.avatar}
                   alt={featured.author}
-                  loading="lazy"
+                  width={64}
+                  height={64}
+                  unoptimized
                   style={{
-                    width: '64px',
-                    height: '64px',
                     borderRadius: tokens.radii.full,
                     objectFit: 'cover',
                     border: `3px solid ${accentColor}`,

@@ -23,7 +23,6 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   submitLead,
   resetLead,
-  selectLeadStatus,
   selectIsSubmitting,
   selectIsSuccess,
   selectIsError,
@@ -39,7 +38,6 @@ import { trackFormSubmission } from '@/components/GoogleAnalytics';
 // ---------------------------------------------------------------------------
 
 const FORM_STORAGE_KEY = 'lead_form_progress';
-const FIELD_ORDER = ['name', 'email', 'phone', 'message'] as const;
 
 // ---------------------------------------------------------------------------
 // GA4 Tracking Helpers
@@ -91,7 +89,6 @@ export function LeadForm({ funnelId, primaryColor = '#0070f3' }: LeadFormProps) 
   const dispatch = useAppDispatch();
 
   // Redux state
-  const status = useAppSelector(selectLeadStatus);
   const isSubmitting = useAppSelector(selectIsSubmitting);
   const isSuccess = useAppSelector(selectIsSuccess);
   const isError = useAppSelector(selectIsError);

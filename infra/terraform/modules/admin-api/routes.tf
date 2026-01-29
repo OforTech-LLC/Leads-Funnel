@@ -36,65 +36,17 @@ resource "aws_apigatewayv2_integration" "admin" {
 # Admin Routes - all protected by JWT authorizer
 # =====================================================
 
-resource "aws_apigatewayv2_route" "admin_funnels" {
+resource "aws_apigatewayv2_route" "admin_any" {
   api_id             = var.api_gateway_id
-  route_key          = "GET /admin/funnels"
+  route_key          = "ANY /admin"
   target             = "integrations/${aws_apigatewayv2_integration.admin.id}"
   authorization_type = "JWT"
   authorizer_id      = aws_apigatewayv2_authorizer.admin_jwt.id
 }
 
-resource "aws_apigatewayv2_route" "admin_query" {
+resource "aws_apigatewayv2_route" "admin_any_proxy" {
   api_id             = var.api_gateway_id
-  route_key          = "POST /admin/query"
-  target             = "integrations/${aws_apigatewayv2_integration.admin.id}"
-  authorization_type = "JWT"
-  authorizer_id      = aws_apigatewayv2_authorizer.admin_jwt.id
-}
-
-resource "aws_apigatewayv2_route" "admin_leads_update" {
-  api_id             = var.api_gateway_id
-  route_key          = "POST /admin/leads/update"
-  target             = "integrations/${aws_apigatewayv2_integration.admin.id}"
-  authorization_type = "JWT"
-  authorizer_id      = aws_apigatewayv2_authorizer.admin_jwt.id
-}
-
-resource "aws_apigatewayv2_route" "admin_leads_bulk_update" {
-  api_id             = var.api_gateway_id
-  route_key          = "POST /admin/leads/bulk-update"
-  target             = "integrations/${aws_apigatewayv2_integration.admin.id}"
-  authorization_type = "JWT"
-  authorizer_id      = aws_apigatewayv2_authorizer.admin_jwt.id
-}
-
-resource "aws_apigatewayv2_route" "admin_exports_create" {
-  api_id             = var.api_gateway_id
-  route_key          = "POST /admin/exports/create"
-  target             = "integrations/${aws_apigatewayv2_integration.admin.id}"
-  authorization_type = "JWT"
-  authorizer_id      = aws_apigatewayv2_authorizer.admin_jwt.id
-}
-
-resource "aws_apigatewayv2_route" "admin_exports_status" {
-  api_id             = var.api_gateway_id
-  route_key          = "GET /admin/exports/status"
-  target             = "integrations/${aws_apigatewayv2_integration.admin.id}"
-  authorization_type = "JWT"
-  authorizer_id      = aws_apigatewayv2_authorizer.admin_jwt.id
-}
-
-resource "aws_apigatewayv2_route" "admin_exports_download" {
-  api_id             = var.api_gateway_id
-  route_key          = "GET /admin/exports/download"
-  target             = "integrations/${aws_apigatewayv2_integration.admin.id}"
-  authorization_type = "JWT"
-  authorizer_id      = aws_apigatewayv2_authorizer.admin_jwt.id
-}
-
-resource "aws_apigatewayv2_route" "admin_stats" {
-  api_id             = var.api_gateway_id
-  route_key          = "GET /admin/stats"
+  route_key          = "ANY /admin/{proxy+}"
   target             = "integrations/${aws_apigatewayv2_integration.admin.id}"
   authorization_type = "JWT"
   authorizer_id      = aws_apigatewayv2_authorizer.admin_jwt.id

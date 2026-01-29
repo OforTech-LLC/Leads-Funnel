@@ -72,6 +72,48 @@ variable "export_jobs_table_arn" {
   type        = string
 }
 
+variable "platform_orgs_table_name" {
+  description = "DynamoDB orgs table name"
+  type        = string
+  default     = ""
+}
+
+variable "platform_users_table_name" {
+  description = "DynamoDB users table name"
+  type        = string
+  default     = ""
+}
+
+variable "platform_memberships_table_name" {
+  description = "DynamoDB memberships table name"
+  type        = string
+  default     = ""
+}
+
+variable "platform_assignment_rules_table_name" {
+  description = "DynamoDB assignment rules table name"
+  type        = string
+  default     = ""
+}
+
+variable "platform_leads_table_name" {
+  description = "DynamoDB leads table name"
+  type        = string
+  default     = ""
+}
+
+variable "platform_notifications_table_name" {
+  description = "DynamoDB notifications table name"
+  type        = string
+  default     = ""
+}
+
+variable "platform_unassigned_table_name" {
+  description = "DynamoDB unassigned table name"
+  type        = string
+  default     = ""
+}
+
 variable "api_gateway_id" {
   description = "API Gateway ID to add admin routes"
   type        = string

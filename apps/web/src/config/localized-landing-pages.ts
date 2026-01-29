@@ -4,7 +4,6 @@
  * Returns service-specific content with translations based on locale.
  */
 
-import { ServiceConfig } from '@/components/landing';
 import { LandingPageConfig } from './landing-pages';
 
 // Import translation files

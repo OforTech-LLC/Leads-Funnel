@@ -270,6 +270,21 @@ resource "aws_ssm_parameter" "idempotency_ttl" {
 }
 
 # -----------------------------------------------------------------------------
+# Quality Scoring Configuration
+# -----------------------------------------------------------------------------
+resource "aws_ssm_parameter" "quality_quarantine_threshold" {
+  name        = "${local.parameter_prefix}/quality/quarantine_threshold"
+  description = "Lead quality score threshold for quarantine (0-100)"
+  type        = "String"
+  value       = tostring(var.quality_quarantine_threshold)
+
+  tags = merge(var.tags, {
+    Name = "quality-quarantine-threshold"
+    Type = "config"
+  })
+}
+
+# -----------------------------------------------------------------------------
 # API Base URL
 # -----------------------------------------------------------------------------
 resource "aws_ssm_parameter" "api_base_url" {

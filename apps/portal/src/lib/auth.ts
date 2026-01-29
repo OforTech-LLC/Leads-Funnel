@@ -20,9 +20,12 @@ export interface TokenPayload {
   email: string;
   given_name: string;
   family_name: string;
-  'custom:org_ids': string;
-  'custom:primary_org_id': string;
-  'custom:role': string;
+  'custom:userId'?: string;
+  'custom:orgIds'?: string;
+  'custom:primaryOrgId'?: string;
+  'custom:org_ids'?: string;
+  'custom:primary_org_id'?: string;
+  'custom:role'?: string;
   exp: number;
   iat: number;
 }
@@ -231,13 +234,16 @@ export function getUserFromToken(token: string): CurrentUser | null {
   // Check expiration
   if (payload.exp * 1000 < Date.now()) return null;
 
+  const orgIdsRaw = payload['custom:orgIds'] || payload['custom:org_ids'] || '';
+  const primaryOrgId = payload['custom:primaryOrgId'] || payload['custom:primary_org_id'] || '';
+
   return {
-    userId: payload.sub,
+    userId: payload['custom:userId'] || payload.sub,
     email: payload.email,
     firstName: payload.given_name || '',
     lastName: payload.family_name || '',
-    orgIds: (payload['custom:org_ids'] || '').split(',').filter(Boolean),
-    primaryOrgId: payload['custom:primary_org_id'] || '',
+    orgIds: orgIdsRaw.split(',').filter(Boolean),
+    primaryOrgId: primaryOrgId,
     role: payload['custom:role'] || 'agent',
   };
 }

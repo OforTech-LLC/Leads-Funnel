@@ -138,9 +138,13 @@ resource "aws_lambda_function" "lead_handler" {
       local.common_env_vars,
       local.dynamodb_env_vars,
       {
-        EVENT_BUS_NAME   = var.event_bus_name
-        FUNNEL_IDS       = join(",", var.funnel_ids)
-        IP_HASH_SALT_ARN = var.ip_hash_salt_secret_arn
+        EVENT_BUS_NAME            = var.event_bus_name
+        FUNNEL_IDS                = join(",", var.funnel_ids)
+        IP_HASH_SALT_ARN          = var.ip_hash_salt_secret_arn
+        DDB_TABLE_NAME            = var.platform_leads_table_name
+        PLATFORM_LEADS_TABLE_NAME = var.platform_leads_table_name
+        AVATARS_BUCKET            = var.avatars_bucket_name
+        AVATAR_PUBLIC_BASE_URL    = var.avatar_public_base_url
       }
     )
   }

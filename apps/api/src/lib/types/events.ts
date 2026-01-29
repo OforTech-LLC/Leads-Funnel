@@ -29,7 +29,12 @@ export interface FeatureFlags {
 export interface AssignmentWorkerConfig {
   awsRegion: string;
   env: 'dev' | 'prod';
-  ddbTableName: string;
+  leadsTableName: string;
+  orgsTableName: string;
+  usersTableName: string;
+  membershipsTableName: string;
+  assignmentRulesTableName: string;
+  unassignedTableName: string;
   eventBusName: string;
   featureFlagSsmPath: string;
   assignmentRulesSsmPath: string;
@@ -38,7 +43,11 @@ export interface AssignmentWorkerConfig {
 export interface NotificationWorkerConfig {
   awsRegion: string;
   env: 'dev' | 'prod';
-  ddbTableName: string;
+  leadsTableName: string;
+  orgsTableName: string;
+  usersTableName: string;
+  membershipsTableName: string;
+  notificationsTableName: string;
   featureFlagSsmPath: string;
   internalRecipientsSsmPath: string;
   sesFromAddress: string;
@@ -53,7 +62,8 @@ export interface PreTokenAdminConfig {
 
 export interface PreTokenPortalConfig {
   awsRegion: string;
-  ddbTableName: string;
+  usersTableName: string;
+  membershipsTableName: string;
 }
 
 // =============================================================================
@@ -125,10 +135,11 @@ export interface LeadRecord {
   status: string;
   createdAt: string;
   updatedAt?: string;
-  assignedOrgId?: string;
+  orgId?: string;
   assignedUserId?: string;
-  assignmentRuleId?: string;
+  ruleId?: string;
   assignedAt?: string;
+  notifiedAt?: string;
   notifiedInternalAt?: string;
   notifiedOrgAt?: string;
   gsi1pk?: string;
@@ -149,12 +160,15 @@ export interface OrgRecord {
   sk: string;
   orgId: string;
   name: string;
-  status: 'active' | 'inactive' | 'suspended';
-  notificationPolicy: 'org_all' | 'assigned_only';
-  email?: string;
+  slug?: string;
+  contactEmail?: string;
   phone?: string;
+  notifyEmails?: string[];
+  notifySms?: string[];
+  settings?: Record<string, unknown>;
   createdAt: string;
   updatedAt?: string;
+  deletedAt?: string;
 }
 
 export interface MembershipRecord {
@@ -162,14 +176,11 @@ export interface MembershipRecord {
   sk: string;
   userId: string;
   orgId: string;
-  role: 'owner' | 'manager' | 'member';
-  status: 'active' | 'inactive';
+  role: 'ORG_OWNER' | 'MANAGER' | 'AGENT' | 'VIEWER';
   notifyEmail: boolean;
   notifySms: boolean;
-  email: string;
-  phone?: string;
-  name: string;
-  createdAt: string;
+  joinedAt: string;
+  updatedAt: string;
 }
 
 // =============================================================================
@@ -180,10 +191,12 @@ export interface UserRecord {
   pk: string;
   sk: string;
   userId: string;
-  cognitoSub: string;
+  cognitoSub?: string;
   email: string;
   name: string;
-  status: 'active' | 'inactive';
+  status: 'active' | 'inactive' | 'invited';
+  phone?: string;
+  avatarUrl?: string;
   createdAt: string;
   gsi2pk?: string; // COGNITO#{cognitoSub}
   gsi2sk?: string;

@@ -8,7 +8,8 @@
  */
 
 import { PutCommand, GetCommand, UpdateCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
-import { getDocClient, tableName } from './client.js';
+import { getDocClient } from './client.js';
+import { getAssignmentRulesTableName } from './table-names.js';
 import { ulid } from '../../lib/id.js';
 import { signCursor, verifyCursor } from '../cursor.js';
 import { DB_PREFIXES, DB_SORT_KEYS, GSI_KEYS, GSI_INDEX_NAMES } from '../constants.js';
@@ -23,11 +24,14 @@ export interface AssignmentRule {
   ruleId: string;
   funnelId: string;
   orgId: string;
+  targetUserId?: string;
   name: string;
   priority: number;
   zipPatterns: string[];
-  dailyCap: number;
+  dailyCap?: number;
+  monthlyCap?: number;
   isActive: boolean;
+  description?: string;
   createdAt: string;
   updatedAt: string;
   deletedAt?: string;
@@ -40,20 +44,28 @@ export interface AssignmentRule {
 export interface CreateRuleInput {
   funnelId: string;
   orgId: string;
+  targetUserId?: string;
   name: string;
   priority: number;
   zipPatterns: string[];
-  dailyCap: number;
+  dailyCap?: number;
+  monthlyCap?: number;
   isActive?: boolean;
+  description?: string;
 }
 
 export interface UpdateRuleInput {
   ruleId: string;
+  funnelId?: string;
+  orgId?: string;
   name?: string;
   priority?: number;
   zipPatterns?: string[];
   dailyCap?: number;
+  monthlyCap?: number;
   isActive?: boolean;
+  targetUserId?: string;
+  description?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -72,11 +84,14 @@ export async function createRule(input: CreateRuleInput): Promise<AssignmentRule
     ruleId,
     funnelId: input.funnelId,
     orgId: input.orgId,
+    targetUserId: input.targetUserId,
     name: input.name,
     priority: input.priority,
     zipPatterns: input.zipPatterns,
     dailyCap: input.dailyCap,
+    monthlyCap: input.monthlyCap,
     isActive: input.isActive ?? true,
+    description: input.description,
     createdAt: now,
     updatedAt: now,
     gsi1pk: `${GSI_KEYS.FUNNEL}${input.funnelId}`,
@@ -87,7 +102,7 @@ export async function createRule(input: CreateRuleInput): Promise<AssignmentRule
 
   await doc.send(
     new PutCommand({
-      TableName: tableName(),
+      TableName: getAssignmentRulesTableName(),
       Item: rule,
       ConditionExpression: 'attribute_not_exists(pk)',
     })
@@ -104,7 +119,7 @@ export async function getRule(ruleId: string): Promise<AssignmentRule | null> {
   const doc = getDocClient();
   const result = await doc.send(
     new GetCommand({
-      TableName: tableName(),
+      TableName: getAssignmentRulesTableName(),
       Key: { pk: `${DB_PREFIXES.RULE}${ruleId}`, sk: DB_SORT_KEYS.META },
     })
   );
@@ -126,6 +141,18 @@ export async function updateRule(input: UpdateRuleInput): Promise<AssignmentRule
     names['#name'] = 'name';
     values[':name'] = input.name;
   }
+  if (input.funnelId !== undefined) {
+    parts.push('funnelId = :funnelId');
+    values[':funnelId'] = input.funnelId;
+    parts.push('gsi1pk = :gsi1pk');
+    values[':gsi1pk'] = `${GSI_KEYS.FUNNEL}${input.funnelId}`;
+  }
+  if (input.orgId !== undefined) {
+    parts.push('orgId = :orgId');
+    values[':orgId'] = input.orgId;
+    parts.push('gsi2pk = :gsi2pk');
+    values[':gsi2pk'] = `${GSI_KEYS.ORG}${input.orgId}`;
+  }
   if (input.priority !== undefined) {
     parts.push('priority = :priority');
     values[':priority'] = input.priority;
@@ -141,14 +168,26 @@ export async function updateRule(input: UpdateRuleInput): Promise<AssignmentRule
     parts.push('dailyCap = :dc');
     values[':dc'] = input.dailyCap;
   }
+  if (input.monthlyCap !== undefined) {
+    parts.push('monthlyCap = :mc');
+    values[':mc'] = input.monthlyCap;
+  }
   if (input.isActive !== undefined) {
     parts.push('isActive = :active');
     values[':active'] = input.isActive;
   }
+  if (input.targetUserId !== undefined) {
+    parts.push('targetUserId = :tu');
+    values[':tu'] = input.targetUserId;
+  }
+  if (input.description !== undefined) {
+    parts.push('description = :desc');
+    values[':desc'] = input.description;
+  }
 
   const result = await doc.send(
     new UpdateCommand({
-      TableName: tableName(),
+      TableName: getAssignmentRulesTableName(),
       Key: { pk: `${DB_PREFIXES.RULE}${input.ruleId}`, sk: DB_SORT_KEYS.META },
       UpdateExpression: `SET ${parts.join(', ')}`,
       ExpressionAttributeNames: names,
@@ -167,7 +206,7 @@ export async function softDeleteRule(ruleId: string): Promise<void> {
 
   await doc.send(
     new UpdateCommand({
-      TableName: tableName(),
+      TableName: getAssignmentRulesTableName(),
       Key: { pk: `${DB_PREFIXES.RULE}${ruleId}`, sk: DB_SORT_KEYS.META },
       UpdateExpression: 'SET deletedAt = :d, #updatedAt = :u, isActive = :f',
       ExpressionAttributeNames: { '#updatedAt': 'updatedAt' },
@@ -201,7 +240,7 @@ export async function listRules(
   if (funnelId) {
     const result = await doc.send(
       new QueryCommand({
-        TableName: tableName(),
+        TableName: getAssignmentRulesTableName(),
         IndexName: GSI_INDEX_NAMES.GSI1,
         KeyConditionExpression: 'gsi1pk = :pk',
         FilterExpression: 'attribute_not_exists(deletedAt)',
@@ -224,7 +263,7 @@ export async function listRules(
   const { ScanCommand } = await import('@aws-sdk/lib-dynamodb');
   const result = await doc.send(
     new ScanCommand({
-      TableName: tableName(),
+      TableName: getAssignmentRulesTableName(),
       FilterExpression:
         'begins_with(pk, :prefix) AND sk = :meta AND attribute_not_exists(deletedAt)',
       ExpressionAttributeValues: { ':prefix': DB_PREFIXES.RULE, ':meta': DB_SORT_KEYS.META },
@@ -253,7 +292,7 @@ export async function getRulesByFunnel(funnelId: string): Promise<AssignmentRule
   do {
     const result = await doc.send(
       new QueryCommand({
-        TableName: tableName(),
+        TableName: getAssignmentRulesTableName(),
         IndexName: GSI_INDEX_NAMES.GSI1,
         KeyConditionExpression: 'gsi1pk = :pk',
         FilterExpression: 'isActive = :yes AND attribute_not_exists(deletedAt)',

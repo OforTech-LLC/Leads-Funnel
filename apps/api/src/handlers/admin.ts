@@ -60,7 +60,8 @@ import { handleWebhookRoutes } from '../lib/webhooks/handler.js';
 import { emitLeadStatusChanged } from '../lib/events.js';
 import * as analytics from '../lib/analytics/aggregator.js';
 import { PutCommand, ScanCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
-import { getDocClient, tableName } from '../lib/db/client.js';
+import { getDocClient } from '../lib/db/client.js';
+import { getExportsTableName, getPlatformLeadsTableName } from '../lib/db/table-names.js';
 import { ulid } from '../lib/id.js';
 import {
   MAX_BODY_SIZE,
@@ -200,6 +201,77 @@ function mapPipelineToStatus(status?: AdminPipelineStatus): leadsDb.LeadStatus |
     default:
       return undefined;
   }
+}
+
+type AdminRuleShape = {
+  ruleId: string;
+  name: string;
+  priority: number;
+  funnels: string[];
+  zipCodes: string[];
+  targetOrgId: string;
+  targetOrgName: string;
+  targetUserId?: string;
+  targetUserName?: string;
+  active: boolean;
+  dailyCap?: number;
+  monthlyCap?: number;
+  currentDailyCount: number;
+  currentMonthlyCount: number;
+  matchedLeadsCount: number;
+  createdAt: string;
+  updatedAt: string;
+  description?: string;
+};
+
+async function mapAdminRule(
+  rule: rulesDb.AssignmentRule,
+  orgCache: Map<string, orgsDb.Org | null>,
+  userCache: Map<string, usersDb.User | null>
+): Promise<AdminRuleShape> {
+  if (!orgCache.has(rule.orgId)) {
+    orgCache.set(rule.orgId, await orgsDb.getOrg(rule.orgId));
+  }
+  const orgName = orgCache.get(rule.orgId)?.name || rule.orgId;
+
+  let targetUserName: string | undefined;
+  if (rule.targetUserId) {
+    if (!userCache.has(rule.targetUserId)) {
+      userCache.set(rule.targetUserId, await usersDb.getUser(rule.targetUserId));
+    }
+    targetUserName = userCache.get(rule.targetUserId)?.name;
+  }
+
+  const funnels = rule.funnelId && rule.funnelId !== '*' ? [rule.funnelId] : [];
+  const zipCodes = rule.zipPatterns || [];
+
+  return {
+    ruleId: rule.ruleId,
+    name: rule.name,
+    priority: rule.priority,
+    funnels,
+    zipCodes,
+    targetOrgId: rule.orgId,
+    targetOrgName: orgName,
+    targetUserId: rule.targetUserId,
+    targetUserName,
+    active: rule.isActive,
+    dailyCap: rule.dailyCap,
+    monthlyCap: rule.monthlyCap,
+    currentDailyCount: 0,
+    currentMonthlyCount: 0,
+    matchedLeadsCount: 0,
+    createdAt: rule.createdAt,
+    updatedAt: rule.updatedAt,
+    description: rule.description,
+  };
+}
+
+async function mapAdminRules(rules: rulesDb.AssignmentRule[]): Promise<AdminRuleShape[]> {
+  const orgCache = new Map<string, orgsDb.Org | null>();
+  const userCache = new Map<string, usersDb.User | null>();
+
+  return Promise.all(rules.map((rule) => mapAdminRule(rule, orgCache, userCache)));
 }
 
 async function mapAdminLeads(leads: leadsDb.PlatformLead[]): Promise<
@@ -993,45 +1065,77 @@ async function handleAdminRequest(event: APIGatewayProxyEventV2): Promise<APIGat
       if (!canWrite) return resp.forbidden(undefined, requestOrigin);
       const body = parseBody(event);
       if (body === null) return resp.badRequest('Invalid JSON in request body', requestOrigin);
-      if (!body.funnelId || !body.orgId || !body.name || body.priority === undefined) {
-        return resp.badRequest(
-          'funnelId, orgId, name, priority, and zipPatterns are required',
-          requestOrigin
-        );
+      const rawFunnels = Array.isArray(body.funnels) ? body.funnels : [];
+      const funnels = rawFunnels.map((f) => String(f).trim()).filter(Boolean);
+      const funnelIdInput = typeof body.funnelId === 'string' ? body.funnelId.trim() : '';
+      const targetOrgId =
+        (typeof body.targetOrgId === 'string' && body.targetOrgId.trim()) ||
+        (typeof body.orgId === 'string' && body.orgId.trim()) ||
+        '';
+
+      if (!targetOrgId || !body.name || body.priority === undefined) {
+        return resp.badRequest('targetOrgId, name, and priority are required', requestOrigin);
       }
-      const rule = await rulesDb.createRule({
-        funnelId: body.funnelId as string,
-        orgId: body.orgId as string,
-        name: body.name as string,
-        priority: body.priority as number,
-        zipPatterns: (body.zipPatterns as string[]) || [],
-        dailyCap: (body.dailyCap as number) || 0,
-        isActive: body.isActive as boolean | undefined,
-      });
+
+      const funnelIds = funnels.length > 0 ? funnels : funnelIdInput ? [funnelIdInput] : ['*'];
+      const zipPatterns = Array.isArray(body.zipCodes)
+        ? body.zipCodes.map((z) => String(z).trim()).filter(Boolean)
+        : Array.isArray(body.zipPatterns)
+          ? body.zipPatterns.map((z) => String(z).trim()).filter(Boolean)
+          : [];
+
+      const createdRules: rulesDb.AssignmentRule[] = [];
+
+      for (const funnelId of funnelIds) {
+        const rule = await rulesDb.createRule({
+          funnelId,
+          orgId: targetOrgId,
+          targetUserId:
+            typeof body.targetUserId === 'string' ? body.targetUserId.trim() : undefined,
+          name: body.name as string,
+          priority: body.priority as number,
+          zipPatterns,
+          dailyCap: body.dailyCap as number | undefined,
+          monthlyCap: body.monthlyCap as number | undefined,
+          isActive: (body.active as boolean | undefined) ?? (body.isActive as boolean | undefined),
+          description: body.description as string | undefined,
+        });
+        createdRules.push(rule);
+      }
+
+      const [mapped] = await mapAdminRules(createdRules);
       await recordAudit({
         actorId: admin.emailHash,
         actorType: ACTOR_TYPES.ADMIN,
         action: 'rule.create',
         resourceType: 'rule',
-        resourceId: rule.ruleId,
+        resourceId: createdRules[0]?.ruleId || 'rule',
         ipHash: getIpHash(event),
       });
-      return resp.created(rule, requestOrigin);
+      return resp.created(
+        {
+          ...mapped,
+          createdCount: createdRules.length,
+        },
+        requestOrigin
+      );
     }
 
     if (subpath === '/rules' && method === 'GET') {
       const funnelId = queryParam(event, 'funnelId');
       const result = await rulesDb.listRules(
-        funnelId,
+        funnelId || undefined,
         queryParam(event, 'cursor'),
         Number(queryParam(event, 'limit')) || 50
       );
-      return resp.paginated(
-        result.items,
+      const mapped = await mapAdminRules(result.items);
+      return resp.success(
         {
-          nextCursor: result.nextCursor,
-          hasMore: !!result.nextCursor,
+          rules: mapped,
+          total: mapped.length,
+          nextToken: result.nextCursor,
         },
+        undefined,
         requestOrigin
       );
     }
@@ -1047,8 +1151,8 @@ async function handleAdminRequest(event: APIGatewayProxyEventV2): Promise<APIGat
       const adapted = rules.map((r) => ({
         ruleId: r.ruleId,
         funnelId: r.funnelId,
-        targetType: 'ORG' as const,
-        targetId: r.orgId,
+        targetType: r.targetUserId ? ('USER' as const) : ('ORG' as const),
+        targetId: r.targetUserId || r.orgId,
         orgId: r.orgId,
         zipPatterns: r.zipPatterns,
         priority: r.priority,
@@ -1057,12 +1161,20 @@ async function handleAdminRequest(event: APIGatewayProxyEventV2): Promise<APIGat
         updatedAt: r.updatedAt,
       }));
       const matched = matchLeadToRule(funnelId, zipCode || '', adapted);
+      const mapped = await mapAdminRules(rules);
+      const matchedRule = matched
+        ? mapped.find((rule) => rule.ruleId === matched.ruleId) || null
+        : null;
+      const evaluatedRules = mapped.map((rule) => ({
+        ruleId: rule.ruleId,
+        name: rule.name,
+        matched: rule.ruleId === matchedRule?.ruleId,
+        reason: rule.ruleId === matchedRule?.ruleId ? 'Matched by ZIP/priority' : 'Not matched',
+      }));
       return resp.success(
         {
-          matched: matched
-            ? { ruleId: matched.ruleId, orgId: matched.orgId, priority: matched.priority }
-            : null,
-          totalRulesEvaluated: rules.length,
+          matchedRule,
+          evaluatedRules,
         },
         undefined,
         requestOrigin
@@ -1082,24 +1194,34 @@ async function handleAdminRequest(event: APIGatewayProxyEventV2): Promise<APIGat
         return resp.badRequest(`Maximum ${BULK_UPDATE_MAX} rules per bulk create`, requestOrigin);
       }
 
-      const created: unknown[] = [];
+      const created: rulesDb.AssignmentRule[] = [];
       const errors: Array<{ index: number; error: string }> = [];
 
       for (let i = 0; i < ruleInputs.length; i++) {
         const input = ruleInputs[i];
         try {
-          if (!input.funnelId || !input.orgId || !input.name || input.priority === undefined) {
-            errors.push({ index: i, error: 'funnelId, orgId, name, and priority are required' });
+          const targetOrgId =
+            (typeof input.targetOrgId === 'string' && input.targetOrgId.trim()) ||
+            (typeof input.orgId === 'string' && input.orgId.trim()) ||
+            '';
+          if (!input.funnelId || !targetOrgId || !input.name || input.priority === undefined) {
+            errors.push({
+              index: i,
+              error: 'funnelId, targetOrgId, name, and priority are required',
+            });
             continue;
           }
           const rule = await rulesDb.createRule({
             funnelId: input.funnelId as string,
-            orgId: input.orgId as string,
+            orgId: targetOrgId,
+            targetUserId: input.targetUserId as string | undefined,
             name: input.name as string,
             priority: input.priority as number,
             zipPatterns: (input.zipPatterns as string[]) || [],
-            dailyCap: (input.dailyCap as number) || 0,
-            isActive: input.isActive as boolean | undefined,
+            dailyCap: input.dailyCap as number | undefined,
+            monthlyCap: input.monthlyCap as number | undefined,
+            isActive: input.active as boolean | undefined,
+            description: input.description as string | undefined,
           });
           created.push(rule);
         } catch (err) {
@@ -1118,12 +1240,13 @@ async function handleAdminRequest(event: APIGatewayProxyEventV2): Promise<APIGat
         ipHash: getIpHash(event),
       });
 
+      const mapped = await mapAdminRules(created);
       return resp.success(
         {
           created: created.length,
           failed: errors.length,
           errors,
-          rules: created,
+          rules: mapped,
         },
         undefined,
         requestOrigin
@@ -1134,7 +1257,20 @@ async function handleAdminRequest(event: APIGatewayProxyEventV2): Promise<APIGat
       const ruleId = pathParam(event, 2);
       const rule = await rulesDb.getRule(ruleId);
       if (!rule) return resp.notFound('Rule not found', requestOrigin);
-      return resp.success(rule, undefined, requestOrigin);
+      const [mapped] = await mapAdminRules([rule]);
+      return resp.success(
+        {
+          ...mapped,
+          conditions: {
+            funnels: mapped.funnels,
+            zipCodes: mapped.zipCodes,
+            targetOrgId: mapped.targetOrgId,
+            targetUserId: mapped.targetUserId,
+          },
+        },
+        undefined,
+        requestOrigin
+      );
     }
 
     if (/^\/rules\/[^/]+$/.test(subpath) && method === 'PUT') {
@@ -1142,13 +1278,40 @@ async function handleAdminRequest(event: APIGatewayProxyEventV2): Promise<APIGat
       const ruleId = pathParam(event, 2);
       const body = parseBody(event);
       if (body === null) return resp.badRequest('Invalid JSON in request body', requestOrigin);
+      const funnelsInput = Array.isArray(body.funnels) ? body.funnels : undefined;
+      const funnels = funnelsInput?.map((f) => String(f).trim()).filter(Boolean) || [];
+      if (funnels.length > 1) {
+        return resp.badRequest('Only one funnel is supported per rule', requestOrigin);
+      }
+      const funnelId =
+        funnels.length === 1
+          ? funnels[0]
+          : typeof body.funnelId === 'string'
+            ? body.funnelId.trim()
+            : undefined;
+      const zipPatterns = Array.isArray(body.zipCodes)
+        ? body.zipCodes.map((z) => String(z).trim()).filter(Boolean)
+        : Array.isArray(body.zipPatterns)
+          ? body.zipPatterns.map((z) => String(z).trim()).filter(Boolean)
+          : undefined;
+      const targetOrgId =
+        typeof body.targetOrgId === 'string'
+          ? body.targetOrgId.trim()
+          : typeof body.orgId === 'string'
+            ? body.orgId.trim()
+            : undefined;
       const updated = await rulesDb.updateRule({
         ruleId,
+        funnelId: funnelId || undefined,
+        orgId: targetOrgId || undefined,
         name: body.name as string | undefined,
         priority: body.priority as number | undefined,
-        zipPatterns: body.zipPatterns as string[] | undefined,
+        zipPatterns,
         dailyCap: body.dailyCap as number | undefined,
-        isActive: body.isActive as boolean | undefined,
+        monthlyCap: body.monthlyCap as number | undefined,
+        isActive: (body.active as boolean | undefined) ?? (body.isActive as boolean | undefined),
+        targetUserId: body.targetUserId as string | undefined,
+        description: body.description as string | undefined,
       });
       // Fix 9: Sanitize audit log - only log field names, not raw body values
       await recordAudit({
@@ -1160,7 +1323,20 @@ async function handleAdminRequest(event: APIGatewayProxyEventV2): Promise<APIGat
         details: { updatedFields: Object.keys(body) },
         ipHash: getIpHash(event),
       });
-      return resp.success(updated, undefined, requestOrigin);
+      const [mapped] = await mapAdminRules([updated]);
+      return resp.success(
+        {
+          ...mapped,
+          conditions: {
+            funnels: mapped.funnels,
+            zipCodes: mapped.zipCodes,
+            targetOrgId: mapped.targetOrgId,
+            targetUserId: mapped.targetUserId,
+          },
+        },
+        undefined,
+        requestOrigin
+      );
     }
 
     if (/^\/rules\/[^/]+$/.test(subpath) && method === 'DELETE') {
@@ -1859,7 +2035,7 @@ async function handleAdminRequest(event: APIGatewayProxyEventV2): Promise<APIGat
       try {
         await doc.send(
           new PutCommand({
-            TableName: tableName(),
+            TableName: getExportsTableName(),
             Item: {
               pk: throttleKey,
               sk: DB_SORT_KEYS.THROTTLE,
@@ -2231,7 +2407,7 @@ async function handleGdprRoutes(
     // Find all leads matching the email hash
     const results = await doc.send(
       new ScanCommand({
-        TableName: tableName(),
+        TableName: getPlatformLeadsTableName(),
         FilterExpression: `begins_with(pk, :prefix) AND sk = :meta AND emailHash = :eh`,
         ExpressionAttributeValues: {
           ':prefix': DB_PREFIXES.LEAD,
@@ -2248,7 +2424,7 @@ async function handleGdprRoutes(
       try {
         await doc.send(
           new UpdateCommand({
-            TableName: tableName(),
+            TableName: getPlatformLeadsTableName(),
             Key: { pk: lead.pk, sk: lead.sk },
             UpdateExpression: `SET #name = :redacted, email = :redacted, phone = :redacted,
               #msg = :redacted, #ip = :redacted, userAgent = :redacted`,
@@ -2298,7 +2474,7 @@ async function handleGdprRoutes(
     // Find all leads matching the email hash
     const results = await doc.send(
       new ScanCommand({
-        TableName: tableName(),
+        TableName: getPlatformLeadsTableName(),
         FilterExpression: `begins_with(pk, :prefix) AND sk = :meta AND emailHash = :eh`,
         ExpressionAttributeValues: {
           ':prefix': DB_PREFIXES.LEAD,

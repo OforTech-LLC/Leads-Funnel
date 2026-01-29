@@ -535,7 +535,7 @@ export const cleanupAnimations = (): void => {
 // Export defaults
 // =============================================================================
 
-export default {
+const gsapAnimations = {
   prefersReducedMotion,
   isTabVisible,
   createHeroToContentTransition,
@@ -548,3 +548,5 @@ export default {
   createMagneticEffect,
   cleanupAnimations,
 };
+
+export default gsapAnimations;

@@ -12,7 +12,8 @@
  */
 
 import React, { forwardRef, useState } from 'react';
-import { motion, HTMLMotionProps } from 'framer-motion';
+import Image from 'next/image';
+import { motion, HTMLMotionProps, MotionStyle } from 'framer-motion';
 import { tokens } from './tokens';
 
 // =============================================================================
@@ -25,14 +26,6 @@ export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'outline';
 
 /** Star rating positions for stable keys */
 const STAR_POSITIONS = [1, 2, 3, 4, 5] as const;
-
-// Size value maps with explicit typing
-const glassSizePadding: Record<GlassSize, string> = {
-  sm: '12px',
-  md: '24px',
-  lg: '32px',
-  xl: '48px',
-};
 
 // =============================================================================
 // CSS-in-JS Helpers
@@ -73,7 +66,7 @@ export const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(
       xl: tokens.spacing[12],
     };
 
-    const baseStyles: any = {
+    const baseStyles: MotionStyle = {
       ...getGlassStyles(variant),
       borderRadius: tokens.radii.card,
       padding: paddingValues[padding as GlassSize],
@@ -163,7 +156,7 @@ export const GlassButton = forwardRef<HTMLButtonElement, GlassButtonProps>(
       },
     };
 
-    const baseStyles: any = {
+    const baseStyles: MotionStyle = {
       ...variantStyles[variant as ButtonVariant],
       ...sizeStyles[size as GlassSize],
       borderRadius: tokens.radii.button,
@@ -259,7 +252,7 @@ export const GlassInput = forwardRef<HTMLInputElement, GlassInputProps>(
       alignItems: 'center',
     };
 
-    const inputStyles: any = {
+    const inputStyles: React.CSSProperties = {
       ...getGlassStyles('light'),
       ...sizeStyles[size],
       width: '100%',
@@ -315,6 +308,7 @@ export const GlassInput = forwardRef<HTMLInputElement, GlassInputProps>(
           )}
           <input
             ref={ref}
+            className={className}
             style={inputStyles}
             aria-invalid={!!error}
             aria-describedby={error && errorId ? errorId : undefined}
@@ -365,7 +359,7 @@ export const GlassTextarea = forwardRef<HTMLTextAreaElement, GlassTextareaProps>
       xl: { padding: '20px 24px', fontSize: tokens.typography.fontSize.xl },
     };
 
-    const textareaStyles: any = {
+    const textareaStyles: React.CSSProperties = {
       ...getGlassStyles('light'),
       ...sizeStyles[size],
       width: '100%',
@@ -467,7 +461,7 @@ export const GlassSection = forwardRef<HTMLElement, GlassSectionProps>(
       xl: `${tokens.spacing[24]} ${tokens.spacing[12]}`,
     };
 
-    const sectionStyles: any = {
+    const sectionStyles: MotionStyle = {
       ...getGlassStyles(variant),
       padding: paddingValues[padding as GlassSize],
       borderRadius: fullWidth ? 0 : tokens.radii['2xl'],
@@ -653,12 +647,13 @@ export const TestimonialCard: React.FC<TestimonialCardProps> = ({
       </blockquote>
       <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing[4] }}>
         {avatar && (
-          <img
+          <Image
             src={avatar}
             alt={author}
+            width={48}
+            height={48}
+            unoptimized
             style={{
-              width: '48px',
-              height: '48px',
               borderRadius: tokens.radii.full,
               objectFit: 'cover',
               border: `2px solid ${tokens.colors.border.accent}`,
@@ -874,7 +869,7 @@ export const GlassSelect = forwardRef<HTMLSelectElement, GlassSelectProps>(
       xl: { padding: '20px 24px', fontSize: tokens.typography.fontSize.xl },
     };
 
-    const selectStyles: any = {
+    const selectStyles: React.CSSProperties = {
       ...getGlassStyles('light'),
       ...sizeStyles[size],
       width: '100%',

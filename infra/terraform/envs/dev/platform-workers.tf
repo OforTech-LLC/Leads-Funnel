@@ -16,6 +16,7 @@ module "assignment_worker" {
     module.dynamodb_users,
     module.dynamodb_memberships,
     module.dynamodb_assignment_rules,
+    module.dynamodb_leads,
     module.dynamodb_unassigned,
     module.assignment_queue,
     module.notification_queue,
@@ -23,6 +24,7 @@ module "assignment_worker" {
 
   function_name   = "${local.prefix}-assignment-worker"
   description     = "Processes lead assignment based on rules"
+  zip_path        = var.assignment_worker_zip_path
   memory_mb       = 256
   timeout_seconds = 60
 
@@ -34,6 +36,7 @@ module "assignment_worker" {
     local.platform_users_table_arn,
     local.platform_memberships_table_arn,
     local.platform_assignment_rules_table_arn,
+    local.platform_leads_table_arn,
     local.platform_unassigned_table_arn,
   ])
 
@@ -45,16 +48,21 @@ module "assignment_worker" {
   event_bus_arn = module.eventbridge.event_bus_arn
 
   environment_variables = {
-    ENVIRONMENT            = var.environment
-    PROJECT_NAME           = var.project_name
-    LOG_LEVEL              = "DEBUG"
-    ORGS_TABLE_NAME        = local.platform_orgs_table_name
-    USERS_TABLE_NAME       = local.platform_users_table_name
-    MEMBERSHIPS_TABLE_NAME = local.platform_memberships_table_name
-    ASSIGNMENT_RULES_TABLE = local.platform_assignment_rules_table_name
-    UNASSIGNED_TABLE_NAME  = local.platform_unassigned_table_name
-    EVENT_BUS_NAME         = module.eventbridge.event_bus_name
-    NOTIFICATION_QUEUE_URL = local.platform_notification_queue_url
+    ENV                       = var.environment
+    ENVIRONMENT               = var.environment
+    PROJECT_NAME              = var.project_name
+    LOG_LEVEL                 = "DEBUG"
+    DDB_TABLE_NAME            = local.platform_leads_table_name
+    PLATFORM_LEADS_TABLE_NAME = local.platform_leads_table_name
+    ORGS_TABLE_NAME           = local.platform_orgs_table_name
+    USERS_TABLE_NAME          = local.platform_users_table_name
+    MEMBERSHIPS_TABLE_NAME    = local.platform_memberships_table_name
+    ASSIGNMENT_RULES_TABLE    = local.platform_assignment_rules_table_name
+    UNASSIGNED_TABLE_NAME     = local.platform_unassigned_table_name
+    EVENT_BUS_NAME            = module.eventbridge.event_bus_name
+    NOTIFICATION_QUEUE_URL    = local.platform_notification_queue_url
+    FEATURE_FLAG_SSM_PATH     = local.platform_ssm_prefix != "" ? "${local.platform_ssm_prefix}/config/worker-feature-flags" : ""
+    ASSIGNMENT_RULES_SSM_PATH = local.platform_ssm_prefix != "" ? "${local.platform_ssm_prefix}/config/assignment-rules" : ""
   }
 
   sqs_send_queue_arns = compact([local.platform_notification_queue_arn])
@@ -74,11 +82,13 @@ module "notification_worker" {
     module.dynamodb_users,
     module.dynamodb_memberships,
     module.dynamodb_notifications,
+    module.dynamodb_leads,
     module.notification_queue,
   ]
 
   function_name   = "${local.prefix}-notification-worker"
   description     = "Sends email/SMS notifications for lead events"
+  zip_path        = var.notification_worker_zip_path
   memory_mb       = 256
   timeout_seconds = 60
 
@@ -89,6 +99,7 @@ module "notification_worker" {
     local.platform_users_table_arn,
     local.platform_memberships_table_arn,
     local.platform_notifications_table_arn,
+    local.platform_leads_table_arn,
   ])
 
   ssm_parameter_arns = concat(
@@ -96,16 +107,24 @@ module "notification_worker" {
     local.platform_ssm_parameter_arns,
   )
 
-  enable_ses = var.enable_ses
-  enable_sns = false # Disable SMS in dev
+  enable_ses   = var.enable_ses
+  enable_sns   = false # Disable SMS in dev
+  secrets_arns = [module.secrets.twilio_secret_arn]
 
   environment_variables = {
-    ENVIRONMENT            = var.environment
-    PROJECT_NAME           = var.project_name
-    LOG_LEVEL              = "DEBUG"
-    USERS_TABLE_NAME       = local.platform_users_table_name
-    MEMBERSHIPS_TABLE_NAME = local.platform_memberships_table_name
-    NOTIFICATIONS_TABLE    = local.platform_notifications_table_name
+    ENV                          = var.environment
+    ENVIRONMENT                  = var.environment
+    PROJECT_NAME                 = var.project_name
+    LOG_LEVEL                    = "DEBUG"
+    DDB_TABLE_NAME               = local.platform_leads_table_name
+    PLATFORM_LEADS_TABLE_NAME    = local.platform_leads_table_name
+    ORGS_TABLE_NAME              = local.platform_orgs_table_name
+    USERS_TABLE_NAME             = local.platform_users_table_name
+    MEMBERSHIPS_TABLE_NAME       = local.platform_memberships_table_name
+    NOTIFICATIONS_TABLE          = local.platform_notifications_table_name
+    FEATURE_FLAG_SSM_PATH        = local.platform_ssm_prefix != "" ? "${local.platform_ssm_prefix}/config/worker-feature-flags" : ""
+    INTERNAL_RECIPIENTS_SSM_PATH = local.platform_ssm_prefix != "" ? "${local.platform_ssm_prefix}/config/internal-recipients" : ""
+    TWILIO_SECRET_ARN            = module.secrets.twilio_secret_arn
   }
 
   enable_xray        = var.enable_xray
@@ -131,6 +150,7 @@ module "pre_token_admin" {
 
   function_name   = "${local.prefix}-pre-token-admin"
   description     = "Pre-token generation trigger for admin Cognito pool"
+  zip_path        = var.pre_token_admin_zip_path
   memory_mb       = 128
   timeout_seconds = 10
 
@@ -173,6 +193,7 @@ module "pre_token_portal" {
 
   function_name   = "${local.prefix}-pre-token-portal"
   description     = "Pre-token generation trigger for portal Cognito pool"
+  zip_path        = var.pre_token_portal_zip_path
   memory_mb       = 128
   timeout_seconds = 10
 
@@ -238,6 +259,7 @@ module "platform_ssm" {
     module.dynamodb_users,
     module.dynamodb_memberships,
     module.dynamodb_assignment_rules,
+    module.dynamodb_leads,
     module.dynamodb_unassigned,
     module.dynamodb_notifications,
     module.assignment_queue,
@@ -250,14 +272,21 @@ module "platform_ssm" {
   environment  = var.environment
 
   # Feature flags (all default false in dev)
-  enable_assignment_engine  = false
-  enable_portal             = false
-  enable_multi_tenant       = false
-  enable_auto_assignment    = false
-  enable_lead_notifications = false
-  enable_org_management     = false
-  enable_exports            = false
-  enable_audit_logging      = false
+  enable_assignment_engine   = false
+  enable_portal              = false
+  enable_multi_tenant        = false
+  enable_auto_assignment     = false
+  enable_lead_notifications  = false
+  enable_org_management      = false
+  enable_exports             = false
+  enable_audit_logging       = false
+  enable_email_notifications = false
+  enable_sms_notifications   = false
+  enable_twilio_sms          = false
+  enable_sns_sms             = false
+
+  assignment_rules_json    = "[]"
+  internal_recipients_json = "[]"
 
   # CORS origins
   admin_cors_origins  = local.admin_cors_origins

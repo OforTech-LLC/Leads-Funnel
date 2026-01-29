@@ -161,6 +161,50 @@ module "dynamodb_assignment_rules" {
   tags = merge(local.common_tags, { Type = "platform-assignment-rules" })
 }
 
+# --- Platform Leads Table ---
+module "dynamodb_leads" {
+  count  = var.enable_platform ? 1 : 0
+  source = "../../modules/dynamodb-table"
+
+  table_name = "${local.prefix}-leads"
+  hash_key   = "pk"
+  range_key  = "sk"
+
+  attributes = [
+    { name = "pk", type = "S" },
+    { name = "sk", type = "S" },
+    { name = "gsi1pk", type = "S" },
+    { name = "gsi1sk", type = "S" },
+    { name = "gsi2pk", type = "S" },
+    { name = "gsi2sk", type = "S" },
+    { name = "gsi3pk", type = "S" },
+    { name = "gsi3sk", type = "S" },
+  ]
+
+  global_secondary_indexes = [
+    {
+      name      = "GSI1"
+      hash_key  = "gsi1pk"
+      range_key = "gsi1sk"
+    },
+    {
+      name      = "GSI2"
+      hash_key  = "gsi2pk"
+      range_key = "gsi2sk"
+    },
+    {
+      name      = "GSI3"
+      hash_key  = "gsi3pk"
+      range_key = "gsi3sk"
+    },
+  ]
+
+  enable_pitr                = false
+  enable_deletion_protection = false
+
+  tags = merge(local.common_tags, { Type = "platform-leads" })
+}
+
 # --- Unassigned Leads Table (with TTL) ---
 module "dynamodb_unassigned" {
   count  = var.enable_platform ? 1 : 0

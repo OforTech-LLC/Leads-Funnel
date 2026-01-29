@@ -9,16 +9,10 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { createMockResponse, flushPromises, delay } from './setup';
+import { createMockResponse } from './setup';
 
 // We need to re-create the api client module for testing since we need to mock fetch
 // This is a simplified test version that mirrors the actual implementation
-
-interface ApiError {
-  message: string;
-  code?: string;
-  errors?: Record<string, string[]>;
-}
 
 class ApiRequestError extends Error {
   status: number;
@@ -328,7 +322,6 @@ describe('API Client Integration', () => {
 
       // Simulate retry logic
       let attempts = 0;
-      let lastError: Error | null = null;
 
       while (attempts < MAX_RETRIES) {
         const response = await fetch('https://api.example.com/retry-test');
@@ -342,7 +335,6 @@ describe('API Client Integration', () => {
           throw error;
         }
 
-        lastError = error;
         attempts++;
       }
 

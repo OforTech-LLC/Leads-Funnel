@@ -42,7 +42,21 @@ module "ssm" {
   enable_debug               = false # Disable debug in prod
 
   # Runtime config - prod uses api subdomain
-  api_base_url = "https://${local.api_subdomain}.${var.root_domain}"
+  api_base_url                 = "https://${local.api_subdomain}.${var.root_domain}"
+  quality_quarantine_threshold = var.quality_quarantine_threshold
+
+  tags = local.common_tags
+}
+
+# =============================================================================
+# Avatars Bucket (Portal Profile Images)
+# =============================================================================
+module "avatars" {
+  source = "../../modules/avatars"
+
+  project_name    = var.project_name
+  environment     = var.environment
+  allowed_origins = local.portal_cors_origins
 
   tags = local.common_tags
 }
@@ -81,12 +95,15 @@ module "lambda" {
   enable_voice_agent = var.enable_voice_agent
 
   # DynamoDB integration
-  all_funnel_table_arns  = module.dynamodb.all_funnel_table_arns
-  all_funnel_gsi_arns    = module.dynamodb.all_funnel_gsi_arns
-  rate_limits_table_name = module.dynamodb.rate_limits_table_name
-  rate_limits_table_arn  = module.dynamodb.rate_limits_table_arn
-  idempotency_table_name = module.dynamodb.idempotency_table_name
-  idempotency_table_arn  = module.dynamodb.idempotency_table_arn
+  all_funnel_table_arns     = module.dynamodb.all_funnel_table_arns
+  all_funnel_gsi_arns       = module.dynamodb.all_funnel_gsi_arns
+  rate_limits_table_name    = module.dynamodb.rate_limits_table_name
+  rate_limits_table_arn     = module.dynamodb.rate_limits_table_arn
+  idempotency_table_name    = module.dynamodb.idempotency_table_name
+  idempotency_table_arn     = module.dynamodb.idempotency_table_arn
+  platform_leads_table_name = local.platform_leads_table_name
+  platform_leads_table_arn  = local.platform_leads_table_arn
+  platform_leads_gsi_arns   = local.platform_leads_gsi_arns
 
   # EventBridge integration
   event_bus_name = module.eventbridge.event_bus_name
@@ -104,7 +121,14 @@ module "lambda" {
   # CORS allowlist for Lambda responses
   allowed_origins = local.cors_origins
 
+  # Avatar uploads
+  avatars_bucket_name    = module.avatars.bucket_name
+  avatars_bucket_arn     = module.avatars.bucket_arn
+  avatar_public_base_url = "https://${module.avatars.bucket_regional_domain_name}"
+
   # Lambda configuration (production optimized)
+  lead_handler_zip_path             = var.lead_handler_zip_path
+  health_handler_zip_path           = var.health_handler_zip_path
   lead_handler_memory_mb            = var.lambda_memory_mb
   lead_handler_reserved_concurrency = var.lambda_reserved_concurrency
   voice_functions_memory_mb         = 512
@@ -371,6 +395,15 @@ module "admin" {
   exports_retention_days   = 30
   enable_bucket_versioning = true
   enable_access_logging    = true
+
+  # Platform table names for admin API
+  platform_orgs_table_name             = local.platform_orgs_table_name
+  platform_users_table_name            = local.platform_users_table_name
+  platform_memberships_table_name      = local.platform_memberships_table_name
+  platform_assignment_rules_table_name = local.platform_assignment_rules_table_name
+  platform_leads_table_name            = local.platform_leads_table_name
+  platform_notifications_table_name    = local.platform_notifications_table_name
+  platform_unassigned_table_name       = local.platform_unassigned_table_name
 
   # Lambda configuration
   lambda_zip_path    = var.admin_lambda_zip_path

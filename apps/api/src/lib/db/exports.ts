@@ -7,7 +7,8 @@
  */
 
 import { PutCommand, GetCommand, UpdateCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
-import { getDocClient, tableName } from './client.js';
+import { getDocClient } from './client.js';
+import { getExportsTableName } from './table-names.js';
 import { ulid } from '../../lib/id.js';
 import { signCursor, verifyCursor } from '../cursor.js';
 import { DB_PREFIXES, DB_SORT_KEYS, GSI_KEYS, GSI_INDEX_NAMES } from '../constants.js';
@@ -80,7 +81,7 @@ export async function createExport(input: CreateExportInput): Promise<ExportJob>
 
   await doc.send(
     new PutCommand({
-      TableName: tableName(),
+      TableName: getExportsTableName(),
       Item: job,
     })
   );
@@ -92,7 +93,7 @@ export async function getExport(exportId: string): Promise<ExportJob | null> {
   const doc = getDocClient();
   const result = await doc.send(
     new GetCommand({
-      TableName: tableName(),
+      TableName: getExportsTableName(),
       Key: { pk: `${DB_PREFIXES.EXPORT}${exportId}`, sk: DB_SORT_KEYS.META },
     })
   );
@@ -146,7 +147,7 @@ export async function updateExport(
 
   const result = await doc.send(
     new UpdateCommand({
-      TableName: tableName(),
+      TableName: getExportsTableName(),
       Key: { pk: `${DB_PREFIXES.EXPORT}${exportId}`, sk: DB_SORT_KEYS.META },
       UpdateExpression: `SET ${parts.join(', ')}`,
       ExpressionAttributeNames: Object.keys(names).length > 0 ? names : undefined,
@@ -178,7 +179,7 @@ export async function listExports(cursor?: string, limit = 25): Promise<Paginate
 
   const result = await doc.send(
     new QueryCommand({
-      TableName: tableName(),
+      TableName: getExportsTableName(),
       IndexName: GSI_INDEX_NAMES.GSI1,
       KeyConditionExpression: 'gsi1pk = :pk',
       ExpressionAttributeValues: { ':pk': GSI_KEYS.EXPORTS_LIST },

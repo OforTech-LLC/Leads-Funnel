@@ -102,6 +102,15 @@ variable "api_subdomain" {
 }
 
 # -----------------------------------------------------------------------------
+# Quality Scoring
+# -----------------------------------------------------------------------------
+variable "quality_quarantine_threshold" {
+  type        = number
+  default     = 0
+  description = "Lead quality score threshold for quarantine (0-100). 0 disables quarantine."
+}
+
+# -----------------------------------------------------------------------------
 # Funnel Configuration (47 funnels)
 # -----------------------------------------------------------------------------
 variable "funnel_ids" {
@@ -298,6 +307,21 @@ variable "lambda_reserved_concurrency" {
   type        = number
   default     = null
   description = "Lambda reserved concurrent executions (null for no limit)"
+}
+
+# -----------------------------------------------------------------------------
+# Lambda Deployment Packages
+# -----------------------------------------------------------------------------
+variable "lead_handler_zip_path" {
+  type        = string
+  default     = "../../../../apps/api/dist/lead-handler.zip"
+  description = "Path to lead handler Lambda deployment package"
+}
+
+variable "health_handler_zip_path" {
+  type        = string
+  default     = "../../../../apps/api/dist/health-handler.zip"
+  description = "Path to health handler Lambda deployment package"
 }
 
 # -----------------------------------------------------------------------------

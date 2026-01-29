@@ -25,7 +25,8 @@
 import type { AssignmentRule } from '../types/events.js';
 import { isWithinRadius } from '../geo/zip-coords.js';
 import { UpdateCommand, GetCommand } from '@aws-sdk/lib-dynamodb';
-import { getDocClient, tableName } from '../clients.js';
+import { getDocClient } from '../clients.js';
+import { getAssignmentRulesTableName } from '../db/table-names.js';
 import { isFeatureEnabled } from '../feature-flags.js';
 
 // =============================================================================
@@ -152,7 +153,7 @@ async function roundRobinSelect(
 
   const pk = `ROUNDROBIN#${funnelId}#${priority}`;
   const sk = 'LAST';
-  const table = tableName();
+  const table = getAssignmentRulesTableName();
 
   // If no table is configured (e.g. tests), fall back to first rule
   if (!table) {

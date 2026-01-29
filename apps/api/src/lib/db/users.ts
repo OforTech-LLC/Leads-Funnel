@@ -9,7 +9,8 @@
  */
 
 import { PutCommand, GetCommand, UpdateCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
-import { getDocClient, tableName } from './client.js';
+import { getDocClient } from './client.js';
+import { getUsersTableName } from './table-names.js';
 import { ulid } from '../../lib/id.js';
 import { sha256 } from '../hash.js';
 import { signCursor, verifyCursor } from '../cursor.js';
@@ -103,7 +104,7 @@ export async function createUser(input: CreateUserInput): Promise<User> {
 
   await doc.send(
     new PutCommand({
-      TableName: tableName(),
+      TableName: getUsersTableName(),
       Item: user,
       ConditionExpression: 'attribute_not_exists(pk)',
     })
@@ -125,7 +126,7 @@ export async function getUser(userId: string): Promise<User | null> {
   const doc = getDocClient();
   const result = await doc.send(
     new GetCommand({
-      TableName: tableName(),
+      TableName: getUsersTableName(),
       Key: { pk: `${DB_PREFIXES.USER}${userId}`, sk: DB_SORT_KEYS.META },
     })
   );
@@ -140,7 +141,7 @@ export async function getUserByEmail(email: string): Promise<User | null> {
 
   const result = await doc.send(
     new QueryCommand({
-      TableName: tableName(),
+      TableName: getUsersTableName(),
       IndexName: GSI_INDEX_NAMES.GSI1,
       KeyConditionExpression: 'gsi1pk = :pk AND gsi1sk = :sk',
       FilterExpression: 'attribute_not_exists(deletedAt)',
@@ -161,7 +162,7 @@ export async function getUserByCognitoSub(cognitoSub: string): Promise<User | nu
 
   const result = await doc.send(
     new QueryCommand({
-      TableName: tableName(),
+      TableName: getUsersTableName(),
       IndexName: GSI_INDEX_NAMES.GSI2,
       KeyConditionExpression: 'gsi2pk = :pk AND gsi2sk = :sk',
       FilterExpression: 'attribute_not_exists(deletedAt)',
@@ -223,7 +224,7 @@ export async function updateUser(input: UpdateUserInput): Promise<User> {
 
   const result = await doc.send(
     new UpdateCommand({
-      TableName: tableName(),
+      TableName: getUsersTableName(),
       Key: { pk: `${DB_PREFIXES.USER}${input.userId}`, sk: DB_SORT_KEYS.META },
       UpdateExpression: `SET ${parts.join(', ')}`,
       ExpressionAttributeNames: names,
@@ -242,7 +243,7 @@ export async function softDeleteUser(userId: string): Promise<void> {
 
   await doc.send(
     new UpdateCommand({
-      TableName: tableName(),
+      TableName: getUsersTableName(),
       Key: { pk: `${DB_PREFIXES.USER}${userId}`, sk: DB_SORT_KEYS.META },
       UpdateExpression: 'SET deletedAt = :d, #updatedAt = :u',
       ExpressionAttributeNames: { '#updatedAt': 'updatedAt' },
@@ -303,7 +304,7 @@ export async function listUsers(input: ListUsersInput = {}): Promise<PaginatedUs
 
   const result = await doc.send(
     new QueryCommand({
-      TableName: tableName(),
+      TableName: getUsersTableName(),
       IndexName: GSI_INDEX_NAMES.GSI3,
       KeyConditionExpression: 'gsi3pk = :pk',
       FilterExpression: filterExpressions.join(' AND '),

@@ -70,18 +70,7 @@ export default function LeadsPage() {
   const [user, setUser] = useState<AdminUser | null>(null);
   const canWrite = user?.role === 'Admin';
 
-  useEffect(() => {
-    loadFunnels();
-    loadUser();
-  }, []);
-
-  useEffect(() => {
-    if (selectedFunnel) {
-      loadLeads();
-    }
-  }, [selectedFunnel, statusFilter, searchQuery, startDate, endDate]);
-
-  async function loadUser() {
+  const loadUser = useCallback(async () => {
     try {
       const currentUser = await getCurrentUser();
       setUser(currentUser);
@@ -91,9 +80,9 @@ export default function LeadsPage() {
         err instanceof Error ? err.message : 'Unknown error'
       );
     }
-  }
+  }, []);
 
-  async function loadFunnels() {
+  const loadFunnels = useCallback(async () => {
     try {
       const { funnels: funnelList } = await listFunnels();
       setFunnels(funnelList);
@@ -104,7 +93,12 @@ export default function LeadsPage() {
       console.error('[LeadsPage] Failed to load funnels:', err);
       setError(err instanceof Error ? err.message : 'Failed to load funnels');
     }
-  }
+  }, [selectedFunnel]);
+
+  useEffect(() => {
+    loadFunnels();
+    loadUser();
+  }, [loadFunnels, loadUser]);
 
   const loadLeads = useCallback(
     async (loadMore = false) => {
@@ -143,6 +137,12 @@ export default function LeadsPage() {
     },
     [selectedFunnel, statusFilter, searchQuery, startDate, endDate, nextToken]
   );
+
+  useEffect(() => {
+    if (selectedFunnel) {
+      loadLeads();
+    }
+  }, [selectedFunnel, loadLeads]);
 
   async function handleUpdateLead(leadId: string, updates: Partial<Lead>) {
     try {
@@ -203,7 +203,12 @@ export default function LeadsPage() {
   return (
     <div className="leads-page">
       <header className="leads-header">
-        <h1>Leads</h1>
+        <div>
+          <h1>Leads</h1>
+          <div className="leads-count">
+            {totalCount > 0 ? `${totalCount} total` : 'No leads yet'}
+          </div>
+        </div>
 
         {/* Funnel Selector */}
         <select
@@ -416,6 +421,12 @@ export default function LeadsPage() {
           font-size: 28px;
           font-weight: 600;
           margin: 0;
+        }
+
+        .leads-count {
+          margin-top: 6px;
+          font-size: 13px;
+          color: rgba(255, 255, 255, 0.7);
         }
 
         .funnel-select {

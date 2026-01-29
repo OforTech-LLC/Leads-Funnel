@@ -21,7 +21,7 @@ import { QueryCommand } from '@aws-sdk/lib-dynamodb';
 import type { PreTokenPortalConfig, UserRecord, MembershipRecord } from './types.js';
 import { getDocClient } from '../lib/clients.js';
 import { createLogger } from '../lib/logging.js';
-import { GSI_INDEX_NAMES } from '../lib/constants.js';
+import { DB_PREFIXES, DB_SORT_KEYS, GSI_KEYS, GSI_INDEX_NAMES } from '../lib/constants.js';
 
 const log = createLogger('pre-token-portal');
 
@@ -32,7 +32,8 @@ const log = createLogger('pre-token-portal');
 function loadConfig(): PreTokenPortalConfig {
   return {
     awsRegion: process.env.AWS_REGION || 'us-east-1',
-    ddbTableName: process.env.DDB_TABLE_NAME || '',
+    usersTableName: process.env.USERS_TABLE_NAME || '',
+    membershipsTableName: process.env.MEMBERSHIPS_TABLE_NAME || '',
   };
 }
 
@@ -56,12 +57,12 @@ async function getUserByCognitoSub(
   try {
     const result = await client.send(
       new QueryCommand({
-        TableName: config.ddbTableName,
+        TableName: config.usersTableName,
         IndexName: GSI_INDEX_NAMES.GSI2,
         KeyConditionExpression: 'gsi2pk = :pk AND gsi2sk = :sk',
         ExpressionAttributeValues: {
-          ':pk': `COGNITO#${cognitoSub}`,
-          ':sk': 'USER',
+          ':pk': `${GSI_KEYS.COGNITOSUB}${cognitoSub}`,
+          ':sk': DB_SORT_KEYS.META,
         },
         Limit: 1,
       })
@@ -99,12 +100,11 @@ async function getUserMemberships(
   try {
     const result = await client.send(
       new QueryCommand({
-        TableName: config.ddbTableName,
+        TableName: config.membershipsTableName,
         IndexName: GSI_INDEX_NAMES.GSI1,
-        KeyConditionExpression: 'gsi1pk = :pk AND begins_with(gsi1sk, :skPrefix)',
+        KeyConditionExpression: 'gsi1pk = :pk',
         ExpressionAttributeValues: {
-          ':pk': `USER#${userId}#MEMBERSHIPS`,
-          ':skPrefix': 'MEMBERSHIP#',
+          ':pk': `${DB_PREFIXES.USER}${userId}`,
         },
       })
     );
@@ -118,6 +118,17 @@ async function getUserMemberships(
       error: errorMessage,
     });
     throw error;
+  }
+}
+
+function mapMembershipRole(role?: MembershipRecord['role']): string {
+  switch (role) {
+    case 'ORG_OWNER':
+      return 'admin';
+    case 'MANAGER':
+      return 'manager';
+    default:
+      return 'agent';
   }
 }
 
@@ -149,8 +160,8 @@ export async function handler(
   log.info('Pre-token generation triggered (portal)', { sub: cognitoSub });
 
   // Validate configuration
-  if (!config.ddbTableName) {
-    log.error('DDB_TABLE_NAME not configured', {
+  if (!config.usersTableName || !config.membershipsTableName) {
+    log.error('Platform table configuration missing', {
       sub: cognitoSub,
       errorCode: 'CONFIG_ERROR',
     });
@@ -188,11 +199,11 @@ export async function handler(
   const memberships = await getUserMemberships(config, user.userId);
 
   // Filter to active memberships
-  const activeMemberships = memberships.filter((m) => m.status === 'active');
-
   // Build org IDs list
-  const orgIds = activeMemberships.map((m) => m.orgId);
+  const orgIds = memberships.map((m) => m.orgId);
   const primaryOrgId = orgIds.length > 0 ? orgIds[0] : '';
+  const primaryMembership = memberships.find((m) => m.orgId === primaryOrgId) || memberships[0];
+  const role = mapMembershipRole(primaryMembership?.role);
 
   log.info('Portal token claims prepared', {
     sub: cognitoSub,
@@ -207,6 +218,7 @@ export async function handler(
         'custom:userId': user.userId,
         'custom:orgIds': orgIds.join(','),
         'custom:primaryOrgId': primaryOrgId,
+        'custom:role': role,
       },
     },
   };

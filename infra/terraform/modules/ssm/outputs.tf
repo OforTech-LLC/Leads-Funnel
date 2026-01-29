@@ -46,13 +46,14 @@ output "feature_flag_names" {
 output "config_arns" {
   description = "Map of configuration parameter names to their ARNs"
   value = {
-    funnels_config    = aws_ssm_parameter.funnels_config.arn
-    funnel_ids        = aws_ssm_parameter.funnel_ids.arn
-    rate_limit_max    = aws_ssm_parameter.rate_limit_max.arn
-    rate_limit_window = aws_ssm_parameter.rate_limit_window.arn
-    idempotency_ttl   = aws_ssm_parameter.idempotency_ttl.arn
-    api_base_url      = aws_ssm_parameter.api_base_url.arn
-    environment       = aws_ssm_parameter.environment.arn
+    funnels_config               = aws_ssm_parameter.funnels_config.arn
+    funnel_ids                   = aws_ssm_parameter.funnel_ids.arn
+    rate_limit_max               = aws_ssm_parameter.rate_limit_max.arn
+    rate_limit_window            = aws_ssm_parameter.rate_limit_window.arn
+    idempotency_ttl              = aws_ssm_parameter.idempotency_ttl.arn
+    quality_quarantine_threshold = aws_ssm_parameter.quality_quarantine_threshold.arn
+    api_base_url                 = aws_ssm_parameter.api_base_url.arn
+    environment                  = aws_ssm_parameter.environment.arn
   }
 }
 
@@ -62,13 +63,14 @@ output "config_arns" {
 output "config_names" {
   description = "Map of configuration parameter names to their SSM parameter names"
   value = {
-    funnels_config    = aws_ssm_parameter.funnels_config.name
-    funnel_ids        = aws_ssm_parameter.funnel_ids.name
-    rate_limit_max    = aws_ssm_parameter.rate_limit_max.name
-    rate_limit_window = aws_ssm_parameter.rate_limit_window.name
-    idempotency_ttl   = aws_ssm_parameter.idempotency_ttl.name
-    api_base_url      = aws_ssm_parameter.api_base_url.name
-    environment       = aws_ssm_parameter.environment.name
+    funnels_config               = aws_ssm_parameter.funnels_config.name
+    funnel_ids                   = aws_ssm_parameter.funnel_ids.name
+    rate_limit_max               = aws_ssm_parameter.rate_limit_max.name
+    rate_limit_window            = aws_ssm_parameter.rate_limit_window.name
+    idempotency_ttl              = aws_ssm_parameter.idempotency_ttl.name
+    quality_quarantine_threshold = aws_ssm_parameter.quality_quarantine_threshold.name
+    api_base_url                 = aws_ssm_parameter.api_base_url.name
+    environment                  = aws_ssm_parameter.environment.name
   }
 }
 
@@ -101,6 +103,7 @@ output "all_parameter_arns" {
     aws_ssm_parameter.rate_limit_max.arn,
     aws_ssm_parameter.rate_limit_window.arn,
     aws_ssm_parameter.idempotency_ttl.arn,
+    aws_ssm_parameter.quality_quarantine_threshold.arn,
     aws_ssm_parameter.api_base_url.arn,
     aws_ssm_parameter.environment.arn,
   ]

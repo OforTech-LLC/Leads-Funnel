@@ -32,12 +32,13 @@ export async function handler(
   event: PreTokenGenerationTriggerEvent
 ): Promise<PreTokenGenerationTriggerEvent> {
   const cognitoSub = event.request.userAttributes.sub;
-  const table = process.env.DDB_TABLE_NAME || '';
+  const usersTable = process.env.USERS_TABLE_NAME || '';
+  const membershipsTable = process.env.MEMBERSHIPS_TABLE_NAME || '';
 
   log.info('Pre-token generation triggered (portal)', { sub: cognitoSub });
 
-  if (!table) {
-    log.error('DDB_TABLE_NAME not configured');
+  if (!usersTable || !membershipsTable) {
+    log.error('Platform table configuration missing');
     throw new Error('Portal authentication configuration error');
   }
 
@@ -45,7 +46,7 @@ export async function handler(
   const doc = getDocClient();
   const userResult = await doc.send(
     new QueryCommand({
-      TableName: table,
+      TableName: usersTable,
       IndexName: GSI_INDEX_NAMES.GSI2,
       KeyConditionExpression: 'gsi2pk = :pk AND gsi2sk = :sk',
       FilterExpression: 'attribute_not_exists(deletedAt)',
@@ -69,12 +70,11 @@ export async function handler(
   // Look up org memberships using GSI1 (USER#<userId> -> ORG#<orgId>)
   const membResult = await doc.send(
     new QueryCommand({
-      TableName: table,
+      TableName: membershipsTable,
       IndexName: GSI_INDEX_NAMES.GSI1,
-      KeyConditionExpression: 'gsi1pk = :pk AND begins_with(gsi1sk, :skPrefix)',
+      KeyConditionExpression: 'gsi1pk = :pk',
       ExpressionAttributeValues: {
         ':pk': `${DB_PREFIXES.USER}${userId}`,
-        ':skPrefix': DB_PREFIXES.ORG,
       },
     })
   );

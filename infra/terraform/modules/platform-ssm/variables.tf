@@ -68,6 +68,42 @@ variable "enable_audit_logging" {
   default     = false
 }
 
+variable "enable_email_notifications" {
+  type        = bool
+  description = "Enable email notifications for platform leads"
+  default     = false
+}
+
+variable "enable_sms_notifications" {
+  type        = bool
+  description = "Enable SMS notifications for platform leads"
+  default     = false
+}
+
+variable "enable_twilio_sms" {
+  type        = bool
+  description = "Enable Twilio SMS integration for notifications"
+  default     = false
+}
+
+variable "enable_sns_sms" {
+  type        = bool
+  description = "Enable SNS SMS integration for notifications"
+  default     = false
+}
+
+variable "assignment_rules_json" {
+  type        = string
+  description = "JSON array of assignment rules for the assignment worker"
+  default     = "[]"
+}
+
+variable "internal_recipients_json" {
+  type        = string
+  description = "JSON array of internal notification recipients"
+  default     = "[]"
+}
+
 # -----------------------------------------------------------------------------
 # CORS Origins
 # -----------------------------------------------------------------------------

@@ -47,62 +47,77 @@ resource "aws_iam_role_policy" "lead_handler" {
 
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [
-      # DynamoDB - Access specific funnel tables (scoped to project/environment)
-      {
-        Sid    = "DynamoDBFunnelTables"
-        Effect = "Allow"
-        Action = [
-          "dynamodb:PutItem",
-          "dynamodb:UpdateItem",
-          "dynamodb:BatchWriteItem",
-          "dynamodb:Query",
-          "dynamodb:GetItem",
-        ]
-        Resource = concat(
-          var.all_funnel_table_arns,
-          var.all_funnel_gsi_arns,
-          [var.rate_limits_table_arn, var.idempotency_table_arn]
-        )
-      },
-      # EventBridge - Put events to specific bus
-      {
-        Sid      = "EventBridgePutEvents"
-        Effect   = "Allow"
-        Action   = ["events:PutEvents"]
-        Resource = var.event_bus_arn
-      },
-      # Secrets Manager - Read specific secret only
-      {
-        Sid    = "SecretsManagerRead"
-        Effect = "Allow"
-        Action = [
-          "secretsmanager:GetSecretValue",
-        ]
-        Resource = var.ip_hash_salt_secret_arn
-      },
-      # SSM Parameter Store - Read specific parameters
-      {
-        Sid    = "SSMParameterRead"
-        Effect = "Allow"
-        Action = [
-          "ssm:GetParameter",
-          "ssm:GetParameters",
-          "ssm:GetParametersByPath",
-        ]
-        Resource = var.ssm_parameter_arns
-      },
-      # KMS - Decrypt for CloudWatch Logs
-      {
-        Sid    = "KMSDecryptLogs"
-        Effect = "Allow"
-        Action = [
-          "kms:Decrypt",
-          "kms:GenerateDataKey"
-        ]
-        Resource = aws_kms_key.lambda_logs.arn
-      },
-    ]
+    Statement = concat(
+      [
+        # DynamoDB - Access specific funnel tables (scoped to project/environment)
+        {
+          Sid    = "DynamoDBFunnelTables"
+          Effect = "Allow"
+          Action = [
+            "dynamodb:PutItem",
+            "dynamodb:UpdateItem",
+            "dynamodb:BatchWriteItem",
+            "dynamodb:Query",
+            "dynamodb:GetItem",
+          ]
+          Resource = concat(
+            var.all_funnel_table_arns,
+            var.all_funnel_gsi_arns,
+            [var.rate_limits_table_arn, var.idempotency_table_arn],
+            var.platform_leads_table_arn != "" ? [var.platform_leads_table_arn] : [],
+            var.platform_leads_gsi_arns
+          )
+        },
+        # EventBridge - Put events to specific bus
+        {
+          Sid      = "EventBridgePutEvents"
+          Effect   = "Allow"
+          Action   = ["events:PutEvents"]
+          Resource = var.event_bus_arn
+        },
+        # Secrets Manager - Read specific secret only
+        {
+          Sid    = "SecretsManagerRead"
+          Effect = "Allow"
+          Action = [
+            "secretsmanager:GetSecretValue",
+          ]
+          Resource = var.ip_hash_salt_secret_arn
+        },
+        # SSM Parameter Store - Read specific parameters
+        {
+          Sid    = "SSMParameterRead"
+          Effect = "Allow"
+          Action = [
+            "ssm:GetParameter",
+            "ssm:GetParameters",
+            "ssm:GetParametersByPath",
+          ]
+          Resource = var.ssm_parameter_arns
+        },
+        # KMS - Decrypt for CloudWatch Logs
+        {
+          Sid    = "KMSDecryptLogs"
+          Effect = "Allow"
+          Action = [
+            "kms:Decrypt",
+            "kms:GenerateDataKey"
+          ]
+          Resource = aws_kms_key.lambda_logs.arn
+        },
+      ],
+      var.avatars_bucket_arn != "" ? [
+        {
+          Sid    = "S3AvatarUploads"
+          Effect = "Allow"
+          Action = [
+            "s3:PutObject",
+            "s3:AbortMultipartUpload",
+          ]
+          Resource = "${var.avatars_bucket_arn}/avatars/*"
+        }
+      ] : []
+    )
   })
 }
 

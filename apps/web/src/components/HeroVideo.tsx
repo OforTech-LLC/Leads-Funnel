@@ -33,6 +33,20 @@ export const HeroVideo: React.FC<HeroVideoProps> = ({
   const videoRef = useRef<HTMLVideoElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const handleComplete = useCallback(() => {
+    setIsVisible(false);
+    setTimeout(() => {
+      onComplete?.();
+    }, 500); // Wait for exit animation
+  }, [onComplete]);
+
+  const handleSkip = useCallback(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+    handleComplete();
+  }, [handleComplete]);
+
   // Check for reduced motion preference
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -44,7 +58,7 @@ export const HeroVideo: React.FC<HeroVideoProps> = ({
         handleComplete();
       }
     }
-  }, []);
+  }, [handleComplete]);
 
   // Auto-skip timer
   useEffect(() => {
@@ -61,26 +75,12 @@ export const HeroVideo: React.FC<HeroVideoProps> = ({
     };
   }, [isLoaded, isVisible, autoSkipDelay]);
 
-  const handleComplete = useCallback(() => {
-    setIsVisible(false);
-    setTimeout(() => {
-      onComplete?.();
-    }, 500); // Wait for exit animation
-  }, [onComplete]);
-
   const handleVideoLoaded = () => {
     setIsLoaded(true);
   };
 
   const handleVideoError = () => {
     // If video fails to load, skip to content
-    handleComplete();
-  };
-
-  const handleSkip = () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
     handleComplete();
   };
 
@@ -99,7 +99,7 @@ export const HeroVideo: React.FC<HeroVideoProps> = ({
       window.removeEventListener('wheel', handleScroll);
       window.removeEventListener('touchmove', handleScroll);
     };
-  }, [isVisible]);
+  }, [handleSkip, isVisible]);
 
   // Handle keyboard to skip
   useEffect(() => {
@@ -112,7 +112,7 @@ export const HeroVideo: React.FC<HeroVideoProps> = ({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isVisible]);
+  }, [handleSkip, isVisible]);
 
   const videoSrc = `/videos/hero-${serviceId}.mp4`;
   const defaultPoster = `/images/posters/${serviceId}.jpg`;
@@ -188,7 +188,9 @@ export const HeroVideo: React.FC<HeroVideoProps> = ({
                   borderRadius: '50%',
                 }}
               />
-              <span style={{ color: tokens.colors.text.muted, fontSize: tokens.typography.fontSize.sm }}>
+              <span
+                style={{ color: tokens.colors.text.muted, fontSize: tokens.typography.fontSize.sm }}
+              >
                 Loading...
               </span>
             </motion.div>
@@ -229,7 +231,14 @@ export const HeroVideo: React.FC<HeroVideoProps> = ({
               }}
             >
               Skip Intro
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
             </motion.button>
@@ -277,7 +286,14 @@ export const HeroVideo: React.FC<HeroVideoProps> = ({
                 animate={{ y: [0, 8, 0] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
               >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <path d="M12 5v14M19 12l-7 7-7-7" />
                 </svg>
               </motion.div>

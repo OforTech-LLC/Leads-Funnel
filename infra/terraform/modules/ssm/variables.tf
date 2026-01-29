@@ -125,6 +125,12 @@ variable "api_base_url" {
   default     = ""
 }
 
+variable "quality_quarantine_threshold" {
+  type        = number
+  description = "Lead quality score threshold for quarantine (0-100). 0 disables quarantine."
+  default     = 0
+}
+
 # -----------------------------------------------------------------------------
 # Tags
 # -----------------------------------------------------------------------------

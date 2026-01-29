@@ -80,7 +80,7 @@ resource "aws_kms_alias" "admin_logs" {
 resource "aws_lambda_function" "admin" {
   function_name = "${var.project_name}-${var.environment}-admin-handler"
   role          = aws_iam_role.admin_lambda.arn
-  handler       = "admin-handler.handler"
+  handler       = "index.handler"
   runtime       = "nodejs22.x"
   timeout       = 30
   memory_size   = 512
@@ -92,20 +92,26 @@ resource "aws_lambda_function" "admin" {
 
   environment {
     variables = {
-      ENV                     = var.environment
-      PROJECT_NAME            = var.project_name
-      AWS_REGION_NAME         = var.aws_region
-      COGNITO_USER_POOL_ID    = var.cognito_user_pool_id
-      COGNITO_CLIENT_ID       = var.cognito_client_id
-      COGNITO_ISSUER          = var.cognito_issuer
-      EXPORTS_BUCKET          = var.exports_bucket_name
-      AUDIT_TABLE             = var.audit_table_name
-      EXPORT_JOBS_TABLE       = var.export_jobs_table_name
-      ALLOWED_EMAILS_SSM_PATH = "/${var.project_name}/${var.environment}/admin/allowed_emails"
-      FEATURE_FLAG_SSM_PATH   = "/${var.project_name}/${var.environment}/features/enable_admin_console"
-      IP_ALLOWLIST_FLAG_PATH  = "/${var.project_name}/${var.environment}/features/enable_admin_ip_allowlist"
-      IP_ALLOWLIST_SSM_PATH   = "/${var.project_name}/${var.environment}/admin/allowed_cidrs"
-      LOG_LEVEL               = var.environment == "prod" ? "info" : "debug"
+      ENV                       = var.environment
+      PROJECT_NAME              = var.project_name
+      AWS_REGION_NAME           = var.aws_region
+      COGNITO_USER_POOL_ID      = var.cognito_user_pool_id
+      COGNITO_CLIENT_ID         = var.cognito_client_id
+      COGNITO_ISSUER            = var.cognito_issuer
+      EXPORTS_BUCKET            = var.exports_bucket_name
+      AUDIT_TABLE               = var.audit_table_name
+      EXPORT_JOBS_TABLE         = var.export_jobs_table_name
+      PLATFORM_LEADS_TABLE_NAME = var.platform_leads_table_name
+      ORGS_TABLE_NAME           = var.platform_orgs_table_name
+      USERS_TABLE_NAME          = var.platform_users_table_name
+      MEMBERSHIPS_TABLE_NAME    = var.platform_memberships_table_name
+      ASSIGNMENT_RULES_TABLE    = var.platform_assignment_rules_table_name
+      NOTIFICATIONS_TABLE       = var.platform_notifications_table_name
+      UNASSIGNED_TABLE_NAME     = var.platform_unassigned_table_name
+      ALLOWED_EMAILS_SSM_PATH   = "/${var.project_name}/${var.environment}/admin/allowed_emails"
+      IP_ALLOWLIST_FLAG_PATH    = "/${var.project_name}/${var.environment}/features/enable_admin_ip_allowlist"
+      IP_ALLOWLIST_SSM_PATH     = "/${var.project_name}/${var.environment}/admin/allowed_cidrs"
+      LOG_LEVEL                 = var.environment == "prod" ? "info" : "debug"
     }
   }
 

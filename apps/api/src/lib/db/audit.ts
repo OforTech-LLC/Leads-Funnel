@@ -7,7 +7,8 @@
  */
 
 import { PutCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
-import { getDocClient, tableName } from './client.js';
+import { getDocClient } from './client.js';
+import { getAuditTableName } from './table-names.js';
 import { ulid } from '../../lib/id.js';
 import { signCursor, verifyCursor } from '../cursor.js';
 import { DB_PREFIXES, GSI_KEYS, GSI_INDEX_NAMES } from '../constants.js';
@@ -109,7 +110,7 @@ export async function recordAudit(input: RecordAuditInput): Promise<AuditEntry> 
 
   await doc.send(
     new PutCommand({
-      TableName: tableName(),
+      TableName: getAuditTableName(),
       Item: entry,
       ConditionExpression: 'attribute_not_exists(pk)',
     })
@@ -144,7 +145,7 @@ export async function listAuditByActor(
 
   const result = await doc.send(
     new QueryCommand({
-      TableName: tableName(),
+      TableName: getAuditTableName(),
       KeyConditionExpression: 'pk = :pk',
       ExpressionAttributeValues: { ':pk': `${DB_PREFIXES.AUDIT}${actorId}` },
       Limit: limit,
@@ -193,7 +194,7 @@ export async function listAudit(
 
   const result = await doc.send(
     new QueryCommand({
-      TableName: tableName(),
+      TableName: getAuditTableName(),
       IndexName: GSI_INDEX_NAMES.GSI1,
       KeyConditionExpression: keyCondition,
       ExpressionAttributeValues: exprValues,

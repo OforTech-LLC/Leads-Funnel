@@ -72,6 +72,8 @@ locals {
   platform_assignment_rules_table_arn = try(module.dynamodb_assignment_rules[0].table_arn, null)
   platform_unassigned_table_arn       = try(module.dynamodb_unassigned[0].table_arn, null)
   platform_notifications_table_arn    = try(module.dynamodb_notifications[0].table_arn, null)
+  platform_leads_table_arn            = try(module.dynamodb_leads[0].table_arn, null)
+  platform_leads_gsi_arns             = try(module.dynamodb_leads[0].gsi_arns, [])
 
   # DynamoDB table names (safe access)
   platform_orgs_table_name             = try(module.dynamodb_orgs[0].table_name, "")
@@ -80,6 +82,7 @@ locals {
   platform_assignment_rules_table_name = try(module.dynamodb_assignment_rules[0].table_name, "")
   platform_unassigned_table_name       = try(module.dynamodb_unassigned[0].table_name, "")
   platform_notifications_table_name    = try(module.dynamodb_notifications[0].table_name, "")
+  platform_leads_table_name            = try(module.dynamodb_leads[0].table_name, "")
 
   # SQS queue outputs (safe access)
   platform_assignment_queue_arn   = try(module.assignment_queue[0].queue_arn, null)
@@ -101,6 +104,7 @@ locals {
 
   # Platform SSM outputs (safe access)
   platform_ssm_parameter_arns = try(module.platform_ssm[0].all_parameter_arns, [])
+  platform_ssm_prefix         = try(module.platform_ssm[0].parameter_prefix, "")
 
   # WAF output (safe access)
   waf_web_acl_arn = try(module.waf[0].web_acl_arn, null)

@@ -5,6 +5,7 @@
  * Videos are pre-rendered during build time and served from /public/videos/
  */
 
+import type { ComponentType } from 'react';
 import { Composition } from 'remotion';
 import { ServiceHeroVideo, SERVICE_VIDEO_CONFIG } from './compositions/ServiceHeroVideo';
 
@@ -65,6 +66,10 @@ const SERVICE_IDS = [
   'auto-glass',
 ] as const;
 
+type ServiceId = (typeof SERVICE_IDS)[number];
+
+const ServiceHeroComponent = ServiceHeroVideo as ComponentType<{ serviceId: ServiceId }>;
+
 export const RemotionRoot: React.FC = () => {
   return (
     <>
@@ -72,7 +77,7 @@ export const RemotionRoot: React.FC = () => {
         <Composition
           key={serviceId}
           id={`hero-${serviceId}`}
-          component={ServiceHeroVideo as any}
+          component={ServiceHeroComponent}
           durationInFrames={SERVICE_VIDEO_CONFIG.durationInFrames}
           fps={SERVICE_VIDEO_CONFIG.fps}
           width={SERVICE_VIDEO_CONFIG.width}

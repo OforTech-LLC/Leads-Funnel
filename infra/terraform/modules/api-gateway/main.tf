@@ -188,18 +188,6 @@ resource "aws_apigatewayv2_route" "any_funnel_proxy" {
 # -----------------------------------------------------------------------------
 # Admin / Portal / Auth Routes (routed through unified handler)
 # -----------------------------------------------------------------------------
-resource "aws_apigatewayv2_route" "any_admin" {
-  api_id    = aws_apigatewayv2_api.main.id
-  route_key = "ANY /admin"
-  target    = "integrations/${aws_apigatewayv2_integration.lead_handler.id}"
-}
-
-resource "aws_apigatewayv2_route" "any_admin_proxy" {
-  api_id    = aws_apigatewayv2_api.main.id
-  route_key = "ANY /admin/{proxy+}"
-  target    = "integrations/${aws_apigatewayv2_integration.lead_handler.id}"
-}
-
 resource "aws_apigatewayv2_route" "any_portal" {
   api_id    = aws_apigatewayv2_api.main.id
   route_key = "ANY /portal"
@@ -227,18 +215,6 @@ resource "aws_apigatewayv2_route" "any_auth_proxy" {
 # -----------------------------------------------------------------------------
 # Legacy path aliases
 # -----------------------------------------------------------------------------
-resource "aws_apigatewayv2_route" "any_api_admin_proxy" {
-  api_id    = aws_apigatewayv2_api.main.id
-  route_key = "ANY /api/admin/{proxy+}"
-  target    = "integrations/${aws_apigatewayv2_integration.lead_handler.id}"
-}
-
-resource "aws_apigatewayv2_route" "any_api_admin" {
-  api_id    = aws_apigatewayv2_api.main.id
-  route_key = "ANY /api/admin"
-  target    = "integrations/${aws_apigatewayv2_integration.lead_handler.id}"
-}
-
 resource "aws_apigatewayv2_route" "any_api_portal_proxy" {
   api_id    = aws_apigatewayv2_api.main.id
   route_key = "ANY /api/v1/portal/{proxy+}"

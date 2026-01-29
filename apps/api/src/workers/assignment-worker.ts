@@ -13,7 +13,7 @@
  *   - lead.unassigned event (no matching rule found)
  *
  * Idempotency:
- *   Uses conditional DynamoDB update with attribute_not_exists(assignedOrgId)
+ *   Uses conditional DynamoDB update with status = "new"
  *   to prevent duplicate assignments on message replay.
  *
  * Partial Failure:
@@ -22,7 +22,6 @@
  */
 
 import type { SQSEvent, SQSBatchResponse, SQSBatchItemFailure } from 'aws-lambda';
-import { GetCommand, UpdateCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
 import { GetParameterCommand } from '@aws-sdk/client-ssm';
 import type {
   AssignmentWorkerConfig,
@@ -31,14 +30,18 @@ import type {
   LeadRecord,
   LeadCreatedEventDetail,
   LeadAssignedEventDetail,
-  UnassignedLeadRecord,
 } from './types.js';
-import { getDocClient, getSsmClient } from '../lib/clients.js';
+import { getSsmClient } from '../lib/clients.js';
 import { createLogger } from '../lib/logging.js';
 import { matchLeadToRule } from '../lib/assignment/matcher.js';
 import { checkAndIncrementCap } from '../lib/assignment/caps.js';
 import { emitLeadAssigned, emitLeadUnassigned } from '../lib/events.js';
-import { DB_PREFIXES, DB_SORT_KEYS, GSI_KEYS } from '../lib/constants.js';
+import * as leadsDb from '../lib/db/leads.js';
+import * as rulesDb from '../lib/db/rules.js';
+import * as orgsDb from '../lib/db/orgs.js';
+import * as usersDb from '../lib/db/users.js';
+import * as membershipsDb from '../lib/db/memberships.js';
+import * as unassignedDb from '../lib/db/unassigned.js';
 
 const log = createLogger('assignment-worker');
 
@@ -47,10 +50,20 @@ const log = createLogger('assignment-worker');
 // =============================================================================
 
 function loadConfig(): AssignmentWorkerConfig {
+  const fallbackTable = process.env.DDB_TABLE_NAME || '';
+
   return {
     awsRegion: process.env.AWS_REGION || 'us-east-1',
     env: (process.env.ENV as 'dev' | 'prod') || 'dev',
-    ddbTableName: process.env.DDB_TABLE_NAME || '',
+    leadsTableName: process.env.PLATFORM_LEADS_TABLE_NAME || fallbackTable,
+    orgsTableName: process.env.ORGS_TABLE_NAME || fallbackTable,
+    usersTableName: process.env.USERS_TABLE_NAME || fallbackTable,
+    membershipsTableName: process.env.MEMBERSHIPS_TABLE_NAME || fallbackTable,
+    assignmentRulesTableName:
+      process.env.ASSIGNMENT_RULES_TABLE ||
+      process.env.ASSIGNMENT_RULES_TABLE_NAME ||
+      fallbackTable,
+    unassignedTableName: process.env.UNASSIGNED_TABLE_NAME || fallbackTable,
     eventBusName: process.env.EVENT_BUS_NAME || 'default',
     featureFlagSsmPath: process.env.FEATURE_FLAG_SSM_PATH || '',
     assignmentRulesSsmPath: process.env.ASSIGNMENT_RULES_SSM_PATH || '',
@@ -64,8 +77,7 @@ function loadConfig(): AssignmentWorkerConfig {
 let cachedFeatureFlags: FeatureFlags | null = null;
 let featureFlagsCacheExpiry = 0;
 
-let cachedAssignmentRules: AssignmentRule[] | null = null;
-let rulesCacheExpiry = 0;
+const cachedAssignmentRules = new Map<string, { rules: AssignmentRule[]; expiresAt: number }>();
 
 const CACHE_TTL_MS = 60 * 1000; // 60 seconds
 
@@ -159,13 +171,9 @@ async function loadFeatureFlags(config: AssignmentWorkerConfig): Promise<Feature
  *   }
  * ]
  */
-async function loadAssignmentRules(config: AssignmentWorkerConfig): Promise<AssignmentRule[]> {
-  const now = Date.now();
-
-  if (cachedAssignmentRules && now < rulesCacheExpiry) {
-    return cachedAssignmentRules;
-  }
-
+async function loadAssignmentRulesFromSsm(
+  config: AssignmentWorkerConfig
+): Promise<AssignmentRule[]> {
   if (!config.assignmentRulesSsmPath) {
     log.warn('Assignment rules SSM path not configured');
     return [];
@@ -185,26 +193,59 @@ async function loadAssignmentRules(config: AssignmentWorkerConfig): Promise<Assi
     }
 
     const rules = JSON.parse(result.Parameter.Value) as AssignmentRule[];
-    cachedAssignmentRules = rules;
-    rulesCacheExpiry = now + CACHE_TTL_MS;
-
-    log.info('Assignment rules loaded', { ruleCount: rules.length });
+    log.info('Assignment rules loaded (SSM)', { ruleCount: rules.length });
 
     return rules;
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    log.error('Failed to load assignment rules', {
+    log.error('Failed to load assignment rules from SSM', {
       errorCode: 'SSM_LOAD_ERROR',
       error: errorMessage,
     });
-
-    // Return cached value if available
-    if (cachedAssignmentRules) {
-      return cachedAssignmentRules;
-    }
-
     return [];
   }
+}
+
+async function loadAssignmentRules(
+  config: AssignmentWorkerConfig,
+  funnelId: string
+): Promise<AssignmentRule[]> {
+  const now = Date.now();
+  const cacheKey = `funnel:${funnelId}`;
+  const cached = cachedAssignmentRules.get(cacheKey);
+
+  if (cached && now < cached.expiresAt) {
+    return cached.rules;
+  }
+
+  let rules: AssignmentRule[] = [];
+
+  if (config.assignmentRulesTableName) {
+    const dbRules = await rulesDb.getRulesByFunnel(funnelId);
+    rules = dbRules.map((rule) => ({
+      ruleId: rule.ruleId,
+      funnelId: rule.funnelId,
+      targetType: rule.targetUserId ? 'USER' : 'ORG',
+      targetId: rule.targetUserId || rule.orgId,
+      orgId: rule.orgId,
+      zipPatterns: rule.zipPatterns || [],
+      priority: rule.priority,
+      dailyCap: rule.dailyCap,
+      monthlyCap: rule.monthlyCap,
+      active: rule.isActive,
+      createdAt: rule.createdAt,
+      updatedAt: rule.updatedAt,
+    }));
+  } else {
+    rules = await loadAssignmentRulesFromSsm(config);
+  }
+
+  const filtered = rules.filter(
+    (rule) => rule.active && (rule.funnelId === funnelId || rule.funnelId === '*')
+  );
+
+  cachedAssignmentRules.set(cacheKey, { rules: filtered, expiresAt: now + CACHE_TTL_MS });
+  return filtered;
 }
 
 // =============================================================================
@@ -215,24 +256,12 @@ async function loadAssignmentRules(config: AssignmentWorkerConfig): Promise<Assi
  * Load a lead record from DynamoDB.
  */
 async function getLead(
-  config: AssignmentWorkerConfig,
+  _config: AssignmentWorkerConfig,
   leadId: string,
   funnelId: string
 ): Promise<LeadRecord | null> {
-  const client = getDocClient(config.awsRegion);
-
   try {
-    const result = await client.send(
-      new GetCommand({
-        TableName: config.ddbTableName,
-        Key: {
-          pk: `${DB_PREFIXES.LEAD}${leadId}`,
-          sk: `${GSI_KEYS.FUNNEL}${funnelId}`,
-        },
-      })
-    );
-
-    return (result.Item as LeadRecord) || null;
+    return (await leadsDb.getLead(funnelId, leadId)) as LeadRecord | null;
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     log.error('Failed to get lead', {
@@ -248,8 +277,8 @@ async function getLead(
 /**
  * Conditionally assign a lead to an org/user.
  *
- * Uses attribute_not_exists(assignedOrgId) for idempotency - if the lead
- * was already assigned (e.g., on message replay), the update is skipped.
+ * Uses status = "new" for idempotency - if the lead was already assigned
+ * (e.g., on message replay), the update is skipped.
  *
  * @returns true if assignment succeeded, false if already assigned
  */
@@ -259,79 +288,21 @@ async function assignLead(
   funnelId: string,
   rule: AssignmentRule
 ): Promise<boolean> {
-  const client = getDocClient(config.awsRegion);
-  const now = new Date().toISOString();
-
-  const assignedOrgId = rule.orgId;
   const assignedUserId = rule.targetType === 'USER' ? rule.targetId : undefined;
 
   try {
-    await client.send(
-      new UpdateCommand({
-        TableName: config.ddbTableName,
-        Key: {
-          pk: `${DB_PREFIXES.LEAD}${leadId}`,
-          sk: `${GSI_KEYS.FUNNEL}${funnelId}`,
-        },
-        UpdateExpression: [
-          'SET assignedOrgId = :orgId',
-          'assignmentRuleId = :ruleId',
-          'assignedAt = :assignedAt',
-          'updatedAt = :updatedAt',
-          assignedUserId ? 'assignedUserId = :userId' : undefined,
-          // Update GSI sort keys for org-based queries
-          'gsi2pk = :gsi2pk',
-          'gsi2sk = :gsi2sk',
-          assignedUserId ? 'gsi3pk = :gsi3pk' : undefined,
-          assignedUserId ? 'gsi3sk = :gsi3sk' : undefined,
-          '#evidencePack = if_not_exists(#evidencePack, :emptyEvidence)',
-          '#evidencePack.#assignment = :assignment',
-        ]
-          .filter(Boolean)
-          .join(', '),
-        // Idempotency guard: only assign if not already assigned
-        ConditionExpression: 'attribute_not_exists(assignedOrgId)',
-        ExpressionAttributeNames: {
-          '#evidencePack': 'evidencePack',
-          '#assignment': 'assignment',
-        },
-        ExpressionAttributeValues: {
-          ':orgId': assignedOrgId,
-          ':ruleId': rule.ruleId,
-          ':assignedAt': now,
-          ':updatedAt': now,
-          ...(assignedUserId ? { ':userId': assignedUserId } : {}),
-          ':gsi2pk': `${GSI_KEYS.ORG}${assignedOrgId}${GSI_KEYS.ORG_LEADS_SUFFIX}`,
-          ':gsi2sk': `${GSI_KEYS.ASSIGNED}${now}`,
-          ...(assignedUserId
-            ? {
-                ':gsi3pk': `${DB_PREFIXES.USER}${assignedUserId}${GSI_KEYS.USER_LEADS_SUFFIX}`,
-                ':gsi3sk': `${GSI_KEYS.ASSIGNED}${now}`,
-              }
-            : {}),
-          ':emptyEvidence': {},
-          ':assignment': {
-            ruleId: rule.ruleId,
-            assignedOrgId,
-            assignedUserId,
-            assignedAt: now,
-          },
-        },
-      })
-    );
-
-    return true;
+    const updated = await leadsDb.assignLead(funnelId, leadId, rule.orgId, rule.ruleId, {
+      assignedUserId,
+    });
+    return Boolean(updated);
   } catch (error: unknown) {
-    if (
-      error &&
-      typeof error === 'object' &&
-      'name' in error &&
-      error.name === 'ConditionalCheckFailedException'
-    ) {
-      // Lead was already assigned - idempotent success
-      log.info('Lead already assigned (idempotent)', { leadId, funnelId });
-      return false;
-    }
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    log.error('Failed to assign lead', {
+      leadId,
+      funnelId,
+      errorCode: 'DDB_UPDATE_ERROR',
+      error: errorMessage,
+    });
     throw error;
   }
 }
@@ -340,48 +311,23 @@ async function assignLead(
  * Check if the target org/user is active.
  */
 async function isTargetActive(
-  config: AssignmentWorkerConfig,
+  _config: AssignmentWorkerConfig,
   rule: AssignmentRule
 ): Promise<boolean> {
-  const client = getDocClient(config.awsRegion);
-
   try {
-    // Check org status
-    const orgResult = await client.send(
-      new GetCommand({
-        TableName: config.ddbTableName,
-        Key: {
-          pk: `${DB_PREFIXES.ORG}${rule.orgId}`,
-          sk: DB_SORT_KEYS.META,
-        },
-        ProjectionExpression: '#status',
-        ExpressionAttributeNames: {
-          '#status': 'status',
-        },
-      })
-    );
-
-    if (!orgResult.Item || orgResult.Item.status !== 'active') {
+    const org = await orgsDb.getOrg(rule.orgId);
+    if (!org) {
       return false;
     }
 
-    // If target is a USER, also check user status
     if (rule.targetType === 'USER') {
-      const userResult = await client.send(
-        new GetCommand({
-          TableName: config.ddbTableName,
-          Key: {
-            pk: `${DB_PREFIXES.USER}${rule.targetId}`,
-            sk: DB_SORT_KEYS.META,
-          },
-          ProjectionExpression: '#status',
-          ExpressionAttributeNames: {
-            '#status': 'status',
-          },
-        })
-      );
+      const user = await usersDb.getUser(rule.targetId);
+      if (!user || user.status !== 'active') {
+        return false;
+      }
 
-      if (!userResult.Item || userResult.Item.status !== 'active') {
+      const membership = await membershipsDb.getMember(rule.orgId, rule.targetId);
+      if (!membership) {
         return false;
       }
     }
@@ -404,36 +350,14 @@ async function isTargetActive(
  * Write an unassigned lead record with the reason.
  */
 async function writeUnassignedRecord(
-  config: AssignmentWorkerConfig,
+  _config: AssignmentWorkerConfig,
   leadId: string,
   funnelId: string,
   zipCode: string | undefined,
   reason: string
 ): Promise<void> {
-  const client = getDocClient(config.awsRegion);
-  const now = new Date().toISOString();
-
-  // TTL: 90 days
-  const ttl = Math.floor(Date.now() / 1000) + 90 * 24 * 60 * 60;
-
-  const record: UnassignedLeadRecord = {
-    pk: `${DB_PREFIXES.UNASSIGNED}${leadId}`,
-    sk: `${GSI_KEYS.FUNNEL}${funnelId}`,
-    leadId,
-    funnelId,
-    zipCode,
-    reason,
-    evaluatedAt: now,
-    ttl,
-  };
-
   try {
-    await client.send(
-      new PutCommand({
-        TableName: config.ddbTableName,
-        Item: record,
-      })
-    );
+    await unassignedDb.addUnassigned(funnelId, leadId, reason, zipCode);
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     log.error('Failed to write unassigned record', {
@@ -493,22 +417,24 @@ async function processRecord(config: AssignmentWorkerConfig, messageBody: string
     return;
   }
 
-  // Skip already assigned leads (idempotency)
-  if (lead.assignedOrgId) {
-    log.info('Lead already assigned, skipping', {
+  // Skip leads that are no longer in a "new" state
+  if (lead.status && lead.status !== 'new') {
+    log.info('Lead not eligible for assignment, skipping', {
       leadId,
       funnelId,
-      orgId: lead.assignedOrgId,
+      status: lead.status,
+      orgId: lead.orgId,
     });
     return;
   }
 
   // Load assignment rules
-  const rules = await loadAssignmentRules(config);
+  const rules = await loadAssignmentRules(config, funnelId);
 
   if (rules.length === 0) {
     log.warn('No assignment rules configured', { leadId, funnelId });
 
+    await leadsDb.markUnassigned(funnelId, leadId).catch(() => null);
     await writeUnassignedRecord(config, leadId, funnelId, lead.zipCode, 'no_rules_configured');
     await emitLeadUnassigned(
       config.awsRegion,
@@ -531,6 +457,7 @@ async function processRecord(config: AssignmentWorkerConfig, messageBody: string
       zipCode: lead.zipCode ? `${lead.zipCode.slice(0, 3)}***` : 'none',
     });
 
+    await leadsDb.markUnassigned(funnelId, leadId).catch(() => null);
     await writeUnassignedRecord(config, leadId, funnelId, lead.zipCode, 'no_matching_rule');
     await emitLeadUnassigned(
       config.awsRegion,
@@ -545,7 +472,7 @@ async function processRecord(config: AssignmentWorkerConfig, messageBody: string
 
   // Try the matched rule and fall back through remaining rules if needed
   const allRules = rules
-    .filter((r) => r.active && (r.funnelId === funnelId || r.funnelId === '*'))
+    .filter((r) => r.funnelId === funnelId || r.funnelId === '*')
     .sort((a, b) => a.priority - b.priority);
 
   // Put the matched rule first, then others as fallback
@@ -568,7 +495,7 @@ async function processRecord(config: AssignmentWorkerConfig, messageBody: string
 
     // Check daily/monthly caps
     const capResult = await checkAndIncrementCap(
-      config.ddbTableName,
+      config.assignmentRulesTableName,
       config.awsRegion,
       rule.ruleId,
       rule.dailyCap,
@@ -622,6 +549,7 @@ async function processRecord(config: AssignmentWorkerConfig, messageBody: string
       break;
     } else {
       // Already assigned by another invocation - idempotent success
+      log.info('Lead already assigned (idempotent)', { leadId, funnelId });
       assigned = true;
       break;
     }
@@ -630,6 +558,7 @@ async function processRecord(config: AssignmentWorkerConfig, messageBody: string
   if (!assigned) {
     log.info('All rules exhausted, lead unassigned', { leadId, funnelId });
 
+    await leadsDb.markUnassigned(funnelId, leadId).catch(() => null);
     await writeUnassignedRecord(config, leadId, funnelId, lead.zipCode, 'all_rules_exhausted');
     await emitLeadUnassigned(
       config.awsRegion,
@@ -672,8 +601,8 @@ export async function handler(event: SQSEvent): Promise<SQSBatchResponse> {
   }
 
   // Validate configuration
-  if (!config.ddbTableName) {
-    log.error('DDB_TABLE_NAME not configured', { errorCode: 'CONFIG_ERROR' });
+  if (!config.leadsTableName) {
+    log.error('PLATFORM_LEADS_TABLE_NAME not configured', { errorCode: 'CONFIG_ERROR' });
 
     // Fail all records so they are retried after config fix
     return {

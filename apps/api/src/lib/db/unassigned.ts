@@ -6,7 +6,8 @@
  */
 
 import { PutCommand, QueryCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
-import { getDocClient, tableName } from './client.js';
+import { getDocClient } from './client.js';
+import { getUnassignedTableName } from './table-names.js';
 import { DB_PREFIXES } from '../constants.js';
 
 // ---------------------------------------------------------------------------
@@ -21,6 +22,7 @@ export interface UnassignedEntry {
   zipCode?: string;
   reason: string;
   createdAt: string;
+  ttl: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -35,6 +37,7 @@ export async function addUnassigned(
 ): Promise<UnassignedEntry> {
   const doc = getDocClient();
   const now = new Date().toISOString();
+  const ttl = Math.floor(Date.now() / 1000) + 90 * 24 * 60 * 60;
 
   const entry: UnassignedEntry = {
     pk: `${DB_PREFIXES.UNASSIGNED}${funnelId}`,
@@ -44,11 +47,12 @@ export async function addUnassigned(
     zipCode,
     reason,
     createdAt: now,
+    ttl,
   };
 
   await doc.send(
     new PutCommand({
-      TableName: tableName(),
+      TableName: getUnassignedTableName(),
       Item: entry,
     })
   );
@@ -79,7 +83,7 @@ export async function listUnassigned(
 
   const result = await doc.send(
     new QueryCommand({
-      TableName: tableName(),
+      TableName: getUnassignedTableName(),
       KeyConditionExpression: 'pk = :pk',
       ExpressionAttributeValues: { ':pk': `${DB_PREFIXES.UNASSIGNED}${funnelId}` },
       Limit: limit,
@@ -104,7 +108,7 @@ export async function removeUnassigned(funnelId: string, sk: string): Promise<vo
   const doc = getDocClient();
   await doc.send(
     new DeleteCommand({
-      TableName: tableName(),
+      TableName: getUnassignedTableName(),
       Key: { pk: `${DB_PREFIXES.UNASSIGNED}${funnelId}`, sk },
     })
   );

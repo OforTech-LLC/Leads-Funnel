@@ -298,7 +298,7 @@ function buildProfileCompleteness(
 
   if (!firstName.trim()) missingFields.push('firstName');
   if (!lastName.trim()) missingFields.push('lastName');
-  if (!phone) missingFields.push('phone');
+  if (countDigits(phone) < 7) missingFields.push('phone');
   if (!avatarUrl) missingFields.push('avatarUrl');
 
   const totalFields = 4;

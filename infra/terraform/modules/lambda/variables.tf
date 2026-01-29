@@ -177,6 +177,24 @@ variable "idempotency_table_arn" {
   description = "Idempotency DynamoDB table ARN"
 }
 
+variable "platform_leads_table_name" {
+  type        = string
+  description = "Platform leads DynamoDB table name"
+  default     = ""
+}
+
+variable "platform_leads_table_arn" {
+  type        = string
+  description = "Platform leads DynamoDB table ARN"
+  default     = ""
+}
+
+variable "platform_leads_gsi_arns" {
+  type        = list(string)
+  description = "Platform leads DynamoDB GSI ARNs"
+  default     = []
+}
+
 # -----------------------------------------------------------------------------
 # EventBridge Integration
 # -----------------------------------------------------------------------------
@@ -213,6 +231,27 @@ variable "ip_hash_salt_secret_arn" {
 variable "webhook_secret_arn" {
   type        = string
   description = "ARN of webhook signing secret"
+  default     = ""
+}
+
+# -----------------------------------------------------------------------------
+# Avatar Uploads (S3)
+# -----------------------------------------------------------------------------
+variable "avatars_bucket_name" {
+  type        = string
+  description = "S3 bucket name for avatar uploads"
+  default     = ""
+}
+
+variable "avatars_bucket_arn" {
+  type        = string
+  description = "S3 bucket ARN for avatar uploads"
+  default     = ""
+}
+
+variable "avatar_public_base_url" {
+  type        = string
+  description = "Public base URL for avatar images"
   default     = ""
 }
 
