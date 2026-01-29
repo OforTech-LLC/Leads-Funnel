@@ -79,6 +79,30 @@ function getFunnelTableName(config: EnvConfig, funnelId: string): string {
   return `${config.projectName}-${config.env}-${funnelId}`;
 }
 
+/**
+ * Extract funnelId from known path patterns.
+ *
+ * Supported:
+ * - /lead/{funnelId}
+ * - /funnel/{funnelId}/lead
+ * - /{stage}/lead/{funnelId} (stage-prefixed paths)
+ */
+function extractFunnelIdFromPath(path: string | undefined, stage?: string): string | undefined {
+  if (!path) return undefined;
+  const parts = path.split('/').filter(Boolean);
+  const normalizedParts = stage && parts[0] === stage ? parts.slice(1) : parts;
+
+  if (normalizedParts[0] === 'lead' && normalizedParts[1]) {
+    return normalizedParts[1].toLowerCase();
+  }
+
+  if (normalizedParts[0] === 'funnel' && normalizedParts[1] && normalizedParts[2] === 'lead') {
+    return normalizedParts[1].toLowerCase();
+  }
+
+  return undefined;
+}
+
 // =============================================================================
 // Structured Logging
 // =============================================================================
@@ -214,10 +238,11 @@ export async function handler(
   const startTime = Date.now();
   // Generate correlation/request ID
   const requestId = context.awsRequestId || uuidv4();
+  const requestOrigin = event.headers?.origin || event.headers?.Origin;
 
   // Handle OPTIONS preflight
   if (event.requestContext.http.method === 'OPTIONS') {
-    return addRequestIdHeader(http.noContent(), requestId);
+    return addRequestIdHeader(http.noContent(requestOrigin), requestId);
   }
 
   // Only allow POST
@@ -228,7 +253,7 @@ export async function handler(
       message: 'Method not allowed',
       errorCode: 'METHOD_NOT_ALLOWED',
     });
-    return addRequestIdHeader(http.methodNotAllowed(), requestId);
+    return addRequestIdHeader(http.methodNotAllowed(requestOrigin), requestId);
   }
 
   // Check payload size before processing (DoS protection)
@@ -240,7 +265,10 @@ export async function handler(
       message: 'Payload too large',
       errorCode: 'PAYLOAD_TOO_LARGE',
     });
-    return addRequestIdHeader(http.payloadTooLarge(MAX_LEAD_PAYLOAD_SIZE), requestId);
+    return addRequestIdHeader(
+      http.payloadTooLarge(MAX_LEAD_PAYLOAD_SIZE, requestOrigin),
+      requestId
+    );
   }
 
   const config = await loadConfig();
@@ -253,7 +281,7 @@ export async function handler(
       message: 'DynamoDB table names not configured',
       errorCode: 'CONFIG_ERROR',
     });
-    return addRequestIdHeader(http.internalError(), requestId);
+    return addRequestIdHeader(http.internalError(requestOrigin), requestId);
   }
 
   try {
@@ -266,7 +294,7 @@ export async function handler(
         message: 'Invalid JSON body',
         errorCode: 'INVALID_JSON',
       });
-      return addRequestIdHeader(http.invalidJson(parseError), requestId);
+      return addRequestIdHeader(http.invalidJson(parseError, requestOrigin), requestId);
     }
 
     // Validate payload
@@ -278,13 +306,24 @@ export async function handler(
         message: 'Validation failed',
         errorCode: 'VALIDATION_ERROR',
       });
-      return addRequestIdHeader(http.validationError(validation.errors), requestId);
+      return addRequestIdHeader(http.validationError(validation.errors, requestOrigin), requestId);
     }
 
     const payload = data as LeadRequestPayload;
 
     // Normalize lead data
-    const normalizedLead: NormalizedLead = normalizeLead(payload);
+    let normalizedLead: NormalizedLead = normalizeLead(payload);
+
+    // Attempt to infer funnelId from path if not provided in payload
+    if (!normalizedLead.funnelId) {
+      const pathFunnelId = extractFunnelIdFromPath(
+        event.requestContext.http.path,
+        event.requestContext.stage
+      );
+      if (pathFunnelId) {
+        normalizedLead = { ...normalizedLead, funnelId: pathFunnelId };
+      }
+    }
 
     // Validate funnelId is present and valid
     if (!normalizedLead.funnelId) {
@@ -295,7 +334,7 @@ export async function handler(
         errorCode: 'VALIDATION_ERROR',
       });
       return addRequestIdHeader(
-        http.validationError({ funnelId: 'funnelId is required' }),
+        http.validationError({ funnelId: 'funnelId is required' }, requestOrigin),
         requestId
       );
     }
@@ -312,7 +351,10 @@ export async function handler(
         message: 'Invalid funnelId',
         errorCode: 'VALIDATION_ERROR',
       });
-      return addRequestIdHeader(http.validationError({ funnelId: 'Invalid funnel ID' }), requestId);
+      return addRequestIdHeader(
+        http.validationError({ funnelId: 'Invalid funnel ID' }, requestOrigin),
+        requestId
+      );
     }
 
     // Get the funnel-specific table name
@@ -343,7 +385,7 @@ export async function handler(
           errorCode: 'RATE_LIMITED',
           latencyMs: getElapsedMs(startTime),
         });
-        return addRequestIdHeader(http.rateLimited(), requestId);
+        return addRequestIdHeader(http.rateLimited(requestOrigin), requestId);
       }
     } catch (error) {
       // Fail-closed: reject on rate limit errors for security
@@ -353,7 +395,7 @@ export async function handler(
         message: 'Rate limit check failed',
         errorCode: 'RATE_LIMIT_ERROR',
       });
-      return addRequestIdHeader(http.internalError(), requestId);
+      return addRequestIdHeader(http.internalError(requestOrigin), requestId);
     }
 
     // Generate lead ID for idempotency
@@ -376,7 +418,7 @@ export async function handler(
         latencyMs: getElapsedMs(startTime),
       });
       return addRequestIdHeader(
-        http.ok(idempotency.existingLeadId!, idempotency.existingStatus!),
+        http.ok(idempotency.existingLeadId!, idempotency.existingStatus!, requestOrigin),
         requestId
       );
     }
@@ -423,7 +465,7 @@ export async function handler(
       score: scoring.score,
     });
 
-    return addRequestIdHeader(http.created(lead.leadId, lead.status), requestId);
+    return addRequestIdHeader(http.created(lead.leadId, lead.status, requestOrigin), requestId);
   } catch (error) {
     // Catch-all error handler - log details for debugging but never expose to client
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -436,6 +478,6 @@ export async function handler(
       errorCode: 'INTERNAL_ERROR',
       latencyMs: getElapsedMs(startTime),
     });
-    return addRequestIdHeader(http.internalError(), requestId);
+    return addRequestIdHeader(http.internalError(requestOrigin), requestId);
   }
 }

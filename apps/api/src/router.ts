@@ -16,6 +16,7 @@ import { handler as leadHandler } from './handler.js';
 import { handler as healthHandler } from './health/handler.js';
 import { handler as adminHandler } from './handlers/admin.js';
 import { handler as portalHandler } from './handlers/portal.js';
+import { handler as authHandler } from './handlers/auth.js';
 import { checkFeatureEnabled, getCorsOrigin } from './lib/response.js';
 import { createLogger } from './lib/logging.js';
 import { HTTP_STATUS, HTTP_HEADERS, CONTENT_TYPES } from './lib/constants.js';
@@ -93,6 +94,11 @@ export async function router(
 
   if (path === '/lead' || path.startsWith('/lead/')) {
     return leadHandler(event, context);
+  }
+
+  // Auth routes (for admin and portal OAuth token management)
+  if (path.startsWith('/auth/')) {
+    return authHandler(event);
   }
 
   // Admin console routes (feature-flagged)

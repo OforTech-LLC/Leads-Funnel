@@ -102,18 +102,28 @@ const DEFAULT_CORS_HEADERS = {
 // =============================================================================
 
 interface SuccessResponse {
+  // New canonical shape (matches shared LeadSubmitResponse)
+  success: true;
+  data: {
+    id: string;
+    status: CaptureStatus;
+  };
+  // Backward compatibility for older clients
   ok: true;
   leadId: string;
   status: CaptureStatus;
 }
 
 interface ErrorResponse {
-  ok: false;
+  // New canonical shape (matches shared ApiError)
+  success: false;
   error: {
     code: string;
     message: string;
     fieldErrors?: FieldErrors;
   };
+  // Backward compatibility
+  ok: false;
 }
 
 // =============================================================================
@@ -146,6 +156,11 @@ export function created(
   return buildResponse(
     HTTP_STATUS.CREATED,
     {
+      success: true,
+      data: {
+        id: leadId,
+        status,
+      },
       ok: true,
       leadId,
       status,
@@ -165,6 +180,11 @@ export function ok(
   return buildResponse(
     HTTP_STATUS.OK,
     {
+      success: true,
+      data: {
+        id: leadId,
+        status,
+      },
       ok: true,
       leadId,
       status,
@@ -194,6 +214,7 @@ export function validationError(
   return buildResponse(
     HTTP_STATUS.BAD_REQUEST,
     {
+      success: false,
       ok: false,
       error: {
         code: 'VALIDATION_ERROR',
@@ -212,6 +233,7 @@ export function invalidJson(message: string, requestOrigin?: string): APIGateway
   return buildResponse(
     HTTP_STATUS.BAD_REQUEST,
     {
+      success: false,
       ok: false,
       error: {
         code: 'INVALID_JSON',
@@ -229,6 +251,7 @@ export function methodNotAllowed(requestOrigin?: string): APIGatewayProxyResultV
   return buildResponse(
     HTTP_STATUS.METHOD_NOT_ALLOWED,
     {
+      success: false,
       ok: false,
       error: {
         code: 'METHOD_NOT_ALLOWED',
@@ -246,6 +269,7 @@ export function payloadTooLarge(maxSize: number, requestOrigin?: string): APIGat
   return buildResponse(
     HTTP_STATUS.PAYLOAD_TOO_LARGE,
     {
+      success: false,
       ok: false,
       error: {
         code: 'PAYLOAD_TOO_LARGE',
@@ -263,6 +287,7 @@ export function rateLimited(requestOrigin?: string): APIGatewayProxyResultV2 {
   return buildResponse(
     HTTP_STATUS.RATE_LIMITED,
     {
+      success: false,
       ok: false,
       error: {
         code: 'RATE_LIMITED',
@@ -281,6 +306,7 @@ export function internalError(requestOrigin?: string): APIGatewayProxyResultV2 {
   return buildResponse(
     HTTP_STATUS.INTERNAL_ERROR,
     {
+      success: false,
       ok: false,
       error: {
         code: 'INTERNAL',
