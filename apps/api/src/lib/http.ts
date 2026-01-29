@@ -4,7 +4,8 @@
 
 import type { APIGatewayProxyResultV2 } from 'aws-lambda';
 import type { FieldErrors } from '@kanjona/shared';
-import { HTTP_STATUS, HTTP_HEADERS, CONTENT_TYPES } from './constants.js';
+import { HTTP_STATUS, HTTP_HEADERS } from './constants.js';
+import { buildCorsHeaders } from './cors.js';
 import { BASE_SECURITY_HEADERS } from './security-headers.js';
 import type { CaptureStatus } from './constants.js';
 
@@ -23,78 +24,11 @@ const SECURITY_HEADERS = {
 // CORS Configuration with Origin Allowlist
 // =============================================================================
 
-// Load allowed origins from environment variable (comma-separated)
-// Example: ALLOWED_ORIGINS=https://example.com,https://www.example.com
-const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(',').map((o) => o.trim())
-  : [];
-
-// Default origins for development (only used if ALLOWED_ORIGINS is empty)
-const DEFAULT_DEV_ORIGINS = [
-  'http://localhost:3000',
-  'http://localhost:3001',
-  'http://127.0.0.1:3000',
-];
-
-/**
- * Get the allowed origin for CORS headers
- * Returns the origin if it's in the allowlist, or null if not allowed
- */
-function getAllowedOrigin(requestOrigin: string | undefined): string | null {
-  if (!requestOrigin) {
-    return null;
-  }
-
-  // Use configured origins if available, otherwise use dev defaults in development
-  const allowedList =
-    ALLOWED_ORIGINS.length > 0
-      ? ALLOWED_ORIGINS
-      : process.env.NODE_ENV !== 'production'
-        ? DEFAULT_DEV_ORIGINS
-        : [];
-
-  // Check if the request origin is in the allowlist
-  if (allowedList.includes(requestOrigin)) {
-    return requestOrigin;
-  }
-
-  return null;
-}
-
-/**
- * Build CORS headers with origin validation
- */
-function buildCorsHeaders(requestOrigin?: string): Record<string, string> {
-  const allowedOrigin = getAllowedOrigin(requestOrigin);
-
-  // If origin is not allowed, don't include CORS headers
-  // This will cause the browser to block the response
-  if (!allowedOrigin) {
-    return {
-      ...SECURITY_HEADERS,
-      [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.JSON,
-    };
-  }
-
-  return {
-    ...SECURITY_HEADERS,
-    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_ORIGIN]: allowedOrigin,
-    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_HEADERS]: 'content-type,authorization,x-csrf-token',
-    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_METHODS]: 'POST,OPTIONS',
-    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_CREDENTIALS]: 'true',
-    [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.JSON,
-    // Prevent caching of CORS responses
-    [HTTP_HEADERS.VARY]: 'Origin',
-  };
-}
-
-// Default headers for responses without origin context
-const DEFAULT_CORS_HEADERS = {
-  ...SECURITY_HEADERS,
-  [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_HEADERS]: 'content-type,authorization,x-csrf-token',
-  [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_METHODS]: 'POST,OPTIONS',
-  [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.JSON,
-} as const;
+const DEFAULT_CORS_HEADERS = buildCorsHeaders(undefined, {
+  allowMethods: 'POST,OPTIONS',
+  allowHeaders: 'content-type,authorization,x-csrf-token',
+  extraHeaders: SECURITY_HEADERS,
+});
 
 // =============================================================================
 // Response Types
@@ -139,7 +73,13 @@ function buildResponse(
 ): APIGatewayProxyResultV2 {
   return {
     statusCode,
-    headers: requestOrigin ? buildCorsHeaders(requestOrigin) : DEFAULT_CORS_HEADERS,
+    headers: requestOrigin
+      ? buildCorsHeaders(requestOrigin, {
+          allowMethods: 'POST,OPTIONS',
+          allowHeaders: 'content-type,authorization,x-csrf-token',
+          extraHeaders: SECURITY_HEADERS,
+        })
+      : DEFAULT_CORS_HEADERS,
     body: JSON.stringify(body),
   };
 }
@@ -198,7 +138,13 @@ export function ok(
 export function noContent(requestOrigin?: string): APIGatewayProxyResultV2 {
   return {
     statusCode: HTTP_STATUS.NO_CONTENT,
-    headers: requestOrigin ? buildCorsHeaders(requestOrigin) : DEFAULT_CORS_HEADERS,
+    headers: requestOrigin
+      ? buildCorsHeaders(requestOrigin, {
+          allowMethods: 'POST,OPTIONS',
+          allowHeaders: 'content-type,authorization,x-csrf-token',
+          extraHeaders: SECURITY_HEADERS,
+        })
+      : DEFAULT_CORS_HEADERS,
     body: '',
   };
 }

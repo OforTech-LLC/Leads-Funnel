@@ -36,6 +36,8 @@ import type {
   LeadUnassignedEventDetail,
 } from './types.js';
 import { getDocClient, getSsmClient } from '../lib/clients.js';
+import { getAllFlags } from '../lib/feature-flags.js';
+import { normalizeFeatureFlags } from '../lib/feature-flag-utils.js';
 import { createLogger } from '../lib/logging.js';
 import { dispatchNotifications } from '../lib/notifications/dispatcher.js';
 import * as leadsDb from '../lib/db/leads.js';
@@ -75,6 +77,34 @@ let cachedFeatureFlags: FeatureFlags | null = null;
 let featureFlagsCacheExpiry = 0;
 const CACHE_TTL_MS = 60 * 1000; // 60 seconds
 
+const DEFAULT_WORKER_FLAGS: FeatureFlags = {
+  enable_assignment_service: false,
+  enable_notification_service: false,
+  enable_email_notifications: false,
+  enable_sms_notifications: false,
+  enable_twilio_sms: false,
+  enable_sns_sms: false,
+};
+
+const WORKER_FLAG_KEYS = [
+  'enable_assignment_service',
+  'enable_notification_service',
+  'enable_email_notifications',
+  'enable_sms_notifications',
+  'enable_twilio_sms',
+  'enable_sns_sms',
+] as const;
+
+function pickWorkerFlags(flags: Record<string, boolean>): FeatureFlags {
+  return WORKER_FLAG_KEYS.reduce(
+    (acc, key) => {
+      acc[key] = flags[key] ?? DEFAULT_WORKER_FLAGS[key];
+      return acc;
+    },
+    { ...DEFAULT_WORKER_FLAGS }
+  );
+}
+
 /**
  * Load feature flags from SSM Parameter Store with 60s in-memory cache.
  */
@@ -86,15 +116,11 @@ async function loadFeatureFlags(config: NotificationWorkerConfig): Promise<Featu
   }
 
   if (!config.featureFlagSsmPath) {
-    log.warn('Feature flag SSM path not configured, using defaults');
-    return {
-      enable_assignment_service: false,
-      enable_notification_service: false,
-      enable_email_notifications: false,
-      enable_sms_notifications: false,
-      enable_twilio: false,
-      enable_sns_sms: false,
-    };
+    log.warn('Feature flag SSM path not configured, falling back to per-flag SSM');
+    const flags = pickWorkerFlags(await getAllFlags());
+    cachedFeatureFlags = flags;
+    featureFlagsCacheExpiry = now + CACHE_TTL_MS;
+    return flags;
   }
 
   try {
@@ -110,7 +136,9 @@ async function loadFeatureFlags(config: NotificationWorkerConfig): Promise<Featu
       throw new Error('Empty feature flag parameter');
     }
 
-    const flags = JSON.parse(result.Parameter.Value) as FeatureFlags;
+    const parsed = JSON.parse(result.Parameter.Value) as Record<string, unknown>;
+    const normalized = normalizeFeatureFlags(parsed || {});
+    const flags = pickWorkerFlags(normalized);
     cachedFeatureFlags = flags;
     featureFlagsCacheExpiry = now + CACHE_TTL_MS;
 
@@ -126,14 +154,7 @@ async function loadFeatureFlags(config: NotificationWorkerConfig): Promise<Featu
       return cachedFeatureFlags;
     }
 
-    return {
-      enable_assignment_service: false,
-      enable_notification_service: false,
-      enable_email_notifications: false,
-      enable_sms_notifications: false,
-      enable_twilio: false,
-      enable_sns_sms: false,
-    };
+    return DEFAULT_WORKER_FLAGS;
   }
 }
 

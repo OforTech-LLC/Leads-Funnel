@@ -2,7 +2,7 @@
  * Portal API Handler
  *
  * Handles all /portal/* endpoints for organization agents/owners.
- * Requires portal JWT authentication and checks the enable_agent_portal flag.
+ * Requires portal JWT authentication and checks the enable_portal flag.
  *
  * Performance:
  *   - X-Request-Id header injected on every response for distributed tracing

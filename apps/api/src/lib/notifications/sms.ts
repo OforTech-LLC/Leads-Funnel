@@ -4,7 +4,7 @@
  * Sends SMS notifications for lead events via Twilio (primary) or
  * Amazon SNS (fallback). The provider is determined by feature flags:
  *
- * - enable_twilio: Use Twilio REST API
+ * - enable_twilio_sms: Use Twilio REST API
  * - enable_sns_sms: Use Amazon SNS SMS (fallback when Twilio is disabled)
  *
  * Security:
@@ -99,7 +99,7 @@ export interface SendSmsResult {
  * Send an SMS message using the configured provider.
  *
  * Provider selection:
- * 1. If enable_twilio is true, use Twilio REST API
+ * 1. If enable_twilio_sms is true, use Twilio REST API
  * 2. If enable_sns_sms is true, use Amazon SNS
  * 3. If neither is enabled, skip and return success (no-op)
  *
@@ -119,7 +119,7 @@ export async function sendSms(params: SendSmsParams): Promise<SendSmsResult> {
   }
 
   // Try Twilio first
-  if (featureFlags.enable_twilio && twilioSecretArn) {
+  if (featureFlags.enable_twilio_sms && twilioSecretArn) {
     return sendViaTwilio(to, body, region, twilioSecretArn);
   }
 

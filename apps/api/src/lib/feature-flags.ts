@@ -5,7 +5,7 @@
  * caching. Designed for 1B req/day throughput -- SSM calls are amortised
  * across thousands of Lambda invocations by the module-level cache.
  *
- * SSM path pattern:  /kanjona/${STAGE}/flags/${flagName}
+ * SSM path pattern:  /{project}/{env}/features/{flagName}
  *
  * Each flag is stored as a separate SSM parameter so individual flags can
  * be toggled without redeploying.  A single bulk load fetches all flags
@@ -19,75 +19,19 @@
 import { GetParametersByPathCommand, PutParameterCommand } from '@aws-sdk/client-ssm';
 import { getSsmClient } from './clients.js';
 import { createLogger } from './logging.js';
+import {
+  FLAG_DEFAULTS,
+  normalizeFeatureFlags,
+  type FeatureFlagName,
+} from './feature-flag-utils.js';
 
 const log = createLogger('feature-flags');
 
 // ---------------------------------------------------------------------------
-// Flag names & defaults
+// Flag defaults
 // ---------------------------------------------------------------------------
 
-/**
- * Exhaustive union of every supported flag name.
- * Keeps callers type-safe -- passing a typo is a compile error.
- */
-export type FeatureFlagName =
-  | 'billing_enabled'
-  | 'calendar_enabled'
-  | 'slack_enabled'
-  | 'teams_enabled'
-  | 'webhooks_enabled'
-  | 'lead_scoring_enabled'
-  | 'round_robin_enabled'
-  | 'enable_ai_analysis'
-  | 'enable_bedrock_ai'
-  | 'enable_admin_console'
-  | 'enable_agent_portal'
-  | 'enable_assignment'
-  | 'enable_notifications'
-  | 'enable_email'
-  | 'enable_sms'
-  | 'enable_twilio'
-  | 'enable_waf'
-  | 'enable_rate_limiting'
-  | 'enable_deduplication'
-  | 'enable_debug'
-  | 'enable_elevenlabs'
-  | 'enable_sns_sms';
-
-/**
- * Fail-safe default values used when SSM is unavailable AND the cache
- * is empty (i.e. Lambda cold-start with no connectivity).
- *
- * Conservative defaults: new/experimental features default OFF,
- * core pipeline features default ON.
- */
-const DEFAULT_FLAGS: Readonly<Record<FeatureFlagName, boolean>> = {
-  billing_enabled: false,
-  calendar_enabled: false,
-  slack_enabled: false,
-  teams_enabled: false,
-  webhooks_enabled: true,
-  lead_scoring_enabled: true,
-  round_robin_enabled: true,
-  enable_ai_analysis: false,
-  enable_bedrock_ai: false,
-  enable_admin_console: false,
-  enable_agent_portal: false,
-  enable_assignment: true,
-  enable_notifications: true,
-  enable_email: true,
-  enable_sms: false,
-  enable_twilio: false,
-  enable_waf: true,
-  enable_rate_limiting: true,
-  enable_deduplication: true,
-  enable_debug: false,
-  enable_elevenlabs: false,
-  enable_sns_sms: false,
-} as const;
-
-/** Full set of recognised flag names for iteration. */
-const ALL_FLAG_NAMES: readonly FeatureFlagName[] = Object.keys(DEFAULT_FLAGS) as FeatureFlagName[];
+const DEFAULT_FLAGS: Readonly<Record<FeatureFlagName, boolean>> = FLAG_DEFAULTS;
 
 // ---------------------------------------------------------------------------
 // Cache
@@ -109,15 +53,35 @@ let _cache: FlagCache | null = null;
 /**
  * Resolve the SSM path prefix for feature flags.
  *
- * Uses FEATURE_FLAGS_SSM_PREFIX when set explicitly, otherwise falls back
- * to building the path from STAGE (or ENV).
+ * Uses FEATURE_FLAGS_SSM_PREFIX or FEATURE_FLAGS_SSM_PREFIXES when set,
+ * otherwise falls back to /{PROJECT_NAME}/{ENVIRONMENT}/features and legacy paths.
  */
-function ssmPrefix(): string {
-  if (process.env.FEATURE_FLAGS_SSM_PREFIX) {
-    return process.env.FEATURE_FLAGS_SSM_PREFIX;
-  }
-  const stage = process.env.STAGE || process.env.ENV || 'dev';
-  return `/kanjona/${stage}/flags`;
+function resolveProjectEnv(): { project: string; env: string } {
+  const project = process.env.PROJECT_NAME || 'kanjona';
+  const env = process.env.ENVIRONMENT || process.env.STAGE || process.env.ENV || 'dev';
+  return { project, env };
+}
+
+function ssmPrefixes(): string[] {
+  const explicit = process.env.FEATURE_FLAGS_SSM_PREFIX?.trim();
+  if (explicit) return [explicit];
+
+  const explicitList = process.env.FEATURE_FLAGS_SSM_PREFIXES?.split(',')
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+  if (explicitList && explicitList.length > 0) return explicitList;
+
+  const { project, env } = resolveProjectEnv();
+  return [
+    `/${project}/${env}/features`,
+    `/${project}/${env}/feature-flags`,
+    `/${project}/${env}/flags`,
+  ];
+}
+
+function primarySsmPrefix(): string {
+  const prefixes = ssmPrefixes();
+  return prefixes[0];
 }
 
 /**
@@ -126,43 +90,37 @@ function ssmPrefix(): string {
  * GetParameter calls and keeps the 1-second SSM read throughput low.
  */
 async function loadFromSsm(): Promise<Record<FeatureFlagName, boolean>> {
-  const prefix = ssmPrefix();
+  const prefixes = ssmPrefixes();
   const ssm = getSsmClient();
-  const flags: Record<string, boolean> = {};
+  const rawFlags: Record<string, unknown> = {};
 
-  let nextToken: string | undefined;
-  do {
-    const result = await ssm.send(
-      new GetParametersByPathCommand({
-        Path: prefix,
-        Recursive: false,
-        WithDecryption: true,
-        ...(nextToken ? { NextToken: nextToken } : {}),
-      })
-    );
+  for (const prefix of prefixes) {
+    let nextToken: string | undefined;
+    do {
+      const result = await ssm.send(
+        new GetParametersByPathCommand({
+          Path: prefix,
+          Recursive: false,
+          WithDecryption: true,
+          ...(nextToken ? { NextToken: nextToken } : {}),
+        })
+      );
 
-    for (const param of result.Parameters ?? []) {
-      // param.Name is the full path, e.g. /kanjona/dev/flags/billing_enabled
-      // Extract the trailing segment as the flag name.
-      const name = param.Name?.split('/').pop();
-      if (name && param.Value !== undefined) {
-        flags[name] = param.Value === 'true' || param.Value === '1';
+      for (const param of result.Parameters ?? []) {
+        // param.Name is the full path, e.g. /kanjona/dev/features/enable_admin_console
+        // Extract the trailing segment as the flag name.
+        const name = param.Name?.split('/').pop();
+        if (!name || param.Value === undefined) continue;
+        if (!(name in rawFlags)) {
+          rawFlags[name] = param.Value;
+        }
       }
-    }
 
-    nextToken = result.NextToken;
-  } while (nextToken);
-
-  // Merge with defaults so that any flag NOT present in SSM gets its safe
-  // default rather than becoming undefined.
-  const merged: Record<FeatureFlagName, boolean> = { ...DEFAULT_FLAGS };
-  for (const key of ALL_FLAG_NAMES) {
-    if (key in flags) {
-      merged[key] = flags[key];
-    }
+      nextToken = result.NextToken;
+    } while (nextToken);
   }
 
-  return merged;
+  return normalizeFeatureFlags(rawFlags);
 }
 
 /**
@@ -234,7 +192,7 @@ export function _resetCache(): void {
  * Update a feature flag in SSM and invalidate cache.
  */
 export async function updateFeatureFlag(flag: FeatureFlagName, enabled: boolean): Promise<void> {
-  const prefix = ssmPrefix();
+  const prefix = primarySsmPrefix();
   const ssm = getSsmClient();
   const path = `${prefix}/${flag}`;
 

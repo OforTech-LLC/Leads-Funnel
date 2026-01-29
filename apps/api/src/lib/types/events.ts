@@ -18,7 +18,7 @@ export interface FeatureFlags {
   enable_notification_service: boolean;
   enable_email_notifications: boolean;
   enable_sms_notifications: boolean;
-  enable_twilio: boolean;
+  enable_twilio_sms: boolean;
   enable_sns_sms: boolean;
 }
 

@@ -729,7 +729,7 @@ async function handleAdminRequest(event: APIGatewayProxyEventV2): Promise<APIGat
       const userType = body.userType === 'portal' ? 'portal' : 'platform';
 
       if (userType === 'portal') {
-        const portalEnabled = await isFeatureEnabled('enable_agent_portal');
+        const portalEnabled = await isFeatureEnabled('enable_portal');
         if (!portalEnabled) return resp.notFound('Endpoint not found', requestOrigin);
 
         const existing = await usersDb.getUserByEmail(email);

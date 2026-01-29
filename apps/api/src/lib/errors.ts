@@ -14,37 +14,19 @@
  */
 
 import type { APIGatewayProxyResultV2 } from 'aws-lambda';
+import { HTTP_HEADERS } from './constants.js';
+import { buildCorsHeaders } from './cors.js';
 
 // ---------------------------------------------------------------------------
 // CORS / Security headers (mirrors lib/response.ts)
 // ---------------------------------------------------------------------------
 
-/**
- * Determine the CORS origin for error responses.
- *
- * Uses the same logic as lib/response.ts:
- * - Production: safe default domain
- * - Non-production: http://localhost:3000 (NOT wildcard '*')
- */
-function getErrorCorsOrigin(): string {
-  const allowedOrigins = (process.env.ALLOWED_ORIGINS || '').split(',').filter(Boolean);
-  if (allowedOrigins.length > 0) return allowedOrigins[0];
-  const nodeEnv = process.env.NODE_ENV || '';
-  if (nodeEnv === 'production') return 'https://kanjona.com';
-  return 'http://localhost:3000';
-}
-
-const CORS_HEADERS: Record<string, string> = {
-  'X-Content-Type-Options': 'nosniff',
-  'X-Frame-Options': 'DENY',
-  'Cache-Control': 'no-store, no-cache, must-revalidate, private',
-  'Content-Security-Policy': "default-src 'none'; frame-ancestors 'none'",
-  'Access-Control-Allow-Origin': getErrorCorsOrigin(),
-  'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS,PATCH',
-  'Access-Control-Allow-Headers': 'content-type,authorization,x-csrf-token,x-request-id',
-  'Access-Control-Allow-Credentials': 'true',
-  'Content-Type': 'application/json',
-};
+const CORS_HEADERS: Record<string, string> = buildCorsHeaders(undefined, {
+  allowFallbackOrigin: true,
+  extraHeaders: {
+    [HTTP_HEADERS.CONTENT_SECURITY_POLICY]: "default-src 'none'; frame-ancestors 'none'",
+  },
+});
 
 // ---------------------------------------------------------------------------
 // Base class

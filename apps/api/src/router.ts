@@ -17,9 +17,10 @@ import { handler as healthHandler } from './health/handler.js';
 import { handler as adminHandler } from './handlers/admin.js';
 import { handler as portalHandler } from './handlers/portal.js';
 import { handler as authHandler } from './handlers/auth.js';
-import { checkFeatureEnabled, getCorsOrigin } from './lib/response.js';
+import { buildCorsHeaders as buildCors } from './lib/cors.js';
+import { checkFeatureEnabled } from './lib/response.js';
 import { createLogger } from './lib/logging.js';
-import { HTTP_STATUS, HTTP_HEADERS, CONTENT_TYPES } from './lib/constants.js';
+import { HTTP_STATUS, CONTENT_TYPES } from './lib/constants.js';
 
 const log = createLogger('router');
 
@@ -28,15 +29,13 @@ const log = createLogger('router');
 // =============================================================================
 
 function buildCorsHeaders(requestOrigin?: string): Record<string, string> {
-  return {
-    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_ORIGIN]: getCorsOrigin(requestOrigin),
-    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_HEADERS]:
+  return buildCors(requestOrigin, {
+    allowMethods: 'GET,POST,PUT,DELETE,OPTIONS,PATCH',
+    allowHeaders:
       'content-type,authorization,x-csrf-token,x-request-id,x-idempotency-key,x-funnel-id',
-    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_METHODS]: 'GET,POST,PUT,DELETE,OPTIONS,PATCH',
-    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_CREDENTIALS]: 'true',
-    [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.JSON,
-    ...(requestOrigin ? { [HTTP_HEADERS.VARY]: 'Origin' } : {}),
-  };
+    contentType: CONTENT_TYPES.JSON,
+    allowFallbackOrigin: true,
+  });
 }
 
 function notFound(requestOrigin?: string): APIGatewayProxyResultV2 {
@@ -157,7 +156,7 @@ export async function router(
 
   // Agent portal routes (feature-flagged)
   if (path.startsWith('/portal')) {
-    const gated = await checkFeatureEnabled('enable_agent_portal', requestOrigin);
+    const gated = await checkFeatureEnabled('enable_portal', requestOrigin);
     if (gated) return gated;
     return portalHandler(normalized.event);
   }

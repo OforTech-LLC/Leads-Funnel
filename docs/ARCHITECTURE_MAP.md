@@ -1,7 +1,7 @@
 # Architecture Map: Kanjona Lead Generation Platform
 
 > Last Updated: 2026-01-29  
-> Map Version: 7
+> Map Version: 8
 
 ## 1. System Overview
 
@@ -64,6 +64,8 @@
 | Portal Handler | Agent workflows, lead updates, profile/org tooling + avatar upload | `src/handlers/portal.ts`          |
 | Cognito Portal | Admin-provisioned portal users + temp password flow                | `src/lib/cognito/portal-users.ts` |
 | Lead Analyzer  | Feature-flagged AI analysis via Bedrock                            | `src/lib/ai/analyzer.ts`          |
+| Feature Flags  | SSM feature flags + alias mapping                                  | `src/lib/feature-flags.ts`        |
+| CORS Helper    | Unified CORS + security header builder                             | `src/lib/cors.ts`                 |
 
 ### Backend API (backend/Sources/LeadCaptureAPI)
 
@@ -353,16 +355,21 @@ Infrastructure (Terraform)
 
 ## 8. Feature Flags (SSM Parameter Store)
 
-| Flag                       | Default Dev | Default Prod |
-| -------------------------- | ----------- | ------------ |
-| enable_voice_agent         | false       | false        |
-| enable_twilio              | false       | false        |
-| enable_elevenlabs          | false       | false        |
-| enable_waf                 | false       | true         |
-| enable_email_notifications | false       | true         |
-| enable_rate_limiting       | true        | true         |
-| enable_deduplication       | true        | true         |
-| enable_debug               | true        | false        |
+- Canonical path: `/{project}/{env}/features/*` (string `true` | `false`)
+- Legacy fallbacks supported: `/{project}/{env}/feature-flags/*` and `/{project}/{env}/flags/*`
+- Aliases map legacy names (e.g., `enable-twilio`) to canonical names (e.g., `enable_twilio_sms`)
+
+| Flag                        | Default Dev | Default Prod |
+| --------------------------- | ----------- | ------------ |
+| enable_portal               | false       | false        |
+| enable_assignment_service   | false       | false        |
+| enable_notification_service | false       | false        |
+| enable_twilio_sms           | false       | false        |
+| enable_bedrock_ai           | false       | false        |
+| enable_waf                  | false       | true         |
+| enable_rate_limiting        | true        | true         |
+| enable_deduplication        | true        | true         |
+| lead_scoring_enabled        | true        | true         |
 
 ---
 

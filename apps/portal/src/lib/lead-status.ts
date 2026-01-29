@@ -102,17 +102,18 @@ const PORTAL_EXPORT_STATUS_ORDER: LeadStatus[] = [
   'dnc',
 ];
 
-export const PORTAL_STATUS_OPTIONS = PORTAL_STATUS_ORDER.map((status) => ({
-  value: status,
-  label: STATUS_LABELS[status],
-}));
+export const PORTAL_STATUS_OPTIONS: { value: LeadStatus; label: string }[] =
+  PORTAL_STATUS_ORDER.map((status) => ({
+    value: status,
+    label: STATUS_LABELS[status],
+  }));
 
-export const PORTAL_STATUS_FILTER_OPTIONS = [
+export const PORTAL_STATUS_FILTER_OPTIONS: { value: LeadStatus | ''; label: string }[] = [
   { value: '', label: 'All statuses' },
   ...PORTAL_STATUS_OPTIONS,
 ];
 
-export const PORTAL_EXPORT_STATUS_OPTIONS = [
+export const PORTAL_EXPORT_STATUS_OPTIONS: { value: LeadStatus | ''; label: string }[] = [
   { value: '', label: 'All statuses' },
   ...PORTAL_EXPORT_STATUS_ORDER.map((status) => ({
     value: status,

@@ -19,7 +19,8 @@
 
 import type { APIGatewayProxyResultV2 } from 'aws-lambda';
 import { isFeatureEnabled, type FeatureFlags } from './config.js';
-import { HTTP_STATUS, HTTP_HEADERS, CONTENT_TYPES } from './constants.js';
+import { HTTP_STATUS, HTTP_HEADERS } from './constants.js';
+import { buildCorsHeaders } from './cors.js';
 import { BASE_SECURITY_HEADERS } from './security-headers.js';
 
 // ---------------------------------------------------------------------------
@@ -31,42 +32,19 @@ const SECURITY_HEADERS = {
   [HTTP_HEADERS.CONTENT_SECURITY_POLICY]: "default-src 'none'; frame-ancestors 'none'",
 } as const;
 
-const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || '').split(',').filter(Boolean);
+function resolveCorsHeaders(requestOrigin?: string): Record<string, string> {
+  return buildCorsHeaders(requestOrigin, {
+    allowFallbackOrigin: true,
+    extraHeaders: SECURITY_HEADERS,
+  });
+}
 
-/**
- * Determine the CORS origin to return based on an origin allowlist.
- *
- * - If ALLOWED_ORIGINS is configured, only allows listed origins.
- * - In production, falls back to a safe default when ALLOWED_ORIGINS is empty.
- * - In non-production, falls back to 'http://localhost:3000' for local dev.
- */
+const DEFAULT_CORS_HEADERS = resolveCorsHeaders();
+
 export function getCorsOrigin(requestOrigin?: string): string {
-  if (ALLOWED_ORIGINS.length === 0) {
-    const nodeEnv = process.env.NODE_ENV || '';
-    if (nodeEnv === 'production') {
-      return 'https://kanjona.com'; // safe default
-    }
-    return 'http://localhost:3000'; // safe dev default (not wildcard)
-  }
-  if (requestOrigin && ALLOWED_ORIGINS.includes(requestOrigin)) return requestOrigin;
-  return ALLOWED_ORIGINS[0];
+  const headers = resolveCorsHeaders(requestOrigin);
+  return headers[HTTP_HEADERS.ACCESS_CONTROL_ALLOW_ORIGIN] || '';
 }
-
-function buildCorsHeaders(requestOrigin?: string): Record<string, string> {
-  return {
-    ...SECURITY_HEADERS,
-    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_ORIGIN]: getCorsOrigin(requestOrigin),
-    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_METHODS]: 'GET,POST,PUT,DELETE,OPTIONS,PATCH',
-    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_HEADERS]:
-      'content-type,authorization,x-csrf-token,x-request-id',
-    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_CREDENTIALS]: 'true',
-    [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.JSON,
-    ...(ALLOWED_ORIGINS.length > 0 ? { [HTTP_HEADERS.VARY]: 'Origin' } : {}),
-  };
-}
-
-// Default headers for responses without a known request origin
-const DEFAULT_CORS_HEADERS = buildCorsHeaders();
 
 // ---------------------------------------------------------------------------
 // Request ID injection
@@ -121,7 +99,7 @@ export function success<T>(
   requestOrigin?: string,
   requestId?: string
 ): APIGatewayProxyResultV2 {
-  const headers = requestOrigin ? buildCorsHeaders(requestOrigin) : DEFAULT_CORS_HEADERS;
+  const headers = requestOrigin ? resolveCorsHeaders(requestOrigin) : DEFAULT_CORS_HEADERS;
   return {
     statusCode,
     headers: withRequestId(headers, requestId),
@@ -138,7 +116,7 @@ export function created<T>(
 }
 
 export function noContent(requestOrigin?: string, requestId?: string): APIGatewayProxyResultV2 {
-  const headers = requestOrigin ? buildCorsHeaders(requestOrigin) : DEFAULT_CORS_HEADERS;
+  const headers = requestOrigin ? resolveCorsHeaders(requestOrigin) : DEFAULT_CORS_HEADERS;
   return {
     statusCode: HTTP_STATUS.NO_CONTENT,
     headers: withRequestId(headers, requestId),
@@ -161,7 +139,7 @@ export function paginated<T>(
   requestOrigin?: string,
   requestId?: string
 ): APIGatewayProxyResultV2 {
-  const headers = requestOrigin ? buildCorsHeaders(requestOrigin) : DEFAULT_CORS_HEADERS;
+  const headers = requestOrigin ? resolveCorsHeaders(requestOrigin) : DEFAULT_CORS_HEADERS;
   return {
     statusCode: HTTP_STATUS.OK,
     headers: withRequestId(headers, requestId),
@@ -185,7 +163,7 @@ export function error(
   requestOrigin?: string,
   requestId?: string
 ): APIGatewayProxyResultV2 {
-  const headers = requestOrigin ? buildCorsHeaders(requestOrigin) : DEFAULT_CORS_HEADERS;
+  const headers = requestOrigin ? resolveCorsHeaders(requestOrigin) : DEFAULT_CORS_HEADERS;
   return {
     statusCode,
     headers: withRequestId(headers, requestId),
@@ -274,7 +252,7 @@ export function rateLimited(
   requestIdMaybe?: string
 ): APIGatewayProxyResultV2 {
   const { requestOrigin, requestId } = resolveContext(requestOriginOrId, requestIdMaybe);
-  const headers = requestOrigin ? buildCorsHeaders(requestOrigin) : DEFAULT_CORS_HEADERS;
+  const headers = requestOrigin ? resolveCorsHeaders(requestOrigin) : DEFAULT_CORS_HEADERS;
   return {
     statusCode: HTTP_STATUS.RATE_LIMITED,
     headers: withRequestId(
