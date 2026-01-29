@@ -40,8 +40,9 @@ const CORS_HEADERS: Record<string, string> = {
   'Cache-Control': 'no-store, no-cache, must-revalidate, private',
   'Content-Security-Policy': "default-src 'none'; frame-ancestors 'none'",
   'Access-Control-Allow-Origin': getErrorCorsOrigin(),
-  'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
-  'Access-Control-Allow-Headers': 'content-type,authorization',
+  'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS,PATCH',
+  'Access-Control-Allow-Headers': 'content-type,authorization,x-csrf-token,x-request-id',
+  'Access-Control-Allow-Credentials': 'true',
   'Content-Type': 'application/json',
 };
 

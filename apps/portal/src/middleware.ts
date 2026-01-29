@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { AUTH_COOKIE_NAME, AUTH_ENDPOINT } from '@/lib/constants';
 
-const PUBLIC_PATHS = ['/login', '/callback', AUTH_ENDPOINT];
+const PUBLIC_PATHS = ['/login', '/callback', '/reset-password', AUTH_ENDPOINT];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

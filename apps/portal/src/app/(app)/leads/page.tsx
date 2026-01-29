@@ -16,6 +16,7 @@ import ExportModal from '@/components/ExportModal';
 import { LeadListSkeleton } from '@/components/LoadingSpinner';
 import { toast } from '@/lib/toast';
 import type { LeadStatus, LeadFilters, Lead } from '@/lib/types';
+import { ApiError } from '@/lib/api';
 
 const STATUS_OPTIONS: { value: LeadStatus | ''; label: string }[] = [
   { value: '', label: 'All statuses' },
@@ -111,7 +112,7 @@ export default function LeadsPage() {
     [debouncedSearch, statusFilter, dateFrom, dateTo]
   );
 
-  const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage, refetch } =
+  const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage, refetch, error } =
     useLeads(filters);
 
   const updateStatus = useUpdateLeadStatus();
@@ -122,6 +123,30 @@ export default function LeadsPage() {
   const allLeads = useMemo(() => data?.pages.flatMap((page) => page.data) ?? [], [data]);
 
   const totalCount = data?.pages[0]?.total ?? 0;
+
+  const isProfileGate =
+    error instanceof ApiError &&
+    error.status === 403 &&
+    (error.body as { error?: { code?: string } } | undefined)?.error?.code === 'PROFILE_INCOMPLETE';
+
+  if (isProfileGate) {
+    return (
+      <div className="mx-auto max-w-xl px-4 py-12">
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-6 text-sm text-amber-700">
+          <p className="font-semibold">Complete your profile to access leads.</p>
+          <p className="mt-2 text-amber-600">
+            Add a profile photo and phone number to unlock lead access.
+          </p>
+          <a
+            href="/settings"
+            className="mt-4 inline-flex rounded-lg bg-amber-600 px-3 py-2 text-xs font-medium text-white hover:bg-amber-700"
+          >
+            Go to settings
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   const handleStatusChange = useCallback(
     (leadId: string, funnelId: string, status: LeadStatus) => {

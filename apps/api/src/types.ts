@@ -4,6 +4,7 @@
  */
 
 import type { LeadInput, LeadUtm } from '@kanjona/shared';
+import type { EvidencePack } from './lib/types/evidence.js';
 
 // =============================================================================
 // Environment Configuration
@@ -73,6 +74,7 @@ export interface LeadRecord {
   // AI/scoring
   analysis?: LeadAnalysis;
   score?: number;
+  evidencePack?: EvidencePack;
 }
 
 /**
@@ -128,6 +130,8 @@ export interface NormalizedLead {
   pageUrl?: string;
   referrer?: string;
   utm?: LeadUtm;
+  metadata?: import('@kanjona/shared').LeadMetadata;
+  consent?: import('@kanjona/shared').LeadConsentInput;
 
   // Extended fields - stored as JSON in DynamoDB
   // These are imported from @kanjona/shared but kept optional for backward compatibility

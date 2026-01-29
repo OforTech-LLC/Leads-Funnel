@@ -26,6 +26,8 @@ export interface User {
   cognitoSub?: string;
   email: string;
   name: string;
+  nameLower?: string;
+  status: UserStatus;
   phone?: string;
   avatarUrl?: string;
   preferences: Record<string, unknown>;
@@ -40,10 +42,13 @@ export interface User {
   gsi3sk: string;
 }
 
+export type UserStatus = 'active' | 'inactive' | 'invited';
+
 export interface CreateUserInput {
   email: string;
   name: string;
   cognitoSub?: string;
+  status?: UserStatus;
   phone?: string;
   avatarUrl?: string;
   preferences?: Record<string, unknown>;
@@ -54,9 +59,14 @@ export interface UpdateUserInput {
   email?: string;
   name?: string;
   cognitoSub?: string;
+  status?: UserStatus;
   phone?: string;
   avatarUrl?: string;
   preferences?: Record<string, unknown>;
+}
+
+function normalizeNameLower(name: string): string {
+  return name.trim().replace(/\s+/g, ' ').toLowerCase();
 }
 
 // ---------------------------------------------------------------------------
@@ -76,6 +86,8 @@ export async function createUser(input: CreateUserInput): Promise<User> {
     cognitoSub: input.cognitoSub,
     email: emailLower,
     name: input.name,
+    nameLower: normalizeNameLower(input.name),
+    status: input.status || 'active',
     phone: input.phone,
     avatarUrl: input.avatarUrl,
     preferences: input.preferences || {},
@@ -177,6 +189,8 @@ export async function updateUser(input: UpdateUserInput): Promise<User> {
     parts.push('#name = :name');
     names['#name'] = 'name';
     values[':name'] = input.name;
+    parts.push('nameLower = :nameLower');
+    values[':nameLower'] = normalizeNameLower(input.name);
   }
   if (input.email !== undefined) {
     const emailLower = input.email.toLowerCase().trim();
@@ -189,6 +203,10 @@ export async function updateUser(input: UpdateUserInput): Promise<User> {
     values[':sub'] = input.cognitoSub;
     values[':gsi2pk'] = `${GSI_KEYS.COGNITOSUB}${input.cognitoSub}`;
     values[':gsi2sk'] = DB_SORT_KEYS.META;
+  }
+  if (input.status !== undefined) {
+    parts.push('status = :status');
+    values[':status'] = input.status;
   }
   if (input.phone !== undefined) {
     parts.push('phone = :phone');
@@ -239,16 +257,48 @@ export interface PaginatedUsers {
   nextCursor?: string;
 }
 
-export async function listUsers(cursor?: string, limit = 25): Promise<PaginatedUsers> {
+export interface ListUsersInput {
+  cursor?: string;
+  limit?: number;
+  search?: string;
+  status?: UserStatus;
+}
+
+export async function listUsers(input: ListUsersInput = {}): Promise<PaginatedUsers> {
   const doc = getDocClient();
+  const limit = input.limit ?? 25;
 
   let exclusiveStartKey: Record<string, unknown> | undefined;
-  if (cursor) {
-    const verified = verifyCursor(cursor);
+  if (input.cursor) {
+    const verified = verifyCursor(input.cursor);
     if (verified) {
       exclusiveStartKey = verified;
     }
     // If verifyCursor returns null (invalid/tampered), skip setting ExclusiveStartKey
+  }
+
+  const filterExpressions: string[] = ['attribute_not_exists(deletedAt)'];
+  const expressionNames: Record<string, string> = {};
+  const expressionValues: Record<string, unknown> = { ':pk': GSI_KEYS.USERS_LIST };
+
+  if (input.status) {
+    expressionNames['#status'] = 'status';
+    expressionValues[':status'] = input.status;
+    filterExpressions.push('#status = :status');
+  }
+
+  if (input.search) {
+    const searchRaw = input.search.trim();
+    if (searchRaw.length > 0) {
+      const searchLower = searchRaw.toLowerCase();
+      expressionNames['#nameLower'] = 'nameLower';
+      expressionNames['#name'] = 'name';
+      expressionValues[':search'] = searchLower;
+      expressionValues[':searchRaw'] = searchRaw;
+      filterExpressions.push(
+        '(contains(email, :search) OR contains(#nameLower, :search) OR contains(#name, :searchRaw))'
+      );
+    }
   }
 
   const result = await doc.send(
@@ -256,8 +306,10 @@ export async function listUsers(cursor?: string, limit = 25): Promise<PaginatedU
       TableName: tableName(),
       IndexName: GSI_INDEX_NAMES.GSI3,
       KeyConditionExpression: 'gsi3pk = :pk',
-      FilterExpression: 'attribute_not_exists(deletedAt)',
-      ExpressionAttributeValues: { ':pk': GSI_KEYS.USERS_LIST },
+      FilterExpression: filterExpressions.join(' AND '),
+      ExpressionAttributeNames:
+        Object.keys(expressionNames).length > 0 ? expressionNames : undefined,
+      ExpressionAttributeValues: expressionValues,
       Limit: limit,
       ScanIndexForward: false,
       ExclusiveStartKey: exclusiveStartKey,

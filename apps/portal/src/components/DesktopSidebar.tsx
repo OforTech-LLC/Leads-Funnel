@@ -98,6 +98,7 @@ export default function DesktopSidebar() {
   const initials = profile
     ? `${profile.firstName.charAt(0)}${profile.lastName.charAt(0)}`.toUpperCase()
     : '';
+  const avatarUrl = profile?.avatarUrl?.trim();
 
   return (
     <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0 lg:border-r lg:border-gray-200 lg:bg-white">
@@ -136,9 +137,17 @@ export default function DesktopSidebar() {
       {/* User section at bottom */}
       <div className="border-t border-gray-200 p-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-100 text-sm font-semibold text-brand-700">
-            {initials || 'U'}
-          </div>
+          {avatarUrl ? (
+            <img
+              src={avatarUrl}
+              alt={profile ? `${profile.firstName} ${profile.lastName}` : 'User'}
+              className="h-9 w-9 rounded-full object-cover"
+            />
+          ) : (
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-100 text-sm font-semibold text-brand-700">
+              {initials || 'U'}
+            </div>
+          )}
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium text-gray-900">
               {profile ? `${profile.firstName} ${profile.lastName}` : 'Loading...'}

@@ -36,10 +36,12 @@ interface TokenPayload {
 function buildCorsHeaders(requestOrigin?: string): Record<string, string> {
   return {
     [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_ORIGIN]: getCorsOrigin(requestOrigin),
-    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_HEADERS]: 'content-type,authorization',
+    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_HEADERS]:
+      'content-type,authorization,x-csrf-token,x-request-id',
     [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_METHODS]: 'GET,POST,DELETE,OPTIONS',
     [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_CREDENTIALS]: 'true',
     [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.JSON,
+    ...(requestOrigin ? { [HTTP_HEADERS.VARY]: 'Origin' } : {}),
   };
 }
 

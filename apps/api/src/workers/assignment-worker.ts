@@ -284,11 +284,17 @@ async function assignLead(
           'gsi2sk = :gsi2sk',
           assignedUserId ? 'gsi3pk = :gsi3pk' : undefined,
           assignedUserId ? 'gsi3sk = :gsi3sk' : undefined,
+          '#evidencePack = if_not_exists(#evidencePack, :emptyEvidence)',
+          '#evidencePack.#assignment = :assignment',
         ]
           .filter(Boolean)
           .join(', '),
         // Idempotency guard: only assign if not already assigned
         ConditionExpression: 'attribute_not_exists(assignedOrgId)',
+        ExpressionAttributeNames: {
+          '#evidencePack': 'evidencePack',
+          '#assignment': 'assignment',
+        },
         ExpressionAttributeValues: {
           ':orgId': assignedOrgId,
           ':ruleId': rule.ruleId,
@@ -303,6 +309,13 @@ async function assignLead(
                 ':gsi3sk': `${GSI_KEYS.ASSIGNED}${now}`,
               }
             : {}),
+          ':emptyEvidence': {},
+          ':assignment': {
+            ruleId: rule.ruleId,
+            assignedOrgId,
+            assignedUserId,
+            assignedAt: now,
+          },
         },
       })
     );

@@ -12,7 +12,7 @@
 
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
 const REQUEST_TIMEOUT_MS = 30000; // 30 seconds
 
 export const api = createApi({
@@ -36,7 +36,17 @@ export const api = createApi({
           window.location.href = '/login';
         }
       }
-      return response.json();
+
+      if (response.status === 204) {
+        return null;
+      }
+
+      const json = await response.json().catch(() => null);
+      if (json?.ok === false || json?.success === false) {
+        throw new Error(json?.error?.message || json?.message || 'Request failed');
+      }
+
+      return json?.data ?? json;
     },
   }),
   tagTypes: [

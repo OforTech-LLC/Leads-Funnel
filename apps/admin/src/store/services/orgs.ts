@@ -7,12 +7,17 @@ import { api } from '../api';
 export interface Org {
   orgId: string;
   name: string;
-  type: 'agency' | 'broker' | 'direct';
-  status: 'active' | 'inactive' | 'suspended';
-  memberCount: number;
-  leadCount: number;
+  nameLower?: string;
+  slug: string;
+  contactEmail: string;
+  phone?: string;
+  timezone: string;
+  notifyEmails: string[];
+  notifySms: string[];
+  settings: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;
+  deletedAt?: string;
 }
 
 export interface OrgMember {
@@ -25,41 +30,47 @@ export interface OrgMember {
 
 export interface OrgDetail extends Org {
   members: OrgMember[];
-  description?: string;
-  website?: string;
-  contactEmail?: string;
 }
 
 export interface CreateOrgRequest {
   name: string;
-  type: Org['type'];
-  description?: string;
-  website?: string;
-  contactEmail?: string;
+  slug: string;
+  contactEmail: string;
+  phone?: string;
+  timezone?: string;
+  notifyEmails?: string[];
+  notifySms?: string[];
+  settings?: Record<string, unknown>;
 }
 
 export interface UpdateOrgRequest {
   orgId: string;
   name?: string;
-  type?: Org['type'];
-  status?: Org['status'];
-  description?: string;
-  website?: string;
+  slug?: string;
   contactEmail?: string;
+  phone?: string;
+  timezone?: string;
+  notifyEmails?: string[];
+  notifySms?: string[];
+  settings?: Record<string, unknown>;
 }
 
 export interface OrgListParams {
   search?: string;
-  type?: Org['type'];
-  status?: Org['status'];
-  page?: number;
-  pageSize?: number;
+  cursor?: string;
+  limit?: number;
 }
 
 export interface OrgListResponse {
   orgs: Org[];
   total: number;
   nextToken?: string;
+}
+
+export interface OrgMemberListParams {
+  orgId: string;
+  cursor?: string;
+  limit?: number;
 }
 
 export interface AddMemberRequest {
@@ -112,6 +123,14 @@ export const orgsApi = api.injectEndpoints({
       invalidatesTags: (_result, _error, { orgId }) => ['OrgList', { type: 'Org', id: orgId }],
     }),
 
+    listOrgMembers: builder.query<OrgMember[], OrgMemberListParams>({
+      query: ({ orgId, cursor, limit }) => ({
+        url: `/admin/orgs/${orgId}/members`,
+        params: { cursor, limit },
+      }),
+      providesTags: (_result, _error, { orgId }) => [{ type: 'Org', id: orgId }],
+    }),
+
     addOrgMember: builder.mutation<void, AddMemberRequest>({
       query: ({ orgId, ...body }) => ({
         url: `/admin/orgs/${orgId}/members`,
@@ -143,6 +162,7 @@ export const orgsApi = api.injectEndpoints({
 export const {
   useListOrgsQuery,
   useGetOrgQuery,
+  useListOrgMembersQuery,
   useCreateOrgMutation,
   useUpdateOrgMutation,
   useAddOrgMemberMutation,

@@ -11,15 +11,15 @@ import { useParams } from 'next/navigation';
 import {
   useGetOrgQuery,
   useUpdateOrgMutation,
+  useListOrgMembersQuery,
   useAddOrgMemberMutation,
   useRemoveOrgMemberMutation,
   useUpdateMemberRoleMutation,
 } from '@/store/services/orgs';
-import type { Org, OrgMember } from '@/store/services/orgs';
+import type { OrgMember } from '@/store/services/orgs';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorAlert from '@/components/ErrorAlert';
 import FormField from '@/components/FormField';
-import StatusBadge from '@/components/StatusBadge';
 import Modal from '@/components/Modal';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import { formatDate } from '@/lib/utils';
@@ -30,6 +30,7 @@ export default function OrgDetailClient() {
   const orgId = params.orgId as string;
 
   const { data: org, isLoading, error, refetch } = useGetOrgQuery(orgId);
+  const { data: members = [] } = useListOrgMembersQuery({ orgId });
   const [updateOrg, { isLoading: isUpdating }] = useUpdateOrgMutation();
   const [addMember, { isLoading: isAdding }] = useAddOrgMemberMutation();
   const [removeMember] = useRemoveOrgMemberMutation();
@@ -38,11 +39,10 @@ export default function OrgDetailClient() {
   const [editMode, setEditMode] = useState(false);
   const [form, setForm] = useState({
     name: '',
-    type: '' as Org['type'],
-    status: '' as Org['status'],
-    description: '',
-    website: '',
+    slug: '',
     contactEmail: '',
+    phone: '',
+    timezone: '',
   });
 
   const [showAddMember, setShowAddMember] = useState(false);
@@ -53,11 +53,10 @@ export default function OrgDetailClient() {
     if (org) {
       setForm({
         name: org.name,
-        type: org.type,
-        status: org.status,
-        description: org.description || '',
-        website: org.website || '',
+        slug: org.slug,
         contactEmail: org.contactEmail || '',
+        phone: org.phone || '',
+        timezone: org.timezone || '',
       });
       setEditMode(true);
     }
@@ -65,7 +64,14 @@ export default function OrgDetailClient() {
 
   const handleSave = useCallback(async () => {
     try {
-      await updateOrg({ orgId, ...form }).unwrap();
+      await updateOrg({
+        orgId,
+        name: form.name.trim(),
+        slug: form.slug.trim() || undefined,
+        contactEmail: form.contactEmail.trim() || undefined,
+        phone: form.phone.trim() || undefined,
+        timezone: form.timezone.trim() || undefined,
+      }).unwrap();
       setEditMode(false);
     } catch {
       // Error handled by RTK Query
@@ -119,7 +125,6 @@ export default function OrgDetailClient() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-semibold text-[var(--text-primary)]">{org.name}</h1>
-            <StatusBadge status={org.status} />
           </div>
           {!editMode && (
             <button
@@ -151,28 +156,10 @@ export default function OrgDetailClient() {
                 required
               />
               <FormField
-                label="Type"
-                name="type"
-                type="select"
-                value={form.type}
-                onChange={(v) => setForm((f) => ({ ...f, type: v as Org['type'] }))}
-                options={[
-                  { value: 'agency', label: 'Agency' },
-                  { value: 'broker', label: 'Broker' },
-                  { value: 'direct', label: 'Direct' },
-                ]}
-              />
-              <FormField
-                label="Status"
-                name="status"
-                type="select"
-                value={form.status}
-                onChange={(v) => setForm((f) => ({ ...f, status: v as Org['status'] }))}
-                options={[
-                  { value: 'active', label: 'Active' },
-                  { value: 'inactive', label: 'Inactive' },
-                  { value: 'suspended', label: 'Suspended' },
-                ]}
+                label="Slug"
+                name="slug"
+                value={form.slug}
+                onChange={(v) => setForm((f) => ({ ...f, slug: v }))}
               />
               <FormField
                 label="Contact Email"
@@ -182,20 +169,20 @@ export default function OrgDetailClient() {
                 onChange={(v) => setForm((f) => ({ ...f, contactEmail: v }))}
               />
               <FormField
-                label="Website"
-                name="website"
-                type="url"
-                value={form.website}
-                onChange={(v) => setForm((f) => ({ ...f, website: v }))}
+                label="Phone"
+                name="phone"
+                type="tel"
+                value={form.phone}
+                onChange={(v) => setForm((f) => ({ ...f, phone: v }))}
+              />
+              <FormField
+                label="Timezone"
+                name="timezone"
+                value={form.timezone}
+                onChange={(v) => setForm((f) => ({ ...f, timezone: v }))}
+                placeholder="America/New_York"
               />
             </div>
-            <FormField
-              label="Description"
-              name="description"
-              type="textarea"
-              value={form.description}
-              onChange={(v) => setForm((f) => ({ ...f, description: v }))}
-            />
             <div className="flex justify-end gap-3 pt-2">
               <button
                 type="button"
@@ -216,16 +203,22 @@ export default function OrgDetailClient() {
         ) : (
           <dl className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
             <div>
-              <dt className="text-sm font-medium text-[var(--text-secondary)]">Type</dt>
-              <dd className="mt-1 text-sm text-[var(--text-primary)] capitalize">{org.type}</dd>
+              <dt className="text-sm font-medium text-[var(--text-secondary)]">Slug</dt>
+              <dd className="mt-1 text-sm text-[var(--text-primary)]">{org.slug}</dd>
             </div>
             <div>
-              <dt className="text-sm font-medium text-[var(--text-secondary)]">Members</dt>
-              <dd className="mt-1 text-sm text-[var(--text-primary)]">{org.memberCount}</dd>
+              <dt className="text-sm font-medium text-[var(--text-secondary)]">Contact Email</dt>
+              <dd className="mt-1 text-sm text-[var(--text-primary)]">{org.contactEmail}</dd>
             </div>
             <div>
-              <dt className="text-sm font-medium text-[var(--text-secondary)]">Leads</dt>
-              <dd className="mt-1 text-sm text-[var(--text-primary)]">{org.leadCount}</dd>
+              <dt className="text-sm font-medium text-[var(--text-secondary)]">Phone</dt>
+              <dd className="mt-1 text-sm text-[var(--text-primary)]">{org.phone || '--'}</dd>
+            </div>
+            <div>
+              <dt className="text-sm font-medium text-[var(--text-secondary)]">Timezone</dt>
+              <dd className="mt-1 text-sm text-[var(--text-primary)]">
+                {org.timezone || 'America/New_York'}
+              </dd>
             </div>
             <div>
               <dt className="text-sm font-medium text-[var(--text-secondary)]">Created</dt>
@@ -233,24 +226,12 @@ export default function OrgDetailClient() {
                 {formatDate(org.createdAt)}
               </dd>
             </div>
-            {org.contactEmail && (
-              <div>
-                <dt className="text-sm font-medium text-[var(--text-secondary)]">Contact Email</dt>
-                <dd className="mt-1 text-sm text-[var(--text-primary)]">{org.contactEmail}</dd>
-              </div>
-            )}
-            {org.website && (
-              <div>
-                <dt className="text-sm font-medium text-[var(--text-secondary)]">Website</dt>
-                <dd className="mt-1 text-sm text-[var(--text-primary)]">{org.website}</dd>
-              </div>
-            )}
-            {org.description && (
-              <div className="md:col-span-2">
-                <dt className="text-sm font-medium text-[var(--text-secondary)]">Description</dt>
-                <dd className="mt-1 text-sm text-[var(--text-primary)]">{org.description}</dd>
-              </div>
-            )}
+            <div>
+              <dt className="text-sm font-medium text-[var(--text-secondary)]">Updated</dt>
+              <dd className="mt-1 text-sm text-[var(--text-primary)]">
+                {formatDate(org.updatedAt)}
+              </dd>
+            </div>
           </dl>
         )}
       </div>
@@ -266,7 +247,7 @@ export default function OrgDetailClient() {
             Add Member
           </button>
         </div>
-        {org.members.length === 0 ? (
+        {members.length === 0 ? (
           <div className="px-6 py-12 text-center text-sm text-[var(--text-secondary)]">
             No members yet.
           </div>
@@ -292,7 +273,7 @@ export default function OrgDetailClient() {
               </tr>
             </thead>
             <tbody>
-              {org.members.map((member) => (
+              {members.map((member) => (
                 <tr key={member.userId} className="border-b border-[var(--border-color)]">
                   <td className="px-6 py-3">
                     <Link

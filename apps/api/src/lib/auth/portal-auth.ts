@@ -7,6 +7,7 @@
 import type { APIGatewayProxyEventV2 } from 'aws-lambda';
 import { verifyJwt, type JwtClaims } from './jwt.js';
 import type { PlatformLead } from '../db/leads.js';
+import { getCookie } from '../handler-utils.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -33,6 +34,10 @@ function extractBearer(event: APIGatewayProxyEventV2): string | null {
   return token;
 }
 
+function extractCookieToken(event: APIGatewayProxyEventV2): string | null {
+  return getCookie(event, 'portal_token');
+}
+
 // ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
@@ -47,9 +52,9 @@ function extractBearer(event: APIGatewayProxyEventV2): string | null {
  * @throws PortalAuthError with message suitable for 401/403 responses
  */
 export async function authenticatePortal(event: APIGatewayProxyEventV2): Promise<PortalIdentity> {
-  const token = extractBearer(event);
+  const token = extractBearer(event) || extractCookieToken(event);
   if (!token) {
-    throw new PortalAuthError('Missing or invalid Authorization header', 401);
+    throw new PortalAuthError('Missing authentication token', 401);
   }
 
   const issuer = process.env.PORTAL_COGNITO_ISSUER || process.env.COGNITO_ISSUER || '';

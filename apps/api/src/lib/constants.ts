@@ -96,6 +96,8 @@ export const GSI_KEYS = {
   PRIORITY: 'PRIORITY#',
   /** GSI sort key prefix for membership:  MEMBER#<userId> */
   MEMBER: 'MEMBER#',
+  /** GSI sort key prefix for org invites: INVITE#<email> */
+  INVITE: 'INVITE#',
   /** Fixed GSI PK for global org listing */
   ORGS_LIST: 'ORGS',
   /** Fixed GSI PK for global user listing */
@@ -141,7 +143,7 @@ export const EVENT_TYPES = {
 // EventBridge Source
 // ---------------------------------------------------------------------------
 
-export const EVENT_SOURCE = 'kanjona.funnel';
+export const EVENT_SOURCE = 'kanjona.leads';
 
 // ---------------------------------------------------------------------------
 // HTTP / API Error Codes

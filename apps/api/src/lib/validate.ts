@@ -18,6 +18,7 @@ const MAX_LENGTHS = {
   phone: 40,
   message: 2000,
   utm: 120,
+  consentVersion: 120,
   customFieldKey: 64,
   customFieldValue: 500,
   url: 2048,
@@ -446,6 +447,47 @@ export function validateLeadPayload(body: unknown): ValidationResult {
       const referrerResult = validateUrl(payload.metadata.referrer);
       if (!referrerResult.valid) {
         errors.referrer = referrerResult.error || 'Invalid referrer URL';
+      }
+    }
+  }
+
+  // Validate consent payload
+  if (payload.consent !== undefined) {
+    if (typeof payload.consent !== 'object' || payload.consent === null) {
+      errors.consent = 'consent must be an object';
+    } else {
+      if (typeof payload.consent.privacyAccepted !== 'boolean') {
+        errors.consent = 'consent.privacyAccepted must be a boolean';
+      }
+      if (
+        payload.consent.marketingConsent !== undefined &&
+        typeof payload.consent.marketingConsent !== 'boolean'
+      ) {
+        errors.consent = 'consent.marketingConsent must be a boolean';
+      }
+      if (
+        payload.consent.privacyPolicyVersion !== undefined &&
+        typeof payload.consent.privacyPolicyVersion !== 'string'
+      ) {
+        errors.consent = 'consent.privacyPolicyVersion must be a string';
+      }
+      if (
+        payload.consent.termsVersion !== undefined &&
+        typeof payload.consent.termsVersion !== 'string'
+      ) {
+        errors.consent = 'consent.termsVersion must be a string';
+      }
+      if (
+        payload.consent.privacyPolicyVersion &&
+        payload.consent.privacyPolicyVersion.length > MAX_LENGTHS.consentVersion
+      ) {
+        errors.consent = `consent.privacyPolicyVersion must be ${MAX_LENGTHS.consentVersion} characters or less`;
+      }
+      if (
+        payload.consent.termsVersion &&
+        payload.consent.termsVersion.length > MAX_LENGTHS.consentVersion
+      ) {
+        errors.consent = `consent.termsVersion must be ${MAX_LENGTHS.consentVersion} characters or less`;
       }
     }
   }

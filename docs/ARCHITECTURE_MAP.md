@@ -1,6 +1,7 @@
 # Architecture Map: Kanjona Lead Generation Platform
 
-> Last Updated: 2026-01-26
+> Last Updated: 2026-01-29  
+> Map Version: 6
 
 ## 1. System Overview
 
@@ -8,8 +9,8 @@
 
 **Tech Stack:**
 
-- **Frontend:** Next.js 15 (App Router, TypeScript, React 19)
-- **Backend:** Swift 5.10 + Vapor 4.90 (async/await)
+- **Frontend:** Next.js 15 (App Router, TypeScript, React 19) across 3 apps (landing, admin, portal)
+- **Backend:** Node.js 22 + AWS Lambda (apps/api) and Swift 5.10 + Vapor 4.90 (LeadCaptureAPI)
 - **Database:** DynamoDB (47 funnel tables + shared tables)
 - **Message Queue:** EventBridge (async events)
 - **Infrastructure:** Terraform, AWS Lambda, API Gateway, CloudFront, S3
@@ -18,8 +19,8 @@
 
 **Deployment:**
 
-- Frontend: Static export → CloudFront + S3
-- Backend: Swift binary → AWS Lambda + API Gateway
+- Frontend: Static export → CloudFront + S3 (landing), plus separate admin/portal apps
+- Backend: Node Lambda (apps/api router) → API Gateway; Swift binary → AWS Lambda (LeadCaptureAPI)
 - Infrastructure: Terraform (dev + prod environments)
 
 ---
@@ -37,6 +38,30 @@
 | Redux Store       | State management                                  | `store/leadSlice.ts`              |
 | API Client        | Lead submission                                   | `lib/api.ts`, `lib/api-client.ts` |
 | Validators        | Client-side validation                            | `lib/validators.ts`               |
+
+### Frontend (apps/admin)
+
+| Component     | Purpose                   | Key Files               |
+| ------------- | ------------------------- | ----------------------- |
+| Admin Console | Admin UI & management     | `src/app/(dashboard)/*` |
+| API Client    | RTK Query + fetch helpers | `src/store/api.ts`      |
+
+### Frontend (apps/portal)
+
+| Component    | Purpose              | Key Files        |
+| ------------ | -------------------- | ---------------- |
+| Agent Portal | Contractor workflows | `src/app/*`      |
+| API Client   | Fetch + retries      | `src/lib/api.ts` |
+
+### Node API (apps/api)
+
+| Service        | Purpose                                                            | Key File                          |
+| -------------- | ------------------------------------------------------------------ | --------------------------------- |
+| Router Lambda  | Unified entrypoint for /lead, /admin, /portal, /auth               | `src/router.ts`                   |
+| Lead Handler   | Lead capture + validation + rate limiting + evidence pack          | `src/handler.ts`                  |
+| Admin Handler  | Admin CRUD, exports, analytics, flags, user list                   | `src/handlers/admin.ts`           |
+| Portal Handler | Agent workflows, lead updates, profile/org tooling + avatar upload | `src/handlers/portal.ts`          |
+| Cognito Portal | Admin-provisioned portal users + temp password flow                | `src/lib/cognito/portal-users.ts` |
 
 ### Backend API (backend/Sources/LeadCaptureAPI)
 
@@ -161,7 +186,14 @@ GSI1: gsi1pk=EMAIL#<email>, gsi1sk=CREATED#<timestamp>
 **Public API:**
 
 - `POST /lead` - Submit a lead
-- `POST /funnel/:funnelId/lead` - Submit to specific funnel
+- `POST /lead/{funnelId}` - Submit to specific funnel
+- `POST /funnel/{funnelId}/lead` - Legacy path
+
+**Platform API:**
+
+- `/admin/*` - Admin console (feature-flagged)
+- `/portal/*` - Agent portal (feature-flagged)
+- `/auth/*` - OAuth cookie exchange + session checks
 
 **Import Rules:**
 
@@ -175,9 +207,12 @@ GSI1: gsi1pk=EMAIL#<email>, gsi1sk=CREATED#<timestamp>
 
 ### Authentication & Authorization
 
+- **Admin/Portal Auth:** JWT via Cognito + httpOnly cookies
 - **API Key Middleware:** Validates X-API-Key header if enabled
 - **Trusted Proxies:** Only trust X-Forwarded-For from AWS VPC ranges
 - **CORS:** No wildcard in prod; explicitly configured
+- **Portal Onboarding:** Admin creates portal users via Cognito AdminCreateUser (temp password,
+  reset required)
 
 ### Spam & Honeypot
 
@@ -283,6 +318,17 @@ Infrastructure (Terraform)
       - Fire-and-forget: EventBridge event, audit log
 5. Return 201 Created with lead ID
 6. Frontend → Redux dispatch fulfilled → show success
+```
+
+### Portal User Onboarding (Admin → Portal)
+
+```
+1. Admin creates portal user in admin console (assign existing org or create a new org)
+2. Admin API optionally creates org + owner membership
+3. Admin API calls Cognito AdminCreateUser (temp password emailed)
+4. User record stored in DynamoDB + org membership created
+5. Portal user resets password via portal UI
+6. Cognito issues tokens; pre-token Lambda injects org claims
 ```
 
 ### Rate Limit Exceeded

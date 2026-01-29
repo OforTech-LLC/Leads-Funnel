@@ -176,12 +176,18 @@ export async function storeLead(
   lead: NormalizedLead,
   security: SecurityAnalysis,
   userAgent: string | undefined,
-  score?: number
+  score?: number,
+  options?: {
+    leadId?: string;
+    status?: 'accepted' | 'quarantined';
+    createdAt?: string;
+    evidencePack?: import('./types/evidence.js').EvidencePack;
+  }
 ): Promise<LeadRecord> {
   const client = getDocClient(config.awsRegion);
-  const leadId = uuidv4();
-  const createdAt = getIsoTimestamp();
-  const status = security.suspicious ? 'quarantined' : 'accepted';
+  const leadId = options?.leadId || uuidv4();
+  const createdAt = options?.createdAt || getIsoTimestamp();
+  const status = options?.status || (security.suspicious ? 'quarantined' : 'accepted');
 
   const record: LeadRecord = {
     // DynamoDB keys
@@ -222,12 +228,16 @@ export async function storeLead(
     scheduling: lead.scheduling,
     customFields: lead.customFields,
     tags: lead.tags,
+    evidencePack: options?.evidencePack,
   };
 
   // Build the DynamoDB item, optionally including score from scoring engine
   const item: Record<string, unknown> = { ...record };
   if (score !== undefined) {
     item.score = score;
+  }
+  if (options?.evidencePack) {
+    item.evidencePack = options.evidencePack;
   }
 
   await client.send(

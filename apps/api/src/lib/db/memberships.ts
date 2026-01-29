@@ -16,6 +16,7 @@ import {
 import { getDocClient, tableName } from './client.js';
 import { signCursor, verifyCursor } from '../cursor.js';
 import { DB_PREFIXES, GSI_KEYS, GSI_INDEX_NAMES } from '../constants.js';
+import { ulid } from '../../lib/id.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -37,6 +38,23 @@ export interface Membership {
   gsi1sk: string;
 }
 
+export type InviteStatus = 'pending' | 'accepted' | 'expired';
+
+export interface OrgInvite {
+  pk: string;
+  sk: string;
+  orgId: string;
+  inviteId: string;
+  email: string;
+  role: MembershipRole;
+  status: InviteStatus;
+  invitedBy: string;
+  invitedByName: string;
+  createdAt: string;
+  expiresAt: string;
+  ttl: number;
+}
+
 export interface AddMemberInput {
   orgId: string;
   userId: string;
@@ -51,6 +69,14 @@ export interface UpdateMemberInput {
   role?: MembershipRole;
   notifyEmail?: boolean;
   notifySms?: boolean;
+}
+
+export interface CreateInviteInput {
+  orgId: string;
+  email: string;
+  role: MembershipRole;
+  invitedBy: string;
+  invitedByName: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -219,6 +245,84 @@ export async function listUserOrgs(
   );
 
   const items = (result.Items || []) as Membership[];
+  let nextCursor: string | undefined;
+  if (result.LastEvaluatedKey) {
+    nextCursor = signCursor(result.LastEvaluatedKey as Record<string, unknown>);
+  }
+
+  return { items, nextCursor };
+}
+
+// ---------------------------------------------------------------------------
+// Invites
+// ---------------------------------------------------------------------------
+
+const INVITE_TTL_DAYS = 7;
+
+export async function createInvite(input: CreateInviteInput): Promise<OrgInvite> {
+  const doc = getDocClient();
+  const now = new Date();
+  const nowIso = now.toISOString();
+  const expiresAt = new Date(now.getTime() + INVITE_TTL_DAYS * 24 * 60 * 60 * 1000).toISOString();
+  const ttl = Math.floor(now.getTime() / 1000) + INVITE_TTL_DAYS * 24 * 60 * 60;
+  const inviteId = ulid();
+  const emailLower = input.email.toLowerCase().trim();
+
+  const invite: OrgInvite = {
+    pk: `${DB_PREFIXES.ORG}${input.orgId}`,
+    sk: `${GSI_KEYS.INVITE}${emailLower}`,
+    orgId: input.orgId,
+    inviteId,
+    email: emailLower,
+    role: input.role,
+    status: 'pending',
+    invitedBy: input.invitedBy,
+    invitedByName: input.invitedByName,
+    createdAt: nowIso,
+    expiresAt,
+    ttl,
+  };
+
+  await doc.send(
+    new PutCommand({
+      TableName: tableName(),
+      Item: invite,
+      ConditionExpression: 'attribute_not_exists(pk) OR attribute_not_exists(sk)',
+    })
+  );
+
+  return invite;
+}
+
+export async function listInvites(
+  orgId: string,
+  cursor?: string,
+  limit = 50
+): Promise<{ items: OrgInvite[]; nextCursor?: string }> {
+  const doc = getDocClient();
+
+  let exclusiveStartKey: Record<string, unknown> | undefined;
+  if (cursor) {
+    const verified = verifyCursor(cursor);
+    if (verified) {
+      exclusiveStartKey = verified;
+    }
+  }
+
+  const result = await doc.send(
+    new QueryCommand({
+      TableName: tableName(),
+      KeyConditionExpression: 'pk = :pk AND begins_with(sk, :skPrefix)',
+      ExpressionAttributeValues: {
+        ':pk': `${DB_PREFIXES.ORG}${orgId}`,
+        ':skPrefix': GSI_KEYS.INVITE,
+      },
+      Limit: limit,
+      ExclusiveStartKey: exclusiveStartKey,
+    })
+  );
+
+  const items = (result.Items || []) as OrgInvite[];
   let nextCursor: string | undefined;
   if (result.LastEvaluatedKey) {
     nextCursor = signCursor(result.LastEvaluatedKey as Record<string, unknown>);

@@ -58,9 +58,14 @@ function LoginContent() {
             Sign in with your account
           </button>
 
-          <p className="mt-4 text-center text-xs text-gray-400">
-            Access is restricted to authorized team members
-          </p>
+          <div className="mt-4 text-center text-xs text-gray-400">
+            <p>Access is restricted to authorized team members</p>
+            <p className="mt-2">
+              <a href="/reset-password" className="text-brand-600 hover:text-brand-700">
+                Reset temporary password
+              </a>
+            </p>
+          </div>
         </div>
 
         {/* Footer */}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   useProfile,
   useOrg,
@@ -11,6 +11,7 @@ import {
   useUpdateServicePreferences,
   useGranularNotifications,
   useUpdateGranularNotifications,
+  useAvatarUpload,
 } from '@/lib/queries/profile';
 import { logout } from '@/lib/auth';
 import { MetricCardSkeleton } from '@/components/LoadingSpinner';
@@ -58,6 +59,16 @@ const NOTIFICATION_EVENTS = [
   { key: 'weeklyDigest', label: 'Weekly digest', channels: ['Email'] as const },
 ];
 
+const PROFILE_FIELD_LABELS: Record<string, string> = {
+  firstName: 'First name',
+  lastName: 'Last name',
+  phone: 'Phone number',
+  avatarUrl: 'Profile photo',
+};
+
+const MAX_AVATAR_BYTES = 2 * 1024 * 1024;
+const ALLOWED_AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
 // ── Toggle component ─────────────────────────
 
 function Toggle({
@@ -104,12 +115,19 @@ export default function SettingsPage() {
   const updateServicePrefs = useUpdateServicePreferences();
   const { data: granularNotifs } = useGranularNotifications();
   const updateGranularNotifs = useUpdateGranularNotifications();
+  const avatarUpload = useAvatarUpload();
 
   // Profile editing state
   const [isEditingName, setIsEditingName] = useState(false);
   const [editFirstName, setEditFirstName] = useState('');
   const [editLastName, setEditLastName] = useState('');
   const [nameErrors, setNameErrors] = useState<{ firstName?: string; lastName?: string }>({});
+  const [editPhone, setEditPhone] = useState('');
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreviewUrl, setAvatarPreviewUrl] = useState('');
+  const [avatarUploadError, setAvatarUploadError] = useState('');
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const [detailErrors, setDetailErrors] = useState<{ phone?: string; avatarUrl?: string }>({});
 
   // Org editing state
   const [isEditingOrg, setIsEditingOrg] = useState(false);
@@ -126,6 +144,25 @@ export default function SettingsPage() {
   const businessHours = localBusinessHours ?? servicePrefs?.businessHours ?? {};
   const selectedCategories = servicePrefs?.categories ?? [];
   const zipCodes = servicePrefs?.zipCodes ?? [];
+  const profileCompleteness = profile?.profileCompleteness;
+  const missingProfileLabels = profileCompleteness?.missingFields
+    ? profileCompleteness.missingFields.map((field) => PROFILE_FIELD_LABELS[field] || field)
+    : [];
+
+  useEffect(() => {
+    if (!profile) return;
+    setEditPhone(profile.phone || '');
+    setAvatarFile(null);
+    setAvatarPreviewUrl('');
+    setAvatarUploadError('');
+  }, [profile?.phone, profile?.avatarUrl]);
+
+  useEffect(() => {
+    if (!avatarPreviewUrl) return;
+    return () => {
+      URL.revokeObjectURL(avatarPreviewUrl);
+    };
+  }, [avatarPreviewUrl]);
 
   // ── Profile handlers ─────────────
 
@@ -176,6 +213,110 @@ export default function SettingsPage() {
           toast.success(SUCCESS_MESSAGES.PROFILE_UPDATED);
           setIsEditingName(false);
           setNameErrors({});
+        },
+        onError: () => toast.error(ERROR_MESSAGES.PROFILE_UPDATE_FAILED),
+      }
+    );
+  }
+
+  function handleAvatarFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setAvatarUploadError('');
+
+    if (!ALLOWED_AVATAR_TYPES.includes(file.type)) {
+      setDetailErrors((prev) => ({
+        ...prev,
+        avatarUrl: 'Avatar must be a JPG, PNG, or WebP image',
+      }));
+      setAvatarFile(null);
+      setAvatarPreviewUrl('');
+      return;
+    }
+
+    if (file.size > MAX_AVATAR_BYTES) {
+      setDetailErrors((prev) => ({
+        ...prev,
+        avatarUrl: 'Avatar must be 2MB or smaller',
+      }));
+      setAvatarFile(null);
+      setAvatarPreviewUrl('');
+      return;
+    }
+
+    setDetailErrors((prev) => ({ ...prev, avatarUrl: undefined }));
+    setAvatarFile(file);
+    setAvatarPreviewUrl(URL.createObjectURL(file));
+  }
+
+  function validateProfileDetails(): boolean {
+    const errors: { phone?: string; avatarUrl?: string } = {};
+    const phone = editPhone.trim();
+
+    if (phone.length > 40) {
+      errors.phone = 'Phone number is too long';
+    } else if (phone) {
+      const digits = phone.replace(/\D/g, '');
+      if (digits.length < 7) {
+        errors.phone = 'Phone number looks too short';
+      }
+    }
+
+    setDetailErrors(errors);
+    return Object.keys(errors).length === 0;
+  }
+
+  async function saveProfileDetails() {
+    if (!profile) return;
+    if (!validateProfileDetails()) return;
+
+    const phone = editPhone.trim();
+    let avatarUrl: string | undefined;
+
+    if (avatarFile) {
+      setIsUploadingAvatar(true);
+      setAvatarUploadError('');
+
+      try {
+        const upload = await avatarUpload.mutateAsync({
+          contentType: avatarFile.type,
+          contentLength: avatarFile.size,
+        });
+
+        const headers = {
+          ...(upload.headers || {}),
+          'Content-Type': avatarFile.type,
+        };
+
+        const response = await fetch(upload.uploadUrl, {
+          method: 'PUT',
+          headers,
+          body: avatarFile,
+        });
+
+        if (!response.ok) {
+          throw new Error('Upload failed');
+        }
+
+        avatarUrl = upload.publicUrl;
+        setAvatarFile(null);
+        setAvatarPreviewUrl('');
+      } catch {
+        setAvatarUploadError('Failed to upload profile photo. Please try again.');
+        setIsUploadingAvatar(false);
+        return;
+      } finally {
+        setIsUploadingAvatar(false);
+      }
+    }
+
+    updateProfile.mutate(
+      { phone, ...(avatarUrl ? { avatarUrl } : {}) },
+      {
+        onSuccess: () => {
+          toast.success(SUCCESS_MESSAGES.PROFILE_UPDATED);
+          setDetailErrors({});
         },
         onError: () => toast.error(ERROR_MESSAGES.PROFILE_UPDATE_FAILED),
       }
@@ -368,10 +509,18 @@ export default function SettingsPage() {
         ) : profile ? (
           <div className="divide-y divide-gray-50">
             <div className="flex items-center gap-4 px-4 py-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-100 text-lg font-bold text-brand-700">
-                {profile.firstName.charAt(0)}
-                {profile.lastName.charAt(0)}
-              </div>
+              {profile.avatarUrl ? (
+                <img
+                  src={profile.avatarUrl}
+                  alt={`${profile.firstName} ${profile.lastName}`}
+                  className="h-14 w-14 rounded-full object-cover"
+                />
+              ) : (
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-100 text-lg font-bold text-brand-700">
+                  {profile.firstName.charAt(0)}
+                  {profile.lastName.charAt(0)}
+                </div>
+              )}
               {isEditingName ? (
                 <div className="flex-1 space-y-2">
                   <div className="flex gap-2">
@@ -452,9 +601,121 @@ export default function SettingsPage() {
                     {profile.firstName} {profile.lastName}
                   </p>
                   <p className="mt-0.5 text-xs text-gray-500">{profile.email}</p>
+                  <p className="mt-0.5 text-xs text-gray-500">
+                    {profile.phone ? profile.phone : 'Add a phone number'}
+                  </p>
                   <p className="mt-0.5 text-xs capitalize text-gray-400">{profile.role}</p>
                 </div>
               )}
+            </div>
+
+            <div className="px-4 py-4">
+              <div className="rounded-lg bg-gray-50 p-3">
+                <div className="flex items-center justify-between text-xs text-gray-600">
+                  <span>Profile completeness</span>
+                  <span>{profileCompleteness?.score ?? 0}%</span>
+                </div>
+                <div className="mt-2 h-2 w-full rounded-full bg-gray-200">
+                  <div
+                    className="h-2 rounded-full bg-brand-600 transition-all"
+                    style={{ width: `${profileCompleteness?.score ?? 0}%` }}
+                  />
+                </div>
+                {missingProfileLabels.length > 0 && (
+                  <p className="mt-2 text-xs text-gray-500">
+                    Missing: {missingProfileLabels.join(', ')}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="px-4 py-4 space-y-3">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div>
+                  <label className="text-xs font-medium text-gray-600">Phone</label>
+                  <input
+                    type="tel"
+                    value={editPhone}
+                    onChange={(e) => {
+                      setEditPhone(e.target.value);
+                      if (detailErrors.phone) {
+                        setDetailErrors((prev) => ({ ...prev, phone: undefined }));
+                      }
+                    }}
+                    placeholder="Add phone number"
+                    className={`mt-1 h-9 w-full rounded-lg border bg-white px-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 ${
+                      detailErrors.phone
+                        ? 'border-red-300 focus:border-red-500'
+                        : 'border-gray-200 focus:border-brand-500'
+                    }`}
+                    aria-label="Phone"
+                  />
+                  {detailErrors.phone && (
+                    <p className="mt-1 text-xs text-red-500" role="alert">
+                      {detailErrors.phone}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-gray-600">Profile photo</label>
+                  <div className="mt-1 flex items-center gap-3">
+                    <div className="h-10 w-10 overflow-hidden rounded-full bg-gray-100">
+                      {avatarPreviewUrl || profile.avatarUrl ? (
+                        <img
+                          src={avatarPreviewUrl || profile.avatarUrl || undefined}
+                          alt="Profile preview"
+                          className="h-10 w-10 object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-10 w-10 items-center justify-center text-xs font-semibold text-gray-500">
+                          {profile.firstName.charAt(0)}
+                          {profile.lastName.charAt(0)}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <input
+                        type="file"
+                        accept={ALLOWED_AVATAR_TYPES.join(',')}
+                        onChange={handleAvatarFileChange}
+                        className="block w-full text-xs text-gray-600 file:mr-3 file:rounded-lg file:border-0 file:bg-brand-50 file:px-3 file:py-2 file:text-xs file:font-medium file:text-brand-700 hover:file:bg-brand-100"
+                        aria-label="Upload profile photo"
+                      />
+                      <p className="mt-1 text-[11px] text-gray-400">JPG, PNG, or WebP up to 2MB.</p>
+                      {avatarFile && (
+                        <p className="mt-1 text-xs text-gray-500">Selected: {avatarFile.name}</p>
+                      )}
+                    </div>
+                  </div>
+                  {detailErrors.avatarUrl && (
+                    <p className="mt-1 text-xs text-red-500" role="alert">
+                      {detailErrors.avatarUrl}
+                    </p>
+                  )}
+                  {avatarUploadError && (
+                    <p className="mt-1 text-xs text-red-500" role="alert">
+                      {avatarUploadError}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-xs text-gray-400">
+                  Add a photo and phone number to boost trust with leads.
+                </p>
+                <button
+                  type="button"
+                  onClick={saveProfileDetails}
+                  disabled={updateProfile.isPending || isUploadingAvatar || avatarUpload.isPending}
+                  className="rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-brand-700 disabled:opacity-50"
+                >
+                  {isUploadingAvatar
+                    ? 'Uploading...'
+                    : updateProfile.isPending
+                      ? 'Saving...'
+                      : 'Save details'}
+                </button>
+              </div>
             </div>
           </div>
         ) : null}

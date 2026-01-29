@@ -49,6 +49,7 @@ import {
 } from './lib/audit.js';
 import * as http from './lib/http.js';
 import { checkQueryRateLimit, checkExportRateLimit } from '../lib/rate-limit.js';
+import { getCookie } from '../lib/handler-utils.js';
 import { v4 as uuidv4 } from 'uuid';
 
 // =============================================================================
@@ -203,11 +204,19 @@ function addRequestIdHeader(
  * HTTP Standard: 429 status code with Retry-After header tells clients
  * when they can retry, enabling proper backoff behavior.
  */
-function rateLimitedResponse(requestId: string, retryAfter: number): APIGatewayProxyResultV2 {
+function rateLimitedResponse(
+  requestId: string,
+  retryAfter: number,
+  requestOrigin?: string
+): APIGatewayProxyResultV2 {
   return addRequestIdHeader(
     {
       statusCode: HTTP_STATUS.RATE_LIMITED,
       headers: {
+        [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_ORIGIN]: requestOrigin || '*',
+        [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_METHODS]: 'GET, POST, PUT, DELETE, OPTIONS',
+        [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_HEADERS]: 'Content-Type, Authorization',
+        [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_CREDENTIALS]: 'true',
         [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.JSON,
         [HTTP_HEADERS.RETRY_AFTER]: String(retryAfter),
       },
@@ -228,11 +237,18 @@ function rateLimitedResponse(requestId: string, retryAfter: number): APIGatewayP
  *
  * HTTP Standard: 413 status code indicates the request entity is too large.
  */
-function payloadTooLargeResponse(requestId: string): APIGatewayProxyResultV2 {
+function payloadTooLargeResponse(
+  requestId: string,
+  requestOrigin?: string
+): APIGatewayProxyResultV2 {
   return addRequestIdHeader(
     {
       statusCode: 413,
       headers: {
+        [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_ORIGIN]: requestOrigin || '*',
+        [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_METHODS]: 'GET, POST, PUT, DELETE, OPTIONS',
+        [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_HEADERS]: 'Content-Type, Authorization',
+        [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_CREDENTIALS]: 'true',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -253,10 +269,11 @@ function payloadTooLargeResponse(requestId: string): APIGatewayProxyResultV2 {
 
 async function handleListFunnels(
   config: AdminConfig,
-  _user: AdminUser
+  _user: AdminUser,
+  requestOrigin?: string
 ): Promise<APIGatewayProxyResultV2> {
   const funnels = await listFunnels(config);
-  return http.ok({ funnels });
+  return http.ok({ funnels }, requestOrigin);
 }
 
 async function handleQueryLeads(
@@ -264,10 +281,11 @@ async function handleQueryLeads(
   user: AdminUser,
   body: QueryLeadsRequest,
   clientIp: string,
-  userAgent: string
+  userAgent: string,
+  requestOrigin?: string
 ): Promise<APIGatewayProxyResultV2> {
   if (!body.funnelId) {
-    return http.badRequest('funnelId is required');
+    return http.badRequest('funnelId is required', undefined, requestOrigin);
   }
 
   const result = await queryLeads(config, body);
@@ -283,7 +301,7 @@ async function handleQueryLeads(
     userAgent
   );
 
-  return http.ok(result);
+  return http.ok(result, requestOrigin);
 }
 
 async function handleUpdateLead(
@@ -291,15 +309,16 @@ async function handleUpdateLead(
   user: AdminUser,
   body: UpdateLeadRequest,
   clientIp: string,
-  userAgent: string
+  userAgent: string,
+  requestOrigin?: string
 ): Promise<APIGatewayProxyResultV2> {
   // RBAC: Only Admin role can modify data
   if (!hasPermission(user, 'write')) {
-    return http.forbidden('Insufficient permissions', 'PERMISSION_DENIED');
+    return http.forbidden('Insufficient permissions', 'PERMISSION_DENIED', requestOrigin);
   }
 
   if (!body.funnelId || !body.leadId) {
-    return http.badRequest('funnelId and leadId are required');
+    return http.badRequest('funnelId and leadId are required', undefined, requestOrigin);
   }
 
   const updated = await updateLead(config, body);
@@ -315,7 +334,7 @@ async function handleUpdateLead(
     userAgent
   );
 
-  return http.ok({ lead: updated });
+  return http.ok({ lead: updated }, requestOrigin);
 }
 
 async function handleBulkUpdate(
@@ -323,21 +342,22 @@ async function handleBulkUpdate(
   user: AdminUser,
   body: BulkUpdateRequest,
   clientIp: string,
-  userAgent: string
+  userAgent: string,
+  requestOrigin?: string
 ): Promise<APIGatewayProxyResultV2> {
   // RBAC: Only Admin role can modify data
   if (!hasPermission(user, 'write')) {
-    return http.forbidden('Insufficient permissions', 'PERMISSION_DENIED');
+    return http.forbidden('Insufficient permissions', 'PERMISSION_DENIED', requestOrigin);
   }
 
   if (!body.funnelId || !body.leadIds || body.leadIds.length === 0) {
-    return http.badRequest('funnelId and leadIds are required');
+    return http.badRequest('funnelId and leadIds are required', undefined, requestOrigin);
   }
 
   // Security: Limit bulk operations to prevent abuse
   // 100 leads per request balances usability with resource protection
   if (body.leadIds.length > 100) {
-    return http.badRequest('Maximum 100 leads per bulk update');
+    return http.badRequest('Maximum 100 leads per bulk update', undefined, requestOrigin);
   }
 
   const result = await bulkUpdateLeads(config, body);
@@ -353,7 +373,7 @@ async function handleBulkUpdate(
     userAgent
   );
 
-  return http.ok(result);
+  return http.ok(result, requestOrigin);
 }
 
 async function handleCreateExport(
@@ -362,11 +382,12 @@ async function handleCreateExport(
   body: ExportRequest,
   clientIp: string,
   userAgent: string,
-  requestId: string
+  requestId: string,
+  requestOrigin?: string
 ): Promise<APIGatewayProxyResultV2> {
   // RBAC: Both Admin and Viewer can export (read-only operation)
   if (!hasPermission(user, 'export')) {
-    return http.forbidden('Insufficient permissions', 'PERMISSION_DENIED');
+    return http.forbidden('Insufficient permissions', 'PERMISSION_DENIED', requestOrigin);
   }
 
   // Distributed rate limit for exports (DynamoDB-backed)
@@ -379,18 +400,22 @@ async function handleCreateExport(
       userId: user.sub,
       errorCode: 'RATE_LIMITED',
     });
-    return rateLimitedResponse(requestId, rateLimit.retryAfter ?? 60);
+    return rateLimitedResponse(requestId, rateLimit.retryAfter ?? 60, requestOrigin);
   }
 
   if (!body.funnelId || !body.format) {
-    return http.badRequest('funnelId and format are required');
+    return http.badRequest('funnelId and format are required', undefined, requestOrigin);
   }
 
   // Security: Whitelist allowed formats to prevent path traversal
   // or other injection attacks via format parameter
   const validFormats = ['csv', 'xlsx', 'pdf', 'docx', 'json'];
   if (!validFormats.includes(body.format)) {
-    return http.badRequest(`Invalid format. Supported: ${validFormats.join(', ')}`);
+    return http.badRequest(
+      `Invalid format. Supported: ${validFormats.join(', ')}`,
+      undefined,
+      requestOrigin
+    );
   }
 
   const job = await createExportJob(config, user, body);
@@ -407,26 +432,27 @@ async function handleCreateExport(
     userAgent
   );
 
-  return http.created({ job });
+  return http.created({ job }, requestOrigin);
 }
 
 async function handleExportStatus(
   config: AdminConfig,
   user: AdminUser,
-  event: APIGatewayProxyEventV2
+  event: APIGatewayProxyEventV2,
+  requestOrigin?: string
 ): Promise<APIGatewayProxyResultV2> {
   const jobId = getQueryParam(event, 'jobId');
   if (!jobId) {
-    return http.badRequest('jobId query parameter is required');
+    return http.badRequest('jobId query parameter is required', undefined, requestOrigin);
   }
 
   // Security: getExportJob filters by user.sub to prevent accessing other users' exports
   const job = await getExportJob(config, user.sub, jobId);
   if (!job) {
-    return http.notFound('Export job not found');
+    return http.notFound('Export job not found', requestOrigin);
   }
 
-  return http.ok({ job });
+  return http.ok({ job }, requestOrigin);
 }
 
 async function handleExportDownload(
@@ -434,21 +460,22 @@ async function handleExportDownload(
   user: AdminUser,
   event: APIGatewayProxyEventV2,
   clientIp: string,
-  userAgent: string
+  userAgent: string,
+  requestOrigin?: string
 ): Promise<APIGatewayProxyResultV2> {
   const jobId = getQueryParam(event, 'jobId');
   if (!jobId) {
-    return http.badRequest('jobId query parameter is required');
+    return http.badRequest('jobId query parameter is required', undefined, requestOrigin);
   }
 
   // Security: getExportJob filters by user.sub to prevent accessing other users' exports
   const job = await getExportJob(config, user.sub, jobId);
   if (!job) {
-    return http.notFound('Export job not found');
+    return http.notFound('Export job not found', requestOrigin);
   }
 
   if (job.status !== 'completed') {
-    return http.badRequest('Export is not ready for download');
+    return http.badRequest('Export is not ready for download', undefined, requestOrigin);
   }
 
   // Security: Presigned URL has 1 hour expiry - limits exposure window
@@ -457,7 +484,7 @@ async function handleExportDownload(
   // Audit log for compliance - tracks all data downloads
   await logDownloadExport(config, user, jobId, job.funnelId, clientIp, userAgent);
 
-  return http.ok({ downloadUrl, expiresIn: 3600 });
+  return http.ok({ downloadUrl, expiresIn: 3600 }, requestOrigin);
 }
 
 async function handleGetStats(
@@ -465,11 +492,12 @@ async function handleGetStats(
   user: AdminUser,
   event: APIGatewayProxyEventV2,
   clientIp: string,
-  userAgent: string
+  userAgent: string,
+  requestOrigin?: string
 ): Promise<APIGatewayProxyResultV2> {
   const funnelId = getQueryParam(event, 'funnelId');
   if (!funnelId) {
-    return http.badRequest('funnelId query parameter is required');
+    return http.badRequest('funnelId query parameter is required', undefined, requestOrigin);
   }
 
   const stats = await getFunnelStats(config, funnelId);
@@ -477,7 +505,7 @@ async function handleGetStats(
   // Audit log for compliance - tracks dashboard access
   await logViewStats(config, user, funnelId, clientIp, userAgent);
 
-  return http.ok({ stats });
+  return http.ok({ stats }, requestOrigin);
 }
 
 // =============================================================================
@@ -510,16 +538,27 @@ export async function handler(
   // Uses Lambda's built-in request ID when available, falls back to UUID
   const requestId = context.awsRequestId || uuidv4();
   const config = loadConfig();
+  const headers = event.headers || {};
+  const requestOrigin = headers['origin'] || headers['Origin'];
 
   // Handle OPTIONS preflight for CORS
   if (event.requestContext.http.method === 'OPTIONS') {
-    return addRequestIdHeader(http.noContent(), requestId);
+    return addRequestIdHeader(http.noContent(requestOrigin), requestId);
   }
 
   // Extract route info for routing
   const method = event.requestContext.http.method;
   const path = event.requestContext.http.path;
   const routeKey = `${method} ${path}`;
+
+  // Extract client info for logging, CORS, and rate limiting
+  const clientIp = extractClientIp(headers, event.requestContext?.http?.sourceIp);
+  const userAgent = headers['user-agent'] || headers['User-Agent'] || 'unknown';
+  const cookieToken = getCookie(event, 'admin_token');
+  const authHeader =
+    headers['authorization'] ||
+    headers['Authorization'] ||
+    (cookieToken ? `Bearer ${cookieToken}` : undefined);
 
   // Security: Check payload size BEFORE any processing
   // Prevents resource exhaustion from large payloads
@@ -532,15 +571,9 @@ export async function handler(
         message: 'Payload too large',
         errorCode: 'PAYLOAD_TOO_LARGE',
       });
-      return payloadTooLargeResponse(requestId);
+      return payloadTooLargeResponse(requestId, requestOrigin);
     }
   }
-
-  // Extract client info for logging and rate limiting
-  const headers = event.headers || {};
-  const clientIp = extractClientIp(headers, event.requestContext?.http?.sourceIp);
-  const userAgent = headers['user-agent'] || headers['User-Agent'] || 'unknown';
-  const authHeader = headers['authorization'] || headers['Authorization'];
 
   log({
     requestId,
@@ -560,7 +593,11 @@ export async function handler(
         latencyMs: Date.now() - startTime,
       });
       return addRequestIdHeader(
-        http.unauthorized(authResult.error || 'Authentication failed', authResult.errorCode),
+        http.unauthorized(
+          authResult.error || 'Authentication failed',
+          authResult.errorCode,
+          requestOrigin
+        ),
         requestId
       );
     }
@@ -588,7 +625,7 @@ export async function handler(
           errorCode: 'RATE_LIMITED',
           latencyMs: Date.now() - startTime,
         });
-        return rateLimitedResponse(requestId, rateLimit.retryAfter ?? 60);
+        return rateLimitedResponse(requestId, rateLimit.retryAfter ?? 60, requestOrigin);
       }
     }
 
@@ -597,15 +634,15 @@ export async function handler(
 
     switch (routeKey) {
       case 'GET /admin/funnels':
-        response = await handleListFunnels(config, user);
+        response = await handleListFunnels(config, user, requestOrigin);
         break;
 
       case 'POST /admin/query': {
         const body = parseBody<QueryLeadsRequest>(event.body);
         if (!body) {
-          response = http.badRequest('Invalid request body');
+          response = http.badRequest('Invalid request body', undefined, requestOrigin);
         } else {
-          response = await handleQueryLeads(config, user, body, clientIp, userAgent);
+          response = await handleQueryLeads(config, user, body, clientIp, userAgent, requestOrigin);
         }
         break;
       }
@@ -613,9 +650,9 @@ export async function handler(
       case 'POST /admin/leads/update': {
         const body = parseBody<UpdateLeadRequest>(event.body);
         if (!body) {
-          response = http.badRequest('Invalid request body');
+          response = http.badRequest('Invalid request body', undefined, requestOrigin);
         } else {
-          response = await handleUpdateLead(config, user, body, clientIp, userAgent);
+          response = await handleUpdateLead(config, user, body, clientIp, userAgent, requestOrigin);
         }
         break;
       }
@@ -623,9 +660,9 @@ export async function handler(
       case 'POST /admin/leads/bulk-update': {
         const body = parseBody<BulkUpdateRequest>(event.body);
         if (!body) {
-          response = http.badRequest('Invalid request body');
+          response = http.badRequest('Invalid request body', undefined, requestOrigin);
         } else {
-          response = await handleBulkUpdate(config, user, body, clientIp, userAgent);
+          response = await handleBulkUpdate(config, user, body, clientIp, userAgent, requestOrigin);
         }
         break;
       }
@@ -633,27 +670,42 @@ export async function handler(
       case 'POST /admin/exports/create': {
         const body = parseBody<ExportRequest>(event.body);
         if (!body) {
-          response = http.badRequest('Invalid request body');
+          response = http.badRequest('Invalid request body', undefined, requestOrigin);
         } else {
-          response = await handleCreateExport(config, user, body, clientIp, userAgent, requestId);
+          response = await handleCreateExport(
+            config,
+            user,
+            body,
+            clientIp,
+            userAgent,
+            requestId,
+            requestOrigin
+          );
         }
         break;
       }
 
       case 'GET /admin/exports/status':
-        response = await handleExportStatus(config, user, event);
+        response = await handleExportStatus(config, user, event, requestOrigin);
         break;
 
       case 'GET /admin/exports/download':
-        response = await handleExportDownload(config, user, event, clientIp, userAgent);
+        response = await handleExportDownload(
+          config,
+          user,
+          event,
+          clientIp,
+          userAgent,
+          requestOrigin
+        );
         break;
 
       case 'GET /admin/stats':
-        response = await handleGetStats(config, user, event, clientIp, userAgent);
+        response = await handleGetStats(config, user, event, clientIp, userAgent, requestOrigin);
         break;
 
       default:
-        response = http.notFound('Route not found');
+        response = http.notFound('Route not found', requestOrigin);
     }
 
     // Add request ID to response for client-side correlation
@@ -678,6 +730,6 @@ export async function handler(
       errorCode: 'INTERNAL_ERROR',
       latencyMs: Date.now() - startTime,
     });
-    return addRequestIdHeader(http.internalError(), requestId);
+    return addRequestIdHeader(http.internalError(requestOrigin), requestId);
   }
 }

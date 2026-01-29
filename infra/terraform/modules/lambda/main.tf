@@ -32,6 +32,7 @@ locals {
     PROJECT_NAME                        = var.project_name
     LOG_LEVEL                           = var.environment == "prod" ? "INFO" : "DEBUG"
     AWS_NODEJS_CONNECTION_REUSE_ENABLED = "1"
+    ALLOWED_ORIGINS                     = join(",", var.allowed_origins)
   }
 
   # DynamoDB related environment variables

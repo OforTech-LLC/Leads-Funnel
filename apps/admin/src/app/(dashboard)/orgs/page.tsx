@@ -14,7 +14,6 @@ import type { Org, CreateOrgRequest } from '@/store/services/orgs';
 import DataTable from '@/components/DataTable';
 import type { Column } from '@/components/DataTable';
 import Pagination from '@/components/Pagination';
-import StatusBadge from '@/components/StatusBadge';
 import Modal from '@/components/Modal';
 import FormField from '@/components/FormField';
 import ErrorAlert from '@/components/ErrorAlert';
@@ -27,44 +26,45 @@ export default function OrgsPage() {
   const router = useRouter();
   const toast = useToast();
   const [search, setSearch] = useState('');
-  const [typeFilter, setTypeFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
   const [page, setPage] = useState(1);
   const [pageSize] = useState(25);
+  const [cursor, setCursor] = useState<string | undefined>(undefined);
+  const [cursorStack, setCursorStack] = useState<string[]>([]);
   const [showCreate, setShowCreate] = useState(false);
 
   const { data, isLoading, error, refetch } = useListOrgsQuery({
     search: search || undefined,
-    type: (typeFilter as Org['type']) || undefined,
-    status: (statusFilter as Org['status']) || undefined,
-    page,
-    pageSize,
+    cursor,
+    limit: pageSize,
   });
 
   const [createOrg, { isLoading: isCreating }] = useCreateOrgMutation();
 
   const [form, setForm] = useState<CreateOrgRequest>({
     name: '',
-    type: 'agency',
-    description: '',
+    slug: '',
+    contactEmail: '',
   });
+
+  const slugify = useCallback((value: string) => {
+    return value
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-+|-+$)/g, '');
+  }, []);
 
   const columns: Column<Org>[] = [
     { key: 'name', header: 'Name', sortable: true },
     {
-      key: 'type',
-      header: 'Type',
-      render: (row) => <span className="capitalize text-[var(--text-secondary)]">{row.type}</span>,
+      key: 'slug',
+      header: 'Slug',
+      render: (row) => <span className="text-[var(--text-secondary)]">{row.slug}</span>,
     },
     {
-      key: 'status',
-      header: 'Status',
-      render: (row) => <StatusBadge status={row.status} />,
-    },
-    {
-      key: 'memberCount',
-      header: 'Members',
-      render: (row) => <span className="text-[var(--text-secondary)]">{row.memberCount}</span>,
+      key: 'contactEmail',
+      header: 'Contact Email',
+      render: (row) => <span className="text-[var(--text-secondary)]">{row.contactEmail}</span>,
     },
     {
       key: 'createdAt',
@@ -78,14 +78,27 @@ export default function OrgsPage() {
 
   const handleCreate = useCallback(async () => {
     try {
-      await createOrg(form).unwrap();
+      const resolvedSlug = form.slug?.trim() || slugify(form.name);
+      if (!resolvedSlug) {
+        toast.error('Organization slug is required');
+        return;
+      }
+      if (!form.contactEmail?.trim()) {
+        toast.error('Contact email is required');
+        return;
+      }
+      await createOrg({
+        ...form,
+        slug: resolvedSlug,
+        contactEmail: form.contactEmail.trim(),
+      }).unwrap();
       toast.success('Organization created successfully');
       setShowCreate(false);
-      setForm({ name: '', type: 'agency', description: '' });
+      setForm({ name: '', slug: '', contactEmail: '' });
     } catch {
       toast.error('Failed to create organization');
     }
-  }, [createOrg, form, toast]);
+  }, [createOrg, form, slugify, toast]);
 
   return (
     <div className="space-y-6">
@@ -116,36 +129,12 @@ export default function OrgsPage() {
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
+              setCursor(undefined);
+              setCursorStack([]);
               setPage(1);
             }}
             className="flex-1 min-w-[200px] px-3 py-2 text-sm border border-[var(--border-color)] rounded-md bg-[var(--card-bg)] text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
-          <select
-            value={typeFilter}
-            onChange={(e) => {
-              setTypeFilter(e.target.value);
-              setPage(1);
-            }}
-            className="px-3 py-2 text-sm border border-[var(--border-color)] rounded-md bg-[var(--card-bg)] text-[var(--text-primary)]"
-          >
-            <option value="">All Types</option>
-            <option value="agency">Agency</option>
-            <option value="broker">Broker</option>
-            <option value="direct">Direct</option>
-          </select>
-          <select
-            value={statusFilter}
-            onChange={(e) => {
-              setStatusFilter(e.target.value);
-              setPage(1);
-            }}
-            className="px-3 py-2 text-sm border border-[var(--border-color)] rounded-md bg-[var(--card-bg)] text-[var(--text-primary)]"
-          >
-            <option value="">All Statuses</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-            <option value="suspended">Suspended</option>
-          </select>
         </div>
       </div>
 
@@ -168,8 +157,22 @@ export default function OrgsPage() {
             pageSize={pageSize}
             hasNext={!!data.nextToken}
             hasPrev={page > 1}
-            onNext={() => setPage((p) => p + 1)}
-            onPrev={() => setPage((p) => Math.max(1, p - 1))}
+            onNext={() => {
+              if (!data.nextToken) return;
+              setCursorStack((prev) => [...prev, cursor || '']);
+              setCursor(data.nextToken || undefined);
+              setPage((p) => p + 1);
+            }}
+            onPrev={() => {
+              setCursorStack((prev) => {
+                if (prev.length === 0) return prev;
+                const next = [...prev];
+                const previousCursor = next.pop() || '';
+                setCursor(previousCursor || undefined);
+                return next;
+              });
+              setPage((p) => Math.max(1, p - 1));
+            }}
             currentPage={page}
           />
         )}
@@ -193,24 +196,20 @@ export default function OrgsPage() {
             placeholder="Organization name"
           />
           <FormField
-            label="Type"
-            name="type"
-            type="select"
-            value={form.type}
-            onChange={(v) => setForm((f) => ({ ...f, type: v as Org['type'] }))}
-            options={[
-              { value: 'agency', label: 'Agency' },
-              { value: 'broker', label: 'Broker' },
-              { value: 'direct', label: 'Direct' },
-            ]}
+            label="Slug"
+            name="slug"
+            value={form.slug}
+            onChange={(v) => setForm((f) => ({ ...f, slug: v }))}
+            placeholder="auto-generated from name if blank"
           />
           <FormField
-            label="Description"
-            name="description"
-            type="textarea"
-            value={form.description || ''}
-            onChange={(v) => setForm((f) => ({ ...f, description: v }))}
-            placeholder="Optional description"
+            label="Contact Email"
+            name="contactEmail"
+            type="email"
+            value={form.contactEmail}
+            onChange={(v) => setForm((f) => ({ ...f, contactEmail: v }))}
+            required
+            placeholder="ops@company.com"
           />
           <div className="flex justify-end gap-3 pt-4">
             <button
@@ -222,7 +221,7 @@ export default function OrgsPage() {
             </button>
             <button
               type="submit"
-              disabled={isCreating || !form.name}
+              disabled={isCreating || !form.name || !form.contactEmail}
               className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
             >
               {isCreating ? 'Creating...' : 'Create'}

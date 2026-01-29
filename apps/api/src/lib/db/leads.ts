@@ -15,6 +15,7 @@ import { ValidationError } from '../errors.js';
 import { v4 as uuidv4 } from 'uuid';
 import { createHash } from 'node:crypto';
 import { DB_PREFIXES, DB_SORT_KEYS, GSI_KEYS, GSI_INDEX_NAMES } from '../constants.js';
+import type { EvidencePack } from '../types/evidence.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -58,6 +59,8 @@ export interface PlatformLead {
   notifiedAt?: string;
   createdAt: string;
   updatedAt: string;
+  score?: number;
+  evidencePack?: EvidencePack;
   gsi1pk: string;
   gsi1sk: string;
   gsi2pk?: string;
@@ -78,6 +81,25 @@ export interface CreateLeadInput {
   referrer?: string;
   utm?: Record<string, string>;
   status?: LeadStatus;
+}
+
+export interface IngestLeadInput {
+  leadId: string;
+  funnelId: string;
+  email: string;
+  name?: string;
+  phone?: string;
+  zipCode?: string;
+  message?: string;
+  pageUrl?: string;
+  referrer?: string;
+  utm?: Record<string, string>;
+  status?: LeadStatus;
+  ipHash: string;
+  userAgent?: string;
+  score?: number;
+  evidencePack?: EvidencePack;
+  createdAt?: string;
 }
 
 export interface UpdateLeadInput {
@@ -230,6 +252,59 @@ export async function createLead(input: CreateLeadInput): Promise<PlatformLead> 
     new PutCommand({
       TableName: tableName(),
       Item: lead,
+    })
+  );
+
+  return lead;
+}
+
+/**
+ * Ingest a lead from the public capture pipeline into the platform table.
+ *
+ * Uses the provided leadId so downstream systems can correlate the record
+ * with capture-time logs and idempotency keys.
+ */
+export async function ingestLead(
+  input: IngestLeadInput,
+  tableOverride?: string
+): Promise<PlatformLead> {
+  const doc = getDocClient();
+  const now = input.createdAt || new Date().toISOString();
+  const status: LeadStatus = input.status || 'new';
+
+  const lead: PlatformLead = {
+    pk: `${DB_PREFIXES.LEAD}${input.funnelId}#${input.leadId}`,
+    sk: DB_SORT_KEYS.META,
+    leadId: input.leadId,
+    funnelId: input.funnelId,
+    name: input.name || '',
+    email: input.email,
+    phone: input.phone,
+    zipCode: input.zipCode,
+    message: input.message,
+    status,
+    notes: [],
+    tags: [],
+    pageUrl: input.pageUrl,
+    referrer: input.referrer,
+    utm: input.utm,
+    ipHash: input.ipHash,
+    userAgent: input.userAgent,
+    createdAt: now,
+    updatedAt: now,
+    score: input.score,
+    evidencePack: input.evidencePack,
+    gsi1pk: `${GSI_KEYS.FUNNEL}${input.funnelId}`,
+    gsi1sk: `${GSI_KEYS.CREATED}${now}`,
+    gsi3pk: `${GSI_KEYS.STATUS}${input.funnelId}#${status}`,
+    gsi3sk: `${GSI_KEYS.CREATED}${now}`,
+  };
+
+  await doc.send(
+    new PutCommand({
+      TableName: tableOverride || tableName(),
+      Item: lead,
+      ConditionExpression: 'attribute_not_exists(pk)',
     })
   );
 

@@ -22,6 +22,12 @@ variable "root_domain" {
   description = "Root domain for constructing webhook URLs"
 }
 
+variable "allowed_origins" {
+  type        = list(string)
+  description = "Allowed CORS origins (comma-separated in Lambda env)"
+  default     = []
+}
+
 # -----------------------------------------------------------------------------
 # Runtime Configuration
 # -----------------------------------------------------------------------------

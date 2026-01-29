@@ -96,3 +96,27 @@ export function getIpHash(event: APIGatewayProxyEventV2): string {
   const ip = event.requestContext?.http?.sourceIp || '';
   return sha256(ip);
 }
+
+// ---------------------------------------------------------------------------
+// Cookie helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Read a cookie value from the incoming request headers.
+ *
+ * @param event API Gateway event
+ * @param name  Cookie name to retrieve
+ */
+export function getCookie(event: APIGatewayProxyEventV2, name: string): string | null {
+  const cookieHeader = event.headers?.cookie || event.headers?.Cookie;
+  if (!cookieHeader) return null;
+
+  const cookies = cookieHeader.split(';').map((c) => c.trim());
+  for (const cookie of cookies) {
+    const [cookieName, cookieValue] = cookie.split('=');
+    if (cookieName === name) {
+      return cookieValue || null;
+    }
+  }
+  return null;
+}

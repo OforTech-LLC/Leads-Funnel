@@ -40,22 +40,24 @@ locals {
   portal_subdomain = var.portal_subdomain
   api_subdomain    = var.api_subdomain
 
-  # CORS origins - dev only uses subdomain
+  # Platform CORS origins
+  admin_cors_origins = var.enable_platform ? concat(
+    ["https://${local.admin_subdomain}.${var.root_domain}"],
+    ["http://localhost:3001"]
+  ) : []
+  portal_cors_origins = var.enable_platform ? concat(
+    ["https://${local.portal_subdomain}.${var.root_domain}"],
+    ["http://localhost:3002"]
+  ) : []
+
+  # CORS origins - dev includes platform apps when enabled
   cors_origins = concat(
     [
       "https://${local.env_subdomain}.${var.root_domain}",
     ],
-    var.additional_cors_origins
-  )
-
-  # Platform CORS origins
-  admin_cors_origins = concat(
-    ["https://${local.admin_subdomain}.${var.root_domain}"],
-    var.enable_platform ? ["http://localhost:3001"] : []
-  )
-  portal_cors_origins = concat(
-    ["https://${local.portal_subdomain}.${var.root_domain}"],
-    var.enable_platform ? ["http://localhost:3002"] : []
+    var.additional_cors_origins,
+    local.admin_cors_origins,
+    local.portal_cors_origins
   )
 
   # -------------------------------------------------------------------------

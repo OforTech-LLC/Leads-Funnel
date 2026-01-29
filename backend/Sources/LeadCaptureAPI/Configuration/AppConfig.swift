@@ -81,9 +81,12 @@ public struct AppConfig: Sendable {
     private init() {
         // AWS Configuration
         self.awsRegion = Self.env("AWS_REGION", default: "us-east-1")
-        self.dynamoDBTableName = Self.env("DYNAMODB_TABLE_NAME", default: "kanjona-leads-dev")
+        self.dynamoDBTableName = Self.env(
+            "DYNAMODB_TABLE_NAME",
+            default: Self.env("DDB_TABLE_NAME", default: "kanjona-leads-dev")
+        )
         self.eventBusName = Self.env("EVENT_BUS_NAME", default: "kanjona-leads-dev")
-        self.eventSource = Self.env("EVENT_SOURCE", default: "com.kanjona.leads")
+        self.eventSource = Self.env("EVENT_SOURCE", default: "kanjona.leads")
 
         // API Configuration
         self.apiStage = Self.env("API_STAGE", default: "dev")

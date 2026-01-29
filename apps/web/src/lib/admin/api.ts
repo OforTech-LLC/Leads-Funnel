@@ -121,12 +121,14 @@ export interface FunnelStats {
 }
 
 export interface ApiResponse<T> {
-  success: boolean;
+  success?: boolean;
+  ok?: boolean;
   data?: T;
   error?: {
     code: string;
     message: string;
   };
+  message?: string;
 }
 
 /**
@@ -210,18 +212,20 @@ async function apiRequest<T>(path: string, options: RequestInit = {}, retryCount
     }
 
     const data: ApiResponse<T> = await response.json();
+    const hasWrapper = typeof data.ok === 'boolean' || typeof data.success === 'boolean';
+    const ok = data.ok ?? data.success ?? response.ok;
 
-    if (!data.success) {
+    if (!ok) {
       // Check if we should retry on server errors
       if (response.status >= 500 && retryCount < MAX_RETRIES) {
         const retryDelay = getRetryDelay(retryCount);
         await delay(retryDelay);
         return apiRequest<T>(path, options, retryCount + 1);
       }
-      throw new Error(data.error?.message || 'API request failed');
+      throw new Error(data.error?.message || data.message || 'API request failed');
     }
 
-    return data.data as T;
+    return (hasWrapper ? data.data : (data as unknown)) as T;
   } catch (error) {
     clearTimeout(timeoutId);
 

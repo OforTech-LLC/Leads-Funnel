@@ -48,21 +48,23 @@ export async function handleWebhookRoutes(
   event: APIGatewayProxyEventV2,
   subpath: string,
   method: string,
-  canWrite: boolean
+  canWrite: boolean,
+  requestOrigin?: string
 ): Promise<APIGatewayProxyResultV2 | null> {
   // POST /admin/webhooks - Register
   if (subpath === '/webhooks' && method === 'POST') {
-    if (!canWrite) return resp.forbidden();
+    if (!canWrite) return resp.forbidden(undefined, requestOrigin);
     const body = parseBody(event);
-    if (body === null) return resp.badRequest('Invalid JSON in request body');
+    if (body === null) return resp.badRequest('Invalid JSON in request body', requestOrigin);
     if (!body.orgId || !body.url || !body.secret || !body.events) {
-      return resp.badRequest('orgId, url, secret, and events are required');
+      return resp.badRequest('orgId, url, secret, and events are required', requestOrigin);
     }
     const events = body.events as string[];
     for (const evt of events) {
       if (!VALID_EVENT_TYPES.includes(evt as WebhookEventType)) {
         return resp.badRequest(
-          `Invalid event type "${evt}". Must be one of: ${VALID_EVENT_TYPES.join(', ')}`
+          `Invalid event type "${evt}". Must be one of: ${VALID_EVENT_TYPES.join(', ')}`,
+          requestOrigin
         );
       }
     }
@@ -73,36 +75,41 @@ export async function handleWebhookRoutes(
       events: events as WebhookEventType[],
       active: body.active as boolean | undefined,
     });
-    return resp.created(webhook);
+    return resp.created(webhook, requestOrigin);
   }
 
   // GET /admin/webhooks - List
   if (subpath === '/webhooks' && method === 'GET') {
     const orgId = queryParam(event, 'orgId');
-    if (!orgId) return resp.badRequest('orgId query parameter is required');
+    if (!orgId) return resp.badRequest('orgId query parameter is required', requestOrigin);
     const result = await registry.listWebhooksByOrg(
       orgId,
       queryParam(event, 'cursor'),
       Number(queryParam(event, 'limit')) || 25
     );
-    return resp.paginated(result.items, {
-      nextCursor: result.nextCursor,
-      hasMore: !!result.nextCursor,
-    });
+    return resp.paginated(
+      result.items,
+      {
+        nextCursor: result.nextCursor,
+        hasMore: !!result.nextCursor,
+      },
+      requestOrigin
+    );
   }
 
   // PUT /admin/webhooks/{id} - Update
   if (/^\/webhooks\/[^/]+$/.test(subpath) && method === 'PUT') {
-    if (!canWrite) return resp.forbidden();
+    if (!canWrite) return resp.forbidden(undefined, requestOrigin);
     const id = pathParam(event, 2);
     const body = parseBody(event);
-    if (body === null) return resp.badRequest('Invalid JSON in request body');
+    if (body === null) return resp.badRequest('Invalid JSON in request body', requestOrigin);
     if (body.events) {
       const events = body.events as string[];
       for (const evt of events) {
         if (!VALID_EVENT_TYPES.includes(evt as WebhookEventType)) {
           return resp.badRequest(
-            `Invalid event type "${evt}". Must be one of: ${VALID_EVENT_TYPES.join(', ')}`
+            `Invalid event type "${evt}". Must be one of: ${VALID_EVENT_TYPES.join(', ')}`,
+            requestOrigin
           );
         }
       }
@@ -114,15 +121,15 @@ export async function handleWebhookRoutes(
       events: body.events as WebhookEventType[] | undefined,
       active: body.active as boolean | undefined,
     });
-    return resp.success(updated);
+    return resp.success(updated, undefined, requestOrigin);
   }
 
   // DELETE /admin/webhooks/{id} - Delete
   if (/^\/webhooks\/[^/]+$/.test(subpath) && method === 'DELETE') {
-    if (!canWrite) return resp.forbidden();
+    if (!canWrite) return resp.forbidden(undefined, requestOrigin);
     const id = pathParam(event, 2);
     await registry.deleteWebhook(id);
-    return resp.noContent();
+    return resp.noContent(requestOrigin);
   }
 
   // GET /admin/webhooks/{id}/deliveries - Recent deliveries
@@ -157,20 +164,24 @@ export async function handleWebhookRoutes(
       nextCursor = signCursor(result.LastEvaluatedKey as Record<string, unknown>);
     }
 
-    return resp.paginated(items, {
-      nextCursor,
-      hasMore: !!nextCursor,
-    });
+    return resp.paginated(
+      items,
+      {
+        nextCursor,
+        hasMore: !!nextCursor,
+      },
+      requestOrigin
+    );
   }
 
   // POST /admin/webhooks/{id}/test - Send test
   if (/^\/webhooks\/[^/]+\/test$/.test(subpath) && method === 'POST') {
-    if (!canWrite) return resp.forbidden();
+    if (!canWrite) return resp.forbidden(undefined, requestOrigin);
     const id = pathParam(event, 2);
     const webhook = await registry.getWebhook(id);
-    if (!webhook) return resp.notFound('Webhook not found');
+    if (!webhook) return resp.notFound('Webhook not found', requestOrigin);
     const delivery = await sendTestWebhook(webhook);
-    return resp.success(delivery);
+    return resp.success(delivery, undefined, requestOrigin);
   }
 
   // Path not matched

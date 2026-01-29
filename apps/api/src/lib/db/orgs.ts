@@ -22,6 +22,7 @@ export interface Org {
   sk: string;
   orgId: string;
   name: string;
+  nameLower?: string;
   slug: string;
   contactEmail: string;
   phone?: string;
@@ -63,6 +64,10 @@ export interface UpdateOrgInput {
 // Operations
 // ---------------------------------------------------------------------------
 
+function normalizeNameLower(name: string): string {
+  return name.trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
 export async function createOrg(input: CreateOrgInput): Promise<Org> {
   const doc = getDocClient();
   const orgId = ulid();
@@ -73,6 +78,7 @@ export async function createOrg(input: CreateOrgInput): Promise<Org> {
     sk: DB_SORT_KEYS.META,
     orgId,
     name: input.name,
+    nameLower: normalizeNameLower(input.name),
     slug: input.slug,
     contactEmail: input.contactEmail,
     phone: input.phone,
@@ -131,6 +137,9 @@ export async function updateOrg(input: UpdateOrgInput): Promise<Org> {
     parts.push('#name = :name');
     names['#name'] = 'name';
     values[':name'] = input.name;
+    parts.push('#nameLower = :nameLower');
+    names['#nameLower'] = 'nameLower';
+    values[':nameLower'] = normalizeNameLower(input.name);
   }
   if (input.slug !== undefined) {
     parts.push('slug = :slug');
@@ -197,7 +206,11 @@ export interface PaginatedOrgs {
   nextCursor?: string;
 }
 
-export async function listOrgs(cursor?: string, limit = 25): Promise<PaginatedOrgs> {
+export async function listOrgs(
+  cursor?: string,
+  limit = 25,
+  search?: string
+): Promise<PaginatedOrgs> {
   const doc = getDocClient();
 
   let exclusiveStartKey: Record<string, unknown> | undefined;
@@ -209,13 +222,34 @@ export async function listOrgs(cursor?: string, limit = 25): Promise<PaginatedOr
     // If verifyCursor returns null (invalid/tampered), skip setting ExclusiveStartKey
   }
 
+  const filterExpressions: string[] = ['attribute_not_exists(deletedAt)'];
+  const expressionAttributeNames: Record<string, string> = {};
+  const expressionAttributeValues: Record<string, unknown> = {
+    ':pk': GSI_KEYS.ORGS_LIST,
+  };
+
+  if (search) {
+    const normalized = search.trim().toLowerCase();
+    if (normalized) {
+      filterExpressions.push(
+        '(contains(#nameLower, :search) OR contains(#slug, :search) OR contains(#orgId, :search))'
+      );
+      expressionAttributeNames['#nameLower'] = 'nameLower';
+      expressionAttributeNames['#slug'] = 'slug';
+      expressionAttributeNames['#orgId'] = 'orgId';
+      expressionAttributeValues[':search'] = normalized;
+    }
+  }
+
   const result = await doc.send(
     new QueryCommand({
       TableName: tableName(),
       IndexName: GSI_INDEX_NAMES.GSI1,
       KeyConditionExpression: 'gsi1pk = :pk',
-      FilterExpression: 'attribute_not_exists(deletedAt)',
-      ExpressionAttributeValues: { ':pk': GSI_KEYS.ORGS_LIST },
+      FilterExpression: filterExpressions.join(' AND '),
+      ExpressionAttributeNames:
+        Object.keys(expressionAttributeNames).length > 0 ? expressionAttributeNames : undefined,
+      ExpressionAttributeValues: expressionAttributeValues,
       Limit: limit,
       ScanIndexForward: false,
       ExclusiveStartKey: exclusiveStartKey,

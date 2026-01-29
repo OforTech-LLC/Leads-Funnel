@@ -175,7 +175,7 @@ export async function handler(
     throw new Error('Your account has not been set up. Please contact support.');
   }
 
-  if (user.status !== 'active') {
+  if (user.status && user.status !== 'active') {
     log.warn('User account is inactive', {
       sub: cognitoSub,
       userId: user.userId,

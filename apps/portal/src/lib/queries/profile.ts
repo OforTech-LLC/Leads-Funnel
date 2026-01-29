@@ -10,6 +10,7 @@ import type {
   NotificationPreferences,
   GranularNotificationPreferences,
   ServicePreferences,
+  AvatarUploadResponse,
 } from '@/lib/types';
 import { API_ENDPOINTS } from '@/lib/constants';
 
@@ -83,18 +84,25 @@ export function useUpdateProfile() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ firstName, lastName }: { firstName: string; lastName: string }) => {
-      return api.put<UserProfile>(API_ENDPOINTS.PROFILE, { firstName, lastName });
+    mutationFn: async (updates: {
+      firstName?: string;
+      lastName?: string;
+      phone?: string;
+      avatarUrl?: string;
+    }) => {
+      return api.put<UserProfile>(API_ENDPOINTS.PROFILE, updates);
     },
-    onMutate: async ({ firstName, lastName }) => {
+    onMutate: async (updates) => {
       await queryClient.cancelQueries({ queryKey: profileKeys.user() });
       const previous = queryClient.getQueryData<UserProfile>(profileKeys.user());
 
       if (previous) {
         queryClient.setQueryData<UserProfile>(profileKeys.user(), {
           ...previous,
-          firstName,
-          lastName,
+          firstName: updates.firstName ?? previous.firstName,
+          lastName: updates.lastName ?? previous.lastName,
+          phone: updates.phone ?? previous.phone,
+          avatarUrl: updates.avatarUrl ?? previous.avatarUrl,
         });
       }
 
@@ -107,6 +115,25 @@ export function useUpdateProfile() {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: profileKeys.user() });
+    },
+  });
+}
+
+// ── Avatar upload URL ────────────────────────
+
+export function useAvatarUpload() {
+  return useMutation({
+    mutationFn: async ({
+      contentType,
+      contentLength,
+    }: {
+      contentType: string;
+      contentLength: number;
+    }) => {
+      return api.post<AvatarUploadResponse>(API_ENDPOINTS.PROFILE_AVATAR_UPLOAD, {
+        contentType,
+        contentLength,
+      });
     },
   });
 }

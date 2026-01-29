@@ -10,6 +10,7 @@ import type { AdminRole } from './permissions.js';
 import { loadConfig } from '../config.js';
 import { sha256 } from '../hash.js';
 import { ADMIN_ROLES, HTTP_HEADERS } from '../constants.js';
+import { getCookie } from '../handler-utils.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -38,6 +39,14 @@ function extractBearer(event: APIGatewayProxyEventV2): string | null {
   return token;
 }
 
+function extractCookieToken(event: APIGatewayProxyEventV2): string | null {
+  return getCookie(event, 'admin_token');
+}
+
+function extractToken(event: APIGatewayProxyEventV2): string | null {
+  return extractBearer(event) || extractCookieToken(event);
+}
+
 function determineAdminRole(groups: string[]): AdminRole {
   // Map Cognito groups to our internal roles
   if (groups.includes('Admin') || groups.includes(ADMIN_ROLES.ADMIN)) return ADMIN_ROLES.ADMIN;
@@ -61,7 +70,7 @@ function determineAdminRole(groups: string[]): AdminRole {
  * @throws Error with message suitable for 401/403 responses
  */
 export async function authenticateAdmin(event: APIGatewayProxyEventV2): Promise<AdminIdentity> {
-  const token = extractBearer(event);
+  const token = extractToken(event);
   if (!token) {
     throw new AuthError('Missing or invalid Authorization header', 401);
   }

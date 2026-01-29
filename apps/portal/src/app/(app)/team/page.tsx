@@ -1,30 +1,20 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import {
-  useTeamMembers,
-  useTeamInvites,
-  useInviteMember,
-  useRemoveMember,
-  useUpdateMemberRole,
-} from '@/lib/queries/team';
+import { useTeamMembers, useRemoveMember, useUpdateMemberRole } from '@/lib/queries/team';
 import { useProfile } from '@/lib/queries/profile';
 import TeamMemberCard from '@/components/TeamMemberCard';
-import InviteModal from '@/components/InviteModal';
 import EmptyState from '@/components/EmptyState';
 import { MetricCardSkeleton } from '@/components/LoadingSpinner';
 import { toast } from '@/lib/toast';
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from '@/lib/constants';
 
 export default function TeamPage() {
-  const [showInvite, setShowInvite] = useState(false);
   const [search, setSearch] = useState('');
 
   const { data: profile } = useProfile();
   const { data: members, isLoading: membersLoading } = useTeamMembers();
-  const { data: invites, isLoading: invitesLoading } = useTeamInvites();
 
-  const inviteMember = useInviteMember();
   const removeMember = useRemoveMember();
   const updateRole = useUpdateMemberRole();
 
@@ -39,27 +29,6 @@ export default function TeamPage() {
         m.email.toLowerCase().includes(q)
     );
   }, [members, search]);
-
-  // Separate pending invitations
-  const pendingInvites = useMemo(
-    () => (invites ?? []).filter((i) => i.status === 'pending'),
-    [invites]
-  );
-
-  function handleInvite(email: string, role: 'admin' | 'agent') {
-    inviteMember.mutate(
-      { email, role },
-      {
-        onSuccess: () => {
-          toast.success(SUCCESS_MESSAGES.INVITE_SENT(email));
-          setShowInvite(false);
-        },
-        onError: () => {
-          toast.error(ERROR_MESSAGES.INVITE_FAILED);
-        },
-      }
-    );
-  }
 
   function handleRemove(userId: string) {
     removeMember.mutate(userId, {
@@ -90,22 +59,11 @@ export default function TeamPage() {
               : 'Manage your team'}
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => setShowInvite(true)}
-          className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-700 active:bg-brand-800"
-        >
-          <svg
-            className="h-4 w-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-          </svg>
-          Invite Member
-        </button>
+      </div>
+
+      <div className="mb-5 rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-xs text-gray-600">
+        Team access is managed by administrators in the admin console. Contact your admin to add or
+        remove members.
       </div>
 
       {/* Search */}
@@ -147,11 +105,7 @@ export default function TeamPage() {
       ) : filteredMembers.length === 0 && !search ? (
         <EmptyState
           title="No team members yet"
-          description="Invite your first team member to start collaborating on leads"
-          action={{
-            label: 'Invite Member',
-            onClick: () => setShowInvite(true),
-          }}
+          description="Team access is managed by administrators. Contact your admin to add members."
         />
       ) : filteredMembers.length === 0 && search ? (
         <EmptyState
@@ -181,48 +135,6 @@ export default function TeamPage() {
       )}
 
       {/* Pending Invitations */}
-      {!invitesLoading && pendingInvites.length > 0 && (
-        <section className="mt-8">
-          <h2 className="mb-3 text-sm font-semibold text-gray-900">
-            Pending Invitations ({pendingInvites.length})
-          </h2>
-          <div className="space-y-2">
-            {pendingInvites.map((invite) => (
-              <div
-                key={invite.id}
-                className="flex items-center justify-between rounded-xl border border-dashed border-gray-200 bg-gray-50/50 p-4"
-              >
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-gray-700">{invite.email}</p>
-                  <p className="mt-0.5 text-xs text-gray-400">
-                    Invited by {invite.invitedByName} --{' '}
-                    {new Date(invite.createdAt).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                    })}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="rounded-full bg-yellow-50 px-2.5 py-0.5 text-xs font-medium text-yellow-700">
-                    Pending
-                  </span>
-                  <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium capitalize text-gray-600">
-                    {invite.role}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Invite Modal */}
-      <InviteModal
-        open={showInvite}
-        onClose={() => setShowInvite(false)}
-        onInvite={handleInvite}
-        isLoading={inviteMember.isPending}
-      />
     </div>
   );
 }

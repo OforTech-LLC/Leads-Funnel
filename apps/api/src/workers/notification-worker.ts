@@ -225,7 +225,7 @@ interface ParsedEvent {
  *
  * The SQS message contains the full EventBridge event envelope:
  * {
- *   "source": "kanjona.funnel",
+ *   "source": "kanjona.leads",
  *   "detail-type": "lead.assigned",
  *   "detail": { ... }
  * }

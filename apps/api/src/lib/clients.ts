@@ -21,6 +21,7 @@
 
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
+import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 import { SSMClient } from '@aws-sdk/client-ssm';
 import { S3Client } from '@aws-sdk/client-s3';
 import { EventBridgeClient } from '@aws-sdk/client-eventbridge';
@@ -121,6 +122,27 @@ export function getDocClient(region?: string): DynamoDBDocumentClient {
     });
   }
   return _docClient;
+}
+
+// ---------------------------------------------------------------------------
+// Cognito Identity Provider Client
+// ---------------------------------------------------------------------------
+
+let _cognitoClient: CognitoIdentityProviderClient | null = null;
+
+/**
+ * Return (or create) the shared Cognito Identity Provider Client.
+ *
+ * @param region - Optional override; defaults to AWS_REGION env var
+ */
+export function getCognitoClient(region?: string): CognitoIdentityProviderClient {
+  if (!_cognitoClient) {
+    _cognitoClient = new CognitoIdentityProviderClient({
+      region: resolveRegion(region),
+      requestHandler: createRequestHandler(),
+    });
+  }
+  return _cognitoClient;
 }
 
 // ---------------------------------------------------------------------------

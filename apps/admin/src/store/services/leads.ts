@@ -23,23 +23,58 @@ export interface Lead {
   zipCode?: string;
   createdAt: string;
   updatedAt: string;
+  qualityScore?: number;
 }
 
 export interface LeadDetail extends Lead {
   message?: string;
   pageUrl?: string;
   referrer?: string;
-  utm?: {
-    source?: string;
-    medium?: string;
-    campaign?: string;
-    term?: string;
-    content?: string;
-  };
+  utm?: Record<string, string>;
   ipHash?: string;
   userAgent?: string;
   auditTrail: AuditEntry[];
   notificationHistory: NotificationEntry[];
+  evidencePack?: EvidencePack;
+}
+
+export interface EvidencePack {
+  capturedAt: string;
+  funnelId: string;
+  pageVariant?: string;
+  pageUrl?: string;
+  referrer?: string;
+  utm?: Record<string, string>;
+  consent?: {
+    privacyAccepted: boolean;
+    marketingConsent?: boolean;
+    privacyPolicyVersion?: string;
+    termsVersion?: string;
+    capturedAt: string;
+    ipHash: string;
+  };
+  verification?: {
+    emailValid?: boolean;
+    phoneValid?: boolean;
+    captchaVerified?: boolean;
+    captchaScore?: number;
+  };
+  quality?: {
+    score?: number;
+    threshold?: number;
+    matchedRules?: string[];
+    status?: string;
+  };
+  security?: {
+    suspicious: boolean;
+    reasons: string[];
+  };
+  assignment?: {
+    ruleId?: string;
+    assignedOrgId?: string;
+    assignedUserId?: string;
+    assignedAt?: string;
+  };
 }
 
 export interface AuditEntry {

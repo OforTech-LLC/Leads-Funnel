@@ -39,20 +39,20 @@ export type AdminRole = (typeof ADMIN_ROLES)[keyof typeof ADMIN_ROLES];
 // ---------------------------------------------------------------------------
 
 // Backend API base URL for auth endpoints
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
 
 export const API_ENDPOINTS = {
   AUTH: `${API_BASE}/auth/admin`,
-  LEADS: '/api/admin/leads',
-  ORGS: '/api/admin/orgs',
-  USERS: '/api/admin/users',
-  RULES: '/api/admin/rules',
-  WEBHOOKS: '/api/admin/webhooks',
-  EXPORTS: '/api/admin/exports',
-  ANALYTICS: '/api/admin/analytics',
-  NOTIFICATIONS: '/api/admin/notifications',
-  FUNNELS: '/api/admin/funnels',
-  SETTINGS: '/api/admin/settings',
+  LEADS: `${API_BASE}/admin/leads`,
+  ORGS: `${API_BASE}/admin/orgs`,
+  USERS: `${API_BASE}/admin/users`,
+  RULES: `${API_BASE}/admin/rules`,
+  WEBHOOKS: `${API_BASE}/admin/webhooks`,
+  EXPORTS: `${API_BASE}/admin/exports`,
+  ANALYTICS: `${API_BASE}/admin/analytics`,
+  NOTIFICATIONS: `${API_BASE}/admin/notifications`,
+  FUNNELS: `${API_BASE}/admin/funnels`,
+  SETTINGS: `${API_BASE}/admin/settings`,
 } as const;
 
 // ---------------------------------------------------------------------------

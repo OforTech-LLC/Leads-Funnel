@@ -33,6 +33,7 @@ import {
   sanitizeName,
   containsSuspiciousContent,
 } from '@/lib/sanitize';
+import { submitLead } from '@/lib/submitLead';
 
 interface FormField {
   name: string;
@@ -208,19 +209,24 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
           sanitizedData[field.name] = sanitizeFieldValue(value, field.type);
         });
 
-        // Submit to API with sanitized data
-        const response = await fetch('/api/lead', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            ...sanitizedData,
-            serviceId,
-            pageUrl: typeof window !== 'undefined' ? window.location.href : '',
-            referrer: typeof document !== 'undefined' ? document.referrer : '',
-          }),
+        const leadFormData = {
+          ...sanitizedData,
+          name: sanitizedData.name || '',
+          email: sanitizedData.email || '',
+          phone: sanitizedData.phone,
+          message: sanitizedData.message,
+        };
+
+        if (!leadFormData.name || !leadFormData.email) {
+          throw new Error('Name and email are required');
+        }
+
+        const response = await submitLead({
+          funnelId: serviceId,
+          formData: leadFormData,
         });
 
-        if (!response.ok) throw new Error('Submission failed');
+        if (!response.success) throw new Error(response.message || 'Submission failed');
 
         setIsSuccess(true);
         onSuccess?.(sanitizedData);

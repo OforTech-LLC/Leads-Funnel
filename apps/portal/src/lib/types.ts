@@ -25,8 +25,49 @@ export interface Lead {
   assignedName: string | null;
   notes: Note[];
   timeline: TimelineEvent[];
+  qualityScore?: number;
+  evidencePack?: EvidencePack;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface EvidencePack {
+  capturedAt: string;
+  funnelId: string;
+  pageVariant?: string;
+  pageUrl?: string;
+  referrer?: string;
+  utm?: Record<string, string>;
+  consent?: {
+    privacyAccepted: boolean;
+    marketingConsent?: boolean;
+    privacyPolicyVersion?: string;
+    termsVersion?: string;
+    capturedAt: string;
+    ipHash: string;
+  };
+  verification?: {
+    emailValid?: boolean;
+    phoneValid?: boolean;
+    captchaVerified?: boolean;
+    captchaScore?: number;
+  };
+  quality?: {
+    score?: number;
+    threshold?: number;
+    matchedRules?: string[];
+    status?: string;
+  };
+  security?: {
+    suspicious: boolean;
+    reasons: string[];
+  };
+  assignment?: {
+    ruleId?: string;
+    assignedOrgId?: string;
+    assignedUserId?: string;
+    assignedAt?: string;
+  };
 }
 
 export interface Note {
@@ -58,8 +99,23 @@ export interface UserProfile {
   orgIds: string[];
   primaryOrgId: string;
   avatarUrl: string | null;
+  phone: string | null;
   notificationPreferences: NotificationPreferences;
+  profileCompleteness: ProfileCompleteness;
   createdAt: string;
+}
+
+export interface ProfileCompleteness {
+  score: number;
+  missingFields: string[];
+  isComplete: boolean;
+}
+
+export interface AvatarUploadResponse {
+  uploadUrl: string;
+  publicUrl: string;
+  headers?: Record<string, string>;
+  maxBytes?: number;
 }
 
 export interface NotificationPreferences {

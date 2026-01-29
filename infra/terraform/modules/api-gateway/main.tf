@@ -20,11 +20,11 @@ resource "aws_apigatewayv2_api" "main" {
 
   cors_configuration {
     allow_origins     = var.cors_allowed_origins
-    allow_methods     = ["GET", "POST", "OPTIONS"]
-    allow_headers     = ["Content-Type", "X-Requested-With", "X-Idempotency-Key", "X-Funnel-Id"]
+    allow_methods     = ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"]
+    allow_headers     = ["Content-Type", "Authorization", "X-Requested-With", "X-Idempotency-Key", "X-Funnel-Id", "X-CSRF-Token", "X-Request-Id"]
     expose_headers    = ["X-Request-Id", "X-Lead-Id"]
     max_age           = 7200 # 2 hours
-    allow_credentials = false
+    allow_credentials = true
   }
 
   tags = merge(var.tags, {
@@ -161,6 +161,93 @@ resource "aws_apigatewayv2_route" "post_lead" {
 resource "aws_apigatewayv2_route" "post_lead_funnel" {
   api_id    = aws_apigatewayv2_api.main.id
   route_key = "POST /lead/{funnelId}"
+  target    = "integrations/${aws_apigatewayv2_integration.lead_handler.id}"
+}
+
+# -----------------------------------------------------------------------------
+# Lead Capture Aliases
+# -----------------------------------------------------------------------------
+resource "aws_apigatewayv2_route" "post_leads" {
+  api_id    = aws_apigatewayv2_api.main.id
+  route_key = "POST /leads"
+  target    = "integrations/${aws_apigatewayv2_integration.lead_handler.id}"
+}
+
+resource "aws_apigatewayv2_route" "any_leads_proxy" {
+  api_id    = aws_apigatewayv2_api.main.id
+  route_key = "ANY /leads/{proxy+}"
+  target    = "integrations/${aws_apigatewayv2_integration.lead_handler.id}"
+}
+
+resource "aws_apigatewayv2_route" "any_funnel_proxy" {
+  api_id    = aws_apigatewayv2_api.main.id
+  route_key = "ANY /funnel/{proxy+}"
+  target    = "integrations/${aws_apigatewayv2_integration.lead_handler.id}"
+}
+
+# -----------------------------------------------------------------------------
+# Admin / Portal / Auth Routes (routed through unified handler)
+# -----------------------------------------------------------------------------
+resource "aws_apigatewayv2_route" "any_admin" {
+  api_id    = aws_apigatewayv2_api.main.id
+  route_key = "ANY /admin"
+  target    = "integrations/${aws_apigatewayv2_integration.lead_handler.id}"
+}
+
+resource "aws_apigatewayv2_route" "any_admin_proxy" {
+  api_id    = aws_apigatewayv2_api.main.id
+  route_key = "ANY /admin/{proxy+}"
+  target    = "integrations/${aws_apigatewayv2_integration.lead_handler.id}"
+}
+
+resource "aws_apigatewayv2_route" "any_portal" {
+  api_id    = aws_apigatewayv2_api.main.id
+  route_key = "ANY /portal"
+  target    = "integrations/${aws_apigatewayv2_integration.lead_handler.id}"
+}
+
+resource "aws_apigatewayv2_route" "any_portal_proxy" {
+  api_id    = aws_apigatewayv2_api.main.id
+  route_key = "ANY /portal/{proxy+}"
+  target    = "integrations/${aws_apigatewayv2_integration.lead_handler.id}"
+}
+
+resource "aws_apigatewayv2_route" "any_auth" {
+  api_id    = aws_apigatewayv2_api.main.id
+  route_key = "ANY /auth"
+  target    = "integrations/${aws_apigatewayv2_integration.lead_handler.id}"
+}
+
+resource "aws_apigatewayv2_route" "any_auth_proxy" {
+  api_id    = aws_apigatewayv2_api.main.id
+  route_key = "ANY /auth/{proxy+}"
+  target    = "integrations/${aws_apigatewayv2_integration.lead_handler.id}"
+}
+
+# -----------------------------------------------------------------------------
+# Legacy path aliases
+# -----------------------------------------------------------------------------
+resource "aws_apigatewayv2_route" "any_api_admin_proxy" {
+  api_id    = aws_apigatewayv2_api.main.id
+  route_key = "ANY /api/admin/{proxy+}"
+  target    = "integrations/${aws_apigatewayv2_integration.lead_handler.id}"
+}
+
+resource "aws_apigatewayv2_route" "any_api_admin" {
+  api_id    = aws_apigatewayv2_api.main.id
+  route_key = "ANY /api/admin"
+  target    = "integrations/${aws_apigatewayv2_integration.lead_handler.id}"
+}
+
+resource "aws_apigatewayv2_route" "any_api_portal_proxy" {
+  api_id    = aws_apigatewayv2_api.main.id
+  route_key = "ANY /api/v1/portal/{proxy+}"
+  target    = "integrations/${aws_apigatewayv2_integration.lead_handler.id}"
+}
+
+resource "aws_apigatewayv2_route" "any_api_portal" {
+  api_id    = aws_apigatewayv2_api.main.id
+  route_key = "ANY /api/v1/portal"
   target    = "integrations/${aws_apigatewayv2_integration.lead_handler.id}"
 }
 

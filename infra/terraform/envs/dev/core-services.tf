@@ -98,7 +98,10 @@ module "lambda" {
   webhook_secret_arn      = module.secrets.webhook_secret_arn
 
   # SSM integration
-  ssm_parameter_arns = module.ssm.all_parameter_arns
+  ssm_parameter_arns = concat(module.ssm.all_parameter_arns, local.platform_ssm_parameter_arns)
+
+  # CORS allowlist for Lambda responses
+  allowed_origins = local.cors_origins
 
   # Lambda configuration (dev optimized)
   lead_handler_memory_mb            = var.lambda_memory_mb

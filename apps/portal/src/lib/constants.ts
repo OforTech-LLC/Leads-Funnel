@@ -12,7 +12,7 @@ import type { LeadStatus } from '@/lib/types';
 export const AUTH_COOKIE_NAME = 'portal_token';
 
 // Backend API base URL for auth endpoints
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
 
 export const AUTH_ENDPOINT = `${API_BASE}/auth/portal`;
 
@@ -26,52 +26,49 @@ export const STORAGE_KEYS = {
 
 export const API_ENDPOINTS = {
   // Profile
-  PROFILE: '/api/v1/portal/profile',
-  PROFILE_NOTIFICATIONS: '/api/v1/portal/profile/notifications',
-  PROFILE_SERVICE_PREFERENCES: '/api/v1/portal/profile/service-preferences',
-  PROFILE_NOTIFICATION_PREFERENCES: '/api/v1/portal/profile/notification-preferences',
+  PROFILE: '/portal/me',
+  PROFILE_AVATAR_UPLOAD: '/portal/me/avatar',
+  PROFILE_NOTIFICATIONS: '/portal/settings',
+  PROFILE_SERVICE_PREFERENCES: '/portal/settings',
+  PROFILE_NOTIFICATION_PREFERENCES: '/portal/settings',
 
   // Organization
-  ORG: (orgId: string) => `/api/v1/portal/orgs/${orgId}`,
+  ORG: (orgId: string) => `/portal/org?orgId=${encodeURIComponent(orgId)}`,
 
   // Team
-  TEAM_MEMBERS: '/api/v1/portal/org/members',
-  TEAM_INVITES: '/api/v1/portal/org/members/invites',
-  TEAM_INVITE: '/api/v1/portal/org/members/invite',
-  TEAM_MEMBER: (userId: string) => `/api/v1/portal/org/members/${userId}`,
-  TEAM_MEMBER_ROLE: (userId: string) => `/api/v1/portal/org/members/${userId}/role`,
+  TEAM_MEMBERS: '/portal/org/members',
+  TEAM_INVITES: '/portal/org/members/invites',
+  TEAM_INVITE: '/portal/org/members/invite',
+  TEAM_MEMBER: (userId: string) => `/portal/org/members/${userId}`,
+  TEAM_MEMBER_ROLE: (userId: string) => `/portal/org/members/${userId}/role`,
 
   // Leads
-  LEADS: '/api/v1/portal/leads',
-  LEAD_DETAIL: (funnelId: string, leadId: string) =>
-    `/api/v1/portal/funnels/${funnelId}/leads/${leadId}`,
-  LEAD_STATUS: (funnelId: string, leadId: string) =>
-    `/api/v1/portal/funnels/${funnelId}/leads/${leadId}/status`,
-  LEAD_ASSIGN: (funnelId: string, leadId: string) =>
-    `/api/v1/portal/funnels/${funnelId}/leads/${leadId}/assign`,
-  LEAD_NOTES: (funnelId: string, leadId: string) =>
-    `/api/v1/portal/funnels/${funnelId}/leads/${leadId}/notes`,
-  LEADS_BULK_STATUS: '/api/v1/portal/leads/bulk/status',
-  LEADS_BULK_ASSIGN: '/api/v1/portal/leads/bulk/assign',
+  LEADS: '/portal/leads',
+  LEAD_DETAIL: (funnelId: string, leadId: string) => `/portal/leads/${funnelId}/${leadId}`,
+  LEAD_STATUS: (funnelId: string, leadId: string) => `/portal/leads/${funnelId}/${leadId}/status`,
+  LEAD_ASSIGN: (funnelId: string, leadId: string) => `/portal/leads/${funnelId}/${leadId}/assign`,
+  LEAD_NOTES: (funnelId: string, leadId: string) => `/portal/leads/${funnelId}/${leadId}/notes`,
+  LEADS_BULK_STATUS: '/portal/leads/bulk/status',
+  LEADS_BULK_ASSIGN: '/portal/leads/bulk/assign',
 
   // Dashboard & Analytics
-  DASHBOARD: '/api/v1/portal/dashboard',
-  ANALYTICS_OVERVIEW: '/api/v1/portal/analytics/overview',
-  ANALYTICS_TRENDS: '/api/v1/portal/analytics/trends',
-  ANALYTICS_FUNNEL: '/api/v1/portal/analytics/funnel',
-  ANALYTICS_BY_FUNNEL: '/api/v1/portal/analytics/by-funnel',
-  ANALYTICS_ACTIVITY: '/api/v1/portal/analytics/activity',
+  DASHBOARD: '/portal/dashboard',
+  ANALYTICS_OVERVIEW: '/portal/analytics/overview',
+  ANALYTICS_TRENDS: '/portal/analytics/trends',
+  ANALYTICS_FUNNEL: '/portal/analytics/funnel',
+  ANALYTICS_BY_FUNNEL: '/portal/analytics/by-funnel',
+  ANALYTICS_ACTIVITY: '/portal/analytics/activity',
 
   // Notifications
-  NOTIFICATIONS: '/api/v1/portal/notifications',
-  NOTIFICATION_COUNT: '/api/v1/portal/notifications/count',
-  NOTIFICATION_READ: (id: string) => `/api/v1/portal/notifications/${id}/read`,
-  NOTIFICATIONS_MARK_ALL_READ: '/api/v1/portal/notifications/mark-all-read',
+  NOTIFICATIONS: '/portal/notifications',
+  NOTIFICATION_COUNT: '/portal/notifications/count',
+  NOTIFICATION_READ: (id: string) => `/portal/notifications/${id}/read`,
+  NOTIFICATIONS_MARK_ALL_READ: '/portal/notifications/mark-all-read',
 
   // Exports
-  EXPORTS: '/api/v1/portal/exports',
-  EXPORT_STATUS: (id: string) => `/api/v1/portal/exports/${id}`,
-  EXPORT_DOWNLOAD: (id: string) => `/api/v1/portal/exports/${id}/download`,
+  EXPORTS: '/portal/exports',
+  EXPORT_STATUS: (id: string) => `/portal/exports/${id}`,
+  EXPORT_DOWNLOAD: (id: string) => `/portal/exports/${id}/download`,
 } as const;
 
 // ── Role names ────────────────────────────────

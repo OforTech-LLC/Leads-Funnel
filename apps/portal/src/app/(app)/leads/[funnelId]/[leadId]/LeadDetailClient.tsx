@@ -5,6 +5,7 @@ import { useLead, useUpdateLeadStatus, useAddNote, useAssignLead } from '@/lib/q
 import LeadDetailModal from '@/components/LeadDetailModal';
 import { PageLoader } from '@/components/LoadingSpinner';
 import { toast } from '@/lib/toast';
+import { ApiError } from '@/lib/api';
 
 export default function LeadDetailClient() {
   const params = useParams();
@@ -18,6 +19,30 @@ export default function LeadDetailClient() {
 
   if (isLoading) {
     return <PageLoader />;
+  }
+
+  const isProfileGate =
+    error instanceof ApiError &&
+    error.status === 403 &&
+    (error.body as { error?: { code?: string } } | undefined)?.error?.code === 'PROFILE_INCOMPLETE';
+
+  if (isProfileGate) {
+    return (
+      <div className="mx-auto max-w-xl px-4 py-12">
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-6 text-sm text-amber-700">
+          <p className="font-semibold">Complete your profile to view lead details.</p>
+          <p className="mt-2 text-amber-600">
+            Add a profile photo and phone number to unlock lead access.
+          </p>
+          <a
+            href="/settings"
+            className="mt-4 inline-flex rounded-lg bg-amber-600 px-3 py-2 text-xs font-medium text-white hover:bg-amber-700"
+          >
+            Go to settings
+          </a>
+        </div>
+      </div>
+    );
   }
 
   if (error || !lead) {

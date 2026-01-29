@@ -112,6 +112,9 @@ export default function LeadDetailClient() {
     return <ErrorAlert message="Failed to load lead details." onRetry={refetch} />;
   }
 
+  const evidence = lead.evidencePack;
+  const qualityScore = lead.qualityScore ?? evidence?.quality?.score;
+
   return (
     <div className="space-y-6">
       {/* Breadcrumb + Header */}
@@ -220,6 +223,73 @@ export default function LeadDetailClient() {
           )}
         </dl>
       </div>
+
+      {(evidence || qualityScore !== undefined) && (
+        <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg p-6">
+          <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-4">Evidence Pack</h2>
+          <dl className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+            {evidence?.capturedAt && (
+              <div>
+                <dt className="text-sm font-medium text-[var(--text-secondary)]">Captured</dt>
+                <dd className="mt-1 text-sm text-[var(--text-primary)]">
+                  {formatDateTime(evidence.capturedAt)}
+                </dd>
+              </div>
+            )}
+            {(evidence?.utm?.['utm_source'] || evidence?.utm?.source) && (
+              <div>
+                <dt className="text-sm font-medium text-[var(--text-secondary)]">Source</dt>
+                <dd className="mt-1 text-sm text-[var(--text-primary)]">
+                  {evidence.utm?.['utm_source'] || evidence.utm?.source}
+                </dd>
+              </div>
+            )}
+            <div>
+              <dt className="text-sm font-medium text-[var(--text-secondary)]">Consent</dt>
+              <dd className="mt-1 text-sm text-[var(--text-primary)]">
+                {evidence?.consent?.privacyAccepted ? 'Yes' : 'No'}
+              </dd>
+            </div>
+            {qualityScore !== undefined && (
+              <div>
+                <dt className="text-sm font-medium text-[var(--text-secondary)]">Quality Score</dt>
+                <dd className="mt-1 text-sm text-[var(--text-primary)]">{qualityScore}</dd>
+              </div>
+            )}
+            {evidence?.quality?.threshold !== undefined && (
+              <div>
+                <dt className="text-sm font-medium text-[var(--text-secondary)]">Threshold</dt>
+                <dd className="mt-1 text-sm text-[var(--text-primary)]">
+                  {evidence.quality.threshold}
+                </dd>
+              </div>
+            )}
+            {evidence?.security?.reasons?.length ? (
+              <div className="md:col-span-2">
+                <dt className="text-sm font-medium text-[var(--text-secondary)]">Flags</dt>
+                <dd className="mt-1 text-sm text-amber-600">
+                  {evidence.security.reasons.join(', ')}
+                </dd>
+              </div>
+            ) : null}
+            {evidence?.pageUrl && (
+              <div className="md:col-span-2">
+                <dt className="text-sm font-medium text-[var(--text-secondary)]">Landing Page</dt>
+                <dd className="mt-1 text-sm">
+                  <a
+                    href={evidence.pageUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    {evidence.pageUrl}
+                  </a>
+                </dd>
+              </div>
+            )}
+          </dl>
+        </div>
+      )}
 
       {/* Status / Edit */}
       <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg p-6">

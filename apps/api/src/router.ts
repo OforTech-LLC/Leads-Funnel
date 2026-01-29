@@ -30,9 +30,12 @@ const log = createLogger('router');
 function buildCorsHeaders(requestOrigin?: string): Record<string, string> {
   return {
     [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_ORIGIN]: getCorsOrigin(requestOrigin),
-    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_HEADERS]: 'content-type,authorization',
-    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_METHODS]: 'GET,POST,PUT,DELETE,OPTIONS',
+    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_HEADERS]:
+      'content-type,authorization,x-csrf-token,x-request-id,x-idempotency-key,x-funnel-id',
+    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_METHODS]: 'GET,POST,PUT,DELETE,OPTIONS,PATCH',
+    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_CREDENTIALS]: 'true',
     [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.JSON,
+    ...(requestOrigin ? { [HTTP_HEADERS.VARY]: 'Origin' } : {}),
   };
 }
 
@@ -59,6 +62,43 @@ function preflight(requestOrigin?: string): APIGatewayProxyResultV2 {
 }
 
 // =============================================================================
+// Path Normalization
+// =============================================================================
+
+function rewritePath(event: APIGatewayProxyEventV2, newPath: string): APIGatewayProxyEventV2 {
+  return {
+    ...event,
+    rawPath: newPath,
+    requestContext: {
+      ...event.requestContext,
+      http: {
+        ...event.requestContext.http,
+        path: newPath,
+      },
+    },
+  };
+}
+
+function normalizePath(event: APIGatewayProxyEventV2): {
+  event: APIGatewayProxyEventV2;
+  path: string;
+} {
+  const rawPath = event.requestContext.http.path;
+
+  if (rawPath.startsWith('/api/admin')) {
+    const normalized = rawPath.replace(/^\/api/, '');
+    return { event: rewritePath(event, normalized), path: normalized };
+  }
+
+  if (rawPath.startsWith('/api/v1/portal')) {
+    const normalized = rawPath.replace(/^\/api\/v1/, '');
+    return { event: rewritePath(event, normalized), path: normalized };
+  }
+
+  return { event, path: rawPath };
+}
+
+// =============================================================================
 // Router Handler
 // =============================================================================
 
@@ -72,7 +112,8 @@ export async function router(
   event: APIGatewayProxyEventV2,
   context: Context
 ): Promise<APIGatewayProxyResultV2> {
-  const path = event.requestContext.http.path;
+  const normalized = normalizePath(event);
+  const path = normalized.path;
   const method = event.requestContext.http.method;
   const requestOrigin = event.headers?.['origin'] || event.headers?.['Origin'];
 
@@ -89,35 +130,41 @@ export async function router(
 
   // Route based on path
   if (path === '/health' || path.startsWith('/health/')) {
-    return healthHandler(event, context);
+    return healthHandler(normalized.event, context);
   }
 
-  if (path === '/lead' || path.startsWith('/lead/')) {
-    return leadHandler(event, context);
+  if (
+    path === '/lead' ||
+    path === '/leads' ||
+    path.startsWith('/lead/') ||
+    path.startsWith('/leads/') ||
+    path.startsWith('/funnel/')
+  ) {
+    return leadHandler(normalized.event, context);
   }
 
   // Auth routes (for admin and portal OAuth token management)
   if (path.startsWith('/auth/')) {
-    return authHandler(event);
+    return authHandler(normalized.event);
   }
 
   // Admin console routes (feature-flagged)
   if (path.startsWith('/admin')) {
-    const gated = await checkFeatureEnabled('enable_admin_console');
+    const gated = await checkFeatureEnabled('enable_admin_console', requestOrigin);
     if (gated) return gated;
-    return adminHandler(event);
+    return adminHandler(normalized.event);
   }
 
   // Agent portal routes (feature-flagged)
   if (path.startsWith('/portal')) {
-    const gated = await checkFeatureEnabled('enable_agent_portal');
+    const gated = await checkFeatureEnabled('enable_agent_portal', requestOrigin);
     if (gated) return gated;
-    return portalHandler(event);
+    return portalHandler(normalized.event);
   }
 
   // Fallback to lead handler for root path (backwards compatibility)
   if (path === '/' && method === 'POST') {
-    return leadHandler(event, context);
+    return leadHandler(normalized.event, context);
   }
 
   // Not found

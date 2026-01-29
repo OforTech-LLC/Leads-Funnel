@@ -33,7 +33,12 @@ export interface CreateUserRequest {
   email: string;
   phone?: string;
   role?: 'admin' | 'user';
+  userType?: 'platform' | 'portal';
   orgId?: string;
+  createOrg?: boolean;
+  orgName?: string;
+  orgSlug?: string;
+  portalRole?: 'admin' | 'manager' | 'agent';
 }
 
 export interface UpdateUserRequest {
@@ -49,8 +54,8 @@ export interface UserListParams {
   search?: string;
   status?: User['status'];
   orgId?: string;
-  page?: number;
-  pageSize?: number;
+  cursor?: string;
+  limit?: number;
 }
 
 export interface UserListResponse {

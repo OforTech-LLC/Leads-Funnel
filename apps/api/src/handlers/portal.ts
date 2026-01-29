@@ -11,6 +11,7 @@
  *
  * Endpoints:
  *   GET  /portal/me                              - Current user profile
+ *   POST /portal/me/avatar                       - Generate avatar upload URL
  *   GET  /portal/org                             - User's primary org details
  *   GET  /portal/leads                           - List leads for user's org(s)
  *   GET  /portal/leads/:funnelId/:leadId         - Get single lead
@@ -33,19 +34,32 @@
  */
 
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { authenticatePortal, checkLeadAccess, PortalAuthError } from '../lib/auth/portal-auth.js';
-import { canPortalUpdateLead, canPortalViewAllOrgLeads } from '../lib/auth/permissions.js';
+import {
+  authenticatePortal,
+  checkLeadAccess,
+  PortalAuthError,
+  type PortalIdentity,
+} from '../lib/auth/portal-auth.js';
+import {
+  canPortalManageMembers,
+  canPortalUpdateLead,
+  canPortalViewAllOrgLeads,
+} from '../lib/auth/permissions.js';
 import type { MembershipRole } from '../lib/auth/permissions.js';
 import { recordAudit } from '../lib/db/audit.js';
 import * as usersDb from '../lib/db/users.js';
 import * as orgsDb from '../lib/db/orgs.js';
 import * as membershipsDb from '../lib/db/memberships.js';
 import * as leadsDb from '../lib/db/leads.js';
+import * as exportsDb from '../lib/db/exports.js';
 import * as resp from '../lib/response.js';
 import { parseBody, pathParam, queryParam, getIpHash } from '../lib/handler-utils.js';
 import { createLogger } from '../lib/logging.js';
 import { isFeatureEnabled, loadFeatureFlags } from '../lib/config.js';
 import { emitLeadStatusChanged, emitLeadNoteAdded } from '../lib/events.js';
+import { getPresignedDownloadUrl, getPresignedUploadUrl } from '../lib/storage/s3.js';
+import { ulid } from '../lib/id.js';
+import { validateUrl } from '../lib/validate.js';
 import {
   MAX_BODY_SIZE,
   DB_PREFIXES,
@@ -55,6 +69,7 @@ import {
   VALID_BILLING_TIERS,
   ACTOR_TYPES,
 } from '../lib/constants.js';
+import type { EvidencePack } from '../lib/types/evidence.js';
 
 const log = createLogger('portal-handler');
 
@@ -64,10 +79,493 @@ const log = createLogger('portal-handler');
 
 const MAX_NOTE_LENGTH = 2000;
 const MAX_NOTES_PER_LEAD = 100;
+const MIN_PROFILE_NAME_LENGTH = 2;
+const MAX_PROFILE_NAME_LENGTH = 120;
+const MAX_PROFILE_PHONE_LENGTH = 40;
+const MIN_PROFILE_PHONE_DIGITS = 7;
+const MAX_AVATAR_SIZE_BYTES = 2 * 1024 * 1024; // 2MB
+const ALLOWED_AVATAR_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 
 // ---------------------------------------------------------------------------
-// Helpers
+// Portal shape helpers (align responses with apps/portal expectations)
 // ---------------------------------------------------------------------------
+
+type PortalRole = 'admin' | 'manager' | 'agent';
+type PortalTeamRole = 'admin' | 'agent';
+
+interface PortalNotificationPreferences {
+  emailNotifications: boolean;
+  smsNotifications: boolean;
+}
+
+interface PortalGranularNotificationPreferences {
+  newLeadEmail: boolean;
+  newLeadSms: boolean;
+  newLeadPush: boolean;
+  statusChangeEmail: boolean;
+  statusChangeSms: boolean;
+  statusChangePush: boolean;
+  teamActivityEmail: boolean;
+  teamActivitySms: boolean;
+  teamActivityPush: boolean;
+  weeklyDigestEmail: boolean;
+}
+
+interface PortalServicePreferences {
+  categories: string[];
+  zipCodes: string[];
+  businessHours: Record<string, { enabled: boolean; start: string; end: string }>;
+}
+
+interface PortalLead {
+  id: string;
+  funnelId: string;
+  funnelName: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  zip: string;
+  city: string;
+  state: string;
+  status: leadsDb.LeadStatus;
+  assignedTo: string | null;
+  assignedName: string | null;
+  notes: PortalNote[];
+  timeline: PortalTimelineEvent[];
+  qualityScore?: number;
+  evidencePack?: EvidencePack;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface PortalNote {
+  id: string;
+  leadId: string;
+  authorId: string;
+  authorName: string;
+  content: string;
+  createdAt: string;
+}
+
+interface PortalTimelineEvent {
+  id: string;
+  leadId: string;
+  type: 'status_change' | 'note_added' | 'assigned' | 'created' | 'contacted';
+  description: string;
+  performedBy: string;
+  performedByName: string;
+  metadata?: Record<string, string>;
+  createdAt: string;
+}
+
+interface PortalProfileCompleteness {
+  score: number;
+  missingFields: string[];
+  isComplete: boolean;
+}
+
+interface PortalProfile {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: PortalRole;
+  orgIds: string[];
+  primaryOrgId: string;
+  avatarUrl: string | null;
+  phone: string | null;
+  notificationPreferences: PortalNotificationPreferences;
+  profileCompleteness: PortalProfileCompleteness;
+  createdAt: string;
+}
+
+interface PortalOrganization {
+  id: string;
+  name: string;
+  slug: string;
+  logoUrl: string | null;
+  plan: string;
+  memberCount: number;
+  leadsUsed?: number;
+  leadsLimit?: number;
+  createdAt?: string;
+}
+
+const DEFAULT_NOTIFICATION_PREFERENCES: PortalNotificationPreferences = {
+  emailNotifications: true,
+  smsNotifications: false,
+};
+
+const DEFAULT_GRANULAR_NOTIFICATION_PREFERENCES: PortalGranularNotificationPreferences = {
+  newLeadEmail: true,
+  newLeadSms: false,
+  newLeadPush: false,
+  statusChangeEmail: true,
+  statusChangeSms: false,
+  statusChangePush: false,
+  teamActivityEmail: true,
+  teamActivitySms: false,
+  teamActivityPush: false,
+  weeklyDigestEmail: true,
+};
+
+const DEFAULT_SERVICE_PREFERENCES: PortalServicePreferences = {
+  categories: [],
+  zipCodes: [],
+  businessHours: {
+    monday: { enabled: true, start: '09:00', end: '17:00' },
+    tuesday: { enabled: true, start: '09:00', end: '17:00' },
+    wednesday: { enabled: true, start: '09:00', end: '17:00' },
+    thursday: { enabled: true, start: '09:00', end: '17:00' },
+    friday: { enabled: true, start: '09:00', end: '17:00' },
+    saturday: { enabled: false, start: '09:00', end: '17:00' },
+    sunday: { enabled: false, start: '09:00', end: '17:00' },
+  },
+};
+
+function splitName(fullName: string | undefined): { firstName: string; lastName: string } {
+  if (!fullName) return { firstName: '', lastName: '' };
+  const parts = fullName.trim().split(/\s+/);
+  if (parts.length === 1) return { firstName: parts[0], lastName: '' };
+  return { firstName: parts[0], lastName: parts.slice(1).join(' ') };
+}
+
+function formatFunnelName(funnelId: string): string {
+  return funnelId
+    .replace(/[-_]+/g, ' ')
+    .split(' ')
+    .filter(Boolean)
+    .map((part) => part[0].toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
+function mapMembershipRoleToProfileRole(role?: MembershipRole | null): PortalRole {
+  switch (role) {
+    case 'ORG_OWNER':
+      return 'admin';
+    case 'MANAGER':
+      return 'manager';
+    default:
+      return 'agent';
+  }
+}
+
+function mapMembershipRoleToTeamRole(role?: MembershipRole | null): PortalTeamRole {
+  switch (role) {
+    case 'ORG_OWNER':
+    case 'MANAGER':
+      return 'admin';
+    default:
+      return 'agent';
+  }
+}
+
+function countDigits(value: string): number {
+  return value.replace(/\D/g, '').length;
+}
+
+function getAvatarExtension(contentType: string): string | null {
+  switch (contentType) {
+    case 'image/jpeg':
+      return 'jpg';
+    case 'image/png':
+      return 'png';
+    case 'image/webp':
+      return 'webp';
+    default:
+      return null;
+  }
+}
+
+function buildAvatarPublicUrl(bucket: string, key: string): string {
+  const base = process.env.AVATAR_PUBLIC_BASE_URL?.trim().replace(/\/+$/, '');
+  if (base) {
+    return `${base}/${key}`;
+  }
+  const region = process.env.AWS_REGION || 'us-east-1';
+  return `https://${bucket}.s3.${region}.amazonaws.com/${key}`;
+}
+
+function buildProfileCompleteness(
+  user: usersDb.User,
+  firstName: string,
+  lastName: string
+): PortalProfileCompleteness {
+  const missingFields: string[] = [];
+  const phone = user.phone?.trim() || '';
+  const avatarUrl = user.avatarUrl?.trim() || '';
+
+  if (!firstName.trim()) missingFields.push('firstName');
+  if (!lastName.trim()) missingFields.push('lastName');
+  if (!phone) missingFields.push('phone');
+  if (!avatarUrl) missingFields.push('avatarUrl');
+
+  const totalFields = 4;
+  const completed = totalFields - missingFields.length;
+  const score = Math.round((completed / totalFields) * 100);
+
+  return {
+    score,
+    missingFields,
+    isComplete: missingFields.length === 0,
+  };
+}
+
+function parsePortalPreferences(raw: Record<string, unknown> | undefined): {
+  notificationPreferences: PortalNotificationPreferences;
+  granularNotifications: PortalGranularNotificationPreferences;
+  servicePreferences: PortalServicePreferences;
+} {
+  const notificationPreferences =
+    (raw?.notificationPreferences as PortalNotificationPreferences | undefined) ||
+    DEFAULT_NOTIFICATION_PREFERENCES;
+  const granularNotifications =
+    (raw?.granularNotifications as PortalGranularNotificationPreferences | undefined) ||
+    DEFAULT_GRANULAR_NOTIFICATION_PREFERENCES;
+  const servicePreferences =
+    (raw?.servicePreferences as PortalServicePreferences | undefined) ||
+    DEFAULT_SERVICE_PREFERENCES;
+
+  return {
+    notificationPreferences: {
+      ...DEFAULT_NOTIFICATION_PREFERENCES,
+      ...notificationPreferences,
+    },
+    granularNotifications: {
+      ...DEFAULT_GRANULAR_NOTIFICATION_PREFERENCES,
+      ...granularNotifications,
+    },
+    servicePreferences: {
+      ...DEFAULT_SERVICE_PREFERENCES,
+      ...servicePreferences,
+      businessHours: {
+        ...DEFAULT_SERVICE_PREFERENCES.businessHours,
+        ...(servicePreferences.businessHours || {}),
+      },
+    },
+  };
+}
+
+function buildPortalProfile(
+  user: usersDb.User,
+  membership: membershipsDb.Membership | null,
+  identity: PortalIdentity
+): PortalProfile {
+  const { firstName, lastName } = splitName(user.name);
+  const { notificationPreferences } = parsePortalPreferences(user.preferences);
+  const profileCompleteness = buildProfileCompleteness(user, firstName, lastName);
+
+  return {
+    id: user.userId,
+    email: user.email,
+    firstName,
+    lastName,
+    role: mapMembershipRoleToProfileRole(membership?.role),
+    orgIds: identity.orgIds,
+    primaryOrgId: identity.primaryOrgId,
+    avatarUrl: user.avatarUrl?.trim() || null,
+    phone: user.phone?.trim() || null,
+    notificationPreferences: {
+      emailNotifications: membership?.notifyEmail ?? notificationPreferences.emailNotifications,
+      smsNotifications: membership?.notifySms ?? notificationPreferences.smsNotifications,
+    },
+    profileCompleteness,
+    createdAt: user.createdAt,
+  };
+}
+
+async function requireCompleteProfile(
+  identity: PortalIdentity,
+  requestOrigin?: string
+): Promise<APIGatewayProxyResultV2 | null> {
+  const user = await usersDb.getUser(identity.userId);
+  if (!user) return resp.notFound('User not found', requestOrigin);
+  const { firstName, lastName } = splitName(user.name);
+  const completeness = buildProfileCompleteness(user, firstName, lastName);
+
+  if (!completeness.isComplete) {
+    return resp.error(
+      'PROFILE_INCOMPLETE',
+      'Complete your profile to access leads',
+      403,
+      { missingFields: completeness.missingFields },
+      requestOrigin
+    );
+  }
+
+  return null;
+}
+
+function parsePortalNote(note: string, leadId: string, index: number): PortalNote {
+  const match = note.match(/^\[(?<date>.+?)\]\s+(?<author>.+?):\s+(?<content>.+)$/);
+  const createdAt =
+    match?.groups?.date && !Number.isNaN(Date.parse(match.groups.date))
+      ? new Date(match.groups.date).toISOString()
+      : new Date().toISOString();
+  const authorName = match?.groups?.author || 'Unknown';
+  const content = match?.groups?.content || note;
+
+  return {
+    id: `${leadId}-${index}`,
+    leadId,
+    authorId: '',
+    authorName,
+    content,
+    createdAt,
+  };
+}
+
+function buildPortalTimeline(lead: leadsDb.PlatformLead): PortalTimelineEvent[] {
+  return [
+    {
+      id: `${lead.leadId}-created`,
+      leadId: lead.leadId,
+      type: 'created',
+      description: 'Lead created',
+      performedBy: 'system',
+      performedByName: 'System',
+      createdAt: lead.createdAt,
+    },
+  ];
+}
+
+async function mapPortalLeads(leads: leadsDb.PlatformLead[]): Promise<PortalLead[]> {
+  const userCache = new Map<string, usersDb.User | null>();
+
+  return Promise.all(
+    leads.map(async (lead) => {
+      let assignedName: string | null = null;
+      if (lead.assignedUserId) {
+        if (!userCache.has(lead.assignedUserId)) {
+          userCache.set(lead.assignedUserId, await usersDb.getUser(lead.assignedUserId));
+        }
+        const assignedUser = userCache.get(lead.assignedUserId);
+        if (assignedUser) {
+          const { firstName, lastName } = splitName(assignedUser.name);
+          assignedName = `${firstName} ${lastName}`.trim() || assignedUser.email;
+        }
+      }
+
+      const { firstName, lastName } = splitName(lead.name);
+      const notes = (lead.notes || []).map((note, index) =>
+        parsePortalNote(note, lead.leadId, index)
+      );
+
+      return {
+        id: lead.leadId,
+        funnelId: lead.funnelId,
+        funnelName: formatFunnelName(lead.funnelId),
+        firstName,
+        lastName,
+        email: lead.email,
+        phone: lead.phone || '',
+        zip: lead.zipCode || '',
+        city: '',
+        state: '',
+        status: lead.status,
+        assignedTo: lead.assignedUserId || null,
+        assignedName,
+        notes,
+        timeline: buildPortalTimeline(lead),
+        qualityScore: lead.score,
+        evidencePack: lead.evidencePack,
+        createdAt: lead.createdAt,
+        updatedAt: lead.updatedAt,
+      };
+    })
+  );
+}
+
+function mapOrgToPortal(org: orgsDb.Org, memberCount: number): PortalOrganization {
+  const settings = org.settings || {};
+  const plan = (settings.plan as string | undefined) || 'starter';
+
+  return {
+    id: org.orgId,
+    name: org.name,
+    slug: org.slug,
+    logoUrl: (settings.logoUrl as string | undefined) || null,
+    plan,
+    memberCount,
+    leadsUsed: settings.leadsUsed as number | undefined,
+    leadsLimit: settings.leadsLimit as number | undefined,
+    createdAt: org.createdAt,
+  };
+}
+
+interface DateRange {
+  startDate: string;
+  endDate: string;
+}
+
+function getDateRangeFromQuery(event: APIGatewayProxyEventV2): DateRange {
+  const preset = queryParam(event, 'preset') || '30d';
+  const now = new Date();
+
+  if (preset === 'custom') {
+    const from = queryParam(event, 'from');
+    const to = queryParam(event, 'to');
+    const start = from ? new Date(from) : new Date(now.getTime() - 29 * 24 * 60 * 60 * 1000);
+    const end = to ? new Date(to) : now;
+    return {
+      startDate: new Date(
+        Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate())
+      ).toISOString(),
+      endDate: new Date(
+        Date.UTC(end.getUTCFullYear(), end.getUTCMonth(), end.getUTCDate(), 23, 59, 59, 999)
+      ).toISOString(),
+    };
+  }
+
+  const days = preset === 'today' ? 1 : preset === '7d' ? 7 : preset === '90d' ? 90 : 30;
+  const start = new Date(now.getTime() - (days - 1) * 24 * 60 * 60 * 1000);
+  const startUtc = new Date(
+    Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate())
+  );
+  const endUtc = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 23, 59, 59, 999)
+  );
+
+  return { startDate: startUtc.toISOString(), endDate: endUtc.toISOString() };
+}
+
+const MAX_ANALYTICS_PAGES = 20;
+const MAX_ANALYTICS_LEADS = 2000;
+
+async function collectOrgLeads(
+  orgId: string,
+  range?: DateRange,
+  assignedUserId?: string
+): Promise<leadsDb.PlatformLead[]> {
+  const leads: leadsDb.PlatformLead[] = [];
+  let cursor: string | undefined;
+  let pages = 0;
+
+  do {
+    const result = await leadsDb.queryLeads({
+      orgId,
+      startDate: range?.startDate,
+      endDate: range?.endDate,
+      cursor,
+      limit: 100,
+      assignedUserId,
+    });
+
+    leads.push(...result.items);
+    cursor = result.nextCursor;
+    pages++;
+  } while (cursor && pages < MAX_ANALYTICS_PAGES && leads.length < MAX_ANALYTICS_LEADS);
+
+  return leads;
+}
+
+function countByStatus(leads: leadsDb.PlatformLead[]): Record<string, number> {
+  return leads.reduce<Record<string, number>>((acc, lead) => {
+    acc[lead.status] = (acc[lead.status] || 0) + 1;
+    return acc;
+  }, {});
+}
 
 /**
  * Get the user's membership role in a specific org.
@@ -89,7 +587,10 @@ async function getMemberRole(userId: string, orgId: string): Promise<MembershipR
  * or null if the body is within bounds.  GET / DELETE / OPTIONS requests
  * are exempt (they should not carry a body).
  */
-function checkBodySize(event: APIGatewayProxyEventV2): APIGatewayProxyResultV2 | null {
+function checkBodySize(
+  event: APIGatewayProxyEventV2,
+  requestOrigin?: string
+): APIGatewayProxyResultV2 | null {
   const method = event.requestContext.http.method;
   if (method === 'GET' || method === 'DELETE' || method === 'OPTIONS') return null;
 
@@ -99,7 +600,7 @@ function checkBodySize(event: APIGatewayProxyEventV2): APIGatewayProxyResultV2 |
   const byteSize = Buffer.byteLength(body, 'utf8');
   if (byteSize > MAX_BODY_SIZE) {
     log.warn('portal.bodyTooLarge', { size: byteSize, limit: MAX_BODY_SIZE });
-    return resp.payloadTooLarge();
+    return resp.payloadTooLarge(requestOrigin);
   }
   return null;
 }
@@ -146,13 +647,14 @@ async function handlePortalRequest(
 ): Promise<APIGatewayProxyResultV2> {
   const method = event.requestContext.http.method;
   const path = event.requestContext.http.path;
+  const requestOrigin = event.headers?.origin || event.headers?.Origin;
 
   if (method === 'OPTIONS') {
-    return resp.noContent();
+    return resp.noContent(requestOrigin);
   }
 
   // Issue #1: Enforce 1 MB body size limit before any processing
-  const sizeCheck = checkBodySize(event);
+  const sizeCheck = checkBodySize(event, requestOrigin);
   if (sizeCheck) return sizeCheck;
 
   // Authenticate
@@ -161,81 +663,317 @@ async function handlePortalRequest(
     identity = await authenticatePortal(event);
   } catch (err) {
     if (err instanceof PortalAuthError) {
-      return resp.error('AUTH_ERROR', err.message, err.statusCode);
+      return resp.error('AUTH_ERROR', err.message, err.statusCode, undefined, requestOrigin);
     }
-    return resp.unauthorized();
+    return resp.unauthorized(undefined, requestOrigin);
   }
 
   const subpath = path.replace(/^\/portal/, '');
 
   try {
+    if (subpath.startsWith('/leads')) {
+      const gate = await requireCompleteProfile(identity, requestOrigin);
+      if (gate) return gate;
+    }
+
     // ---- ME ----
     if (subpath === '/me' && method === 'GET') {
       const user = await usersDb.getUser(identity.userId);
-      if (!user) return resp.notFound('User not found');
+      if (!user) return resp.notFound('User not found', requestOrigin);
 
-      // Also get memberships
-      const memberships = await membershipsDb.listUserOrgs(identity.userId);
+      const membership = identity.primaryOrgId
+        ? await membershipsDb.getMember(identity.primaryOrgId, identity.userId)
+        : null;
 
-      return resp.success({
-        user: {
-          userId: user.userId,
-          email: user.email,
-          name: user.name,
-          phone: user.phone,
-          avatarUrl: user.avatarUrl,
-          preferences: user.preferences,
-          createdAt: user.createdAt,
+      const profile = buildPortalProfile(user, membership, identity);
+      return resp.success(profile, undefined, requestOrigin);
+    }
+
+    if (subpath === '/me/avatar' && method === 'POST') {
+      const body = parseBody(event);
+      if (body === null) return resp.badRequest('Invalid JSON in request body', requestOrigin);
+
+      const contentType =
+        typeof body.contentType === 'string' ? body.contentType.trim().toLowerCase() : '';
+      const contentLength =
+        typeof body.contentLength === 'number' ? body.contentLength : Number(body.contentLength);
+
+      if (!contentType || !ALLOWED_AVATAR_MIME_TYPES.has(contentType)) {
+        return resp.badRequest('Unsupported avatar contentType', requestOrigin);
+      }
+      if (!Number.isFinite(contentLength) || contentLength <= 0) {
+        return resp.badRequest('contentLength must be a positive number', requestOrigin);
+      }
+      if (contentLength > MAX_AVATAR_SIZE_BYTES) {
+        return resp.badRequest(
+          `Avatar exceeds max size of ${Math.round(MAX_AVATAR_SIZE_BYTES / 1024 / 1024)}MB`,
+          requestOrigin
+        );
+      }
+
+      const bucket = process.env.AVATARS_BUCKET || '';
+      if (!bucket) {
+        return resp.error(
+          'CONFIG_ERROR',
+          'Avatar uploads are not configured',
+          500,
+          undefined,
+          requestOrigin
+        );
+      }
+
+      const extension = getAvatarExtension(contentType);
+      if (!extension) {
+        return resp.badRequest('Unsupported avatar format', requestOrigin);
+      }
+
+      const key = `avatars/${identity.userId}/${ulid()}.${extension}`;
+      const uploadUrl = await getPresignedUploadUrl(bucket, key, contentType, 900);
+      const publicUrl = buildAvatarPublicUrl(bucket, key);
+
+      return resp.success(
+        {
+          uploadUrl,
+          publicUrl,
+          headers: { 'Content-Type': contentType },
+          maxBytes: MAX_AVATAR_SIZE_BYTES,
         },
-        memberships: memberships.items.map((m) => ({
-          orgId: m.orgId,
-          role: m.role,
-          notifyEmail: m.notifyEmail,
-          notifySms: m.notifySms,
-        })),
-        primaryOrgId: identity.primaryOrgId,
-      });
+        undefined,
+        requestOrigin
+      );
+    }
+
+    if (subpath === '/me' && method === 'PUT') {
+      const body = parseBody(event);
+      if (body === null) return resp.badRequest('Invalid JSON in request body', requestOrigin);
+
+      const updates: usersDb.UpdateUserInput = { userId: identity.userId };
+
+      const firstNameInput = typeof body.firstName === 'string' ? body.firstName.trim() : undefined;
+      const lastNameInput = typeof body.lastName === 'string' ? body.lastName.trim() : undefined;
+
+      if (firstNameInput !== undefined || lastNameInput !== undefined) {
+        if (!firstNameInput || !lastNameInput) {
+          return resp.badRequest('firstName and lastName are required', requestOrigin);
+        }
+        if (firstNameInput.length < MIN_PROFILE_NAME_LENGTH) {
+          return resp.badRequest('firstName is too short', requestOrigin);
+        }
+        if (lastNameInput.length < MIN_PROFILE_NAME_LENGTH) {
+          return resp.badRequest('lastName is too short', requestOrigin);
+        }
+        if (
+          firstNameInput.length > MAX_PROFILE_NAME_LENGTH ||
+          lastNameInput.length > MAX_PROFILE_NAME_LENGTH
+        ) {
+          return resp.badRequest('Name is too long', requestOrigin);
+        }
+
+        updates.name = `${firstNameInput} ${lastNameInput}`.trim();
+      }
+
+      if (body.phone !== undefined) {
+        if (typeof body.phone !== 'string') {
+          return resp.badRequest('phone must be a string', requestOrigin);
+        }
+        const phone = body.phone.trim();
+        if (phone.length > MAX_PROFILE_PHONE_LENGTH) {
+          return resp.badRequest('phone is too long', requestOrigin);
+        }
+        if (phone && countDigits(phone) < MIN_PROFILE_PHONE_DIGITS) {
+          return resp.badRequest('phone must include at least 7 digits', requestOrigin);
+        }
+        updates.phone = phone;
+      }
+
+      if (body.avatarUrl !== undefined) {
+        if (typeof body.avatarUrl !== 'string') {
+          return resp.badRequest('avatarUrl must be a string', requestOrigin);
+        }
+        const avatarUrl = body.avatarUrl.trim();
+        const validation = validateUrl(avatarUrl);
+        if (!validation.valid) {
+          return resp.badRequest(validation.error || 'Invalid avatarUrl', requestOrigin);
+        }
+        updates.avatarUrl = avatarUrl;
+      }
+
+      const hasUpdates = Object.keys(updates).some((key) => key !== 'userId');
+      if (!hasUpdates) {
+        return resp.badRequest('No profile fields provided', requestOrigin);
+      }
+
+      await usersDb.updateUser(updates);
+
+      const updated = await usersDb.getUser(identity.userId);
+      if (!updated) return resp.notFound('User not found', requestOrigin);
+
+      const membership = identity.primaryOrgId
+        ? await membershipsDb.getMember(identity.primaryOrgId, identity.userId)
+        : null;
+
+      const profile = buildPortalProfile(updated, membership, identity);
+      return resp.success(profile, undefined, requestOrigin);
     }
 
     // ---- ORG ----
     if (subpath === '/org' && method === 'GET') {
       const orgId = queryParam(event, 'orgId') || identity.primaryOrgId;
-      if (!orgId) return resp.badRequest('No org context');
-      if (!identity.orgIds.includes(orgId)) return resp.forbidden('Not a member of this org');
+      if (!orgId) return resp.badRequest('No org context', requestOrigin);
+      if (!identity.orgIds.includes(orgId)) {
+        return resp.forbidden('Not a member of this org', requestOrigin);
+      }
 
       const org = await orgsDb.getOrg(orgId);
-      if (!org) return resp.notFound('Organization not found');
+      if (!org) return resp.notFound('Organization not found', requestOrigin);
 
-      const members = await membershipsDb.listOrgMembers(orgId);
+      const members = await membershipsDb.listOrgMembers(orgId, undefined, 100);
+      const portalOrg = mapOrgToPortal(org, members.items.length);
+      return resp.success(portalOrg, undefined, requestOrigin);
+    }
 
-      return resp.success({
-        org: {
-          orgId: org.orgId,
-          name: org.name,
-          slug: org.slug,
-          contactEmail: org.contactEmail,
-          phone: org.phone,
-          timezone: org.timezone,
-          createdAt: org.createdAt,
-        },
-        members: members.items.map((m) => ({
-          userId: m.userId,
-          role: m.role,
-          notifyEmail: m.notifyEmail,
-          notifySms: m.notifySms,
-          joinedAt: m.joinedAt,
-        })),
+    // ---- TEAM MEMBERS ----
+    if (subpath === '/org/members' && method === 'GET') {
+      const orgId = queryParam(event, 'orgId') || identity.primaryOrgId;
+      if (!orgId) return resp.badRequest('No org context', requestOrigin);
+      if (!identity.orgIds.includes(orgId)) {
+        return resp.forbidden('Not a member of this org', requestOrigin);
+      }
+
+      const members = await membershipsDb.listOrgMembers(orgId, undefined, 100);
+      const memberUsers = await Promise.all(
+        members.items.map(async (member) => ({
+          member,
+          user: await usersDb.getUser(member.userId),
+        }))
+      );
+
+      const response = memberUsers
+        .filter((entry) => entry.user)
+        .map((entry) => {
+          const { firstName, lastName } = splitName(entry.user?.name);
+          return {
+            userId: entry.member.userId,
+            email: entry.user?.email || '',
+            firstName,
+            lastName,
+            role: mapMembershipRoleToTeamRole(entry.member.role),
+            status: 'active',
+            avatarUrl: entry.user?.avatarUrl || null,
+            lastActiveAt: null,
+            joinedAt: entry.member.joinedAt,
+          };
+        });
+
+      return resp.success(response, undefined, requestOrigin);
+    }
+
+    if (subpath === '/org/members/invites' && method === 'GET') {
+      return resp.forbidden(
+        'Team invites are managed by administrators in the admin console',
+        requestOrigin
+      );
+    }
+
+    if (subpath === '/org/members/invite' && method === 'POST') {
+      return resp.forbidden(
+        'Team invites are managed by administrators in the admin console',
+        requestOrigin
+      );
+    }
+
+    if (/^\/org\/members\/[^/]+$/.test(subpath) && method === 'DELETE') {
+      const orgId = queryParam(event, 'orgId') || identity.primaryOrgId;
+      if (!orgId) return resp.badRequest('No org context', requestOrigin);
+      if (!identity.orgIds.includes(orgId)) {
+        return resp.forbidden('Not a member of this org', requestOrigin);
+      }
+
+      const memberRole = await getMemberRole(identity.userId, orgId);
+      if (!memberRole || !canPortalManageMembers(memberRole)) {
+        return resp.forbidden('Insufficient permissions to remove members', requestOrigin);
+      }
+
+      const userId = pathParam(event, 3);
+      await membershipsDb.removeMember(orgId, userId);
+
+      await recordAudit({
+        actorId: identity.userId,
+        actorType: ACTOR_TYPES.PORTAL_USER,
+        action: 'member.remove',
+        resourceType: 'org',
+        resourceId: orgId,
+        details: { userId },
+        ipHash: getIpHash(event),
       });
+
+      return resp.noContent(requestOrigin);
+    }
+
+    if (/^\/org\/members\/[^/]+\/role$/.test(subpath) && method === 'PUT') {
+      const orgId = queryParam(event, 'orgId') || identity.primaryOrgId;
+      if (!orgId) return resp.badRequest('No org context', requestOrigin);
+      if (!identity.orgIds.includes(orgId)) {
+        return resp.forbidden('Not a member of this org', requestOrigin);
+      }
+
+      const memberRole = await getMemberRole(identity.userId, orgId);
+      if (!memberRole || !canPortalManageMembers(memberRole)) {
+        return resp.forbidden('Insufficient permissions to update roles', requestOrigin);
+      }
+
+      const body = parseBody(event);
+      if (body === null) return resp.badRequest('Invalid JSON in request body', requestOrigin);
+      const role = typeof body.role === 'string' ? body.role : 'agent';
+      const membershipRole: MembershipRole = role === 'admin' ? 'MANAGER' : 'AGENT';
+      const userId = pathParam(event, 3);
+
+      const updated = await membershipsDb.updateMember({
+        orgId,
+        userId,
+        role: membershipRole,
+      });
+
+      const updatedUser = await usersDb.getUser(userId);
+      const { firstName, lastName } = splitName(updatedUser?.name);
+
+      await recordAudit({
+        actorId: identity.userId,
+        actorType: ACTOR_TYPES.PORTAL_USER,
+        action: 'member.update',
+        resourceType: 'org',
+        resourceId: orgId,
+        details: { userId, role: updated.role },
+        ipHash: getIpHash(event),
+      });
+
+      return resp.success(
+        {
+          userId: updated.userId,
+          email: updatedUser?.email || '',
+          firstName,
+          lastName,
+          role: mapMembershipRoleToTeamRole(updated.role),
+          status: 'active',
+          avatarUrl: updatedUser?.avatarUrl || null,
+          lastActiveAt: null,
+          joinedAt: updated.joinedAt,
+        },
+        undefined,
+        requestOrigin
+      );
     }
 
     // ---- LEADS LIST ----
     if (subpath === '/leads' && method === 'GET') {
       const orgId = queryParam(event, 'orgId') || identity.primaryOrgId;
-      if (!orgId) return resp.badRequest('No org context');
-      if (!identity.orgIds.includes(orgId)) return resp.forbidden('Not a member of this org');
+      if (!orgId) return resp.badRequest('No org context', requestOrigin);
+      if (!identity.orgIds.includes(orgId)) {
+        return resp.forbidden('Not a member of this org', requestOrigin);
+      }
 
       const memberRole = await getMemberRole(identity.userId, orgId);
-      if (!memberRole) return resp.forbidden('Not a member of this org');
+      if (!memberRole) return resp.forbidden('Not a member of this org', requestOrigin);
 
       // Agents can only see their own assigned leads
       const isFullView = canPortalViewAllOrgLeads(memberRole);
@@ -245,8 +983,8 @@ async function handlePortalRequest(
         orgId,
         funnelId: queryParam(event, 'funnelId'),
         status: queryParam(event, 'status') as leadsDb.LeadStatus | undefined,
-        startDate: queryParam(event, 'startDate'),
-        endDate: queryParam(event, 'endDate'),
+        startDate: queryParam(event, 'startDate') || queryParam(event, 'dateFrom'),
+        endDate: queryParam(event, 'endDate') || queryParam(event, 'dateTo'),
         cursor: queryParam(event, 'cursor'),
         limit: Number(queryParam(event, 'limit')) || 25,
       };
@@ -258,10 +996,16 @@ async function handlePortalRequest(
 
       const result = await leadsDb.queryLeads(queryParams);
 
-      return resp.paginated(result.items, {
-        nextCursor: result.nextCursor,
-        hasMore: !!result.nextCursor,
-      });
+      const portalLeads = await mapPortalLeads(result.items);
+      return resp.success(
+        {
+          data: portalLeads,
+          nextCursor: result.nextCursor || null,
+          total: portalLeads.length,
+        },
+        undefined,
+        requestOrigin
+      );
     }
 
     // ---- SINGLE LEAD ----
@@ -269,51 +1013,62 @@ async function handlePortalRequest(
       const funnelId = pathParam(event, 2); // portal/leads/<funnelId>/<leadId>
       const leadId = pathParam(event, 3);
       const lead = await leadsDb.getLead(funnelId, leadId);
-      if (!lead) return resp.notFound('Lead not found');
+      if (!lead) return resp.notFound('Lead not found', requestOrigin);
 
       // Check access
       if (!checkLeadAccess(identity, lead)) {
-        return resp.forbidden('Not authorized to view this lead');
+        return resp.forbidden('Not authorized to view this lead', requestOrigin);
       }
 
-      return resp.success(lead);
+      const [portalLead] = await mapPortalLeads([lead]);
+      return resp.success(portalLead, undefined, requestOrigin);
     }
 
     // ---- UPDATE LEAD STATUS ----
-    if (/^\/leads\/[^/]+\/[^/]+\/status$/.test(subpath) && method === 'PUT') {
+    if (
+      /^\/leads\/[^/]+\/[^/]+\/status$/.test(subpath) &&
+      (method === 'PUT' || method === 'PATCH')
+    ) {
       const funnelId = pathParam(event, 2);
       const leadId = pathParam(event, 3);
       const body = parseBody(event);
-      if (body === null) return resp.badRequest('Invalid JSON in request body');
+      if (body === null) return resp.badRequest('Invalid JSON in request body', requestOrigin);
       const newStatus = body.status as string | undefined;
 
-      if (!newStatus) return resp.badRequest('status is required');
+      if (!newStatus) return resp.badRequest('status is required', requestOrigin);
 
       const validPortalStatuses: leadsDb.LeadStatus[] = [
         'new',
         'assigned',
+        'unassigned',
         'contacted',
         'qualified',
+        'booked',
         'converted',
+        'won',
         'lost',
         'dnc',
+        'quarantined',
       ];
       if (!validPortalStatuses.includes(newStatus as leadsDb.LeadStatus)) {
-        return resp.badRequest(`Invalid status. Must be one of: ${validPortalStatuses.join(', ')}`);
+        return resp.badRequest(
+          `Invalid status. Must be one of: ${validPortalStatuses.join(', ')}`,
+          requestOrigin
+        );
       }
 
       // Load lead and check access
       const lead = await leadsDb.getLead(funnelId, leadId);
-      if (!lead) return resp.notFound('Lead not found');
+      if (!lead) return resp.notFound('Lead not found', requestOrigin);
       if (!checkLeadAccess(identity, lead)) {
-        return resp.forbidden('Not authorized to update this lead');
+        return resp.forbidden('Not authorized to update this lead', requestOrigin);
       }
 
       // Check permission to update
       const orgId = lead.orgId || identity.primaryOrgId;
       const memberRole = await getMemberRole(identity.userId, orgId);
       if (!memberRole || !canPortalUpdateLead(memberRole)) {
-        return resp.forbidden('Insufficient permissions to update lead');
+        return resp.forbidden('Insufficient permissions to update lead', requestOrigin);
       }
 
       const oldStatus = lead.status;
@@ -345,7 +1100,8 @@ async function handlePortalRequest(
         ipHash: getIpHash(event),
       });
 
-      return resp.success(updated);
+      const [portalLead] = await mapPortalLeads([updated]);
+      return resp.success(portalLead, undefined, requestOrigin);
     }
 
     // ---- ADD NOTE ----
@@ -353,35 +1109,38 @@ async function handlePortalRequest(
       const funnelId = pathParam(event, 2);
       const leadId = pathParam(event, 3);
       const body = parseBody(event);
-      if (body === null) return resp.badRequest('Invalid JSON in request body');
+      if (body === null) return resp.badRequest('Invalid JSON in request body', requestOrigin);
       const note = body.note as string | undefined;
 
       if (!note || typeof note !== 'string' || note.trim().length === 0) {
-        return resp.badRequest('note is required and must be non-empty');
+        return resp.badRequest('note is required and must be non-empty', requestOrigin);
       }
 
       // Fix 8: Enforce note length limit
       if (note.length > MAX_NOTE_LENGTH) {
-        return resp.badRequest(`Note must be ${MAX_NOTE_LENGTH} characters or less`);
+        return resp.badRequest(`Note must be ${MAX_NOTE_LENGTH} characters or less`, requestOrigin);
       }
 
       // Load lead and check access
       const lead = await leadsDb.getLead(funnelId, leadId);
-      if (!lead) return resp.notFound('Lead not found');
+      if (!lead) return resp.notFound('Lead not found', requestOrigin);
       if (!checkLeadAccess(identity, lead)) {
-        return resp.forbidden('Not authorized to add notes to this lead');
+        return resp.forbidden('Not authorized to add notes to this lead', requestOrigin);
       }
 
       const orgId = lead.orgId || identity.primaryOrgId;
       const memberRole = await getMemberRole(identity.userId, orgId);
       if (!memberRole || !canPortalUpdateLead(memberRole)) {
-        return resp.forbidden('Insufficient permissions');
+        return resp.forbidden('Insufficient permissions', requestOrigin);
       }
 
       // Fix 8: Enforce max notes count per lead
       const existingNotes = lead.notes || [];
       if (existingNotes.length >= MAX_NOTES_PER_LEAD) {
-        return resp.badRequest(`Maximum of ${MAX_NOTES_PER_LEAD} notes per lead reached`);
+        return resp.badRequest(
+          `Maximum of ${MAX_NOTES_PER_LEAD} notes per lead reached`,
+          requestOrigin
+        );
       }
 
       // Append note with timestamp and author
@@ -412,36 +1171,574 @@ async function handlePortalRequest(
         ipHash: getIpHash(event),
       });
 
-      return resp.success(updated);
+      const [portalLead] = await mapPortalLeads([updated]);
+      return resp.success(portalLead, undefined, requestOrigin);
     }
 
-    // ---- UPDATE SETTINGS ----
+    // ---- ASSIGN LEAD ----
+    if (
+      /^\/leads\/[^/]+\/[^/]+\/assign$/.test(subpath) &&
+      (method === 'PATCH' || method === 'PUT')
+    ) {
+      const funnelId = pathParam(event, 2);
+      const leadId = pathParam(event, 3);
+      const body = parseBody(event);
+      if (body === null) return resp.badRequest('Invalid JSON in request body', requestOrigin);
+
+      const assignedTo = typeof body.assignedTo === 'string' ? body.assignedTo : null;
+      const lead = await leadsDb.getLead(funnelId, leadId);
+      if (!lead) return resp.notFound('Lead not found', requestOrigin);
+      if (!checkLeadAccess(identity, lead)) {
+        return resp.forbidden('Not authorized to update this lead', requestOrigin);
+      }
+
+      const orgId = lead.orgId || identity.primaryOrgId;
+      const memberRole = await getMemberRole(identity.userId, orgId);
+      if (!memberRole || !canPortalUpdateLead(memberRole)) {
+        return resp.forbidden('Insufficient permissions to update lead', requestOrigin);
+      }
+
+      const shouldAssignStatus = lead.status === 'new' || lead.status === 'unassigned';
+      const shouldUnassign = !assignedTo;
+
+      const updated = await leadsDb.updateLead({
+        funnelId,
+        leadId,
+        orgId,
+        assignedUserId: assignedTo || undefined,
+        assignedAt: assignedTo ? new Date().toISOString() : undefined,
+        status: shouldUnassign ? 'unassigned' : shouldAssignStatus ? 'assigned' : undefined,
+        force: shouldUnassign,
+      });
+
+      await recordAudit({
+        actorId: identity.userId,
+        actorType: ACTOR_TYPES.PORTAL_USER,
+        action: 'lead.assign',
+        resourceType: 'lead',
+        resourceId: `${funnelId}:${leadId}`,
+        details: { assignedTo },
+        ipHash: getIpHash(event),
+      });
+
+      const [portalLead] = await mapPortalLeads([updated]);
+      return resp.success(portalLead, undefined, requestOrigin);
+    }
+
+    // ---- BULK STATUS UPDATE ----
+    if (subpath === '/leads/bulk/status' && method === 'POST') {
+      const body = parseBody(event);
+      if (body === null) return resp.badRequest('Invalid JSON in request body', requestOrigin);
+
+      const leads = Array.isArray(body.leads) ? body.leads : [];
+      const status = body.status as leadsDb.LeadStatus | undefined;
+      if (!status) return resp.badRequest('status is required', requestOrigin);
+      if (leads.length === 0) return resp.badRequest('leads array is required', requestOrigin);
+
+      const validPortalStatuses: leadsDb.LeadStatus[] = [
+        'new',
+        'assigned',
+        'unassigned',
+        'contacted',
+        'qualified',
+        'booked',
+        'converted',
+        'won',
+        'lost',
+        'dnc',
+        'quarantined',
+      ];
+      if (!validPortalStatuses.includes(status)) {
+        return resp.badRequest(
+          `Invalid status. Must be one of: ${validPortalStatuses.join(', ')}`,
+          requestOrigin
+        );
+      }
+
+      let updatedCount = 0;
+      for (const item of leads) {
+        if (!item?.funnelId || !item?.leadId) continue;
+        const lead = await leadsDb.getLead(item.funnelId, item.leadId);
+        if (!lead || !checkLeadAccess(identity, lead)) continue;
+        const orgId = lead.orgId || identity.primaryOrgId;
+        const memberRole = await getMemberRole(identity.userId, orgId);
+        if (!memberRole || !canPortalUpdateLead(memberRole)) continue;
+
+        await leadsDb.updateLead({
+          funnelId: item.funnelId,
+          leadId: item.leadId,
+          status,
+        });
+        updatedCount++;
+      }
+
+      await recordAudit({
+        actorId: identity.userId,
+        actorType: ACTOR_TYPES.PORTAL_USER,
+        action: 'lead.bulkUpdate',
+        resourceType: 'lead',
+        resourceId: 'bulk',
+        details: { updated: updatedCount },
+        ipHash: getIpHash(event),
+      });
+
+      return resp.success({ updated: updatedCount }, undefined, requestOrigin);
+    }
+
+    // ---- BULK ASSIGN ----
+    if (subpath === '/leads/bulk/assign' && method === 'POST') {
+      const body = parseBody(event);
+      if (body === null) return resp.badRequest('Invalid JSON in request body', requestOrigin);
+
+      const leads = Array.isArray(body.leads) ? body.leads : [];
+      const assignedTo = typeof body.assignedTo === 'string' ? body.assignedTo : '';
+      if (!assignedTo) return resp.badRequest('assignedTo is required', requestOrigin);
+      if (leads.length === 0) return resp.badRequest('leads array is required', requestOrigin);
+
+      let updatedCount = 0;
+      for (const item of leads) {
+        if (!item?.funnelId || !item?.leadId) continue;
+        const lead = await leadsDb.getLead(item.funnelId, item.leadId);
+        if (!lead || !checkLeadAccess(identity, lead)) continue;
+        const orgId = lead.orgId || identity.primaryOrgId;
+        const memberRole = await getMemberRole(identity.userId, orgId);
+        if (!memberRole || !canPortalUpdateLead(memberRole)) continue;
+
+        await leadsDb.updateLead({
+          funnelId: item.funnelId,
+          leadId: item.leadId,
+          orgId,
+          assignedUserId: assignedTo,
+          assignedAt: new Date().toISOString(),
+          status: lead.status === 'new' || lead.status === 'unassigned' ? 'assigned' : undefined,
+        });
+        updatedCount++;
+      }
+
+      await recordAudit({
+        actorId: identity.userId,
+        actorType: ACTOR_TYPES.PORTAL_USER,
+        action: 'lead.assign',
+        resourceType: 'lead',
+        resourceId: 'bulk',
+        details: { updated: updatedCount, assignedTo },
+        ipHash: getIpHash(event),
+      });
+
+      return resp.success({ updated: updatedCount }, undefined, requestOrigin);
+    }
+
+    // ---- DASHBOARD ----
+    if (subpath === '/dashboard' && method === 'GET') {
+      const orgId = queryParam(event, 'orgId') || identity.primaryOrgId;
+      if (!orgId) return resp.badRequest('No org context', requestOrigin);
+      if (!identity.orgIds.includes(orgId)) {
+        return resp.forbidden('Not a member of this org', requestOrigin);
+      }
+
+      const memberRole = await getMemberRole(identity.userId, orgId);
+      if (!memberRole) return resp.forbidden('Not a member of this org', requestOrigin);
+      const assignedFilter = canPortalViewAllOrgLeads(memberRole) ? undefined : identity.userId;
+
+      const leads = await collectOrgLeads(orgId, undefined, assignedFilter);
+      const statusCounts = countByStatus(leads);
+
+      const now = new Date();
+      const todayRange: DateRange = {
+        startDate: new Date(
+          Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+        ).toISOString(),
+        endDate: new Date(
+          Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 23, 59, 59, 999)
+        ).toISOString(),
+      };
+      const todayLeads = await collectOrgLeads(orgId, todayRange, assignedFilter);
+
+      const recentLeads = await mapPortalLeads(leads.slice(0, 10));
+      const activeStatuses = ['new', 'assigned', 'contacted', 'qualified', 'booked', 'converted'];
+      const totalActiveLeads = activeStatuses.reduce(
+        (sum, status) => sum + (statusCounts[status] || 0),
+        0
+      );
+
+      return resp.success(
+        {
+          newLeadsToday: todayLeads.length,
+          totalActiveLeads,
+          leadsByStatus: statusCounts,
+          recentLeads,
+        },
+        undefined,
+        requestOrigin
+      );
+    }
+
+    // ---- ANALYTICS ----
+    if (subpath.startsWith('/analytics') && method === 'GET') {
+      const orgId = queryParam(event, 'orgId') || identity.primaryOrgId;
+      if (!orgId) return resp.badRequest('No org context', requestOrigin);
+      if (!identity.orgIds.includes(orgId)) {
+        return resp.forbidden('Not a member of this org', requestOrigin);
+      }
+
+      const memberRole = await getMemberRole(identity.userId, orgId);
+      if (!memberRole) return resp.forbidden('Not a member of this org', requestOrigin);
+      const assignedFilter = canPortalViewAllOrgLeads(memberRole) ? undefined : identity.userId;
+
+      const range = getDateRangeFromQuery(event);
+      const leads = await collectOrgLeads(orgId, range, assignedFilter);
+      const statusCounts = countByStatus(leads);
+
+      if (subpath === '/analytics/overview') {
+        const previousStart = new Date(range.startDate);
+        const previousEnd = new Date(range.endDate);
+        const durationMs = previousEnd.getTime() - previousStart.getTime();
+        const prevRange: DateRange = {
+          startDate: new Date(previousStart.getTime() - durationMs).toISOString(),
+          endDate: new Date(previousStart.getTime() - 1).toISOString(),
+        };
+        const prevLeads = await collectOrgLeads(orgId, prevRange, assignedFilter);
+        const prevStatusCounts = countByStatus(prevLeads);
+
+        const totalLeads = leads.length;
+        const wonCount = statusCounts.won || 0;
+        const bookedCount = statusCounts.booked || 0;
+        const totalActiveLeads = [
+          'new',
+          'assigned',
+          'contacted',
+          'qualified',
+          'booked',
+          'converted',
+        ].reduce((sum, status) => sum + (statusCounts[status] || 0), 0);
+        const conversionRate = totalLeads > 0 ? Math.round((wonCount / totalLeads) * 100) : 0;
+
+        const prevTotalLeads = prevLeads.length;
+        const prevWonCount = prevStatusCounts.won || 0;
+        const prevBookedCount = prevStatusCounts.booked || 0;
+        const prevActiveLeads = [
+          'new',
+          'assigned',
+          'contacted',
+          'qualified',
+          'booked',
+          'converted',
+        ].reduce((sum, status) => sum + (prevStatusCounts[status] || 0), 0);
+        const prevConversionRate =
+          prevTotalLeads > 0 ? Math.round((prevWonCount / prevTotalLeads) * 100) : 0;
+
+        const buildTrend = (current: number, previous: number) => {
+          if (previous === 0) {
+            return {
+              direction: current > 0 ? 'up' : 'flat',
+              percentage: 0,
+              previousValue: previous,
+            };
+          }
+          const diff = current - previous;
+          const percentage = Math.round((diff / previous) * 100);
+          return {
+            direction: diff === 0 ? 'flat' : diff > 0 ? 'up' : 'down',
+            percentage: Math.abs(percentage),
+            previousValue: previous,
+          };
+        };
+
+        return resp.success(
+          {
+            newLeadsToday: (statusCounts.new || 0) + (statusCounts.assigned || 0),
+            totalActiveLeads,
+            wonCount,
+            bookedCount,
+            conversionRate,
+            avgResponseTimeMinutes: 0,
+            trends: {
+              newLeadsToday: buildTrend(
+                (statusCounts.new || 0) + (statusCounts.assigned || 0),
+                (prevStatusCounts.new || 0) + (prevStatusCounts.assigned || 0)
+              ),
+              totalActiveLeads: buildTrend(totalActiveLeads, prevActiveLeads),
+              wonCount: buildTrend(wonCount, prevWonCount),
+              bookedCount: buildTrend(bookedCount, prevBookedCount),
+              conversionRate: buildTrend(conversionRate, prevConversionRate),
+              avgResponseTimeMinutes: buildTrend(0, 0),
+            },
+          },
+          undefined,
+          requestOrigin
+        );
+      }
+
+      if (subpath === '/analytics/trends') {
+        const points: { date: string; received: number; converted: number }[] = [];
+        const byDate = new Map<string, { received: number; converted: number }>();
+        leads.forEach((lead) => {
+          const dateKey = lead.createdAt.slice(0, 10);
+          const existing = byDate.get(dateKey) || { received: 0, converted: 0 };
+          existing.received += 1;
+          if (lead.status === 'won' || lead.status === 'converted') {
+            existing.converted += 1;
+          }
+          byDate.set(dateKey, existing);
+        });
+        byDate.forEach((value, date) => {
+          points.push({ date, ...value });
+        });
+        points.sort((a, b) => a.date.localeCompare(b.date));
+        return resp.success({ data: points }, undefined, requestOrigin);
+      }
+
+      if (subpath === '/analytics/funnel') {
+        const stages = ['new', 'contacted', 'qualified', 'booked', 'won'];
+        const total = leads.length || 1;
+        const funnel = stages.map((stage, index) => {
+          const count = statusCounts[stage] || 0;
+          const prevCount = index === 0 ? total : statusCounts[stages[index - 1]] || total;
+          const percentage = Math.round((count / total) * 100);
+          const dropOffPercent =
+            prevCount > 0 ? Math.round(((prevCount - count) / prevCount) * 100) : 0;
+          return {
+            stage,
+            label: stage.replace(/^\w/, (c) => c.toUpperCase()),
+            count,
+            percentage,
+            dropOffPercent,
+          };
+        });
+        return resp.success({ data: funnel }, undefined, requestOrigin);
+      }
+
+      if (subpath === '/analytics/by-funnel') {
+        const counts = leads.reduce<Record<string, number>>((acc, lead) => {
+          acc[lead.funnelId] = (acc[lead.funnelId] || 0) + 1;
+          return acc;
+        }, {});
+        const breakdown = Object.entries(counts)
+          .map(([funnelId, count]) => ({
+            funnelId,
+            funnelName: formatFunnelName(funnelId),
+            count,
+          }))
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 10);
+        return resp.success({ data: breakdown }, undefined, requestOrigin);
+      }
+
+      if (subpath === '/analytics/activity') {
+        const limit = Number(queryParam(event, 'limit')) || 10;
+        const recentLeads = leads.slice(0, limit);
+        const activity = recentLeads.map((lead) => ({
+          id: `lead-${lead.leadId}`,
+          type: 'lead_received' as const,
+          description: `New lead from ${lead.funnelId}`,
+          performedBy: 'system',
+          performedByName: 'System',
+          leadId: lead.leadId,
+          funnelId: lead.funnelId,
+          createdAt: lead.createdAt,
+        }));
+        return resp.success({ data: activity }, undefined, requestOrigin);
+      }
+    }
+
+    // ---- NOTIFICATIONS ----
+    if (subpath.startsWith('/notifications')) {
+      if (subpath === '/notifications/count' && method === 'GET') {
+        return resp.success({ unread: 0 }, undefined, requestOrigin);
+      }
+
+      if (subpath === '/notifications/mark-all-read' && method === 'POST') {
+        return resp.success({ updated: true }, undefined, requestOrigin);
+      }
+
+      if (/^\/notifications\/[^/]+\/read$/.test(subpath) && method === 'PUT') {
+        return resp.success({ updated: true }, undefined, requestOrigin);
+      }
+
+      if (subpath === '/notifications' && method === 'GET') {
+        return resp.success({ data: [], nextCursor: null, total: 0 }, undefined, requestOrigin);
+      }
+    }
+
+    // ---- EXPORTS ----
+    if (subpath === '/exports' && method === 'POST') {
+      const body = parseBody(event);
+      if (body === null) return resp.badRequest('Invalid JSON in request body', requestOrigin);
+      if (!body.format) return resp.badRequest('format is required', requestOrigin);
+
+      const job = await exportsDb.createExport({
+        requestedBy: identity.userId,
+        orgId: identity.primaryOrgId || undefined,
+        format: body.format as exportsDb.ExportFormat,
+        filters: {
+          dateFrom: body.dateFrom,
+          dateTo: body.dateTo,
+          status: body.status,
+          fields: body.fields,
+        },
+      });
+
+      return resp.created(
+        {
+          id: job.exportId,
+          status: job.status,
+          format: job.format,
+          totalRecords: job.recordCount,
+          processedRecords: job.recordCount,
+          errorMessage: job.errorMessage,
+          createdAt: job.createdAt,
+          completedAt: job.completedAt,
+        },
+        requestOrigin
+      );
+    }
+
+    if (/^\/exports\/[^/]+$/.test(subpath) && method === 'GET') {
+      const exportId = pathParam(event, 2);
+      const job = await exportsDb.getExport(exportId);
+      if (!job) return resp.notFound('Export not found', requestOrigin);
+      if (job.orgId && !identity.orgIds.includes(job.orgId)) {
+        return resp.forbidden('Not authorized to access this export', requestOrigin);
+      }
+      return resp.success(
+        {
+          id: job.exportId,
+          status: job.status,
+          format: job.format,
+          totalRecords: job.recordCount,
+          processedRecords: job.recordCount,
+          errorMessage: job.errorMessage,
+          createdAt: job.createdAt,
+          completedAt: job.completedAt,
+        },
+        undefined,
+        requestOrigin
+      );
+    }
+
+    if (/^\/exports\/[^/]+\/download$/.test(subpath) && method === 'GET') {
+      const exportId = pathParam(event, 2);
+      const job = await exportsDb.getExport(exportId);
+      if (!job) return resp.notFound('Export not found', requestOrigin);
+      if (job.orgId && !identity.orgIds.includes(job.orgId)) {
+        return resp.forbidden('Not authorized to access this export', requestOrigin);
+      }
+      if (job.status !== 'completed' || !job.s3Key) {
+        return resp.badRequest('Export not ready for download', requestOrigin);
+      }
+
+      const bucket = process.env.EXPORTS_BUCKET || '';
+      const url = await getPresignedDownloadUrl(bucket, job.s3Key, 3600);
+
+      return {
+        statusCode: 302,
+        headers: {
+          [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_ORIGIN]: resp.getCorsOrigin(requestOrigin),
+          [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_CREDENTIALS]: 'true',
+          Location: url,
+        },
+        body: '',
+      };
+    }
+
+    // ---- SETTINGS ----
+    if (subpath === '/settings' && method === 'GET') {
+      const user = await usersDb.getUser(identity.userId);
+      if (!user) return resp.notFound('User not found', requestOrigin);
+
+      const prefs = parsePortalPreferences(user.preferences);
+      return resp.success(
+        {
+          ...prefs.servicePreferences,
+          ...prefs.granularNotifications,
+        },
+        undefined,
+        requestOrigin
+      );
+    }
+
     if (subpath === '/settings' && method === 'PUT') {
       const body = parseBody(event);
-      if (body === null) return resp.badRequest('Invalid JSON in request body');
+      if (body === null) return resp.badRequest('Invalid JSON in request body', requestOrigin);
 
-      // Update user preferences
-      if (body.preferences) {
-        await usersDb.updateUser({
-          userId: identity.userId,
-          preferences: body.preferences as Record<string, unknown>,
-        });
-      }
+      const user = await usersDb.getUser(identity.userId);
+      if (!user) return resp.notFound('User not found', requestOrigin);
 
-      // Update notification settings for a specific org
-      if (body.orgId && (body.notifyEmail !== undefined || body.notifySms !== undefined)) {
-        const orgId = body.orgId as string;
-        if (!identity.orgIds.includes(orgId)) {
-          return resp.forbidden('Not a member of this org');
+      const current = parsePortalPreferences(user.preferences);
+      const nextPreferences: Record<string, unknown> = { ...(user.preferences || {}) };
+
+      const hasNotificationPrefs =
+        typeof body.emailNotifications === 'boolean' || typeof body.smsNotifications === 'boolean';
+
+      if (hasNotificationPrefs) {
+        const merged = {
+          ...current.notificationPreferences,
+          ...(typeof body.emailNotifications === 'boolean'
+            ? { emailNotifications: body.emailNotifications }
+            : {}),
+          ...(typeof body.smsNotifications === 'boolean'
+            ? { smsNotifications: body.smsNotifications }
+            : {}),
+        };
+        nextPreferences.notificationPreferences = merged;
+
+        if (identity.primaryOrgId) {
+          await membershipsDb.updateMember({
+            orgId: identity.primaryOrgId,
+            userId: identity.userId,
+            notifyEmail: merged.emailNotifications,
+            notifySms: merged.smsNotifications,
+          });
         }
-
-        await membershipsDb.updateMember({
-          orgId,
-          userId: identity.userId,
-          notifyEmail: body.notifyEmail as boolean | undefined,
-          notifySms: body.notifySms as boolean | undefined,
-        });
       }
+
+      const servicePrefsUpdates: Partial<PortalServicePreferences> = {};
+      if (Array.isArray(body.categories)) servicePrefsUpdates.categories = body.categories;
+      if (Array.isArray(body.zipCodes)) servicePrefsUpdates.zipCodes = body.zipCodes;
+      if (body.businessHours && typeof body.businessHours === 'object') {
+        servicePrefsUpdates.businessHours =
+          body.businessHours as PortalServicePreferences['businessHours'];
+      }
+      if (Object.keys(servicePrefsUpdates).length > 0) {
+        nextPreferences.servicePreferences = {
+          ...current.servicePreferences,
+          ...servicePrefsUpdates,
+          businessHours: {
+            ...current.servicePreferences.businessHours,
+            ...(servicePrefsUpdates.businessHours || {}),
+          },
+        };
+      }
+
+      const granularKeys: (keyof PortalGranularNotificationPreferences)[] = [
+        'newLeadEmail',
+        'newLeadSms',
+        'newLeadPush',
+        'statusChangeEmail',
+        'statusChangeSms',
+        'statusChangePush',
+        'teamActivityEmail',
+        'teamActivitySms',
+        'teamActivityPush',
+        'weeklyDigestEmail',
+      ];
+      const granularUpdates: Partial<PortalGranularNotificationPreferences> = {};
+      granularKeys.forEach((key) => {
+        if (typeof body[key] === 'boolean') {
+          granularUpdates[key] = body[key];
+        }
+      });
+      if (Object.keys(granularUpdates).length > 0) {
+        nextPreferences.granularNotifications = {
+          ...current.granularNotifications,
+          ...granularUpdates,
+        };
+      }
+
+      await usersDb.updateUser({
+        userId: identity.userId,
+        preferences: nextPreferences,
+      });
 
       await recordAudit({
         actorId: identity.userId,
@@ -453,29 +1750,37 @@ async function handlePortalRequest(
         ipHash: getIpHash(event),
       });
 
-      return resp.success({ updated: true });
+      const prefs = parsePortalPreferences(nextPreferences);
+      return resp.success(
+        {
+          ...prefs.servicePreferences,
+          ...prefs.granularNotifications,
+        },
+        undefined,
+        requestOrigin
+      );
     }
 
     // ---- BILLING (feature-flagged) ----
     if (subpath.startsWith('/billing')) {
       const billingEnabled = await isFeatureEnabled('billing_enabled');
-      if (!billingEnabled) return resp.notFound('Endpoint not found');
-      return await handleBillingRoutes(event, subpath, method, identity);
+      if (!billingEnabled) return resp.notFound('Endpoint not found', requestOrigin);
+      return await handleBillingRoutes(event, subpath, method, identity, requestOrigin);
     }
 
     // ---- CALENDAR (feature-flagged) ----
     if (subpath.startsWith('/calendar')) {
       const calendarEnabled = await isFeatureEnabled('calendar_enabled');
-      if (!calendarEnabled) return resp.notFound('Endpoint not found');
-      return await handleCalendarRoutes(event, subpath, method, identity);
+      if (!calendarEnabled) return resp.notFound('Endpoint not found', requestOrigin);
+      return await handleCalendarRoutes(event, subpath, method, identity, requestOrigin);
     }
 
     // ---- INTEGRATIONS: Slack/Teams (feature-flagged) ----
     if (subpath.startsWith('/integrations')) {
-      return await handleIntegrationRoutes(event, subpath, method, identity);
+      return await handleIntegrationRoutes(event, subpath, method, identity, requestOrigin);
     }
 
-    return resp.notFound('Portal endpoint not found');
+    return resp.notFound('Portal endpoint not found', requestOrigin);
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Unknown error';
     log.error('portal.handler.error', {
@@ -491,10 +1796,10 @@ async function handlePortalRequest(
       'name' in err &&
       err.name === 'ConditionalCheckFailedException'
     ) {
-      return resp.conflict('Resource conflict or not found');
+      return resp.conflict('Resource conflict or not found', requestOrigin);
     }
 
-    return resp.internalError();
+    return resp.internalError(requestOrigin);
   }
 }
 
@@ -506,7 +1811,8 @@ async function handleBillingRoutes(
   event: APIGatewayProxyEventV2,
   subpath: string,
   method: string,
-  identity: { userId: string; email: string; primaryOrgId: string; orgIds: string[] }
+  identity: { userId: string; email: string; primaryOrgId: string; orgIds: string[] },
+  requestOrigin?: string
 ): Promise<APIGatewayProxyResultV2> {
   // Dynamic imports to avoid loading when disabled
   const { getBillingAccount, changePlan, getPlanDetails } =
@@ -515,8 +1821,10 @@ async function handleBillingRoutes(
   const { getStripeService } = await import('../lib/billing/stripe-stub.js');
 
   const orgId = queryParam(event, 'orgId') || identity.primaryOrgId;
-  if (!orgId) return resp.badRequest('No org context');
-  if (!identity.orgIds.includes(orgId)) return resp.forbidden('Not a member of this org');
+  if (!orgId) return resp.badRequest('No org context', requestOrigin);
+  if (!identity.orgIds.includes(orgId)) {
+    return resp.forbidden('Not a member of this org', requestOrigin);
+  }
 
   // GET /portal/billing - Current plan and usage
   if (subpath === '/billing' && method === 'GET') {
@@ -524,17 +1832,21 @@ async function handleBillingRoutes(
     const usage = await getCurrentUsage(orgId);
     const plan = getPlanDetails(account.tier);
 
-    return resp.success({
-      plan,
-      usage: {
-        leadsReceived: usage?.leadsReceived || 0,
-        leadsAccepted: usage?.leadsAccepted || 0,
-        leadsRejected: usage?.leadsRejected || 0,
+    return resp.success(
+      {
+        plan,
+        usage: {
+          leadsReceived: usage?.leadsReceived || 0,
+          leadsAccepted: usage?.leadsAccepted || 0,
+          leadsRejected: usage?.leadsRejected || 0,
+        },
+        currentPeriodStart: account.currentPeriodStart,
+        currentPeriodEnd: account.currentPeriodEnd,
+        status: account.status,
       },
-      currentPeriodStart: account.currentPeriodStart,
-      currentPeriodEnd: account.currentPeriodEnd,
-      status: account.status,
-    });
+      undefined,
+      requestOrigin
+    );
   }
 
   // GET /portal/billing/invoices - Invoice history
@@ -545,16 +1857,19 @@ async function handleBillingRoutes(
       account.stripeCustomerId || '',
       Number(queryParam(event, 'limit')) || 10
     );
-    return resp.success({ invoices });
+    return resp.success({ invoices }, undefined, requestOrigin);
   }
 
   // POST /portal/billing/upgrade - Change plan (stub)
   if (subpath === '/billing/upgrade' && method === 'POST') {
     const body = parseBody(event);
-    if (body === null) return resp.badRequest('Invalid JSON in request body');
+    if (body === null) return resp.badRequest('Invalid JSON in request body', requestOrigin);
     const newTier = body.tier as string | undefined;
     if (!newTier || !(VALID_BILLING_TIERS as readonly string[]).includes(newTier)) {
-      return resp.badRequest(`tier must be one of: ${VALID_BILLING_TIERS.join(', ')}`);
+      return resp.badRequest(
+        `tier must be one of: ${VALID_BILLING_TIERS.join(', ')}`,
+        requestOrigin
+      );
     }
 
     const account = await changePlan(orgId, newTier as (typeof VALID_BILLING_TIERS)[number]);
@@ -569,10 +1884,10 @@ async function handleBillingRoutes(
       ipHash: getIpHash(event),
     });
 
-    return resp.success(account);
+    return resp.success(account, undefined, requestOrigin);
   }
 
-  return resp.notFound('Billing endpoint not found');
+  return resp.notFound('Billing endpoint not found', requestOrigin);
 }
 
 // ---------------------------------------------------------------------------
@@ -583,7 +1898,8 @@ async function handleCalendarRoutes(
   event: APIGatewayProxyEventV2,
   subpath: string,
   method: string,
-  identity: { userId: string; email: string; primaryOrgId: string; orgIds: string[] }
+  identity: { userId: string; email: string; primaryOrgId: string; orgIds: string[] },
+  requestOrigin?: string
 ): Promise<APIGatewayProxyResultV2> {
   const { PutCommand, GetCommand, DeleteCommand } = await import('@aws-sdk/lib-dynamodb');
   const { getDocClient, tableName } = await import('../lib/db/client.js');
@@ -594,11 +1910,11 @@ async function handleCalendarRoutes(
   // POST /portal/calendar/connect
   if (subpath === '/calendar/connect' && method === 'POST') {
     const body = parseBody(event);
-    if (body === null) return resp.badRequest('Invalid JSON in request body');
+    if (body === null) return resp.badRequest('Invalid JSON in request body', requestOrigin);
     const provider = body.provider as string | undefined;
     const supported = getSupportedProviders();
     if (!provider || !supported.includes(provider as 'google' | 'outlook' | 'apple' | 'caldav')) {
-      return resp.badRequest(`provider must be one of: ${supported.join(', ')}`);
+      return resp.badRequest(`provider must be one of: ${supported.join(', ')}`, requestOrigin);
     }
 
     const now = new Date().toISOString();
@@ -634,14 +1950,16 @@ async function handleCalendarRoutes(
       ipHash: getIpHash(event),
     });
 
-    return resp.success({ connected: true, provider });
+    return resp.success({ connected: true, provider }, undefined, requestOrigin);
   }
 
   // GET /portal/calendar/availability
   if (subpath === '/calendar/availability' && method === 'GET') {
     const start = queryParam(event, 'start');
     const end = queryParam(event, 'end');
-    if (!start || !end) return resp.badRequest('start and end query parameters are required');
+    if (!start || !end) {
+      return resp.badRequest('start and end query parameters are required', requestOrigin);
+    }
 
     // Load user's calendar config
     const result = await doc.send(
@@ -655,7 +1973,10 @@ async function handleCalendarRoutes(
     );
 
     if (!result.Item || !result.Item.connected) {
-      return resp.badRequest('No calendar connected. Please connect a calendar first.');
+      return resp.badRequest(
+        'No calendar connected. Please connect a calendar first.',
+        requestOrigin
+      );
     }
 
     const calConfig = result.Item as {
@@ -668,21 +1989,25 @@ async function handleCalendarRoutes(
     const providerInstance = createCalendarProvider(calConfig as any);
     const slots = await providerInstance.getAvailability(new Date(start), new Date(end));
 
-    return resp.success({
-      slots: slots.map((s) => ({
-        start: s.start.toISOString(),
-        end: s.end.toISOString(),
-        available: s.available,
-      })),
-    });
+    return resp.success(
+      {
+        slots: slots.map((s) => ({
+          start: s.start.toISOString(),
+          end: s.end.toISOString(),
+          available: s.available,
+        })),
+      },
+      undefined,
+      requestOrigin
+    );
   }
 
   // POST /portal/calendar/book
   if (subpath === '/calendar/book' && method === 'POST') {
     const body = parseBody(event);
-    if (body === null) return resp.badRequest('Invalid JSON in request body');
+    if (body === null) return resp.badRequest('Invalid JSON in request body', requestOrigin);
     if (!body.startTime || !body.endTime || !body.title) {
-      return resp.badRequest('startTime, endTime, and title are required');
+      return resp.badRequest('startTime, endTime, and title are required', requestOrigin);
     }
 
     // Load user's calendar config
@@ -697,7 +2022,7 @@ async function handleCalendarRoutes(
     );
 
     if (!result.Item || !result.Item.connected) {
-      return resp.badRequest('No calendar connected');
+      return resp.badRequest('No calendar connected', requestOrigin);
     }
 
     const calConfig = result.Item as any;
@@ -723,13 +2048,17 @@ async function handleCalendarRoutes(
       ipHash: getIpHash(event),
     });
 
-    return resp.success({
-      eventId,
-      provider: calConfig.provider,
-      startTime: body.startTime,
-      endTime: body.endTime,
-      title: body.title,
-    });
+    return resp.success(
+      {
+        eventId,
+        provider: calConfig.provider,
+        startTime: body.startTime,
+        endTime: body.endTime,
+        title: body.title,
+      },
+      undefined,
+      requestOrigin
+    );
   }
 
   // DELETE /portal/calendar/disconnect
@@ -753,10 +2082,10 @@ async function handleCalendarRoutes(
       ipHash: getIpHash(event),
     });
 
-    return resp.success({ disconnected: true });
+    return resp.success({ disconnected: true }, undefined, requestOrigin);
   }
 
-  return resp.notFound('Calendar endpoint not found');
+  return resp.notFound('Calendar endpoint not found', requestOrigin);
 }
 
 // ---------------------------------------------------------------------------
@@ -767,22 +2096,25 @@ async function handleIntegrationRoutes(
   event: APIGatewayProxyEventV2,
   subpath: string,
   method: string,
-  identity: { userId: string; email: string; primaryOrgId: string; orgIds: string[] }
+  identity: { userId: string; email: string; primaryOrgId: string; orgIds: string[] },
+  requestOrigin?: string
 ): Promise<APIGatewayProxyResultV2> {
   const flags = await loadFeatureFlags();
   const { saveChannelConfig, deleteChannelConfig, sendTestNotification } =
     await import('../lib/messaging/dispatcher.js');
 
   const orgId = queryParam(event, 'orgId') || identity.primaryOrgId;
-  if (!orgId) return resp.badRequest('No org context');
-  if (!identity.orgIds.includes(orgId)) return resp.forbidden('Not a member of this org');
+  if (!orgId) return resp.badRequest('No org context', requestOrigin);
+  if (!identity.orgIds.includes(orgId)) {
+    return resp.forbidden('Not a member of this org', requestOrigin);
+  }
 
   // POST /portal/integrations/slack
   if (subpath === '/integrations/slack' && method === 'POST') {
-    if (!flags.slack_enabled) return resp.notFound('Endpoint not found');
+    if (!flags.slack_enabled) return resp.notFound('Endpoint not found', requestOrigin);
     const body = parseBody(event);
-    if (body === null) return resp.badRequest('Invalid JSON in request body');
-    if (!body.webhookUrl) return resp.badRequest('webhookUrl is required');
+    if (body === null) return resp.badRequest('Invalid JSON in request body', requestOrigin);
+    if (!body.webhookUrl) return resp.badRequest('webhookUrl is required', requestOrigin);
 
     const config = await saveChannelConfig(
       orgId,
@@ -800,15 +2132,15 @@ async function handleIntegrationRoutes(
       ipHash: getIpHash(event),
     });
 
-    return resp.success(config);
+    return resp.success(config, undefined, requestOrigin);
   }
 
   // POST /portal/integrations/teams
   if (subpath === '/integrations/teams' && method === 'POST') {
-    if (!flags.teams_enabled) return resp.notFound('Endpoint not found');
+    if (!flags.teams_enabled) return resp.notFound('Endpoint not found', requestOrigin);
     const body = parseBody(event);
-    if (body === null) return resp.badRequest('Invalid JSON in request body');
-    if (!body.webhookUrl) return resp.badRequest('webhookUrl is required');
+    if (body === null) return resp.badRequest('Invalid JSON in request body', requestOrigin);
+    if (!body.webhookUrl) return resp.badRequest('webhookUrl is required', requestOrigin);
 
     const config = await saveChannelConfig(
       orgId,
@@ -826,15 +2158,19 @@ async function handleIntegrationRoutes(
       ipHash: getIpHash(event),
     });
 
-    return resp.success(config);
+    return resp.success(config, undefined, requestOrigin);
   }
 
   // DELETE /portal/integrations/:provider
   if (/^\/integrations\/(slack|teams)$/.test(subpath) && method === 'DELETE') {
     const provider = pathParam(event, 2) as 'slack' | 'teams';
 
-    if (provider === 'slack' && !flags.slack_enabled) return resp.notFound('Endpoint not found');
-    if (provider === 'teams' && !flags.teams_enabled) return resp.notFound('Endpoint not found');
+    if (provider === 'slack' && !flags.slack_enabled) {
+      return resp.notFound('Endpoint not found', requestOrigin);
+    }
+    if (provider === 'teams' && !flags.teams_enabled) {
+      return resp.notFound('Endpoint not found', requestOrigin);
+    }
 
     await deleteChannelConfig(orgId, provider);
 
@@ -847,19 +2183,23 @@ async function handleIntegrationRoutes(
       ipHash: getIpHash(event),
     });
 
-    return resp.success({ removed: true, provider });
+    return resp.success({ removed: true, provider }, undefined, requestOrigin);
   }
 
   // POST /portal/integrations/:provider/test
   if (/^\/integrations\/(slack|teams)\/test$/.test(subpath) && method === 'POST') {
     const provider = pathParam(event, 2) as 'slack' | 'teams';
 
-    if (provider === 'slack' && !flags.slack_enabled) return resp.notFound('Endpoint not found');
-    if (provider === 'teams' && !flags.teams_enabled) return resp.notFound('Endpoint not found');
+    if (provider === 'slack' && !flags.slack_enabled) {
+      return resp.notFound('Endpoint not found', requestOrigin);
+    }
+    if (provider === 'teams' && !flags.teams_enabled) {
+      return resp.notFound('Endpoint not found', requestOrigin);
+    }
 
     const result = await sendTestNotification(orgId, provider);
-    return resp.success(result);
+    return resp.success(result, undefined, requestOrigin);
   }
 
-  return resp.notFound('Integration endpoint not found');
+  return resp.notFound('Integration endpoint not found', requestOrigin);
 }

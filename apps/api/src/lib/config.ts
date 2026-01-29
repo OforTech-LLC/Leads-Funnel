@@ -95,7 +95,58 @@ export async function loadFeatureFlags(): Promise<FeatureFlags> {
 
   const path = process.env.FEATURE_FLAGS_SSM_PATH || process.env.FEATURE_FLAG_SSM_PATH || '';
   if (!path) {
-    _flagsCache = { flags: { ...DEFAULT_FLAGS }, expiresAt: Date.now() + CONFIG_CACHE_MS };
+    // Fall back to per-flag parameters when a JSON config path is not provided.
+    const projectName = process.env.PROJECT_NAME || '';
+    const env = process.env.ENVIRONMENT || process.env.ENV || '';
+
+    if (!projectName || !env) {
+      _flagsCache = { flags: { ...DEFAULT_FLAGS }, expiresAt: Date.now() + CONFIG_CACHE_MS };
+      return _flagsCache.flags;
+    }
+
+    const prefix = `/${projectName}/${env}/feature-flags`;
+    const fallbackMap: Record<keyof FeatureFlags, string[]> = {
+      enable_admin_console: ['enable-admin-console', 'enable-org-management'],
+      enable_agent_portal: ['enable-portal'],
+      enable_assignment: ['enable-assignment-engine'],
+      enable_notifications: ['enable-lead-notifications'],
+      enable_email: ['enable-email-notifications'],
+      enable_sms: ['enable-sms-notifications'],
+      enable_twilio: ['enable-twilio'],
+      webhooks_enabled: ['enable-webhooks'],
+      billing_enabled: ['enable-billing'],
+      calendar_enabled: ['enable-calendar'],
+      slack_enabled: ['enable-slack'],
+      teams_enabled: ['enable-teams'],
+      lead_scoring_enabled: ['enable-lead-scoring'],
+    };
+
+    const entries = await Promise.all(
+      (Object.keys(fallbackMap) as Array<keyof FeatureFlags>).map(async (flag) => {
+        const keys = fallbackMap[flag];
+        for (const key of keys) {
+          try {
+            const raw = await loadConfig(`${prefix}/${key}`);
+            if (raw !== '') {
+              return [flag, raw.toLowerCase() === 'true'] as const;
+            }
+          } catch {
+            // Ignore missing parameters and fall back to defaults
+          }
+        }
+        return [flag, DEFAULT_FLAGS[flag]] as const;
+      })
+    );
+
+    const flags = entries.reduce<FeatureFlags>(
+      (acc, [key, value]) => {
+        acc[key] = value;
+        return acc;
+      },
+      { ...DEFAULT_FLAGS }
+    );
+
+    _flagsCache = { flags, expiresAt: Date.now() + CONFIG_CACHE_MS };
     return _flagsCache.flags;
   }
 

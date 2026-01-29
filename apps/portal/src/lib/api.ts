@@ -101,12 +101,16 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
         throw new ApiError('Rate limit exceeded. Please try again later.', 429);
       }
 
+      const hasBody = response.status !== 204;
+      const parsedBody = hasBody ? await response.json().catch(() => null) : null;
+
       if (!response.ok) {
-        const errorBody = await response.json().catch(() => null);
         const apiError = new ApiError(
-          errorBody?.message || `Request failed with status ${response.status}`,
+          parsedBody?.error?.message ||
+            parsedBody?.message ||
+            `Request failed with status ${response.status}`,
           response.status,
-          errorBody
+          parsedBody
         );
 
         // Don't retry client errors (4xx) except 429 (already handled above)
@@ -123,12 +127,20 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
         throw apiError;
       }
 
+      if (parsedBody?.ok === false || parsedBody?.success === false) {
+        throw new ApiError(
+          parsedBody?.error?.message || parsedBody?.message || 'Request failed',
+          response.status,
+          parsedBody
+        );
+      }
+
       // Handle 204 No Content
-      if (response.status === 204) {
+      if (!hasBody) {
         return undefined as T;
       }
 
-      return (await response.json()) as T;
+      return (parsedBody?.data ?? parsedBody) as T;
     } catch (error) {
       clearTimeout(timeoutId);
 

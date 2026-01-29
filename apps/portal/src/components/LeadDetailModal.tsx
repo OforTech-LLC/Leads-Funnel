@@ -7,6 +7,7 @@ import { useTeamMembers } from '@/lib/queries/team';
 import StatusBadge from './StatusBadge';
 import StatusSelect from './StatusSelect';
 import NoteForm from './NoteForm';
+import { formatShortDate, timeAgo } from '@/lib/timeago';
 
 interface LeadDetailModalProps {
   lead: Lead;
@@ -49,6 +50,8 @@ export default function LeadDetailModal({
   }, [showAssignDropdown]);
 
   const currentAssignee = teamMembers?.find((m) => m.userId === lead.assignedTo);
+  const evidence = lead.evidencePack;
+  const qualityScore = lead.qualityScore ?? evidence?.quality?.score;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -206,6 +209,61 @@ export default function LeadDetailModal({
             {lead.assignedName && <p className="mt-1">Assigned to: {lead.assignedName}</p>}
           </div>
         </section>
+
+        {(evidence || qualityScore !== undefined) && (
+          <section className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">
+              Evidence Pack
+            </h2>
+            <div className="space-y-2 text-xs text-gray-600">
+              {evidence?.capturedAt && (
+                <div className="flex items-center justify-between">
+                  <span>Captured</span>
+                  <span>
+                    {formatShortDate(evidence.capturedAt)} · {timeAgo(evidence.capturedAt)}
+                  </span>
+                </div>
+              )}
+              {(evidence?.utm?.['utm_source'] || evidence?.utm?.source) && (
+                <div className="flex items-center justify-between">
+                  <span>Source</span>
+                  <span>{evidence.utm?.['utm_source'] || evidence.utm?.source}</span>
+                </div>
+              )}
+              <div className="flex items-center justify-between">
+                <span>Consent</span>
+                <span>{evidence?.consent?.privacyAccepted ? 'Yes' : 'No'}</span>
+              </div>
+              {qualityScore !== undefined && (
+                <div className="flex items-center justify-between">
+                  <span>Quality score</span>
+                  <span>{qualityScore}</span>
+                </div>
+              )}
+              {evidence?.quality?.threshold !== undefined && (
+                <div className="flex items-center justify-between">
+                  <span>Threshold</span>
+                  <span>{evidence.quality.threshold}</span>
+                </div>
+              )}
+              {evidence?.security?.reasons?.length ? (
+                <p className="text-xs text-amber-600">
+                  Flags: {evidence.security.reasons.join(', ')}
+                </p>
+              ) : null}
+              {evidence?.pageUrl && (
+                <a
+                  href={evidence.pageUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-xs text-blue-600 hover:text-blue-700"
+                >
+                  View landing page
+                </a>
+              )}
+            </div>
+          </section>
+        )}
 
         {/* Assignment Card */}
         {onAssign && (

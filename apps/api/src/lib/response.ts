@@ -57,8 +57,10 @@ function buildCorsHeaders(requestOrigin?: string): Record<string, string> {
   return {
     ...SECURITY_HEADERS,
     [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_ORIGIN]: getCorsOrigin(requestOrigin),
-    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_METHODS]: 'GET,POST,PUT,DELETE,OPTIONS',
-    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_HEADERS]: 'content-type,authorization',
+    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_METHODS]: 'GET,POST,PUT,DELETE,OPTIONS,PATCH',
+    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_HEADERS]:
+      'content-type,authorization,x-csrf-token,x-request-id',
+    [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_CREDENTIALS]: 'true',
     [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.JSON,
     ...(ALLOWED_ORIGINS.length > 0 ? { [HTTP_HEADERS.VARY]: 'Origin' } : {}),
   };
@@ -77,6 +79,37 @@ const DEFAULT_CORS_HEADERS = buildCorsHeaders();
 function withRequestId(base: Record<string, string>, requestId?: string): Record<string, string> {
   if (!requestId) return base;
   return { ...base, [HTTP_HEADERS.X_REQUEST_ID]: requestId };
+}
+
+// ---------------------------------------------------------------------------
+// Request context helpers
+// ---------------------------------------------------------------------------
+
+function resolveContext(
+  requestOriginOrId?: string,
+  requestIdMaybe?: string
+): { requestOrigin?: string; requestId?: string } {
+  if (requestIdMaybe !== undefined) {
+    return { requestOrigin: requestOriginOrId, requestId: requestIdMaybe };
+  }
+  if (requestOriginOrId && requestOriginOrId.startsWith('http')) {
+    return { requestOrigin: requestOriginOrId };
+  }
+  return { requestId: requestOriginOrId };
+}
+
+function resolveDetailsAndContext(
+  detailsOrOrigin?: Record<string, unknown> | string,
+  requestOriginOrId?: string,
+  requestIdMaybe?: string
+): { details?: Record<string, unknown>; requestOrigin?: string; requestId?: string } {
+  if (typeof detailsOrOrigin === 'string') {
+    const { requestOrigin, requestId } = resolveContext(detailsOrOrigin, requestOriginOrId);
+    return { requestOrigin, requestId };
+  }
+
+  const { requestOrigin, requestId } = resolveContext(requestOriginOrId, requestIdMaybe);
+  return { details: detailsOrOrigin, requestOrigin, requestId };
 }
 
 // ---------------------------------------------------------------------------
@@ -166,54 +199,88 @@ export function error(
 
 export function badRequest(
   message: string,
-  details?: Record<string, unknown>,
-  requestId?: string
+  detailsOrOrigin?: Record<string, unknown> | string,
+  requestOriginOrId?: string,
+  requestIdMaybe?: string
 ): APIGatewayProxyResultV2 {
-  return error('BAD_REQUEST', message, HTTP_STATUS.BAD_REQUEST, details, undefined, requestId);
+  const { details, requestOrigin, requestId } = resolveDetailsAndContext(
+    detailsOrOrigin,
+    requestOriginOrId,
+    requestIdMaybe
+  );
+  return error('BAD_REQUEST', message, HTTP_STATUS.BAD_REQUEST, details, requestOrigin, requestId);
 }
 
 export function unauthorized(
   message = 'Authentication required',
-  requestId?: string
+  requestOriginOrId?: string,
+  requestIdMaybe?: string
 ): APIGatewayProxyResultV2 {
-  return error('UNAUTHORIZED', message, HTTP_STATUS.UNAUTHORIZED, undefined, undefined, requestId);
+  const { requestOrigin, requestId } = resolveContext(requestOriginOrId, requestIdMaybe);
+  return error(
+    'UNAUTHORIZED',
+    message,
+    HTTP_STATUS.UNAUTHORIZED,
+    undefined,
+    requestOrigin,
+    requestId
+  );
 }
 
 export function forbidden(
   message = 'Insufficient permissions',
-  requestId?: string
+  requestOriginOrId?: string,
+  requestIdMaybe?: string
 ): APIGatewayProxyResultV2 {
-  return error('FORBIDDEN', message, HTTP_STATUS.FORBIDDEN, undefined, undefined, requestId);
+  const { requestOrigin, requestId } = resolveContext(requestOriginOrId, requestIdMaybe);
+  return error('FORBIDDEN', message, HTTP_STATUS.FORBIDDEN, undefined, requestOrigin, requestId);
 }
 
 export function notFound(
   message = 'Resource not found',
-  requestId?: string
+  requestOriginOrId?: string,
+  requestIdMaybe?: string
 ): APIGatewayProxyResultV2 {
-  return error('NOT_FOUND', message, HTTP_STATUS.NOT_FOUND, undefined, undefined, requestId);
+  const { requestOrigin, requestId } = resolveContext(requestOriginOrId, requestIdMaybe);
+  return error('NOT_FOUND', message, HTTP_STATUS.NOT_FOUND, undefined, requestOrigin, requestId);
 }
 
-export function conflict(message: string, requestId?: string): APIGatewayProxyResultV2 {
-  return error('CONFLICT', message, HTTP_STATUS.CONFLICT, undefined, undefined, requestId);
+export function conflict(
+  message: string,
+  requestOriginOrId?: string,
+  requestIdMaybe?: string
+): APIGatewayProxyResultV2 {
+  const { requestOrigin, requestId } = resolveContext(requestOriginOrId, requestIdMaybe);
+  return error('CONFLICT', message, HTTP_STATUS.CONFLICT, undefined, requestOrigin, requestId);
 }
 
-export function payloadTooLarge(requestId?: string): APIGatewayProxyResultV2 {
+export function payloadTooLarge(
+  requestOriginOrId?: string,
+  requestIdMaybe?: string
+): APIGatewayProxyResultV2 {
+  const { requestOrigin, requestId } = resolveContext(requestOriginOrId, requestIdMaybe);
   return error(
     'PAYLOAD_TOO_LARGE',
     'Request body exceeds the maximum allowed size',
     HTTP_STATUS.PAYLOAD_TOO_LARGE,
     undefined,
-    undefined,
+    requestOrigin,
     requestId
   );
 }
 
-export function rateLimited(retryAfter = 60, requestId?: string): APIGatewayProxyResultV2 {
+export function rateLimited(
+  retryAfter = 60,
+  requestOriginOrId?: string,
+  requestIdMaybe?: string
+): APIGatewayProxyResultV2 {
+  const { requestOrigin, requestId } = resolveContext(requestOriginOrId, requestIdMaybe);
+  const headers = requestOrigin ? buildCorsHeaders(requestOrigin) : DEFAULT_CORS_HEADERS;
   return {
     statusCode: HTTP_STATUS.RATE_LIMITED,
     headers: withRequestId(
       {
-        ...DEFAULT_CORS_HEADERS,
+        ...headers,
         [HTTP_HEADERS.RETRY_AFTER]: String(retryAfter),
       },
       requestId
@@ -225,13 +292,17 @@ export function rateLimited(retryAfter = 60, requestId?: string): APIGatewayProx
   };
 }
 
-export function internalError(requestId?: string): APIGatewayProxyResultV2 {
+export function internalError(
+  requestOriginOrId?: string,
+  requestIdMaybe?: string
+): APIGatewayProxyResultV2 {
+  const { requestOrigin, requestId } = resolveContext(requestOriginOrId, requestIdMaybe);
   return error(
     'INTERNAL_ERROR',
     'An unexpected error occurred',
     HTTP_STATUS.INTERNAL_ERROR,
     undefined,
-    undefined,
+    requestOrigin,
     requestId
   );
 }
@@ -246,11 +317,12 @@ export function internalError(requestId?: string): APIGatewayProxyResultV2 {
  */
 export async function checkFeatureEnabled(
   flag: keyof FeatureFlags,
-  requestId?: string
+  requestOriginOrId?: string,
+  requestIdMaybe?: string
 ): Promise<APIGatewayProxyResultV2 | null> {
   const enabled = await isFeatureEnabled(flag);
   if (!enabled) {
-    return notFound('Endpoint not found', requestId);
+    return notFound('Endpoint not found', requestOriginOrId, requestIdMaybe);
   }
   return null;
 }

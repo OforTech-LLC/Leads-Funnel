@@ -10,6 +10,7 @@ export default function Header() {
   const initials = profile
     ? `${profile.firstName.charAt(0)}${profile.lastName.charAt(0)}`.toUpperCase()
     : '';
+  const avatarUrl = profile?.avatarUrl?.trim();
 
   return (
     <header className="sticky top-0 z-40 border-b border-gray-200 bg-white">
@@ -32,12 +33,20 @@ export default function Header() {
           <NotificationBell />
 
           {/* User avatar */}
-          <div
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-100 text-sm font-semibold text-brand-700"
-            title={profile ? `${profile.firstName} ${profile.lastName}` : 'User'}
-          >
-            {initials || 'U'}
-          </div>
+          {avatarUrl ? (
+            <img
+              src={avatarUrl}
+              alt={profile ? `${profile.firstName} ${profile.lastName}` : 'User'}
+              className="h-9 w-9 rounded-full object-cover"
+            />
+          ) : (
+            <div
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-100 text-sm font-semibold text-brand-700"
+              title={profile ? `${profile.firstName} ${profile.lastName}` : 'User'}
+            >
+              {initials || 'U'}
+            </div>
+          )}
         </div>
       </div>
     </header>

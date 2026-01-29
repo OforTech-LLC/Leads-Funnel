@@ -31,7 +31,10 @@ function SettingsContent() {
         const res = await fetch(API_ENDPOINTS.SETTINGS, { credentials: 'include' });
         if (!res.ok) throw new Error('Failed to load settings');
         const json = await res.json();
-        setData(json);
+        if (json?.ok === false) {
+          throw new Error(json.error?.message || 'Failed to load settings');
+        }
+        setData(json?.data ?? json);
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Failed to load settings';
         setError(message);

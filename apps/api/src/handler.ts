@@ -12,6 +12,8 @@ import { extractClientIp, analyzeLeadSecurity } from './lib/security.js';
 import { checkRateLimit, checkIdempotency, storeLead } from './lib/dynamo.js';
 import { getSecretValue } from './lib/clients.js';
 import { publishLeadCreatedEvent } from './lib/events.js';
+import * as platformLeadsDb from './lib/db/leads.js';
+import type { EvidencePack } from './lib/types/evidence.js';
 import { getElapsedMs } from './lib/time.js';
 import * as http from './lib/http.js';
 import { v4 as uuidv4 } from 'uuid';
@@ -85,6 +87,7 @@ function getFunnelTableName(config: EnvConfig, funnelId: string): string {
  * Supported:
  * - /lead/{funnelId}
  * - /funnel/{funnelId}/lead
+ * - /funnel/{funnelId}/leads
  * - /{stage}/lead/{funnelId} (stage-prefixed paths)
  */
 function extractFunnelIdFromPath(path: string | undefined, stage?: string): string | undefined {
@@ -96,7 +99,11 @@ function extractFunnelIdFromPath(path: string | undefined, stage?: string): stri
     return normalizedParts[1].toLowerCase();
   }
 
-  if (normalizedParts[0] === 'funnel' && normalizedParts[1] && normalizedParts[2] === 'lead') {
+  if (
+    normalizedParts[0] === 'funnel' &&
+    normalizedParts[1] &&
+    (normalizedParts[2] === 'lead' || normalizedParts[2] === 'leads')
+  ) {
     return normalizedParts[1].toLowerCase();
   }
 
@@ -228,6 +235,54 @@ async function maybeScoreLead(
 }
 
 // =============================================================================
+// Quality Config (SSM)
+// =============================================================================
+
+interface QualityConfig {
+  quarantineThreshold?: number;
+}
+
+let cachedQualityConfig: { value: QualityConfig; expiresAt: number } | null = null;
+const QUALITY_CONFIG_TTL_MS = 60 * 1000;
+
+async function loadQualityConfig(config: EnvConfig): Promise<QualityConfig> {
+  const now = Date.now();
+  if (cachedQualityConfig && cachedQualityConfig.expiresAt > now) {
+    return cachedQualityConfig.value;
+  }
+
+  const project = config.projectName;
+  const env = config.env;
+  if (!project || !env) {
+    const fallback = {
+      quarantineThreshold: Number(process.env.QUALITY_QUARANTINE_THRESHOLD) || undefined,
+    };
+    cachedQualityConfig = { value: fallback, expiresAt: now + QUALITY_CONFIG_TTL_MS };
+    return fallback;
+  }
+
+  try {
+    const { loadConfig } = await import('./lib/config.js');
+    const basePath = `/${project}/${env}/quality`;
+    const rawThreshold = await loadConfig(`${basePath}/quarantine_threshold`).catch(() => '');
+    const thresholdValue = rawThreshold ? Number(rawThreshold) : undefined;
+    const quarantineThreshold = Number.isFinite(thresholdValue) ? thresholdValue : undefined;
+
+    const value: QualityConfig = {
+      quarantineThreshold: quarantineThreshold || undefined,
+    };
+    cachedQualityConfig = { value, expiresAt: now + QUALITY_CONFIG_TTL_MS };
+    return value;
+  } catch {
+    const fallback = {
+      quarantineThreshold: Number(process.env.QUALITY_QUARANTINE_THRESHOLD) || undefined,
+    };
+    cachedQualityConfig = { value: fallback, expiresAt: now + QUALITY_CONFIG_TTL_MS };
+    return fallback;
+  }
+}
+
+// =============================================================================
 // Lambda Handler
 // =============================================================================
 
@@ -310,6 +365,20 @@ export async function handler(
     }
 
     const payload = data as LeadRequestPayload;
+
+    const requireConsent = (process.env.REQUIRE_CONSENT || '').toLowerCase() === 'true';
+    if (requireConsent && !payload.consent?.privacyAccepted) {
+      log({
+        requestId,
+        level: 'warn',
+        message: 'Consent required but not provided',
+        errorCode: 'CONSENT_REQUIRED',
+      });
+      return addRequestIdHeader(
+        http.validationError({ consent: 'Consent is required' }, requestOrigin),
+        requestId
+      );
+    }
 
     // Normalize lead data
     let normalizedLead: NormalizedLead = normalizeLead(payload);
@@ -398,9 +467,19 @@ export async function handler(
       return addRequestIdHeader(http.internalError(requestOrigin), requestId);
     }
 
+    // Lead scoring (non-blocking, feature-flagged)
+    const scoring = await maybeScoreLead(normalizedLead, security, userAgent, requestId);
+    const qualityConfig = await loadQualityConfig(config);
+    const threshold = qualityConfig.quarantineThreshold;
+    const scoreValue = scoring.score;
+    const thresholdEnabled = typeof threshold === 'number' && threshold > 0;
+    const quarantineByScore =
+      thresholdEnabled && scoreValue !== undefined && scoreValue < threshold;
+
+    const status = security.suspicious || quarantineByScore ? 'quarantined' : 'accepted';
+
     // Generate lead ID for idempotency
     const leadId = uuidv4();
-    const status = security.suspicious ? 'quarantined' : 'accepted';
 
     // Idempotency check
     const idempotency = await checkIdempotency(config, security.idempotencyKey, leadId, status);
@@ -423,8 +502,39 @@ export async function handler(
       );
     }
 
-    // Lead scoring (non-blocking, feature-flagged)
-    const scoring = await maybeScoreLead(normalizedLead, security, userAgent, requestId);
+    const capturedAt = new Date().toISOString();
+    const phoneDigits = normalizedLead.phone ? normalizedLead.phone.replace(/\D/g, '').length : 0;
+    const evidencePack: EvidencePack = {
+      capturedAt,
+      funnelId: normalizedLead.funnelId,
+      pageVariant: payload.metadata?.pageVariant,
+      pageUrl: normalizedLead.pageUrl,
+      referrer: normalizedLead.referrer,
+      utm: normalizedLead.utm,
+      metadata: payload.metadata,
+      consent: payload.consent
+        ? {
+            ...payload.consent,
+            capturedAt,
+            ipHash: security.ipHash,
+          }
+        : undefined,
+      verification: {
+        emailValid: true,
+        phoneValid: phoneDigits >= 7,
+      },
+      delivery: { attempts: [] },
+      quality: {
+        score: scoreValue,
+        threshold: thresholdEnabled ? threshold : undefined,
+        matchedRules: scoring.matchedRules,
+        status,
+      },
+      security: {
+        suspicious: security.suspicious,
+        reasons: security.reasons,
+      },
+    };
 
     // Store lead (with score if available)
     const lead = await storeLead(
@@ -433,8 +543,52 @@ export async function handler(
       normalizedLead,
       security,
       userAgent,
-      scoring.score
+      scoring.score,
+      {
+        leadId,
+        status,
+        createdAt: capturedAt,
+        evidencePack,
+      }
     );
+
+    // Optional: ingest into platform lead table if configured
+    const platformTableName =
+      process.env.PLATFORM_LEADS_TABLE_NAME || process.env.DDB_TABLE_NAME || '';
+    if (platformTableName) {
+      const platformStatus = status === 'quarantined' ? 'quarantined' : 'new';
+      try {
+        await platformLeadsDb.ingestLead(
+          {
+            leadId,
+            funnelId: normalizedLead.funnelId,
+            email: normalizedLead.email,
+            name: normalizedLead.name,
+            phone: normalizedLead.phone,
+            zipCode: normalizedLead.address?.zipCode,
+            message: normalizedLead.message,
+            pageUrl: normalizedLead.pageUrl,
+            referrer: normalizedLead.referrer,
+            utm: normalizedLead.utm,
+            status: platformStatus,
+            ipHash: security.ipHash,
+            userAgent,
+            score: scoring.score,
+            evidencePack,
+            createdAt: capturedAt,
+          },
+          platformTableName
+        );
+      } catch (err) {
+        log({
+          requestId,
+          level: 'warn',
+          message: 'Failed to ingest lead into platform table (non-blocking)',
+          leadId,
+          errorCode: 'PLATFORM_INGEST_ERROR',
+        });
+      }
+    }
 
     // Publish event (fire-and-forget with error logging)
     try {

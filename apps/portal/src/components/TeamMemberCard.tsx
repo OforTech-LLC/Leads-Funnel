@@ -34,9 +34,17 @@ export default function TeamMemberCard({
       <div className="flex items-center gap-4 rounded-xl border border-gray-100 bg-white p-4 shadow-sm transition-shadow hover:shadow-md">
         {/* Avatar with online indicator */}
         <div className="relative flex-shrink-0">
-          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-100 text-sm font-bold text-brand-700">
-            {initials}
-          </div>
+          {member.avatarUrl ? (
+            <img
+              src={member.avatarUrl}
+              alt={fullName}
+              className="h-11 w-11 rounded-full object-cover"
+            />
+          ) : (
+            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-100 text-sm font-bold text-brand-700">
+              {initials}
+            </div>
+          )}
           <span
             className={`absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-white ${
               isOnline ? 'bg-green-400' : 'bg-gray-300'

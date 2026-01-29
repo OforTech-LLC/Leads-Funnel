@@ -78,6 +78,8 @@ export function normalizeLead(payload: LeadRequestPayload): NormalizedLead {
     pageUrl: payload.metadata?.pageUrl?.trim(),
     referrer: payload.metadata?.referrer?.trim(),
     utm: normalizeUtm(payload.utm),
+    metadata: payload.metadata,
+    consent: payload.consent,
 
     // Extended fields - pass through as-is (validated at form level)
     address: payload.address,
