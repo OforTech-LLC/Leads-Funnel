@@ -8,6 +8,7 @@
  */
 
 import { Suspense, useEffect, useState, useCallback } from 'react';
+import './admin.css';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -31,30 +32,6 @@ function AdminLoadingSpinner() {
     <div className="admin-content-loading">
       <div className="admin-content-spinner" />
       <p>Loading content...</p>
-      <style jsx>{`
-        .admin-content-loading {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          padding: 60px 24px;
-          color: rgba(255, 255, 255, 0.7);
-        }
-        .admin-content-spinner {
-          width: 32px;
-          height: 32px;
-          border: 2px solid rgba(255, 255, 255, 0.1);
-          border-top-color: #3b82f6;
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-          margin-bottom: 12px;
-        }
-        @keyframes spin {
-          to {
-            transform: rotate(360deg);
-          }
-        }
-      `}</style>
     </div>
   );
 }
@@ -116,35 +93,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       <div className="admin-loading">
         <div className="admin-loading-spinner" />
         <p>Loading admin console...</p>
-        <style jsx>{`
-          .admin-loading {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
-            color: #fff;
-            font-family:
-              system-ui,
-              -apple-system,
-              sans-serif;
-          }
-          .admin-loading-spinner {
-            width: 48px;
-            height: 48px;
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            border-top-color: #3b82f6;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 16px;
-          }
-          @keyframes spin {
-            to {
-              transform: rotate(360deg);
-            }
-          }
-        `}</style>
       </div>
     );
   }
@@ -158,41 +106,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <p>{authError}</p>
           <button onClick={handleRetry}>Try Again</button>
         </div>
-        <style jsx>{`
-          .admin-error {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
-            color: #fff;
-            font-family:
-              system-ui,
-              -apple-system,
-              sans-serif;
-          }
-          .admin-error-content {
-            text-align: center;
-            padding: 40px;
-          }
-          .admin-error-content h2 {
-            color: #ef4444;
-            margin-bottom: 16px;
-          }
-          .admin-error-content p {
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 24px;
-          }
-          .admin-error-content button {
-            padding: 12px 24px;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            border: none;
-            border-radius: 8px;
-            color: #fff;
-            font-size: 14px;
-            cursor: pointer;
-          }
-        `}</style>
       </div>
     );
   }
@@ -310,134 +223,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <main className="admin-main">
           <Suspense fallback={<AdminLoadingSpinner />}>{children}</Suspense>
         </main>
-
-        <style jsx>{`
-          .admin-layout {
-            display: flex;
-            min-height: 100vh;
-            background: #0f0f13;
-            color: #fff;
-            font-family:
-              system-ui,
-              -apple-system,
-              sans-serif;
-          }
-
-          .admin-sidebar {
-            width: 260px;
-            background: rgba(20, 20, 30, 0.95);
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
-          }
-
-          .admin-logo {
-            padding: 24px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-          }
-
-          .admin-logo h1 {
-            font-size: 20px;
-            font-weight: 600;
-            margin: 0;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-          }
-
-          .admin-nav {
-            flex: 1;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-          }
-
-          .admin-nav-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            border-radius: 8px;
-            color: rgba(255, 255, 255, 0.7);
-            text-decoration: none;
-            transition: all 0.2s;
-          }
-
-          .admin-nav-item:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: #fff;
-          }
-
-          .admin-nav-item.active {
-            background: rgba(59, 130, 246, 0.2);
-            color: #3b82f6;
-          }
-
-          .admin-user {
-            padding: 16px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-          }
-
-          .admin-user-info {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            margin-bottom: 12px;
-          }
-
-          .admin-user-email {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.9);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-          }
-
-          .admin-user-role {
-            font-size: 12px;
-            padding: 2px 8px;
-            border-radius: 4px;
-            width: fit-content;
-          }
-
-          .admin-user-role.admin {
-            background: rgba(59, 130, 246, 0.2);
-            color: #3b82f6;
-          }
-
-          .admin-user-role.viewer {
-            background: rgba(139, 92, 246, 0.2);
-            color: #8b5cf6;
-          }
-
-          .admin-logout {
-            width: 100%;
-            padding: 8px 16px;
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 6px;
-            color: #ef4444;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
-          }
-
-          .admin-logout:hover {
-            background: rgba(239, 68, 68, 0.2);
-          }
-
-          .admin-main {
-            flex: 1;
-            margin-left: 260px;
-            padding: 24px;
-            min-height: 100vh;
-          }
-        `}</style>
       </div>
     </ErrorBoundary>
   );

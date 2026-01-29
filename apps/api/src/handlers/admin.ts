@@ -59,6 +59,7 @@ import { getAllFlags, updateFeatureFlag, FeatureFlagName } from '../lib/feature-
 import { handleWebhookRoutes } from '../lib/webhooks/handler.js';
 import { emitLeadStatusChanged } from '../lib/events.js';
 import * as analytics from '../lib/analytics/aggregator.js';
+import { LEAD_STATUSES } from '@kanjona/shared';
 import { PutCommand, ScanCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import { getDocClient } from '../lib/db/client.js';
 import { getExportsTableName, getPlatformLeadsTableName } from '../lib/db/table-names.js';
@@ -83,19 +84,7 @@ const log = createLogger('admin-handler');
 
 const VALID_MEMBERSHIP_ROLES: readonly string[] = VALID_ROLES_LIST;
 
-// Fix 7: Align with LeadStatus type from leads.ts (includes 'booked')
-const VALID_LEAD_STATUSES: leadsDb.LeadStatus[] = [
-  'new',
-  'assigned',
-  'contacted',
-  'qualified',
-  'converted',
-  'lost',
-  'dnc',
-  'quarantined',
-  'unassigned',
-  'booked',
-];
+const VALID_LEAD_STATUSES: leadsDb.LeadStatus[] = [...LEAD_STATUSES];
 
 const BULK_UPDATE_MAX = 100;
 

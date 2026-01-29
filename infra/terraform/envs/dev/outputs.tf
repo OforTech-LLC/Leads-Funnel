@@ -197,7 +197,7 @@ output "sns_alerts_topic_arn" {
 # -----------------------------------------------------------------------------
 output "funnel_count" {
   description = "Number of funnels configured"
-  value       = length(var.funnel_ids)
+  value       = length(local.funnel_ids)
 }
 
 output "environment" {

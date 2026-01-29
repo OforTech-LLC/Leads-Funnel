@@ -437,7 +437,7 @@ Commercial Cleaning, Security Systems, IT Services, Marketing Agency
 Auto Repair, Auto Detailing, Towing, Auto Glass
 
 Each funnel is available in English and Spanish in both environments. Source of truth for slugs:
-`infra/terraform/envs/dev/variables.tf` (`funnel_ids`).
+`infra/terraform/shared/funnels.tf` (`funnel_ids`).
 
 ### Funnel URLs (Dev + Prod)
 

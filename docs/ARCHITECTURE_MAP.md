@@ -1,7 +1,7 @@
 # Architecture Map: Kanjona Lead Generation Platform
 
 > Last Updated: 2026-01-29  
-> Map Version: 6
+> Map Version: 7
 
 ## 1. System Overview
 
@@ -14,6 +14,7 @@
 - **Database:** DynamoDB (47 funnel tables + shared tables)
 - **Message Queue:** EventBridge (async events)
 - **Infrastructure:** Terraform, AWS Lambda, API Gateway, CloudFront, S3
+- **AI (optional):** Amazon Bedrock (feature-flagged lead analysis)
 - **State Management:** Redux Toolkit (Frontend)
 - **Validation:** Zod (TypeScript), Vapor Validatable (Swift)
 
@@ -62,6 +63,7 @@
 | Admin Handler  | Admin CRUD, exports, analytics, flags, user list                   | `src/handlers/admin.ts`           |
 | Portal Handler | Agent workflows, lead updates, profile/org tooling + avatar upload | `src/handlers/portal.ts`          |
 | Cognito Portal | Admin-provisioned portal users + temp password flow                | `src/lib/cognito/portal-users.ts` |
+| Lead Analyzer  | Feature-flagged AI analysis via Bedrock                            | `src/lib/ai/analyzer.ts`          |
 
 ### Backend API (backend/Sources/LeadCaptureAPI)
 

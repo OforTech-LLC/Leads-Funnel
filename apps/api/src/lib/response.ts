@@ -20,15 +20,14 @@
 import type { APIGatewayProxyResultV2 } from 'aws-lambda';
 import { isFeatureEnabled, type FeatureFlags } from './config.js';
 import { HTTP_STATUS, HTTP_HEADERS, CONTENT_TYPES } from './constants.js';
+import { BASE_SECURITY_HEADERS } from './security-headers.js';
 
 // ---------------------------------------------------------------------------
 // CORS + Security headers
 // ---------------------------------------------------------------------------
 
 const SECURITY_HEADERS = {
-  [HTTP_HEADERS.X_CONTENT_TYPE_OPTIONS]: 'nosniff',
-  [HTTP_HEADERS.X_FRAME_OPTIONS]: 'DENY',
-  [HTTP_HEADERS.CACHE_CONTROL]: 'no-store, no-cache, must-revalidate, private',
+  ...BASE_SECURITY_HEADERS,
   [HTTP_HEADERS.CONTENT_SECURITY_POLICY]: "default-src 'none'; frame-ancestors 'none'",
 } as const;
 

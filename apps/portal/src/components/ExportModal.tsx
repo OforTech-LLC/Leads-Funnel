@@ -11,6 +11,7 @@ import {
 } from '@/lib/exports';
 import { useFocusTrap } from '@/lib/useFocusTrap';
 import { ERROR_MESSAGES } from '@/lib/constants';
+import { PORTAL_EXPORT_STATUS_OPTIONS } from '@/lib/lead-status';
 import type { LeadStatus } from '@/lib/types';
 
 const FORMAT_OPTIONS: { value: ExportFormat; label: string; description: string }[] = [
@@ -19,16 +20,7 @@ const FORMAT_OPTIONS: { value: ExportFormat; label: string; description: string 
   { value: 'json', label: 'JSON', description: 'Structured data for developers' },
 ];
 
-const STATUS_OPTIONS: { value: LeadStatus | ''; label: string }[] = [
-  { value: '', label: 'All statuses' },
-  { value: 'new', label: 'New' },
-  { value: 'contacted', label: 'Contacted' },
-  { value: 'qualified', label: 'Qualified' },
-  { value: 'booked', label: 'Booked' },
-  { value: 'won', label: 'Won' },
-  { value: 'lost', label: 'Lost' },
-  { value: 'dnc', label: 'DNC' },
-];
+const STATUS_OPTIONS: { value: LeadStatus | ''; label: string }[] = PORTAL_EXPORT_STATUS_OPTIONS;
 
 interface ExportModalProps {
   isOpen: boolean;

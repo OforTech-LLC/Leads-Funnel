@@ -22,9 +22,10 @@ function buildCSPHeader(nonce: string): string {
     // script-src: use nonce and strict-dynamic for modern browsers
     // strict-dynamic ignores 'self' and 'unsafe-inline' in supporting browsers
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://www.googletagmanager.com https://www.google-analytics.com`,
-    // style-src: unsafe-inline needed for CSS-in-JS (React inline styles, framer-motion)
-    // TODO: Consider using CSS modules or external stylesheets to remove unsafe-inline
-    `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
+    // style-src: inline style attributes are used across the funnel UI
+    `style-src 'self' https://fonts.googleapis.com`,
+    `style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com`,
+    `style-src-attr 'unsafe-inline'`,
     "img-src 'self' data: https: blob:",
     "font-src 'self' https://fonts.gstatic.com",
     "connect-src 'self' https://api.kanjona.com https://*.amazonaws.com https://www.google-analytics.com",

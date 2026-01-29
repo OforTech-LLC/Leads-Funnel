@@ -2,15 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import type { LeadStatus } from '@/lib/types';
-
-const STATUS_OPTIONS: { value: LeadStatus; label: string; color: string }[] = [
-  { value: 'new', label: 'New', color: 'bg-blue-500' },
-  { value: 'contacted', label: 'Contacted', color: 'bg-yellow-500' },
-  { value: 'booked', label: 'Booked', color: 'bg-purple-500' },
-  { value: 'won', label: 'Won', color: 'bg-green-500' },
-  { value: 'lost', label: 'Lost', color: 'bg-red-500' },
-  { value: 'dnc', label: 'DNC', color: 'bg-gray-400' },
-];
+import { PORTAL_STATUS_OPTIONS, STATUS_DOT_COLORS } from '@/lib/lead-status';
 
 interface StatusSelectProps {
   currentStatus: LeadStatus;
@@ -39,7 +31,8 @@ export default function StatusSelect({
     }
   }, [isOpen]);
 
-  const current = STATUS_OPTIONS.find((o) => o.value === currentStatus) || STATUS_OPTIONS[0];
+  const current =
+    PORTAL_STATUS_OPTIONS.find((o) => o.value === currentStatus) || PORTAL_STATUS_OPTIONS[0];
 
   return (
     <div ref={containerRef} className="relative">
@@ -52,7 +45,11 @@ export default function StatusSelect({
         aria-expanded={isOpen}
         aria-label="Change lead status"
       >
-        <span className={`h-2.5 w-2.5 rounded-full ${current.color}`} />
+        <span
+          className={`h-2.5 w-2.5 rounded-full ${
+            STATUS_DOT_COLORS[current.value] || STATUS_DOT_COLORS.new
+          }`}
+        />
         {current.label}
         <svg
           className={`h-4 w-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
@@ -71,7 +68,7 @@ export default function StatusSelect({
           role="listbox"
           aria-label="Status options"
         >
-          {STATUS_OPTIONS.map((option) => (
+          {PORTAL_STATUS_OPTIONS.map((option) => (
             <button
               key={option.value}
               type="button"
@@ -89,7 +86,11 @@ export default function StatusSelect({
                 setIsOpen(false);
               }}
             >
-              <span className={`h-2.5 w-2.5 rounded-full ${option.color}`} />
+              <span
+                className={`h-2.5 w-2.5 rounded-full ${
+                  STATUS_DOT_COLORS[option.value] || STATUS_DOT_COLORS.new
+                }`}
+              />
               {option.label}
               {option.value === currentStatus && (
                 <svg

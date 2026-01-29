@@ -5,8 +5,6 @@
 // components and query hooks.
 // ──────────────────────────────────────────────
 
-import type { LeadStatus } from '@/lib/types';
-
 // ── Auth ──────────────────────────────────────
 
 export const AUTH_COOKIE_NAME = 'portal_token';
@@ -83,36 +81,6 @@ export const ROLE_LABELS: Record<string, string> = {
   admin: 'Admin',
   agent: 'Agent',
   manager: 'Manager',
-};
-
-// ── Lead statuses ─────────────────────────────
-
-export const LEAD_STATUSES: LeadStatus[] = [
-  'new',
-  'assigned',
-  'unassigned',
-  'contacted',
-  'qualified',
-  'converted',
-  'booked',
-  'won',
-  'lost',
-  'dnc',
-  'quarantined',
-];
-
-export const STATUS_LABELS: Record<LeadStatus, string> = {
-  new: 'New',
-  assigned: 'Assigned',
-  unassigned: 'Unassigned',
-  contacted: 'Contacted',
-  qualified: 'Qualified',
-  converted: 'Converted',
-  booked: 'Booked',
-  won: 'Won',
-  lost: 'Lost',
-  dnc: 'DNC',
-  quarantined: 'Quarantined',
 };
 
 // ── Error messages ────────────────────────────

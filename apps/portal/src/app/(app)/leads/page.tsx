@@ -17,25 +17,9 @@ import { LeadListSkeleton } from '@/components/LoadingSpinner';
 import { toast } from '@/lib/toast';
 import type { LeadStatus, LeadFilters, Lead } from '@/lib/types';
 import { ApiError } from '@/lib/api';
+import { PORTAL_STATUS_FILTER_OPTIONS, PORTAL_STATUS_OPTIONS } from '@/lib/lead-status';
 
-const STATUS_OPTIONS: { value: LeadStatus | ''; label: string }[] = [
-  { value: '', label: 'All statuses' },
-  { value: 'new', label: 'New' },
-  { value: 'contacted', label: 'Contacted' },
-  { value: 'booked', label: 'Booked' },
-  { value: 'won', label: 'Won' },
-  { value: 'lost', label: 'Lost' },
-  { value: 'dnc', label: 'DNC' },
-];
-
-const BULK_STATUS_OPTIONS: { value: LeadStatus; label: string }[] = [
-  { value: 'new', label: 'New' },
-  { value: 'contacted', label: 'Contacted' },
-  { value: 'booked', label: 'Booked' },
-  { value: 'won', label: 'Won' },
-  { value: 'lost', label: 'Lost' },
-  { value: 'dnc', label: 'DNC' },
-];
+const BULK_STATUS_OPTIONS: { value: LeadStatus; label: string }[] = PORTAL_STATUS_OPTIONS;
 
 const DATE_PRESETS = [
   {
@@ -331,7 +315,7 @@ export default function LeadsPage() {
               Status
             </p>
             <div className="flex flex-wrap gap-2">
-              {STATUS_OPTIONS.map((option) => (
+              {PORTAL_STATUS_FILTER_OPTIONS.map((option) => (
                 <button
                   key={option.value}
                   type="button"

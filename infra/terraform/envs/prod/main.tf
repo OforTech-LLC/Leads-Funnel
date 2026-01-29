@@ -17,6 +17,13 @@
 # =============================================================================
 
 # -----------------------------------------------------------------------------
+# Shared Funnel Configuration
+# -----------------------------------------------------------------------------
+module "funnels" {
+  source = "../../shared"
+}
+
+# -----------------------------------------------------------------------------
 # Local Values
 # -----------------------------------------------------------------------------
 locals {
@@ -28,8 +35,8 @@ locals {
   }
 
   # Load funnels from shared configuration
-  funnel_ids      = var.funnel_ids
-  funnel_metadata = var.funnel_metadata
+  funnel_ids      = module.funnels.funnel_ids
+  funnel_metadata = module.funnels.funnel_metadata
 
   # Resource prefix
   prefix = "${var.project_name}-${var.environment}"

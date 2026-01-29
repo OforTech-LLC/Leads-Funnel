@@ -202,7 +202,7 @@ output "cloudwatch_dashboard_name" {
 # -----------------------------------------------------------------------------
 output "funnel_count" {
   description = "Number of funnels configured"
-  value       = length(var.funnel_ids)
+  value       = length(local.funnel_ids)
 }
 
 output "environment" {

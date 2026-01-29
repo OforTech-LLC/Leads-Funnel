@@ -21,7 +21,7 @@ import ConversionFunnel from '@/components/charts/ConversionFunnel';
 import ActivityFeed from '@/components/ActivityFeed';
 import StatusBadge from '@/components/StatusBadge';
 import { MetricCardSkeleton, LeadCardSkeleton } from '@/components/LoadingSpinner';
-import { STATUS_LABELS } from '@/lib/constants';
+import { STATUS_LABELS } from '@/lib/lead-status';
 import type { LeadStatus } from '@/lib/types';
 
 // ── Trend indicator component ────────────────
@@ -90,22 +90,6 @@ function Sparkline({ values, color }: { values: number[]; color: string }) {
     </svg>
   );
 }
-
-// ── Status colors map ────────────────────────
-
-const STATUS_COLORS: Record<LeadStatus, string> = {
-  new: 'bg-blue-500',
-  assigned: 'bg-cyan-500',
-  unassigned: 'bg-slate-400',
-  contacted: 'bg-yellow-500',
-  qualified: 'bg-purple-500',
-  converted: 'bg-green-500',
-  booked: 'bg-indigo-500',
-  won: 'bg-emerald-500',
-  lost: 'bg-red-500',
-  dnc: 'bg-gray-400',
-  quarantined: 'bg-orange-500',
-};
 
 // ── Dashboard inner content ──────────────────
 

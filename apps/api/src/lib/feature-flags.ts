@@ -39,6 +39,7 @@ export type FeatureFlagName =
   | 'lead_scoring_enabled'
   | 'round_robin_enabled'
   | 'enable_ai_analysis'
+  | 'enable_bedrock_ai'
   | 'enable_admin_console'
   | 'enable_agent_portal'
   | 'enable_assignment'
@@ -69,6 +70,7 @@ const DEFAULT_FLAGS: Readonly<Record<FeatureFlagName, boolean>> = {
   lead_scoring_enabled: true,
   round_robin_enabled: true,
   enable_ai_analysis: false,
+  enable_bedrock_ai: false,
   enable_admin_console: false,
   enable_agent_portal: false,
   enable_assignment: true,

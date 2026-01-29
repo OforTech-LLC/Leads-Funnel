@@ -5,6 +5,7 @@
 import type { APIGatewayProxyResultV2 } from 'aws-lambda';
 import type { FieldErrors } from '@kanjona/shared';
 import { HTTP_STATUS, HTTP_HEADERS, CONTENT_TYPES } from './constants.js';
+import { BASE_SECURITY_HEADERS } from './security-headers.js';
 import type { CaptureStatus } from './constants.js';
 
 // =============================================================================
@@ -13,10 +14,8 @@ import type { CaptureStatus } from './constants.js';
 
 /** Security headers to include in all responses */
 const SECURITY_HEADERS = {
-  [HTTP_HEADERS.X_CONTENT_TYPE_OPTIONS]: 'nosniff',
-  [HTTP_HEADERS.X_FRAME_OPTIONS]: 'DENY',
+  ...BASE_SECURITY_HEADERS,
   [HTTP_HEADERS.X_XSS_PROTECTION]: '1; mode=block',
-  [HTTP_HEADERS.CACHE_CONTROL]: 'no-store, no-cache, must-revalidate, private',
   [HTTP_HEADERS.PRAGMA]: 'no-cache',
 } as const;
 
