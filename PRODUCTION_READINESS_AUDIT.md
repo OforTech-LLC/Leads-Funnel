@@ -5,7 +5,7 @@ By:** Automated Security & Performance Analysis
 
 ---
 
-## Status: ALL ISSUES RESOLVED
+## Status: HISTORICAL SNAPSHOT (Issues Resolved)
 
 **Updated:** January 27, 2026
 
@@ -13,7 +13,8 @@ All 85+ issues identified in this audit have been fixed. A second-pass security 
 completed on January 27, 2026, which identified and resolved an additional 23 findings (11 backend,
 12 frontend). The platform has also been upgraded to Node.js 22 across all runtimes, CI/CD, and
 TypeScript targets. Backend modularity, frontend coupling, and Terraform robustness have all been
-refactored. See `PRODUCTION_FIXES_COMPLETED.md` and `CHANGELOG.md` for full details.
+refactored. Current status and ongoing changes are tracked in `CHANGELOG.md` and
+`docs/PRODUCT_ENGINEERING_SPEC.md`.
 
 ---
 

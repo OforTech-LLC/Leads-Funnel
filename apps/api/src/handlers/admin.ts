@@ -1020,7 +1020,9 @@ async function handleAdminRequest(event: APIGatewayProxyEventV2): Promise<APIGat
       const userId = pathParam(event, 4); // admin/orgs/<orgId>/members/<userId>
       const body = parseBody(event);
       if (body === null) return resp.badRequest('Invalid JSON in request body', requestOrigin);
-      const resolvedRole = body.role ? mapAdminRoleToMembership(body.role as string) : undefined;
+      const resolvedRole = body.role
+        ? (mapAdminRoleToMembership(body.role as string) ?? undefined)
+        : undefined;
       if (body.role && !resolvedRole) {
         return resp.badRequest('Invalid role. Must be one of: owner, admin, member', requestOrigin);
       }
@@ -1664,7 +1666,7 @@ async function handleAdminRequest(event: APIGatewayProxyEventV2): Promise<APIGat
         actorType: ACTOR_TYPES.ADMIN,
         action: 'lead.bulkImport',
         resourceType: 'lead',
-        resourceId: funnelId,
+        resourceId: funnelId || 'bulk-import',
         details: { imported, failed: failedCount },
         ipHash: getIpHash(event),
       });
@@ -1780,7 +1782,9 @@ async function handleAdminRequest(event: APIGatewayProxyEventV2): Promise<APIGat
       if (!canWrite) return resp.forbidden(undefined, requestOrigin);
       const body = parseBody(event);
       if (body === null) return resp.badRequest('Invalid JSON in request body', requestOrigin);
-      if (!body.funnelId || !body.leadId) {
+      const funnelId = typeof body.funnelId === 'string' ? body.funnelId.trim() : '';
+      const leadId = typeof body.leadId === 'string' ? body.leadId.trim() : '';
+      if (!funnelId || !leadId) {
         return resp.badRequest('funnelId and leadId are required', requestOrigin);
       }
 
@@ -1797,15 +1801,15 @@ async function handleAdminRequest(event: APIGatewayProxyEventV2): Promise<APIGat
         );
       }
 
-      const existingLead = await leadsDb.getLead(body.funnelId, body.leadId);
+      const existingLead = await leadsDb.getLead(funnelId, leadId);
       const oldStatus = existingLead?.status || 'unknown';
 
       const notes =
         typeof body.notes === 'string' ? [body.notes] : (body.notes as string[] | undefined);
 
       const updated = await leadsDb.updateLead({
-        funnelId: body.funnelId as string,
-        leadId: body.leadId as string,
+        funnelId,
+        leadId,
         status: desiredStatus,
         orgId: body.assignedOrgId as string | undefined,
         assignedUserId: body.assignedUserId as string | undefined,
@@ -1817,8 +1821,8 @@ async function handleAdminRequest(event: APIGatewayProxyEventV2): Promise<APIGat
 
       if (desiredStatus && desiredStatus !== oldStatus) {
         void emitLeadStatusChanged({
-          leadId: body.leadId as string,
-          funnelId: body.funnelId as string,
+          leadId,
+          funnelId,
           oldStatus,
           newStatus: desiredStatus,
           changedBy: admin.emailHash,

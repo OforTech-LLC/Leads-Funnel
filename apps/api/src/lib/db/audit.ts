@@ -22,6 +22,7 @@ export type AuditAction =
   | 'org.update'
   | 'org.delete'
   | 'user.create'
+  | 'portal_user.create'
   | 'user.update'
   | 'user.delete'
   | 'member.add'

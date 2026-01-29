@@ -204,6 +204,13 @@ describe('parseIdToken', () => {
 
 describe('verifyState', () => {
   const AUTH_STATE_KEY = 'auth_state';
+  const buildState = (overrides?: { nonce?: string; timestamp?: number }): string => {
+    const state = {
+      nonce: overrides?.nonce ?? 'nonce',
+      timestamp: overrides?.timestamp ?? Date.now(),
+    };
+    return btoa(JSON.stringify(state));
+  };
 
   beforeEach(() => {
     // Clear sessionStorage before each test
@@ -217,7 +224,7 @@ describe('verifyState', () => {
 
   describe('successful verification', () => {
     it('should return true when state matches stored value', () => {
-      const state = 'valid-state-value';
+      const state = buildState();
       sessionStorage.setItem(AUTH_STATE_KEY, state);
 
       const result = verifyState(state);
@@ -226,7 +233,7 @@ describe('verifyState', () => {
     });
 
     it('should remove state from storage after successful verification', () => {
-      const state = 'valid-state-value';
+      const state = buildState();
       sessionStorage.setItem(AUTH_STATE_KEY, state);
 
       verifyState(state);
@@ -235,7 +242,7 @@ describe('verifyState', () => {
     });
 
     it('should handle long state values', () => {
-      const longState = 'a'.repeat(128);
+      const longState = buildState({ nonce: 'a'.repeat(256) });
       sessionStorage.setItem(AUTH_STATE_KEY, longState);
 
       const result = verifyState(longState);
@@ -244,7 +251,7 @@ describe('verifyState', () => {
     });
 
     it('should handle state with special characters', () => {
-      const specialState = 'state-with-special-chars_123-abc.xyz';
+      const specialState = buildState({ nonce: 'state-with-special-chars_123-abc.xyz' });
       sessionStorage.setItem(AUTH_STATE_KEY, specialState);
 
       const result = verifyState(specialState);
@@ -255,9 +262,9 @@ describe('verifyState', () => {
 
   describe('failed verification', () => {
     it('should return false when state does not match', () => {
-      sessionStorage.setItem(AUTH_STATE_KEY, 'stored-state');
+      sessionStorage.setItem(AUTH_STATE_KEY, buildState());
 
-      const result = verifyState('different-state');
+      const result = verifyState(buildState({ nonce: 'different' }));
 
       expect(result).toBe(false);
     });
@@ -265,7 +272,7 @@ describe('verifyState', () => {
     it('should return false when no state is stored', () => {
       // sessionStorage is empty
 
-      const result = verifyState('any-state');
+      const result = verifyState(buildState());
 
       expect(result).toBe(false);
     });
@@ -280,17 +287,21 @@ describe('verifyState', () => {
     });
 
     it('should be case-sensitive', () => {
-      sessionStorage.setItem(AUTH_STATE_KEY, 'CaseSensitiveState');
+      const state = buildState({ nonce: 'CaseSensitiveState' });
+      sessionStorage.setItem(AUTH_STATE_KEY, state);
+      const tampered = state.replace(/[A-Za-z]/, (char) =>
+        char === char.toUpperCase() ? char.toLowerCase() : char.toUpperCase()
+      );
 
-      const result = verifyState('casesensitivestate');
+      const result = verifyState(tampered);
 
       expect(result).toBe(false);
     });
 
     it('should not match partial state values', () => {
-      sessionStorage.setItem(AUTH_STATE_KEY, 'full-state-value');
+      sessionStorage.setItem(AUTH_STATE_KEY, buildState({ nonce: 'full-state-value' }));
 
-      const result = verifyState('full-state');
+      const result = verifyState(buildState({ nonce: 'full-state' }));
 
       expect(result).toBe(false);
     });
@@ -298,7 +309,7 @@ describe('verifyState', () => {
 
   describe('CSRF protection', () => {
     it('should prevent replay attacks by clearing state after use', () => {
-      const state = 'one-time-use-state';
+      const state = buildState({ nonce: 'one-time-use-state' });
       sessionStorage.setItem(AUTH_STATE_KEY, state);
 
       // First verification should succeed
@@ -310,16 +321,14 @@ describe('verifyState', () => {
       expect(secondResult).toBe(false);
     });
 
-    it('should not clear state on failed verification', () => {
-      const storedState = 'stored-state';
+    it('should clear state on failed verification', () => {
+      const storedState = buildState({ nonce: 'stored-state' });
       sessionStorage.setItem(AUTH_STATE_KEY, storedState);
 
       // Attempt with wrong state
-      verifyState('wrong-state');
+      verifyState(buildState({ nonce: 'wrong-state' }));
 
-      // Original state should still be stored (implementation-dependent)
-      // Note: The actual implementation clears on success only
-      expect(sessionStorage.getItem(AUTH_STATE_KEY)).toBe(storedState);
+      expect(sessionStorage.getItem(AUTH_STATE_KEY)).toBeNull();
     });
   });
 
@@ -334,12 +343,13 @@ describe('verifyState', () => {
     });
 
     it('should handle whitespace differences', () => {
-      sessionStorage.setItem(AUTH_STATE_KEY, 'state-value');
+      const state = buildState({ nonce: 'state-value' });
+      sessionStorage.setItem(AUTH_STATE_KEY, state);
 
-      const resultWithSpace = verifyState(' state-value');
+      const resultWithSpace = verifyState(` ${state}`);
       expect(resultWithSpace).toBe(false);
 
-      const resultWithTrailingSpace = verifyState('state-value ');
+      const resultWithTrailingSpace = verifyState(`${state} `);
       expect(resultWithTrailingSpace).toBe(false);
     });
   });

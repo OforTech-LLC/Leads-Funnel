@@ -4,7 +4,7 @@ import { generateTemporaryPassword } from './portal-users.js';
 const hasUpper = (value: string) => /[A-Z]/.test(value);
 const hasLower = (value: string) => /[a-z]/.test(value);
 const hasNumber = (value: string) => /[0-9]/.test(value);
-const hasSpecial = (value: string) => /[!@#$%^&*_-+=]/.test(value);
+const hasSpecial = (value: string) => /[!@#$%^&*_=+\-]/.test(value);
 
 describe('generateTemporaryPassword', () => {
   it('generates a password with expected length', () => {

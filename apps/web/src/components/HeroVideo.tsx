@@ -73,7 +73,7 @@ export const HeroVideo: React.FC<HeroVideoProps> = ({
         clearTimeout(timerRef.current);
       }
     };
-  }, [isLoaded, isVisible, autoSkipDelay]);
+  }, [isLoaded, isVisible, autoSkipDelay, handleComplete]);
 
   const handleVideoLoaded = () => {
     setIsLoaded(true);

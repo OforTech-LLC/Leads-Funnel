@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
+import type { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 
 type HttpModule = typeof import('../lib/http.js');
 
@@ -16,7 +17,11 @@ describe('lead capture http responses', () => {
   it('created returns success response with legacy fields and CORS headers', async () => {
     const http = await loadHttp('https://example.com');
 
-    const response = http.created('lead-123', 'accepted', 'https://example.com');
+    const response = http.created(
+      'lead-123',
+      'accepted',
+      'https://example.com'
+    ) as APIGatewayProxyStructuredResultV2;
     const body = JSON.parse(response.body as string) as {
       success: boolean;
       ok: boolean;
@@ -38,7 +43,10 @@ describe('lead capture http responses', () => {
   it('validationError returns error response with fieldErrors', async () => {
     const http = await loadHttp('https://example.com');
 
-    const response = http.validationError({ email: 'Email is required' }, 'https://example.com');
+    const response = http.validationError(
+      { email: 'Email is required' },
+      'https://example.com'
+    ) as APIGatewayProxyStructuredResultV2;
     const body = JSON.parse(response.body as string) as {
       success: boolean;
       ok: boolean;

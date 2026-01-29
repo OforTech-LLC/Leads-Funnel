@@ -436,26 +436,65 @@ Commercial Cleaning, Security Systems, IT Services, Marketing Agency
 
 Auto Repair, Auto Detailing, Towing, Auto Glass
 
-Each funnel is available in English and Spanish at:
+Each funnel is available in English and Spanish in both environments. Source of truth for slugs:
+`infra/terraform/envs/dev/variables.tf` (`funnel_ids`).
 
-- `https://kanjona.com/en/{service-slug}`
-- `https://kanjona.com/es/{service-slug}`
+### Funnel URLs (Dev + Prod)
+
+| Funnel Slug                 | Dev (EN)                                             | Dev (ES)                                             | Prod (EN)                                        | Prod (ES)                                        |
+| --------------------------- | ---------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------ | ------------------------------------------------ |
+| `real-estate`               | https://dev.kanjona.com/en/real-estate               | https://dev.kanjona.com/es/real-estate               | https://kanjona.com/en/real-estate               | https://kanjona.com/es/real-estate               |
+| `roofing`                   | https://dev.kanjona.com/en/roofing                   | https://dev.kanjona.com/es/roofing                   | https://kanjona.com/en/roofing                   | https://kanjona.com/es/roofing                   |
+| `cleaning`                  | https://dev.kanjona.com/en/cleaning                  | https://dev.kanjona.com/es/cleaning                  | https://kanjona.com/en/cleaning                  | https://kanjona.com/es/cleaning                  |
+| `hvac`                      | https://dev.kanjona.com/en/hvac                      | https://dev.kanjona.com/es/hvac                      | https://kanjona.com/en/hvac                      | https://kanjona.com/es/hvac                      |
+| `plumbing`                  | https://dev.kanjona.com/en/plumbing                  | https://dev.kanjona.com/es/plumbing                  | https://kanjona.com/en/plumbing                  | https://kanjona.com/es/plumbing                  |
+| `electrician`               | https://dev.kanjona.com/en/electrician               | https://dev.kanjona.com/es/electrician               | https://kanjona.com/en/electrician               | https://kanjona.com/es/electrician               |
+| `pest-control`              | https://dev.kanjona.com/en/pest-control              | https://dev.kanjona.com/es/pest-control              | https://kanjona.com/en/pest-control              | https://kanjona.com/es/pest-control              |
+| `landscaping`               | https://dev.kanjona.com/en/landscaping               | https://dev.kanjona.com/es/landscaping               | https://kanjona.com/en/landscaping               | https://kanjona.com/es/landscaping               |
+| `pool-service`              | https://dev.kanjona.com/en/pool-service              | https://dev.kanjona.com/es/pool-service              | https://kanjona.com/en/pool-service              | https://kanjona.com/es/pool-service              |
+| `home-remodeling`           | https://dev.kanjona.com/en/home-remodeling           | https://dev.kanjona.com/es/home-remodeling           | https://kanjona.com/en/home-remodeling           | https://kanjona.com/es/home-remodeling           |
+| `solar`                     | https://dev.kanjona.com/en/solar                     | https://dev.kanjona.com/es/solar                     | https://kanjona.com/en/solar                     | https://kanjona.com/es/solar                     |
+| `pressure-washing`          | https://dev.kanjona.com/en/pressure-washing          | https://dev.kanjona.com/es/pressure-washing          | https://kanjona.com/en/pressure-washing          | https://kanjona.com/es/pressure-washing          |
+| `locksmith`                 | https://dev.kanjona.com/en/locksmith                 | https://dev.kanjona.com/es/locksmith                 | https://kanjona.com/en/locksmith                 | https://kanjona.com/es/locksmith                 |
+| `water-damage-restoration`  | https://dev.kanjona.com/en/water-damage-restoration  | https://dev.kanjona.com/es/water-damage-restoration  | https://kanjona.com/en/water-damage-restoration  | https://kanjona.com/es/water-damage-restoration  |
+| `mold-remediation`          | https://dev.kanjona.com/en/mold-remediation          | https://dev.kanjona.com/es/mold-remediation          | https://kanjona.com/en/mold-remediation          | https://kanjona.com/es/mold-remediation          |
+| `flooring`                  | https://dev.kanjona.com/en/flooring                  | https://dev.kanjona.com/es/flooring                  | https://kanjona.com/en/flooring                  | https://kanjona.com/es/flooring                  |
+| `painting`                  | https://dev.kanjona.com/en/painting                  | https://dev.kanjona.com/es/painting                  | https://kanjona.com/en/painting                  | https://kanjona.com/es/painting                  |
+| `windows-doors`             | https://dev.kanjona.com/en/windows-doors             | https://dev.kanjona.com/es/windows-doors             | https://kanjona.com/en/windows-doors             | https://kanjona.com/es/windows-doors             |
+| `fencing`                   | https://dev.kanjona.com/en/fencing                   | https://dev.kanjona.com/es/fencing                   | https://kanjona.com/en/fencing                   | https://kanjona.com/es/fencing                   |
+| `concrete`                  | https://dev.kanjona.com/en/concrete                  | https://dev.kanjona.com/es/concrete                  | https://kanjona.com/en/concrete                  | https://kanjona.com/es/concrete                  |
+| `moving`                    | https://dev.kanjona.com/en/moving                    | https://dev.kanjona.com/es/moving                    | https://kanjona.com/en/moving                    | https://kanjona.com/es/moving                    |
+| `junk-removal`              | https://dev.kanjona.com/en/junk-removal              | https://dev.kanjona.com/es/junk-removal              | https://kanjona.com/en/junk-removal              | https://kanjona.com/es/junk-removal              |
+| `appliance-repair`          | https://dev.kanjona.com/en/appliance-repair          | https://dev.kanjona.com/es/appliance-repair          | https://kanjona.com/en/appliance-repair          | https://kanjona.com/es/appliance-repair          |
+| `dentist`                   | https://dev.kanjona.com/en/dentist                   | https://dev.kanjona.com/es/dentist                   | https://kanjona.com/en/dentist                   | https://kanjona.com/es/dentist                   |
+| `plastic-surgeon`           | https://dev.kanjona.com/en/plastic-surgeon           | https://dev.kanjona.com/es/plastic-surgeon           | https://kanjona.com/en/plastic-surgeon           | https://kanjona.com/es/plastic-surgeon           |
+| `orthodontist`              | https://dev.kanjona.com/en/orthodontist              | https://dev.kanjona.com/es/orthodontist              | https://kanjona.com/en/orthodontist              | https://kanjona.com/es/orthodontist              |
+| `dermatology`               | https://dev.kanjona.com/en/dermatology               | https://dev.kanjona.com/es/dermatology               | https://kanjona.com/en/dermatology               | https://kanjona.com/es/dermatology               |
+| `medspa`                    | https://dev.kanjona.com/en/medspa                    | https://dev.kanjona.com/es/medspa                    | https://kanjona.com/en/medspa                    | https://kanjona.com/es/medspa                    |
+| `chiropractic`              | https://dev.kanjona.com/en/chiropractic              | https://dev.kanjona.com/es/chiropractic              | https://kanjona.com/en/chiropractic              | https://kanjona.com/es/chiropractic              |
+| `physical-therapy`          | https://dev.kanjona.com/en/physical-therapy          | https://dev.kanjona.com/es/physical-therapy          | https://kanjona.com/en/physical-therapy          | https://kanjona.com/es/physical-therapy          |
+| `hair-transplant`           | https://dev.kanjona.com/en/hair-transplant           | https://dev.kanjona.com/es/hair-transplant           | https://kanjona.com/en/hair-transplant           | https://kanjona.com/es/hair-transplant           |
+| `cosmetic-dentistry`        | https://dev.kanjona.com/en/cosmetic-dentistry        | https://dev.kanjona.com/es/cosmetic-dentistry        | https://kanjona.com/en/cosmetic-dentistry        | https://kanjona.com/es/cosmetic-dentistry        |
+| `personal-injury-attorney`  | https://dev.kanjona.com/en/personal-injury-attorney  | https://dev.kanjona.com/es/personal-injury-attorney  | https://kanjona.com/en/personal-injury-attorney  | https://kanjona.com/es/personal-injury-attorney  |
+| `immigration-attorney`      | https://dev.kanjona.com/en/immigration-attorney      | https://dev.kanjona.com/es/immigration-attorney      | https://kanjona.com/en/immigration-attorney      | https://kanjona.com/es/immigration-attorney      |
+| `criminal-defense-attorney` | https://dev.kanjona.com/en/criminal-defense-attorney | https://dev.kanjona.com/es/criminal-defense-attorney | https://kanjona.com/en/criminal-defense-attorney | https://kanjona.com/es/criminal-defense-attorney |
+| `tax-accounting`            | https://dev.kanjona.com/en/tax-accounting            | https://dev.kanjona.com/es/tax-accounting            | https://kanjona.com/en/tax-accounting            | https://kanjona.com/es/tax-accounting            |
+| `business-consulting`       | https://dev.kanjona.com/en/business-consulting       | https://dev.kanjona.com/es/business-consulting       | https://kanjona.com/en/business-consulting       | https://kanjona.com/es/business-consulting       |
+| `life-insurance`            | https://dev.kanjona.com/en/life-insurance            | https://dev.kanjona.com/es/life-insurance            | https://kanjona.com/en/life-insurance            | https://kanjona.com/es/life-insurance            |
+| `commercial-cleaning`       | https://dev.kanjona.com/en/commercial-cleaning       | https://dev.kanjona.com/es/commercial-cleaning       | https://kanjona.com/en/commercial-cleaning       | https://kanjona.com/es/commercial-cleaning       |
+| `security-systems`          | https://dev.kanjona.com/en/security-systems          | https://dev.kanjona.com/es/security-systems          | https://kanjona.com/en/security-systems          | https://kanjona.com/es/security-systems          |
+| `it-services`               | https://dev.kanjona.com/en/it-services               | https://dev.kanjona.com/es/it-services               | https://kanjona.com/en/it-services               | https://kanjona.com/es/it-services               |
+| `marketing-agency`          | https://dev.kanjona.com/en/marketing-agency          | https://dev.kanjona.com/es/marketing-agency          | https://kanjona.com/en/marketing-agency          | https://kanjona.com/es/marketing-agency          |
+| `auto-repair`               | https://dev.kanjona.com/en/auto-repair               | https://dev.kanjona.com/es/auto-repair               | https://kanjona.com/en/auto-repair               | https://kanjona.com/es/auto-repair               |
+| `auto-detailing`            | https://dev.kanjona.com/en/auto-detailing            | https://dev.kanjona.com/es/auto-detailing            | https://kanjona.com/en/auto-detailing            | https://kanjona.com/es/auto-detailing            |
+| `towing`                    | https://dev.kanjona.com/en/towing                    | https://dev.kanjona.com/es/towing                    | https://kanjona.com/en/towing                    | https://kanjona.com/es/towing                    |
+| `auto-glass`                | https://dev.kanjona.com/en/auto-glass                | https://dev.kanjona.com/es/auto-glass                | https://kanjona.com/en/auto-glass                | https://kanjona.com/es/auto-glass                |
+| `construction`              | https://dev.kanjona.com/en/construction              | https://dev.kanjona.com/es/construction              | https://kanjona.com/en/construction              | https://kanjona.com/es/construction              |
 
 ## Feature Flags
 
-Feature flags are managed via SSM Parameter Store:
-
-| Flag                         | Description                   | Dev Default | Prod Default |
-| ---------------------------- | ----------------------------- | ----------- | ------------ |
-| `enable_voice_agent`         | AI voice agent functionality  | `false`     | `false`      |
-| `enable_twilio`              | Twilio SMS/Voice integration  | `false`     | `false`      |
-| `enable_elevenlabs`          | ElevenLabs AI voice synthesis | `false`     | `false`      |
-| `enable_waf`                 | WAF protection                | `false`     | `true`       |
-| `enable_email_notifications` | Email notifications           | `true`      | `true`       |
-| `enable_sms_notifications`   | SMS notifications             | `false`     | `false`      |
-| `enable_rate_limiting`       | Rate limiting                 | `true`      | `true`       |
-| `enable_deduplication`       | Lead deduplication            | `true`      | `true`       |
-| `enable_debug`               | Debug logging                 | `true`      | `false`      |
+Feature flags are managed via SSM Parameter Store. The full, authoritative flag map and defaults
+live in `docs/PRODUCT_ENGINEERING_SPEC.md`.
 
 ## Security
 

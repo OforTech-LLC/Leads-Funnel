@@ -569,7 +569,7 @@ export async function handler(
             message: normalizedLead.message,
             pageUrl: normalizedLead.pageUrl,
             referrer: normalizedLead.referrer,
-            utm: normalizedLead.utm,
+            utm: normalizedLead.utm as Record<string, string> | undefined,
             status: platformStatus,
             ipHash: security.ipHash,
             userAgent,

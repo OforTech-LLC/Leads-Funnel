@@ -28,7 +28,6 @@ class ApiRequestError extends Error {
   }
 }
 
-const REQUEST_TIMEOUT_MS = 30000;
 const MAX_RETRIES = 3;
 const INITIAL_RETRY_DELAY_MS = 1000;
 
@@ -281,29 +280,36 @@ describe('API Client Integration', () => {
 
   describe('timeout handling', () => {
     it('should abort request after timeout', async () => {
-      // Create a never-resolving promise to simulate timeout
-      mockFetch.mockImplementation(
-        () =>
-          new Promise((_, reject) => {
-            setTimeout(() => {
-              const error = new Error('Aborted');
-              error.name = 'AbortError';
-              reject(error);
-            }, REQUEST_TIMEOUT_MS + 100);
-          })
-      );
+      mockFetch.mockImplementation((_url, init) => {
+        const signal = init?.signal as AbortSignal | undefined;
+        return new Promise((_, reject) => {
+          if (signal?.aborted) {
+            const error = new Error('Aborted');
+            error.name = 'AbortError';
+            reject(error);
+            return;
+          }
+          const onAbort = () => {
+            signal?.removeEventListener('abort', onAbort);
+            const error = new Error('Aborted');
+            error.name = 'AbortError';
+            reject(error);
+          };
+          signal?.addEventListener('abort', onAbort);
+        });
+      });
 
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 100);
 
-      try {
-        await fetch('https://api.example.com/slow', {
-          signal: controller.signal,
-        });
-      } catch (error) {
-        expect(error).toBeInstanceOf(Error);
-        expect((error as Error).name).toBe('AbortError');
-      }
+      const request = fetch('https://api.example.com/slow', {
+        signal: controller.signal,
+      });
+      const expectation = expect(request).rejects.toMatchObject({ name: 'AbortError' });
+
+      await vi.advanceTimersByTimeAsync(100);
+
+      await expectation;
 
       clearTimeout(timeoutId);
     });

@@ -105,8 +105,8 @@ export async function createPortalUser(
   });
 
   const response = await client.send(command);
-  const attributes = response.User?.Attributes || [];
-  const sub = attributes.find((attr) => attr.Name === 'sub')?.Value;
+  const attributes = (response.User?.Attributes || []) as AttributeType[];
+  const sub = attributes.find((attr: AttributeType) => attr.Name === 'sub')?.Value;
 
   if (!sub) {
     throw new Error('Cognito user created but missing sub');
