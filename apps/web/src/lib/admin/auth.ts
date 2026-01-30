@@ -17,6 +17,7 @@
 
 import { getAdminConfig, buildLoginUrl, buildLogoutUrl, buildTokenUrl } from './config';
 import { csrfTokenManager } from '../csrf';
+import { getApiBaseUrl } from '../runtime-config';
 
 /**
  * Represents an authenticated admin user with their profile and permissions.
@@ -147,7 +148,7 @@ export async function exchangeCodeForTokens(code: string): Promise<AuthTokens> {
   // Store tokens in httpOnly cookie via backend API
   // Security: httpOnly prevents XSS attacks from stealing tokens
   // Security: credentials: 'include' ensures cookies are sent/received
-  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+  const apiUrl = getApiBaseUrl();
   const cookieResponse = await fetch(`${apiUrl}/auth/admin`, {
     method: 'POST',
     headers: {
@@ -188,7 +189,7 @@ export async function exchangeCodeForTokens(code: string): Promise<AuthTokens> {
 export async function refreshTokens(): Promise<AuthTokens | null> {
   try {
     // Check current auth status from server
-    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+    const apiUrl = getApiBaseUrl();
     const statusResponse = await fetch(`${apiUrl}/auth/admin`, {
       method: 'GET',
       credentials: 'include',
@@ -252,7 +253,7 @@ export async function checkAuthStatus(): Promise<{
   }
 
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+    const apiUrl = getApiBaseUrl();
     const response = await fetch(`${apiUrl}/auth/admin`, {
       method: 'GET',
       credentials: 'include',
@@ -295,7 +296,7 @@ export async function isAuthenticated(): Promise<boolean> {
  */
 export async function getAccessToken(): Promise<string | null> {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+  const apiUrl = getApiBaseUrl();
     const response = await fetch(`${apiUrl}/auth/admin/token`, {
       method: 'GET',
       credentials: 'include',
@@ -327,7 +328,7 @@ export async function getAccessToken(): Promise<string | null> {
  */
 export async function getCurrentUser(): Promise<AdminUser | null> {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+  const apiUrl = getApiBaseUrl();
     const response = await fetch(`${apiUrl}/auth/admin/user`, {
       method: 'GET',
       credentials: 'include',
@@ -364,7 +365,7 @@ export async function clearAuth(): Promise<void> {
   try {
     // Security: CSRF token required even for logout to prevent CSRF logout attacks
     const csrfToken = await csrfTokenManager.getToken();
-    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+  const apiUrl = getApiBaseUrl();
 
     await fetch(`${apiUrl}/auth/admin`, {
       method: 'DELETE',

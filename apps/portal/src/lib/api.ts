@@ -8,7 +8,9 @@
 // - httpOnly cookie auth via credentials: 'include'
 // ──────────────────────────────────────────────
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
+import { getApiBaseUrl } from './runtime-config';
+
+const API_BASE_URL = getApiBaseUrl();
 
 // Configuration - aligned across all 3 apps
 const REQUEST_TIMEOUT_MS = 30000; // 30 seconds

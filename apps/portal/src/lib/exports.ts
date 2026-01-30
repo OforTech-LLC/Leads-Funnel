@@ -8,8 +8,11 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import type { LeadStatus } from '@/lib/types';
 import { API_ENDPOINTS } from '@/lib/constants';
+import { getApiBaseUrl } from './runtime-config';
 
 // ── Types ────────────────────────────────────
+
+const API_BASE_URL = getApiBaseUrl();
 
 export type ExportFormat = 'csv' | 'xlsx' | 'json';
 
@@ -64,8 +67,6 @@ export function useExportStatus(exportId: string | null) {
 }
 
 // ── Download export ──────────────────────────
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
 
 export function downloadExportFile(exportId: string): void {
   // Open download URL in a new tab/trigger download

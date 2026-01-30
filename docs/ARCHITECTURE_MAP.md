@@ -1,7 +1,7 @@
 # Architecture Map: Kanjona Lead Generation Platform
 
 > Last Updated: 2026-01-29  
-> Map Version: 9
+> Map Version: 11
 
 ## 1. System Overview
 
@@ -28,7 +28,7 @@
 
 ## 2. Module/Service Inventory
 
-### Frontend (apps/web)
+### Frontend (apps/web) [Updated: 2026-01-29]
 
 | Component         | Purpose                                           | Key Files                         |
 | ----------------- | ------------------------------------------------- | --------------------------------- |
@@ -38,20 +38,23 @@
 | Language Switcher | i18n support (EN/ES)                              | `components/LanguageSwitcher.tsx` |
 | Redux Store       | State management                                  | `store/leadSlice.ts`              |
 | API Client        | Lead submission                                   | `lib/api.ts`, `lib/api-client.ts` |
+| Runtime Config    | API base URL inference for dev/prod               | `lib/runtime-config.ts`           |
 | Validators        | Client-side validation                            | `lib/validators.ts`               |
 
-### Frontend (apps/admin)
+### Frontend (apps/admin) [Updated: 2026-01-29]
 
 | Component     | Purpose                   | Key Files               |
 | ------------- | ------------------------- | ----------------------- |
 | Admin Console | Admin UI & management     | `src/app/(dashboard)/*` |
+| Auth Gate     | Client auth check + redirect (static export) | `src/components/AuthGate.tsx` |
 | API Client    | RTK Query + fetch helpers | `src/store/api.ts`      |
 
-### Frontend (apps/portal)
+### Frontend (apps/portal) [Updated: 2026-01-29]
 
 | Component    | Purpose              | Key Files        |
 | ------------ | -------------------- | ---------------- |
 | Agent Portal | Contractor workflows | `src/app/*`      |
+| Auth Gate    | Client auth check + redirect (static export) | `src/components/AuthGate.tsx` |
 | API Client   | Fetch + retries      | `src/lib/api.ts` |
 
 ### Node API (apps/api)

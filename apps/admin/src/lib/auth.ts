@@ -11,10 +11,8 @@
 
 const COGNITO_DOMAIN = process.env.NEXT_PUBLIC_COGNITO_DOMAIN || '';
 const COGNITO_CLIENT_ID = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID || '';
-const COGNITO_REDIRECT_URI =
-  process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI || 'http://localhost:3001/callback';
-const COGNITO_LOGOUT_URI =
-  process.env.NEXT_PUBLIC_COGNITO_LOGOUT_URI || 'http://localhost:3001/login';
+const DEFAULT_REDIRECT_URI = 'http://localhost:3001/callback';
+const DEFAULT_LOGOUT_URI = 'http://localhost:3001/login';
 
 import { API_ENDPOINTS, STORAGE_KEYS } from './constants';
 
@@ -27,6 +25,25 @@ const STATE_EXPIRY_MS = 5 * 60 * 1000;
 interface OAuthState {
   nonce: string;
   timestamp: number;
+}
+
+function getAppOrigin(): string | null {
+  if (typeof window === 'undefined') return null;
+  return window.location.origin;
+}
+
+function getRedirectUri(): string {
+  return (
+    process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI ||
+    (getAppOrigin() ? `${getAppOrigin()}/callback` : DEFAULT_REDIRECT_URI)
+  );
+}
+
+function getLogoutUri(): string {
+  return (
+    process.env.NEXT_PUBLIC_COGNITO_LOGOUT_URI ||
+    (getAppOrigin() ? `${getAppOrigin()}/login` : DEFAULT_LOGOUT_URI)
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -112,11 +129,12 @@ export function verifyState(state: string): boolean {
  */
 export function getLoginUrl(): string {
   const state = generateState();
+  const redirectUri = getRedirectUri();
   const params = new URLSearchParams({
     client_id: COGNITO_CLIENT_ID,
     response_type: 'code',
     scope: 'openid email profile',
-    redirect_uri: COGNITO_REDIRECT_URI,
+    redirect_uri: redirectUri,
     state,
   });
   return `${COGNITO_DOMAIN}/login?${params.toString()}`;
@@ -126,9 +144,10 @@ export function getLoginUrl(): string {
  * Build the Cognito Hosted UI logout URL.
  */
 export function getLogoutUrl(): string {
+  const logoutUri = getLogoutUri();
   const params = new URLSearchParams({
     client_id: COGNITO_CLIENT_ID,
-    logout_uri: COGNITO_LOGOUT_URI,
+    logout_uri: logoutUri,
   });
   return `${COGNITO_DOMAIN}/logout?${params.toString()}`;
 }
@@ -157,7 +176,7 @@ export async function exchangeCodeForTokens(code: string): Promise<boolean> {
       grant_type: 'authorization_code',
       client_id: COGNITO_CLIENT_ID,
       code,
-      redirect_uri: COGNITO_REDIRECT_URI,
+      redirect_uri: getRedirectUri(),
     });
 
     const tokenResponse = await fetch(`${COGNITO_DOMAIN}/oauth2/token`, {
@@ -185,6 +204,10 @@ export async function exchangeCodeForTokens(code: string): Promise<boolean> {
         expiresIn: tokens.expires_in,
       }),
     });
+
+    if (storeResponse.ok) {
+      sessionStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, tokens.access_token);
+    }
 
     return storeResponse.ok;
   } catch (error) {
@@ -234,5 +257,6 @@ export async function logout(): Promise<void> {
   } catch {
     // Ignore errors - we redirect regardless
   }
+  sessionStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
   window.location.href = getLogoutUrl();
 }

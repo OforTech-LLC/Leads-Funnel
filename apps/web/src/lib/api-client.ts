@@ -4,8 +4,9 @@
  */
 
 import { csrfTokenManager } from './csrf';
+import { getApiBaseUrl } from './runtime-config';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.kanjona.com';
+const API_BASE_URL = getApiBaseUrl();
 
 // Configuration
 const REQUEST_TIMEOUT_MS = 30000; // 30 seconds

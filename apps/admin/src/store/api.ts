@@ -11,8 +11,10 @@
  */
 
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { getApiBaseUrl } from '@/lib/runtime-config';
+import { STORAGE_KEYS } from '@/lib/constants';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
+const API_BASE_URL = getApiBaseUrl();
 const REQUEST_TIMEOUT_MS = 30000; // 30 seconds
 
 export const api = createApi({
@@ -23,8 +25,14 @@ export const api = createApi({
     timeout: REQUEST_TIMEOUT_MS,
     prepareHeaders: (headers) => {
       // The httpOnly cookie is sent automatically via credentials: 'include'.
-      // For API Gateway requests that need Bearer tokens, we read the cookie
-      // server-side or use the token from the cookie.
+      // Admin routes accept bearer tokens or cookies; attach bearer if available.
+      // We keep a short-lived access token in sessionStorage when present.
+      if (typeof window !== 'undefined') {
+        const token = sessionStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+        if (token) {
+          headers.set('Authorization', `Bearer ${token}`);
+        }
+      }
       headers.set('Content-Type', 'application/json');
       headers.set('Accept', 'application/json');
       return headers;

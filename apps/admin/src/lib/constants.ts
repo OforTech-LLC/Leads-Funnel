@@ -7,6 +7,7 @@
 
 import { LEAD_STATUSES, ADMIN_PIPELINE_STATUSES, EXPORT_FORMATS } from '@kanjona/shared';
 import type { LeadStatus, AdminPipelineStatus, ExportFormatValue } from '@kanjona/shared';
+import { getApiBaseUrl } from './runtime-config';
 
 // Re-export shared constants and types for local use
 export { LEAD_STATUSES, ADMIN_PIPELINE_STATUSES as PIPELINE_STATUSES, EXPORT_FORMATS };
@@ -21,6 +22,7 @@ export const AUTH_COOKIE_NAME = 'admin_token';
 
 export const STORAGE_KEYS = {
   OAUTH_STATE: 'admin_oauth_state',
+  ACCESS_TOKEN: 'admin_access_token',
 } as const;
 
 // ---------------------------------------------------------------------------
@@ -39,7 +41,7 @@ export type AdminRole = (typeof ADMIN_ROLES)[keyof typeof ADMIN_ROLES];
 // ---------------------------------------------------------------------------
 
 // Backend API base URL for auth endpoints
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
+const API_BASE = getApiBaseUrl();
 
 export const API_ENDPOINTS = {
   AUTH: `${API_BASE}/auth/admin`,

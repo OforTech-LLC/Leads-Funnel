@@ -78,7 +78,9 @@ basic_auth_password = "adminadmin12"
 # Enables Cognito user pools, CloudFront apps, DynamoDB tables for platform
 # =============================================================================
 
-enable_platform = true
+enable_platform      = true
+enable_admin_console = true
+admin_allowed_emails = "john@ofortech.com"
 
 # Cognito domain prefixes (must be globally unique)
 platform_admin_cognito_domain  = "kanjona-admin-dev"

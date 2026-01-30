@@ -12,8 +12,21 @@ import { AUTH_ENDPOINT, STORAGE_KEYS } from './constants';
 
 const COGNITO_DOMAIN = process.env.NEXT_PUBLIC_COGNITO_DOMAIN || '';
 const CLIENT_ID = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID || '';
-const PORTAL_URL = process.env.NEXT_PUBLIC_PORTAL_URL || 'http://localhost:3002';
-const REDIRECT_URI = `${PORTAL_URL}/callback`;
+const DEFAULT_PORTAL_URL = 'http://localhost:3002';
+
+function getPortalBaseUrl(): string {
+  if (process.env.NEXT_PUBLIC_PORTAL_URL) {
+    return process.env.NEXT_PUBLIC_PORTAL_URL;
+  }
+  if (typeof window !== 'undefined') {
+    return window.location.origin;
+  }
+  return DEFAULT_PORTAL_URL;
+}
+
+function getRedirectUri(): string {
+  return `${getPortalBaseUrl()}/callback`;
+}
 
 export interface TokenPayload {
   sub: string;
@@ -114,10 +127,11 @@ export function verifyState(state: string): boolean {
  */
 export function getLoginUrl(): string {
   const state = generateState();
+  const redirectUri = getRedirectUri();
   const params = new URLSearchParams({
     response_type: 'code',
     client_id: CLIENT_ID,
-    redirect_uri: REDIRECT_URI,
+    redirect_uri: redirectUri,
     scope: 'openid profile email',
     state,
   });
@@ -128,9 +142,10 @@ export function getLoginUrl(): string {
  * Build the Cognito logout URL
  */
 export function getLogoutUrl(): string {
+  const portalUrl = getPortalBaseUrl();
   const params = new URLSearchParams({
     client_id: CLIENT_ID,
-    logout_uri: `${PORTAL_URL}/login`,
+    logout_uri: `${portalUrl}/login`,
   });
   return `${COGNITO_DOMAIN}/logout?${params.toString()}`;
 }
@@ -147,7 +162,7 @@ export async function exchangeCodeForTokens(code: string): Promise<boolean> {
       grant_type: 'authorization_code',
       client_id: CLIENT_ID,
       code,
-      redirect_uri: REDIRECT_URI,
+      redirect_uri: getRedirectUri(),
     });
 
     const tokenResponse = await fetch(`${COGNITO_DOMAIN}/oauth2/token`, {

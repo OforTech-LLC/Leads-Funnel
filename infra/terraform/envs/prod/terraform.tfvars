@@ -73,3 +73,12 @@ notification_email = ""
 enable_basic_auth   = true
 basic_auth_username = "admin"
 basic_auth_password = "adminadmin12"
+
+# =============================================================================
+# PLATFORM FEATURES (Admin Console & Customer Portal)
+# =============================================================================
+
+enable_platform           = true
+enable_admin_console      = true
+enable_admin_ip_allowlist = false
+admin_allowed_emails      = "john@ofortech.com"

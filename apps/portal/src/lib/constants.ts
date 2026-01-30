@@ -7,10 +7,12 @@
 
 // ── Auth ──────────────────────────────────────
 
+import { getApiBaseUrl } from './runtime-config';
+
 export const AUTH_COOKIE_NAME = 'portal_token';
 
 // Backend API base URL for auth endpoints
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
+const API_BASE = getApiBaseUrl();
 
 export const AUTH_ENDPOINT = `${API_BASE}/auth/portal`;
 

@@ -3,6 +3,7 @@
  */
 
 import type { LeadInput, LeadUtm, LeadSubmitResponse, LeadRequestPayload } from '@kanjona/shared';
+import { getApiBaseUrl } from './runtime-config';
 
 // Re-export shared types for convenience
 export type { LeadInput, LeadUtm, LeadSubmitResponse, LeadRequestPayload };
@@ -54,15 +55,15 @@ export class ApiError extends Error {
 /**
  * Get the API base URL from environment
  */
-function getApiBaseUrl(): string {
-  return process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.kanjona.com';
+function resolveApiBaseUrl(): string {
+  return getApiBaseUrl();
 }
 
 /**
  * Submit a lead to the API
  */
 export async function submitLeadToApi(payload: LeadPayload): Promise<LeadResponse> {
-  const apiUrl = `${getApiBaseUrl()}/lead`;
+  const apiUrl = `${resolveApiBaseUrl()}/lead`;
 
   // Build API request payload (maps client fields to API fields)
   const apiPayload: LeadRequestPayload & {

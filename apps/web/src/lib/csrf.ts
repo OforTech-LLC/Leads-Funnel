@@ -12,6 +12,7 @@
  */
 
 import { createHash, randomBytes } from 'crypto';
+import { getApiBaseUrl } from './runtime-config';
 
 // Token configuration
 // Security: 256 bits provides sufficient entropy against brute force
@@ -256,7 +257,7 @@ export class CSRFTokenManager {
    * to the backend API for the double-submit pattern.
    */
   private async fetchToken(): Promise<string> {
-    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+    const apiUrl = getApiBaseUrl();
     const response = await fetch(`${apiUrl}/csrf`, {
       method: 'GET',
       credentials: 'include',

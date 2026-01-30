@@ -5,6 +5,8 @@
  * These values should come from environment variables.
  */
 
+import { getApiBaseUrl } from '../runtime-config';
+
 export interface AdminConfig {
   cognitoUserPoolId: string;
   cognitoClientId: string;
@@ -21,7 +23,7 @@ export function getAdminConfig(): AdminConfig {
     cognitoUserPoolId: process.env.NEXT_PUBLIC_ADMIN_COGNITO_USER_POOL_ID || '',
     cognitoClientId: process.env.NEXT_PUBLIC_ADMIN_COGNITO_CLIENT_ID || '',
     cognitoDomain: process.env.NEXT_PUBLIC_ADMIN_COGNITO_DOMAIN || '',
-    apiBaseUrl: process.env.NEXT_PUBLIC_API_BASE_URL || '',
+    apiBaseUrl: getApiBaseUrl(),
     redirectUri: `${baseUrl}/admin/callback`,
     logoutUri: `${baseUrl}/admin`,
   };

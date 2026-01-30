@@ -6,6 +6,7 @@ import DesktopSidebar from '@/components/DesktopSidebar';
 import NotificationBell from '@/components/NotificationBell';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { useProfile } from '@/lib/queries/profile';
+import AuthGate from '@/components/AuthGate';
 
 function DesktopTopBar() {
   const { data: profile } = useProfile();
@@ -38,28 +39,30 @@ function DesktopTopBar() {
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Desktop sidebar (hidden on mobile) */}
-      <DesktopSidebar />
+    <AuthGate>
+      <div className="min-h-screen bg-gray-50">
+        {/* Desktop sidebar (hidden on mobile) */}
+        <DesktopSidebar />
 
-      {/* Main content area */}
-      <div className="lg:pl-64">
-        {/* Mobile header (hidden on desktop where sidebar has branding) */}
-        <div className="lg:hidden">
-          <Header />
+        {/* Main content area */}
+        <div className="lg:pl-64">
+          {/* Mobile header (hidden on desktop where sidebar has branding) */}
+          <div className="lg:hidden">
+            <Header />
+          </div>
+
+          {/* Desktop top bar with notifications (hidden on mobile) */}
+          <DesktopTopBar />
+
+          {/* Page content wrapped in ErrorBoundary */}
+          <main className="pb-20 lg:pb-0">
+            <ErrorBoundary>{children}</ErrorBoundary>
+          </main>
+
+          {/* Mobile bottom nav */}
+          <BottomNav />
         </div>
-
-        {/* Desktop top bar with notifications (hidden on mobile) */}
-        <DesktopTopBar />
-
-        {/* Page content wrapped in ErrorBoundary */}
-        <main className="pb-20 lg:pb-0">
-          <ErrorBoundary>{children}</ErrorBoundary>
-        </main>
-
-        {/* Mobile bottom nav */}
-        <BottomNav />
       </div>
-    </div>
+    </AuthGate>
   );
 }
