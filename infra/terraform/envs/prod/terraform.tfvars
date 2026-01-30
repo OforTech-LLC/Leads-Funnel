@@ -82,3 +82,4 @@ enable_platform           = true
 enable_admin_console      = true
 enable_admin_ip_allowlist = false
 admin_allowed_emails      = "john@ofortech.com"
+admin_allowed_cidrs       = "0.0.0.0/0" # Allow all since IP allowlist is disabled

@@ -198,6 +198,11 @@ resource "aws_cloudfront_distribution" "app" {
 
     viewer_protocol_policy = "redirect-to-https"
     compress               = true
+
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.spa_rewrite.arn
+    }
   }
 
   # SPA routing: 403/404 -> index.html

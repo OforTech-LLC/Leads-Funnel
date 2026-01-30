@@ -4,6 +4,8 @@ const nextConfig = {
   // Static export for S3/CloudFront deployment
   // Auth has been moved to the Swift backend
   output: 'export',
+  // Ensure directory index output for CloudFront S3 origins
+  trailingSlash: true,
 
   // Image settings for static export
   images: {
