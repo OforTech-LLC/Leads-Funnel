@@ -2,7 +2,7 @@
 
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { getLoginUrl } from '@/lib/auth';
+import { getLoginUrl, isAuthConfigured } from '@/lib/auth';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
 function LoginContent() {
@@ -11,6 +11,9 @@ function LoginContent() {
   const returnTo = searchParams.get('returnTo');
 
   function handleSignIn() {
+    if (!isAuthConfigured()) {
+      return;
+    }
     // Security: Validate returnTo is a relative path before storing
     // Prevents open redirect attacks via protocol-relative or absolute URLs
     if (returnTo && returnTo.startsWith('/') && !returnTo.startsWith('//')) {
@@ -53,10 +56,16 @@ function LoginContent() {
 
           <button
             onClick={handleSignIn}
+            disabled={!isAuthConfigured()}
             className="flex w-full min-h-[48px] items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-700 active:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
           >
             Sign in with your account
           </button>
+          {!isAuthConfigured() && (
+            <p className="mt-3 text-xs text-red-600">
+              Portal auth is not configured. Check Cognito domain and client ID.
+            </p>
+          )}
 
           <div className="mt-4 text-center text-xs text-gray-400">
             <p>Access is restricted to authorized team members</p>

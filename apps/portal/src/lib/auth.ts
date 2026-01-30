@@ -15,11 +15,11 @@ const CLIENT_ID = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID || '';
 const DEFAULT_PORTAL_URL = 'http://localhost:3002';
 
 function getPortalBaseUrl(): string {
-  if (process.env.NEXT_PUBLIC_PORTAL_URL) {
-    return process.env.NEXT_PUBLIC_PORTAL_URL;
-  }
   if (typeof window !== 'undefined') {
     return window.location.origin;
+  }
+  if (process.env.NEXT_PUBLIC_PORTAL_URL) {
+    return process.env.NEXT_PUBLIC_PORTAL_URL;
   }
   return DEFAULT_PORTAL_URL;
 }
@@ -122,10 +122,17 @@ export function verifyState(state: string): boolean {
   }
 }
 
+export function isAuthConfigured(): boolean {
+  return Boolean(COGNITO_DOMAIN && CLIENT_ID);
+}
+
 /**
  * Build the Cognito Hosted UI login URL with state parameter
  */
 export function getLoginUrl(): string {
+  if (!isAuthConfigured()) {
+    return '';
+  }
   const state = generateState();
   const redirectUri = getRedirectUri();
   const params = new URLSearchParams({
@@ -142,6 +149,9 @@ export function getLoginUrl(): string {
  * Build the Cognito logout URL
  */
 export function getLogoutUrl(): string {
+  if (!isAuthConfigured()) {
+    return '';
+  }
   const portalUrl = getPortalBaseUrl();
   const params = new URLSearchParams({
     client_id: CLIENT_ID,

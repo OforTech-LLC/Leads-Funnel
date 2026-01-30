@@ -33,17 +33,23 @@ function getAppOrigin(): string | null {
 }
 
 function getRedirectUri(): string {
-  return (
-    process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI ||
-    (getAppOrigin() ? `${getAppOrigin()}/callback` : DEFAULT_REDIRECT_URI)
-  );
+  const origin = getAppOrigin();
+  if (origin) {
+    return `${origin}/callback`;
+  }
+  return process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI || DEFAULT_REDIRECT_URI;
 }
 
 function getLogoutUri(): string {
-  return (
-    process.env.NEXT_PUBLIC_COGNITO_LOGOUT_URI ||
-    (getAppOrigin() ? `${getAppOrigin()}/login` : DEFAULT_LOGOUT_URI)
-  );
+  const origin = getAppOrigin();
+  if (origin) {
+    return `${origin}/login`;
+  }
+  return process.env.NEXT_PUBLIC_COGNITO_LOGOUT_URI || DEFAULT_LOGOUT_URI;
+}
+
+export function isAuthConfigured(): boolean {
+  return Boolean(COGNITO_DOMAIN && COGNITO_CLIENT_ID);
 }
 
 // ---------------------------------------------------------------------------

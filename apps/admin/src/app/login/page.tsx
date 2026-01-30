@@ -7,7 +7,7 @@
  * Uses an allowlist of error codes to prevent reflecting arbitrary input.
  */
 
-import { getLoginUrl } from '@/lib/auth';
+import { getLoginUrl, isAuthConfigured } from '@/lib/auth';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 
@@ -54,12 +54,19 @@ function LoginContent() {
           <button
             type="button"
             onClick={() => {
+              if (!isAuthConfigured()) return;
               window.location.href = getLoginUrl();
             }}
+            disabled={!isAuthConfigured()}
             className="flex items-center justify-center w-full px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
           >
             Sign in with SSO
           </button>
+          {!isAuthConfigured() && (
+            <p className="mt-3 text-xs text-red-600">
+              Admin auth is not configured. Check Cognito domain and client ID.
+            </p>
+          )}
 
           <p className="text-xs text-center text-[var(--text-tertiary)] mt-6">
             Access restricted to authorized administrators.
