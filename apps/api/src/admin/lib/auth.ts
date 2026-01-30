@@ -311,8 +311,10 @@ async function verifyToken(
  */
 function determineRole(groups: string[]): AdminRole {
   // Check for Admin role first (highest privilege)
-  if (groups.includes('Admin')) return 'Admin';
-  if (groups.includes('Viewer')) return 'Viewer';
+  if (groups.includes('Admin') || groups.includes('SuperAdmin') || groups.includes('OrgAdmin')) {
+    return 'Admin';
+  }
+  if (groups.includes('Viewer') || groups.includes('OrgViewer')) return 'Viewer';
   // Security: Default to lowest privilege role
   return 'Viewer';
 }
@@ -424,7 +426,15 @@ export async function authenticateAdmin(
   }
 
   // Layer 5: Group membership - Cognito-based authorization
-  const adminGroups = groups.filter((g): g is AdminRole => g === 'Admin' || g === 'Viewer');
+  const adminGroups = Array.from(
+    new Set(
+      groups.flatMap((group) => {
+        if (group === 'Admin' || group === 'SuperAdmin' || group === 'OrgAdmin') return ['Admin'];
+        if (group === 'Viewer' || group === 'OrgViewer') return ['Viewer'];
+        return [];
+      })
+    )
+  ) as AdminRole[];
   if (adminGroups.length === 0) {
     return {
       success: false,

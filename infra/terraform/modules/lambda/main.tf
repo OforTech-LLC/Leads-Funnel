@@ -145,6 +145,17 @@ resource "aws_lambda_function" "lead_handler" {
         PLATFORM_LEADS_TABLE_NAME = var.platform_leads_table_name
         AVATARS_BUCKET            = var.avatars_bucket_name
         AVATAR_PUBLIC_BASE_URL    = var.avatar_public_base_url
+        COGNITO_ISSUER            = var.admin_cognito_issuer
+        COGNITO_CLIENT_ID         = var.admin_cognito_client_id
+        ADMIN_COGNITO_ISSUER      = var.admin_cognito_issuer
+        ADMIN_COGNITO_CLIENT_ID   = var.admin_cognito_client_id
+        PORTAL_COGNITO_ISSUER     = var.portal_cognito_issuer
+        PORTAL_COGNITO_CLIENT_ID  = var.portal_cognito_client_id
+        PORTAL_COGNITO_POOL_ID    = var.portal_cognito_pool_id
+        ALLOWED_EMAILS_SSM_PATH   = var.allowed_emails_ssm_path
+        EXPORTS_BUCKET            = var.exports_bucket_name
+        EXPORT_JOBS_TABLE         = var.exports_table_name
+        AUDIT_TABLE               = var.audit_table_name
       }
     )
   }

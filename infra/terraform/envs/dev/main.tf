@@ -90,6 +90,8 @@ locals {
   platform_unassigned_table_name       = try(module.dynamodb_unassigned[0].table_name, "")
   platform_notifications_table_name    = try(module.dynamodb_notifications[0].table_name, "")
   platform_leads_table_name            = try(module.dynamodb_leads[0].table_name, "")
+  platform_admin_audit_table_name      = try(module.dynamodb_admin_audit[0].table_name, "")
+  platform_exports_table_name          = try(module.dynamodb_exports[0].table_name, "")
 
   # SQS queue outputs (safe access)
   platform_assignment_queue_arn   = try(module.assignment_queue[0].queue_arn, null)
@@ -99,9 +101,14 @@ locals {
 
   # Cognito outputs (safe access)
   platform_admin_cognito_pool_id    = try(module.cognito_admin[0].pool_id, "")
+  platform_admin_cognito_pool_arn   = try(module.cognito_admin[0].pool_arn, "")
   platform_admin_cognito_client_id  = try(module.cognito_admin[0].client_id, "")
+  platform_admin_cognito_domain     = try(module.cognito_admin[0].domain_url, "")
+  platform_admin_cognito_issuer     = try(module.cognito_admin[0].issuer_url, "")
   platform_portal_cognito_pool_id   = try(module.cognito_portal[0].pool_id, "")
   platform_portal_cognito_client_id = try(module.cognito_portal[0].client_id, "")
+  platform_portal_cognito_domain    = try(module.cognito_portal[0].domain_url, "")
+  platform_portal_cognito_issuer    = try(module.cognito_portal[0].issuer_url, "")
 
   # Pre-token Lambda outputs (safe access)
   pre_token_admin_function_arn   = try(module.pre_token_admin[0].function_arn, null)

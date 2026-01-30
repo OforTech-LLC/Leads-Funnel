@@ -218,6 +218,17 @@ module "dynamodb_unassigned" {
   attributes = [
     { name = "pk", type = "S" },
     { name = "sk", type = "S" },
+    { name = "gsi1pk", type = "S" },
+    { name = "gsi1sk", type = "S" },
+  ]
+
+  global_secondary_indexes = [
+    {
+      name            = "GSI1"
+      hash_key        = "gsi1pk"
+      range_key       = "gsi1sk"
+      projection_type = "ALL"
+    }
   ]
 
   enable_pitr                = false # Transient data, no PITR needed
@@ -239,6 +250,17 @@ module "dynamodb_notifications" {
   attributes = [
     { name = "pk", type = "S" },
     { name = "sk", type = "S" },
+    { name = "gsi1pk", type = "S" },
+    { name = "gsi1sk", type = "S" },
+  ]
+
+  global_secondary_indexes = [
+    {
+      name            = "GSI1"
+      hash_key        = "gsi1pk"
+      range_key       = "gsi1sk"
+      projection_type = "ALL"
+    }
   ]
 
   enable_pitr                = false # Transient data, no PITR needed

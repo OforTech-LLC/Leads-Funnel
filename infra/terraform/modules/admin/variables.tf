@@ -65,6 +65,63 @@ variable "admin_allowed_cidrs" {
 # Cognito Configuration
 # =====================================================
 
+variable "use_existing_cognito" {
+  description = "Reuse an existing Cognito user pool instead of creating a new one"
+  type        = bool
+  default     = false
+}
+
+variable "existing_cognito_user_pool_id" {
+  description = "Existing Cognito User Pool ID (required when use_existing_cognito is true)"
+  type        = string
+  default     = ""
+
+  validation {
+    condition     = !var.use_existing_cognito || var.existing_cognito_user_pool_id != ""
+    error_message = "existing_cognito_user_pool_id is required when use_existing_cognito is true."
+  }
+}
+
+variable "existing_cognito_user_pool_arn" {
+  description = "Existing Cognito User Pool ARN (optional)"
+  type        = string
+  default     = ""
+}
+
+variable "existing_cognito_client_id" {
+  description = "Existing Cognito App Client ID (required when use_existing_cognito is true)"
+  type        = string
+  default     = ""
+
+  validation {
+    condition     = !var.use_existing_cognito || var.existing_cognito_client_id != ""
+    error_message = "existing_cognito_client_id is required when use_existing_cognito is true."
+  }
+}
+
+variable "existing_cognito_domain" {
+  description = "Existing Cognito Hosted UI domain URL (required when use_existing_cognito is true)"
+  type        = string
+  default     = ""
+
+  validation {
+    condition     = !var.use_existing_cognito || var.existing_cognito_domain != ""
+    error_message = "existing_cognito_domain is required when use_existing_cognito is true."
+  }
+}
+
+variable "existing_cognito_admin_group_name" {
+  description = "Existing Cognito admin group name (optional)"
+  type        = string
+  default     = ""
+}
+
+variable "existing_cognito_viewer_group_name" {
+  description = "Existing Cognito viewer group name (optional)"
+  type        = string
+  default     = ""
+}
+
 variable "admin_console_callback_urls" {
   description = "OAuth callback URLs for admin console"
   type        = list(string)

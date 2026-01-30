@@ -9,23 +9,40 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { isFeatureEnabled, extractClientIp, hasPermission } from '../lib/auth.js';
+import { isFeatureEnabled, extractClientIp, hasPermission, authenticateAdmin } from '../lib/auth.js';
 import {
   generateAdminConfig,
   generateAdminUser,
+  generateJwtPayload,
   createMockSSMClient,
 } from '../../__tests__/helpers.js';
 import type { AdminConfig, AdminUser } from '../types.js';
+import { jwtVerify } from 'jose';
+
+let mockSSMClient: ReturnType<typeof createMockSSMClient>;
 
 // Mock the SSM client — factory must be self-contained (vi.mock is hoisted)
 vi.mock('@aws-sdk/client-ssm', () => {
+  class GetParameterCommand {
+    input: unknown;
+    constructor(input: unknown) {
+      this.input = input;
+    }
+  }
+
   return {
     SSMClient: vi.fn(() => ({
       send: vi.fn().mockResolvedValue({
         Parameter: { Value: 'true' },
       }),
     })),
-    GetParameterCommand: vi.fn((input: unknown) => ({ input })),
+    GetParameterCommand,
+  };
+});
+
+vi.mock('../../lib/clients', () => {
+  return {
+    getSsmClient: () => mockSSMClient,
   };
 });
 
@@ -36,7 +53,6 @@ vi.mock('jose', () => ({
 }));
 
 describe('isFeatureEnabled', () => {
-  let mockSSMClient: ReturnType<typeof createMockSSMClient>;
   let config: AdminConfig;
 
   beforeEach(() => {
@@ -313,6 +329,46 @@ describe('isIpInCidr', () => {
       // Expected: isIpInCidr('192.168.1.1', '192.168.1.0') === false
       expect(true).toBe(true);
     });
+  });
+});
+
+describe('authenticateAdmin', () => {
+  let config: AdminConfig;
+
+  beforeEach(() => {
+    mockSSMClient = createMockSSMClient();
+    config = generateAdminConfig();
+
+    mockSSMClient.setParameter(config.featureFlagSsmPath, 'true');
+    mockSSMClient.setParameter(config.allowedEmailsSsmPath, 'admin@example.com');
+    mockSSMClient.setParameter(config.ipAllowlistFlagPath, 'false');
+    mockSSMClient.setParameter(config.ipAllowlistSsmPath, '');
+
+    vi.mocked(jwtVerify).mockReset();
+  });
+
+  it('maps SuperAdmin to Admin role', async () => {
+    vi.mocked(jwtVerify).mockResolvedValue({
+      payload: generateJwtPayload({ 'cognito:groups': ['SuperAdmin'] }),
+    } as never);
+
+    const result = await authenticateAdmin('Bearer token', '203.0.113.10', config);
+
+    expect(result.success).toBe(true);
+    expect(result.user?.role).toBe('Admin');
+    expect(result.user?.groups).toContain('Admin');
+  });
+
+  it('maps OrgViewer to Viewer role', async () => {
+    vi.mocked(jwtVerify).mockResolvedValue({
+      payload: generateJwtPayload({ 'cognito:groups': ['OrgViewer'] }),
+    } as never);
+
+    const result = await authenticateAdmin('Bearer token', '203.0.113.10', config);
+
+    expect(result.success).toBe(true);
+    expect(result.user?.role).toBe('Viewer');
+    expect(result.user?.groups).toContain('Viewer');
   });
 });
 

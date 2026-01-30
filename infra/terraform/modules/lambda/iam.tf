@@ -113,6 +113,22 @@ resource "aws_iam_role_policy" "lead_handler" {
           ]
           Resource = "${var.avatars_bucket_arn}/avatars/*"
         }
+      ] : [],
+      var.exports_bucket_name != "" ? [
+        {
+          Sid    = "S3ExportsAccess"
+          Effect = "Allow"
+          Action = [
+            "s3:GetObject",
+            "s3:PutObject",
+            "s3:AbortMultipartUpload",
+            "s3:ListBucket"
+          ]
+          Resource = [
+            "arn:aws:s3:::${var.exports_bucket_name}",
+            "arn:aws:s3:::${var.exports_bucket_name}/*"
+          ]
+        }
       ] : []
     )
   })

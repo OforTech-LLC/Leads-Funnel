@@ -17,7 +17,22 @@
 # Cognito Authentication
 # =====================================================
 
+locals {
+  use_existing_cognito = var.use_existing_cognito
+
+  cognito_user_pool_id  = var.use_existing_cognito ? var.existing_cognito_user_pool_id : try(module.cognito[0].user_pool_id, "")
+  cognito_user_pool_arn = var.use_existing_cognito ? var.existing_cognito_user_pool_arn : try(module.cognito[0].user_pool_arn, "")
+  cognito_client_id     = var.use_existing_cognito ? var.existing_cognito_client_id : try(module.cognito[0].web_client_id, "")
+  cognito_domain        = var.use_existing_cognito ? var.existing_cognito_domain : try(module.cognito[0].user_pool_domain_url, "")
+
+  cognito_issuer = local.cognito_user_pool_id != "" ? "https://cognito-idp.${var.aws_region}.amazonaws.com/${local.cognito_user_pool_id}" : ""
+
+  cognito_admin_group_name  = var.use_existing_cognito ? var.existing_cognito_admin_group_name : try(module.cognito[0].admin_group_name, "")
+  cognito_viewer_group_name = var.use_existing_cognito ? var.existing_cognito_viewer_group_name : try(module.cognito[0].viewer_group_name, "")
+}
+
 module "cognito" {
+  count  = var.use_existing_cognito ? 0 : 1
   source = "../admin-cognito"
 
   project_name = var.project_name
@@ -62,9 +77,9 @@ module "ssm" {
   admin_allowed_emails      = var.admin_allowed_emails
   admin_allowed_cidrs       = var.admin_allowed_cidrs
 
-  cognito_user_pool_id = module.cognito.user_pool_id
-  cognito_client_id    = module.cognito.web_client_id
-  cognito_domain       = module.cognito.user_pool_domain_url
+  cognito_user_pool_id = local.cognito_user_pool_id
+  cognito_client_id    = local.cognito_client_id
+  cognito_domain       = local.cognito_domain
 
   tags = var.tags
 }
@@ -83,9 +98,9 @@ module "api" {
   lambda_zip_path = var.lambda_zip_path
   lambda_zip_hash = var.lambda_zip_hash
 
-  cognito_user_pool_id = module.cognito.user_pool_id
-  cognito_client_id    = module.cognito.web_client_id
-  cognito_issuer       = "https://cognito-idp.${var.aws_region}.amazonaws.com/${module.cognito.user_pool_id}"
+  cognito_user_pool_id = local.cognito_user_pool_id
+  cognito_client_id    = local.cognito_client_id
+  cognito_issuer       = local.cognito_issuer
 
   exports_bucket_name = module.exports.bucket_name
   exports_bucket_arn  = module.exports.bucket_arn

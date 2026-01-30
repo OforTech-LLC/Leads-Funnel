@@ -1,6 +1,6 @@
 # Architecture Map: Kanjona Lead Generation Platform
 
-> Last Updated: 2026-01-29 Map Version: 11
+> Last Updated: 2026-01-30 Map Version: 12
 
 ## 1. System Overview
 
@@ -68,6 +68,7 @@
 | Lead Analyzer  | Feature-flagged AI analysis via Bedrock                            | `src/lib/ai/analyzer.ts`          |
 | Feature Flags  | SSM feature flags + alias mapping                                  | `src/lib/feature-flags.ts`        |
 | CORS Helper    | Unified CORS + security header builder                             | `src/lib/cors.ts`                 |
+| Auth Config    | Admin/portal Cognito issuer + client envs for router auth          | `infra/terraform/modules/lambda`  |
 
 ### Backend API (backend/Sources/LeadCaptureAPI)
 
@@ -100,6 +101,7 @@
 | eventbridge/ | Event bus configuration                                            |
 | ssm/         | Parameter store for feature flags                                  |
 | secrets/     | API keys, credentials                                              |
+| cognito-userpool/ | Shared admin + portal user pools (platform auth)               |
 | static_site/ | CloudFront + S3 frontend hosting                                   |
 | acm/         | SSL/TLS certificates                                               |
 | dns/         | Route 53 DNS records                                               |

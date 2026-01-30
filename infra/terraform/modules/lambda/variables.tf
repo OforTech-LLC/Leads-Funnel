@@ -44,6 +44,66 @@ variable "app_version" {
 }
 
 # -----------------------------------------------------------------------------
+# Cognito Configuration (admin + portal auth)
+# -----------------------------------------------------------------------------
+variable "admin_cognito_client_id" {
+  type        = string
+  description = "Admin Cognito app client ID"
+  default     = ""
+}
+
+variable "admin_cognito_issuer" {
+  type        = string
+  description = "Admin Cognito issuer URL"
+  default     = ""
+}
+
+variable "portal_cognito_client_id" {
+  type        = string
+  description = "Portal Cognito app client ID"
+  default     = ""
+}
+
+variable "portal_cognito_issuer" {
+  type        = string
+  description = "Portal Cognito issuer URL"
+  default     = ""
+}
+
+variable "portal_cognito_pool_id" {
+  type        = string
+  description = "Portal Cognito user pool ID (needed for user provisioning)"
+  default     = ""
+}
+
+variable "allowed_emails_ssm_path" {
+  type        = string
+  description = "SSM path for admin allowlist"
+  default     = ""
+}
+
+# -----------------------------------------------------------------------------
+# Admin/Portal Export + Audit Resources
+# -----------------------------------------------------------------------------
+variable "exports_bucket_name" {
+  type        = string
+  description = "S3 bucket name for exports"
+  default     = ""
+}
+
+variable "exports_table_name" {
+  type        = string
+  description = "DynamoDB exports table name"
+  default     = ""
+}
+
+variable "audit_table_name" {
+  type        = string
+  description = "DynamoDB admin audit table name"
+  default     = ""
+}
+
+# -----------------------------------------------------------------------------
 # Funnel Configuration
 # -----------------------------------------------------------------------------
 variable "funnel_ids" {

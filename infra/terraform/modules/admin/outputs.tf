@@ -8,37 +8,37 @@
 
 output "cognito_user_pool_id" {
   description = "Cognito User Pool ID"
-  value       = module.cognito.user_pool_id
+  value       = local.cognito_user_pool_id
 }
 
 output "cognito_user_pool_arn" {
   description = "Cognito User Pool ARN"
-  value       = module.cognito.user_pool_arn
+  value       = local.cognito_user_pool_arn
 }
 
 output "cognito_client_id" {
   description = "Cognito App Client ID"
-  value       = module.cognito.web_client_id
+  value       = local.cognito_client_id
 }
 
 output "cognito_hosted_ui_domain" {
   description = "Cognito Hosted UI domain"
-  value       = module.cognito.user_pool_domain_url
+  value       = local.cognito_domain
 }
 
 output "cognito_issuer_url" {
   description = "Cognito JWT issuer URL"
-  value       = "https://${module.cognito.user_pool_endpoint}"
+  value       = local.cognito_issuer
 }
 
 output "cognito_admin_group_name" {
   description = "Cognito Admin group name"
-  value       = module.cognito.admin_group_name
+  value       = local.cognito_admin_group_name
 }
 
 output "cognito_viewer_group_name" {
   description = "Cognito Viewer group name"
-  value       = module.cognito.viewer_group_name
+  value       = local.cognito_viewer_group_name
 }
 
 # =====================================================

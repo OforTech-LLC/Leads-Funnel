@@ -49,7 +49,14 @@ function extractToken(event: APIGatewayProxyEventV2): string | null {
 
 function determineAdminRole(groups: string[]): AdminRole {
   // Map Cognito groups to our internal roles
-  if (groups.includes('Admin') || groups.includes(ADMIN_ROLES.ADMIN)) return ADMIN_ROLES.ADMIN;
+  if (
+    groups.includes('Admin') ||
+    groups.includes('SuperAdmin') ||
+    groups.includes('OrgAdmin') ||
+    groups.includes(ADMIN_ROLES.ADMIN)
+  ) {
+    return ADMIN_ROLES.ADMIN;
+  }
   return ADMIN_ROLES.VIEWER;
 }
 

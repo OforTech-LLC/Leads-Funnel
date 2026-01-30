@@ -126,6 +126,19 @@ module "lambda" {
   avatars_bucket_arn     = module.avatars.bucket_arn
   avatar_public_base_url = "https://${module.avatars.bucket_regional_domain_name}"
 
+  # Cognito (admin + portal)
+  admin_cognito_client_id  = local.platform_admin_cognito_client_id
+  admin_cognito_issuer     = local.platform_admin_cognito_issuer
+  portal_cognito_client_id = local.platform_portal_cognito_client_id
+  portal_cognito_issuer    = local.platform_portal_cognito_issuer
+  portal_cognito_pool_id   = local.platform_portal_cognito_pool_id
+  allowed_emails_ssm_path  = "/${var.project_name}/${var.environment}/admin/allowed_emails"
+
+  # Admin/portal exports + audit
+  exports_bucket_name = var.admin_exports_bucket_name
+  exports_table_name  = local.platform_exports_table_name
+  audit_table_name    = local.platform_admin_audit_table_name
+
   # Lambda configuration (production optimized)
   lead_handler_zip_path             = var.lead_handler_zip_path
   health_handler_zip_path           = var.health_handler_zip_path
@@ -376,9 +389,16 @@ module "admin" {
   admin_allowed_cidrs  = var.admin_allowed_cidrs
 
   # Cognito configuration
-  cognito_domain_prefix      = var.admin_cognito_domain_prefix
-  mfa_configuration          = "ON"  # Always require MFA in production
-  enable_localhost_callbacks = false # NO localhost in production
+  cognito_domain_prefix              = var.admin_cognito_domain_prefix
+  mfa_configuration                  = "ON"  # Always require MFA in production
+  enable_localhost_callbacks         = false # NO localhost in production
+  use_existing_cognito               = var.enable_platform
+  existing_cognito_user_pool_id      = local.platform_admin_cognito_pool_id
+  existing_cognito_user_pool_arn     = local.platform_admin_cognito_pool_arn
+  existing_cognito_client_id         = local.platform_admin_cognito_client_id
+  existing_cognito_domain            = local.platform_admin_cognito_domain
+  existing_cognito_admin_group_name  = "SuperAdmin"
+  existing_cognito_viewer_group_name = "OrgViewer"
 
   # Production callback URLs only - NO localhost
   admin_console_callback_urls = [
