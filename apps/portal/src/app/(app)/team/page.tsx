@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTeamMembers, useRemoveMember, useUpdateMemberRole } from '@/lib/queries/team';
 import { useProfile } from '@/lib/queries/profile';
 import TeamMemberCard from '@/components/TeamMemberCard';
@@ -8,9 +8,12 @@ import EmptyState from '@/components/EmptyState';
 import { MetricCardSkeleton } from '@/components/LoadingSpinner';
 import { toast } from '@/lib/toast';
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from '@/lib/constants';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { portalUiActions } from '@/store/uiSlice';
 
 export default function TeamPage() {
-  const [search, setSearch] = useState('');
+  const dispatch = useAppDispatch();
+  const search = useAppSelector((state) => state.portalUi.team.search);
 
   const { data: profile } = useProfile();
   const { data: members, isLoading: membersLoading } = useTeamMembers();
@@ -87,7 +90,7 @@ export default function TeamPage() {
               type="search"
               placeholder="Search by name or email..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => dispatch(portalUiActions.setTeamSearch(e.target.value))}
               className="h-11 w-full rounded-xl border border-gray-200 bg-white pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 transition-colors focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
               aria-label="Search team members"
             />
@@ -113,7 +116,7 @@ export default function TeamPage() {
           description="Try adjusting your search query"
           action={{
             label: 'Clear search',
-            onClick: () => setSearch(''),
+            onClick: () => dispatch(portalUiActions.clearTeamSearch()),
           }}
         />
       ) : (

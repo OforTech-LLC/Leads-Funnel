@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import QueryProvider from '@/providers/QueryProvider';
-import { ToastProvider } from '@/components/Toast';
+import AppProviders from '@/providers/AppProviders';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -34,9 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="apple-touch-icon" href="/icon-192.png" />
       </head>
       <body className="bg-gray-50 text-gray-900 antialiased">
-        <QueryProvider>
-          <ToastProvider>{children}</ToastProvider>
-        </QueryProvider>
+        <AppProviders>{children}</AppProviders>
       </body>
     </html>
   );

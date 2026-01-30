@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import {
   useLeads,
   useUpdateLeadStatus,
@@ -15,9 +15,11 @@ import EmptyState from '@/components/EmptyState';
 import ExportModal from '@/components/ExportModal';
 import { LeadListSkeleton } from '@/components/LoadingSpinner';
 import { toast } from '@/lib/toast';
-import type { LeadStatus, LeadFilters, Lead } from '@/lib/types';
+import type { LeadStatus, LeadFilters } from '@/lib/types';
 import { ApiError } from '@/lib/api';
 import { PORTAL_STATUS_FILTER_OPTIONS, PORTAL_STATUS_OPTIONS } from '@/lib/lead-status';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { portalUiActions } from '@/store/uiSlice';
 
 const BULK_STATUS_OPTIONS: { value: LeadStatus; label: string }[] = PORTAL_STATUS_OPTIONS;
 
@@ -59,31 +61,29 @@ const DATE_PRESETS = [
 ];
 
 export default function LeadsPage() {
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<LeadStatus | ''>('');
-  const [showFilters, setShowFilters] = useState(false);
-  const [dateFrom, setDateFrom] = useState('');
-  const [dateTo, setDateTo] = useState('');
-  const [showExportModal, setShowExportModal] = useState(false);
+  const dispatch = useAppDispatch();
+  const {
+    search,
+    debouncedSearch,
+    statusFilter,
+    showFilters,
+    dateFrom,
+    dateTo,
+    showExportModal,
+    selectedIds,
+    showBulkStatus,
+    showBulkAssign,
+  } = useAppSelector((state) => state.portalUi.leads);
 
-  // Selection state for bulk actions
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [showBulkStatus, setShowBulkStatus] = useState(false);
-  const [showBulkAssign, setShowBulkAssign] = useState(false);
-
-  // Debounced search
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const debounceTimer = useMemo(() => {
-    let timer: ReturnType<typeof setTimeout>;
-    return (value: string) => {
-      clearTimeout(timer);
-      timer = setTimeout(() => setDebouncedSearch(value), 300);
-    };
-  }, []);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      dispatch(portalUiActions.setLeadDebouncedSearch(search));
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [search, dispatch]);
 
   function handleSearchChange(value: string) {
-    setSearch(value);
-    debounceTimer(value);
+    dispatch(portalUiActions.setLeadSearch(value));
   }
 
   const filters: LeadFilters = useMemo(
@@ -105,6 +105,7 @@ export default function LeadsPage() {
   const { data: teamMembers } = useTeamMembers();
 
   const allLeads = useMemo(() => data?.pages.flatMap((page) => page.data) ?? [], [data]);
+  const selectedIdsSet = useMemo(() => new Set(selectedIds), [selectedIds]);
 
   const totalCount = data?.pages[0]?.total ?? 0;
 
@@ -151,38 +152,28 @@ export default function LeadsPage() {
 
   // Selection handlers
   const toggleSelect = useCallback((leadId: string) => {
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(leadId)) {
-        next.delete(leadId);
-      } else {
-        next.add(leadId);
-      }
-      return next;
-    });
-  }, []);
+    dispatch(portalUiActions.toggleLeadSelection(leadId));
+  }, [dispatch]);
 
   const toggleSelectAll = useCallback(() => {
-    if (selectedIds.size === allLeads.length) {
-      setSelectedIds(new Set());
+    if (selectedIds.length === allLeads.length) {
+      dispatch(portalUiActions.setLeadSelectedIds([]));
     } else {
-      setSelectedIds(new Set(allLeads.map((l) => l.id)));
+      dispatch(portalUiActions.setLeadSelectedIds(allLeads.map((lead) => lead.id)));
     }
-  }, [allLeads, selectedIds.size]);
+  }, [allLeads, dispatch, selectedIds.length]);
 
   const clearSelection = useCallback(() => {
-    setSelectedIds(new Set());
-    setShowBulkStatus(false);
-    setShowBulkAssign(false);
-  }, []);
+    dispatch(portalUiActions.clearLeadSelection());
+  }, [dispatch]);
 
   // Get selected leads with their funnelId
   const selectedLeads = useMemo(
     () =>
       allLeads
-        .filter((l) => selectedIds.has(l.id))
+        .filter((l) => selectedIdsSet.has(l.id))
         .map((l) => ({ leadId: l.id, funnelId: l.funnelId })),
-    [allLeads, selectedIds]
+    [allLeads, selectedIdsSet]
   );
 
   function handleBulkStatusChange(status: LeadStatus) {
@@ -196,7 +187,7 @@ export default function LeadsPage() {
         onError: () => toast.error('Failed to update leads'),
       }
     );
-    setShowBulkStatus(false);
+    dispatch(portalUiActions.setLeadShowBulkStatus(false));
   }
 
   function handleBulkAssign(assignedTo: string) {
@@ -210,22 +201,22 @@ export default function LeadsPage() {
         onError: () => toast.error('Failed to assign leads'),
       }
     );
-    setShowBulkAssign(false);
+    dispatch(portalUiActions.setLeadShowBulkAssign(false));
   }
 
   function handleDatePreset(preset: (typeof DATE_PRESETS)[0]) {
     const { from, to } = preset.getValue();
-    setDateFrom(from);
-    setDateTo(to);
+    dispatch(portalUiActions.setLeadDateFrom(from));
+    dispatch(portalUiActions.setLeadDateTo(to));
   }
 
   function clearDateFilter() {
-    setDateFrom('');
-    setDateTo('');
+    dispatch(portalUiActions.setLeadDateFrom(''));
+    dispatch(portalUiActions.setLeadDateTo(''));
   }
 
   const hasActiveFilters = statusFilter || dateFrom || dateTo;
-  const isSelectMode = selectedIds.size > 0;
+  const isSelectMode = selectedIds.length > 0;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-4">
@@ -258,7 +249,7 @@ export default function LeadsPage() {
         {/* Export button */}
         <button
           type="button"
-          onClick={() => setShowExportModal(true)}
+          onClick={() => dispatch(portalUiActions.setLeadShowExportModal(true))}
           className="flex h-11 items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 active:bg-gray-100"
           aria-label="Export leads"
         >
@@ -281,7 +272,7 @@ export default function LeadsPage() {
         {/* Filter toggle */}
         <button
           type="button"
-          onClick={() => setShowFilters(!showFilters)}
+          onClick={() => dispatch(portalUiActions.setLeadShowFilters(!showFilters))}
           className={`flex h-11 w-11 items-center justify-center rounded-xl border transition-colors ${
             showFilters || hasActiveFilters
               ? 'border-brand-200 bg-brand-50 text-brand-600'
@@ -319,7 +310,11 @@ export default function LeadsPage() {
                 <button
                   key={option.value}
                   type="button"
-                  onClick={() => setStatusFilter(option.value as LeadStatus | '')}
+                  onClick={() =>
+                    dispatch(
+                      portalUiActions.setLeadStatusFilter(option.value as LeadStatus | '')
+                    )
+                  }
                   className={`min-h-[36px] rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
                     statusFilter === option.value
                       ? 'bg-brand-600 text-white'
@@ -367,7 +362,7 @@ export default function LeadsPage() {
                   id="date-from"
                   type="date"
                   value={dateFrom}
-                  onChange={(e) => setDateFrom(e.target.value)}
+                  onChange={(e) => dispatch(portalUiActions.setLeadDateFrom(e.target.value))}
                   className="h-10 w-full rounded-lg border border-gray-200 bg-white px-3 text-xs text-gray-700 transition-colors focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
                   placeholder="From"
                 />
@@ -381,7 +376,7 @@ export default function LeadsPage() {
                   id="date-to"
                   type="date"
                   value={dateTo}
-                  onChange={(e) => setDateTo(e.target.value)}
+                  onChange={(e) => dispatch(portalUiActions.setLeadDateTo(e.target.value))}
                   className="h-10 w-full rounded-lg border border-gray-200 bg-white px-3 text-xs text-gray-700 transition-colors focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
                   placeholder="To"
                 />
@@ -399,7 +394,7 @@ export default function LeadsPage() {
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={selectedIds.size === allLeads.length && allLeads.length > 0}
+                  checked={selectedIds.length === allLeads.length && allLeads.length > 0}
                   onChange={toggleSelectAll}
                   className="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500"
                   aria-label="Select all leads"
@@ -444,11 +439,7 @@ export default function LeadsPage() {
               ? {
                   label: 'Clear filters',
                   onClick: () => {
-                    setSearch('');
-                    setDebouncedSearch('');
-                    setStatusFilter('');
-                    setDateFrom('');
-                    setDateTo('');
+                    dispatch(portalUiActions.resetLeadFilters());
                   },
                 }
               : undefined
@@ -468,7 +459,7 @@ export default function LeadsPage() {
                   <div className="mt-4 flex-shrink-0">
                     <input
                       type="checkbox"
-                      checked={selectedIds.has(lead.id)}
+                      checked={selectedIdsSet.has(lead.id)}
                       onChange={() => toggleSelect(lead.id)}
                       className="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500"
                       aria-label={`Select ${lead.firstName} ${lead.lastName}`}
@@ -495,7 +486,7 @@ export default function LeadsPage() {
         <div className="fixed bottom-20 left-1/2 z-50 -translate-x-1/2 lg:bottom-6 animate-slide-up">
           <div className="flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 shadow-xl">
             <span className="mr-2 text-sm font-medium text-gray-900">
-              {selectedIds.size} selected
+              {selectedIds.length} selected
             </span>
 
             {/* Change Status */}
@@ -503,8 +494,7 @@ export default function LeadsPage() {
               <button
                 type="button"
                 onClick={() => {
-                  setShowBulkStatus(!showBulkStatus);
-                  setShowBulkAssign(false);
+                  dispatch(portalUiActions.setLeadShowBulkStatus(!showBulkStatus));
                 }}
                 disabled={bulkUpdateStatus.isPending}
                 className="inline-flex min-h-[36px] items-center gap-1.5 rounded-lg bg-brand-50 px-3 py-1.5 text-xs font-medium text-brand-700 transition-colors hover:bg-brand-100 disabled:opacity-50"
@@ -524,10 +514,10 @@ export default function LeadsPage() {
                 </svg>
                 Status
               </button>
-              {showBulkStatus && (
-                <div className="absolute bottom-full left-0 mb-1 w-40 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
-                  {BULK_STATUS_OPTIONS.map((opt) => (
-                    <button
+                {showBulkStatus && (
+                  <div className="absolute bottom-full left-0 mb-1 w-40 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
+                    {BULK_STATUS_OPTIONS.map((opt) => (
+                      <button
                       key={opt.value}
                       type="button"
                       onClick={() => handleBulkStatusChange(opt.value)}
@@ -544,13 +534,12 @@ export default function LeadsPage() {
             {teamMembers && teamMembers.length > 0 && (
               <div className="relative">
                 <button
-                  type="button"
-                  onClick={() => {
-                    setShowBulkAssign(!showBulkAssign);
-                    setShowBulkStatus(false);
-                  }}
-                  disabled={bulkAssign.isPending}
-                  className="inline-flex min-h-[36px] items-center gap-1.5 rounded-lg bg-purple-50 px-3 py-1.5 text-xs font-medium text-purple-700 transition-colors hover:bg-purple-100 disabled:opacity-50"
+                type="button"
+                onClick={() => {
+                  dispatch(portalUiActions.setLeadShowBulkAssign(!showBulkAssign));
+                }}
+                disabled={bulkAssign.isPending}
+                className="inline-flex min-h-[36px] items-center gap-1.5 rounded-lg bg-purple-50 px-3 py-1.5 text-xs font-medium text-purple-700 transition-colors hover:bg-purple-100 disabled:opacity-50"
                 >
                   <svg
                     className="h-3.5 w-3.5"
@@ -591,7 +580,7 @@ export default function LeadsPage() {
             {/* Export */}
             <button
               type="button"
-              onClick={() => setShowExportModal(true)}
+              onClick={() => dispatch(portalUiActions.setLeadShowExportModal(true))}
               className="inline-flex min-h-[36px] items-center gap-1.5 rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-200"
             >
               <svg
@@ -632,7 +621,10 @@ export default function LeadsPage() {
       )}
 
       {/* Export Modal */}
-      <ExportModal isOpen={showExportModal} onClose={() => setShowExportModal(false)} />
+      <ExportModal
+        isOpen={showExportModal}
+        onClose={() => dispatch(portalUiActions.setLeadShowExportModal(false))}
+      />
     </div>
   );
 }
