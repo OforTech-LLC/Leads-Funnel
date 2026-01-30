@@ -252,3 +252,5 @@ localstack/
 
 # Sentry
 .sentryclirc
+*.tfplan
+tfplan
