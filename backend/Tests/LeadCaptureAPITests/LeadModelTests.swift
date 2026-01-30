@@ -30,7 +30,7 @@ struct LeadModelTests {
         let createdAt = Date()
         let id = UUID()
         let analysis = LeadAnalysis(urgency: "high", intent: "buy", language: "en", summary: "Hot lead")
-        
+
         let lead = Lead(
             id: id,
             email: "USER@EXAMPLE.COM",
@@ -70,7 +70,7 @@ struct LeadModelTests {
         let id = UUID()
         let lead = Lead(id: id, email: "user@example.com")
         #expect(lead.pk == nil)
-        
+
         // PK logic is in EntityType
         let pk = "\(EntityType.lead.pkPrefix)\(id.uuidString)"
         #expect(pk == "LEAD#\(id.uuidString)")

@@ -26,22 +26,22 @@ else
     aws s3api create-bucket \
         --bucket "$BUCKET_NAME" \
         --region "$REGION"
-    
+
     # Enable Versioning
     aws s3api put-bucket-versioning \
         --bucket "$BUCKET_NAME" \
         --versioning-configuration Status=Enabled
-        
+
     # Enable Encryption
     aws s3api put-bucket-encryption \
         --bucket "$BUCKET_NAME" \
         --server-side-encryption-configuration '{"Rules": [{"ApplyServerSideEncryptionByDefault": {"SSEAlgorithm": "AES256"}}]}'
-        
+
     # Block Public Access
     aws s3api put-public-access-block \
         --bucket "$BUCKET_NAME" \
         --public-access-block-configuration "BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true"
-        
+
     echo "✅ Bucket created."
 fi
 
@@ -56,7 +56,7 @@ else
         --key-schema AttributeName=LockID,KeyType=HASH \
         --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1 \
         --region "$REGION"
-        
+
     echo "✅ Table created."
 fi
 

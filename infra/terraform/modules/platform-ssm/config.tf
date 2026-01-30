@@ -120,7 +120,7 @@ resource "aws_ssm_parameter" "notifications_table_name" {
 # =============================================================================
 
 resource "aws_ssm_parameter" "assignment_queue_url" {
-  count = var.assignment_queue_url != "" ? 1 : 0
+  count = var.enable_queue_params ? 1 : 0
 
   name        = "${local.parameter_prefix}/config/queues/assignment-queue-url"
   description = "SQS queue URL for lead assignment"
@@ -134,7 +134,7 @@ resource "aws_ssm_parameter" "assignment_queue_url" {
 }
 
 resource "aws_ssm_parameter" "notification_queue_url" {
-  count = var.notification_queue_url != "" ? 1 : 0
+  count = var.enable_queue_params ? 1 : 0
 
   name        = "${local.parameter_prefix}/config/queues/notification-queue-url"
   description = "SQS queue URL for notifications"
@@ -152,7 +152,7 @@ resource "aws_ssm_parameter" "notification_queue_url" {
 # =============================================================================
 
 resource "aws_ssm_parameter" "admin_cognito_pool_id" {
-  count = var.admin_cognito_pool_id != "" ? 1 : 0
+  count = var.enable_cognito_params ? 1 : 0
 
   name        = "${local.parameter_prefix}/config/cognito/admin-pool-id"
   description = "Cognito User Pool ID for admin authentication"
@@ -166,7 +166,7 @@ resource "aws_ssm_parameter" "admin_cognito_pool_id" {
 }
 
 resource "aws_ssm_parameter" "admin_cognito_client_id" {
-  count = var.admin_cognito_client_id != "" ? 1 : 0
+  count = var.enable_cognito_params ? 1 : 0
 
   name        = "${local.parameter_prefix}/config/cognito/admin-client-id"
   description = "Cognito App Client ID for admin authentication"
@@ -180,7 +180,7 @@ resource "aws_ssm_parameter" "admin_cognito_client_id" {
 }
 
 resource "aws_ssm_parameter" "portal_cognito_pool_id" {
-  count = var.portal_cognito_pool_id != "" ? 1 : 0
+  count = var.enable_cognito_params ? 1 : 0
 
   name        = "${local.parameter_prefix}/config/cognito/portal-pool-id"
   description = "Cognito User Pool ID for portal authentication"
@@ -194,7 +194,7 @@ resource "aws_ssm_parameter" "portal_cognito_pool_id" {
 }
 
 resource "aws_ssm_parameter" "portal_cognito_client_id" {
-  count = var.portal_cognito_client_id != "" ? 1 : 0
+  count = var.enable_cognito_params ? 1 : 0
 
   name        = "${local.parameter_prefix}/config/cognito/portal-client-id"
   description = "Cognito App Client ID for portal authentication"

@@ -161,6 +161,12 @@ variable "notifications_table_name" {
 # -----------------------------------------------------------------------------
 # Queue URL References
 # -----------------------------------------------------------------------------
+variable "enable_queue_params" {
+  type        = bool
+  description = "Enable queue URL SSM parameters (set to true when queues are created)"
+  default     = false
+}
+
 variable "assignment_queue_url" {
   type        = string
   description = "SQS queue URL for lead assignment"
@@ -176,6 +182,12 @@ variable "notification_queue_url" {
 # -----------------------------------------------------------------------------
 # Cognito References
 # -----------------------------------------------------------------------------
+variable "enable_cognito_params" {
+  type        = bool
+  description = "Enable Cognito SSM parameters (set to true when Cognito pools are created)"
+  default     = false
+}
+
 variable "admin_cognito_pool_id" {
   type        = string
   description = "Cognito User Pool ID for admin authentication"

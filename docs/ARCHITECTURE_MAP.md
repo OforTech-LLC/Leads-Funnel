@@ -1,7 +1,6 @@
 # Architecture Map: Kanjona Lead Generation Platform
 
-> Last Updated: 2026-01-29  
-> Map Version: 11
+> Last Updated: 2026-01-29 Map Version: 11
 
 ## 1. System Overview
 
@@ -43,19 +42,19 @@
 
 ### Frontend (apps/admin) [Updated: 2026-01-29]
 
-| Component     | Purpose                   | Key Files               |
-| ------------- | ------------------------- | ----------------------- |
-| Admin Console | Admin UI & management     | `src/app/(dashboard)/*` |
+| Component     | Purpose                                      | Key Files                     |
+| ------------- | -------------------------------------------- | ----------------------------- |
+| Admin Console | Admin UI & management                        | `src/app/(dashboard)/*`       |
 | Auth Gate     | Client auth check + redirect (static export) | `src/components/AuthGate.tsx` |
-| API Client    | RTK Query + fetch helpers | `src/store/api.ts`      |
+| API Client    | RTK Query + fetch helpers                    | `src/store/api.ts`            |
 
 ### Frontend (apps/portal) [Updated: 2026-01-29]
 
-| Component    | Purpose              | Key Files        |
-| ------------ | -------------------- | ---------------- |
-| Agent Portal | Contractor workflows | `src/app/*`      |
+| Component    | Purpose                                      | Key Files                     |
+| ------------ | -------------------------------------------- | ----------------------------- |
+| Agent Portal | Contractor workflows                         | `src/app/*`                   |
 | Auth Gate    | Client auth check + redirect (static export) | `src/components/AuthGate.tsx` |
-| API Client   | Fetch + retries      | `src/lib/api.ts` |
+| API Client   | Fetch + retries                              | `src/lib/api.ts`              |
 
 ### Node API (apps/api)
 

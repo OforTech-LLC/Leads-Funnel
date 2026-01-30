@@ -7,7 +7,7 @@ public struct LeadAnalysis: Content {
     public var intent: String
     public var language: String
     public var summary: String
-    
+
     public init(urgency: String, intent: String, language: String, summary: String) {
         self.urgency = urgency
         self.intent = intent
@@ -25,7 +25,7 @@ public struct Lead: Content {
     public var funnelId: String?
     public var status: LeadStatus // Changed to LeadStatus enum
     public var analysis: LeadAnalysis?
-    
+
     // Added fields to match usage in other files
     public var company: String?
     public var source: String // Changed to String to match usage, ideally enum

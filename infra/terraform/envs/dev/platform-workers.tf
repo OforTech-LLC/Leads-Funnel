@@ -28,8 +28,9 @@ module "assignment_worker" {
   memory_mb       = 256
   timeout_seconds = 60
 
-  sqs_queue_arn  = local.platform_assignment_queue_arn
-  sqs_batch_size = 5
+  enable_sqs_trigger = true
+  sqs_queue_arn      = local.platform_assignment_queue_arn
+  sqs_batch_size     = 5
 
   dynamodb_table_arns = compact([
     local.platform_orgs_table_arn,
@@ -92,8 +93,9 @@ module "notification_worker" {
   memory_mb       = 256
   timeout_seconds = 60
 
-  sqs_queue_arn  = local.platform_notification_queue_arn
-  sqs_batch_size = 5
+  enable_sqs_trigger = true
+  sqs_queue_arn      = local.platform_notification_queue_arn
+  sqs_batch_size     = 5
 
   dynamodb_table_arns = compact([
     local.platform_users_table_arn,
@@ -301,10 +303,12 @@ module "platform_ssm" {
   notifications_table_name    = local.platform_notifications_table_name
 
   # Queue references (safe access via locals)
+  enable_queue_params    = true
   assignment_queue_url   = local.platform_assignment_queue_url
   notification_queue_url = local.platform_notification_queue_url
 
   # Cognito references (safe access via locals)
+  enable_cognito_params    = true
   admin_cognito_pool_id    = local.platform_admin_cognito_pool_id
   admin_cognito_client_id  = local.platform_admin_cognito_client_id
   portal_cognito_pool_id   = local.platform_portal_cognito_pool_id

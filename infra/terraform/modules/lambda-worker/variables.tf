@@ -84,6 +84,12 @@ variable "environment_variables" {
 # -----------------------------------------------------------------------------
 # SQS Event Source
 # -----------------------------------------------------------------------------
+variable "enable_sqs_trigger" {
+  type        = bool
+  description = "Enable SQS event source mapping (set to true when sqs_queue_arn is provided)"
+  default     = false
+}
+
 variable "sqs_queue_arn" {
   type        = string
   description = "ARN of SQS queue to trigger this Lambda (null to disable)"
