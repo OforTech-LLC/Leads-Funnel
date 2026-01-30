@@ -51,12 +51,15 @@ function LoginContent() {
           )}
 
           {/* Login Button */}
-          <a
-            href={getLoginUrl()}
+          <button
+            type="button"
+            onClick={() => {
+              window.location.href = getLoginUrl();
+            }}
             className="flex items-center justify-center w-full px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
           >
             Sign in with SSO
-          </a>
+          </button>
 
           <p className="text-xs text-center text-[var(--text-tertiary)] mt-6">
             Access restricted to authorized administrators.
