@@ -60,6 +60,7 @@ module "cognito_admin" {
   ]
 
   # Pre-token generation trigger (adds custom claims)
+  enable_pre_token_trigger         = true
   pre_token_generation_lambda_arn  = local.pre_token_admin_function_arn
   pre_token_generation_lambda_name = local.pre_token_admin_function_name
 
@@ -112,6 +113,7 @@ module "cognito_portal" {
   write_attributes = ["email", "custom:orgId", "custom:membershipRole"]
 
   # Pre-token generation trigger (adds org/user claims)
+  enable_pre_token_trigger         = true
   pre_token_generation_lambda_arn  = local.pre_token_portal_function_arn
   pre_token_generation_lambda_name = local.pre_token_portal_function_name
 

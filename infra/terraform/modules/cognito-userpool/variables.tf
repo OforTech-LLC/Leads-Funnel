@@ -246,6 +246,12 @@ variable "user_groups" {
 # -----------------------------------------------------------------------------
 # Lambda Triggers
 # -----------------------------------------------------------------------------
+variable "enable_pre_token_trigger" {
+  type        = bool
+  description = "Enable pre-token generation Lambda trigger (set to true if Lambda ARN/name are provided)"
+  default     = false
+}
+
 variable "pre_token_generation_lambda_arn" {
   type        = string
   description = "ARN of Lambda function for pre-token generation trigger"

@@ -132,7 +132,7 @@ resource "aws_cognito_user_pool" "this" {
 
   # Pre-token generation Lambda trigger (optional)
   dynamic "lambda_config" {
-    for_each = var.pre_token_generation_lambda_arn != null ? [1] : []
+    for_each = var.enable_pre_token_trigger ? [1] : []
     content {
       pre_token_generation = var.pre_token_generation_lambda_arn
     }
@@ -209,7 +209,7 @@ resource "aws_cognito_user_group" "groups" {
 # Lambda Permission for Pre-Token Generation Trigger
 # -----------------------------------------------------------------------------
 resource "aws_lambda_permission" "cognito_trigger" {
-  count = var.pre_token_generation_lambda_arn != null ? 1 : 0
+  count = var.enable_pre_token_trigger ? 1 : 0
 
   statement_id  = "AllowCognitoInvoke-${replace(var.pool_name, "-", "")}"
   action        = "lambda:InvokeFunction"

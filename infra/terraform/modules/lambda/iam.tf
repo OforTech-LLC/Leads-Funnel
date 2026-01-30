@@ -49,7 +49,7 @@ resource "aws_iam_role_policy" "lead_handler" {
     Version = "2012-10-17"
     Statement = concat(
       [
-        # DynamoDB - Access specific funnel tables (scoped to project/environment)
+        # DynamoDB - Access funnel tables using wildcard pattern (to stay within policy size limit)
         {
           Sid    = "DynamoDBFunnelTables"
           Effect = "Allow"
@@ -60,13 +60,10 @@ resource "aws_iam_role_policy" "lead_handler" {
             "dynamodb:Query",
             "dynamodb:GetItem",
           ]
-          Resource = concat(
-            var.all_funnel_table_arns,
-            var.all_funnel_gsi_arns,
-            [var.rate_limits_table_arn, var.idempotency_table_arn],
-            var.platform_leads_table_arn != "" ? [var.platform_leads_table_arn] : [],
-            var.platform_leads_gsi_arns
-          )
+          Resource = [
+            "arn:aws:dynamodb:*:*:table/${var.project_name}-${var.environment}-*",
+            "arn:aws:dynamodb:*:*:table/${var.project_name}-${var.environment}-*/index/*"
+          ]
         },
         # EventBridge - Put events to specific bus
         {
@@ -84,7 +81,7 @@ resource "aws_iam_role_policy" "lead_handler" {
           ]
           Resource = var.ip_hash_salt_secret_arn
         },
-        # SSM Parameter Store - Read specific parameters
+        # SSM Parameter Store - Read parameters using wildcard pattern (to stay within policy size limit)
         {
           Sid    = "SSMParameterRead"
           Effect = "Allow"
@@ -93,7 +90,7 @@ resource "aws_iam_role_policy" "lead_handler" {
             "ssm:GetParameters",
             "ssm:GetParametersByPath",
           ]
-          Resource = var.ssm_parameter_arns
+          Resource = "arn:aws:ssm:*:*:parameter/${var.project_name}/${var.environment}/*"
         },
         # KMS - Decrypt for CloudWatch Logs
         {
@@ -243,7 +240,7 @@ resource "aws_iam_role_policy" "voice_handler" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
-      # DynamoDB - Access specific funnel tables (scoped)
+      # DynamoDB - Access funnel tables using wildcard pattern (to stay within policy size limit)
       {
         Sid    = "DynamoDBFunnels"
         Effect = "Allow"
@@ -253,11 +250,10 @@ resource "aws_iam_role_policy" "voice_handler" {
           "dynamodb:UpdateItem",
           "dynamodb:Query",
         ]
-        Resource = concat(
-          var.all_funnel_table_arns,
-          var.all_funnel_gsi_arns,
-          [var.rate_limits_table_arn, var.idempotency_table_arn]
-        )
+        Resource = [
+          "arn:aws:dynamodb:*:*:table/${var.project_name}-${var.environment}-*",
+          "arn:aws:dynamodb:*:*:table/${var.project_name}-${var.environment}-*/index/*"
+        ]
       },
       # Secrets Manager - Read specific secrets only
       {
@@ -270,7 +266,7 @@ resource "aws_iam_role_policy" "voice_handler" {
           var.webhook_secret_arn,
         ])
       },
-      # SSM Parameter Store - Read specific parameters
+      # SSM Parameter Store - Read parameters using wildcard pattern (to stay within policy size limit)
       {
         Sid    = "SSMParameterRead"
         Effect = "Allow"
@@ -278,7 +274,7 @@ resource "aws_iam_role_policy" "voice_handler" {
           "ssm:GetParameter",
           "ssm:GetParameters",
         ]
-        Resource = var.ssm_parameter_arns
+        Resource = "arn:aws:ssm:*:*:parameter/${var.project_name}/${var.environment}/*"
       },
       # EventBridge - Put events to specific bus
       {

@@ -81,6 +81,7 @@ basic_auth_password = "adminadmin12"
 enable_platform      = true
 enable_admin_console = true
 admin_allowed_emails = "john@ofortech.com"
+admin_allowed_cidrs  = "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"  # Allow private networks for dev
 
 # Cognito domain prefixes (must be globally unique)
 platform_admin_cognito_domain  = "kanjona-admin-dev"

@@ -47,10 +47,10 @@ module "cognito_admin" {
   # custom:role removed from write_attributes - role should only be set by admin API, not self-service
   write_attributes = ["email", "custom:orgId"]
 
-  # Token validity (stricter for prod)
-  access_token_validity  = 1
-  id_token_validity      = 1
-  refresh_token_validity = 7
+  # Token validity (stricter for prod - min 5 minutes per AWS requirements)
+  access_token_validity  = 15  # 15 minutes
+  id_token_validity      = 15  # 15 minutes
+  refresh_token_validity = 7   # 7 days
 
   user_groups = [
     { name = "SuperAdmin", description = "Platform super administrator", precedence = 1 },
@@ -59,6 +59,7 @@ module "cognito_admin" {
   ]
 
   # Pre-token generation trigger (safe access via locals)
+  enable_pre_token_trigger         = true
   pre_token_generation_lambda_arn  = local.pre_token_admin_function_arn
   pre_token_generation_lambda_name = local.pre_token_admin_function_name
 
@@ -109,10 +110,10 @@ module "cognito_portal" {
   read_attributes  = ["email", "email_verified", "custom:orgId", "custom:membershipRole"]
   write_attributes = ["email", "custom:orgId", "custom:membershipRole"]
 
-  # Token validity (stricter for prod)
-  access_token_validity  = 1
-  id_token_validity      = 1
-  refresh_token_validity = 7
+  # Token validity (stricter for prod - min 5 minutes per AWS requirements)
+  access_token_validity  = 15  # 15 minutes
+  id_token_validity      = 15  # 15 minutes
+  refresh_token_validity = 7   # 7 days
 
   user_groups = [
     { name = "OrgOwner", description = "Organization owner", precedence = 1 },
@@ -120,6 +121,7 @@ module "cognito_portal" {
   ]
 
   # Pre-token generation trigger (safe access via locals)
+  enable_pre_token_trigger         = true
   pre_token_generation_lambda_arn  = local.pre_token_portal_function_arn
   pre_token_generation_lambda_name = local.pre_token_portal_function_name
 
