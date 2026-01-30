@@ -48,6 +48,8 @@ export interface JwtClaims {
   'custom:userId'?: string;
   'custom:orgIds'?: string;
   'custom:primaryOrgId'?: string;
+  client_id?: string;
+  azp?: string;
   token_use?: string;
   iss?: string;
   aud?: string | string[];
@@ -71,12 +73,24 @@ export async function verifyJwt(
 ): Promise<JwtClaims> {
   const jwks = getJwks(issuer);
 
-  const verifyOptions: { issuer: string; audience?: string } = { issuer };
-  if (audience) {
-    verifyOptions.audience = audience;
-  }
+  const { payload } = await jwtVerify(token, jwks, { issuer });
 
-  const { payload } = await jwtVerify(token, jwks, verifyOptions);
+  if (audience) {
+    const aud = payload.aud;
+    const clientId = payload.client_id;
+    const azp = payload.azp;
+    const audMatches =
+      typeof aud === 'string'
+        ? aud === audience
+        : Array.isArray(aud)
+          ? aud.includes(audience)
+          : false;
+    const clientMatches = clientId === audience || azp === audience;
+
+    if (!audMatches && !clientMatches) {
+      throw new Error('JWT audience mismatch');
+    }
+  }
 
   return payload as unknown as JwtClaims;
 }
