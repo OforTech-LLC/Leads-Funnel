@@ -95,7 +95,7 @@ if [ "${USE_DOCKER}" = true ]; then
         -v "${PROJECT_ROOT}:/workspace" \
         -w /workspace \
         --platform linux/arm64 \
-        swift:5.10-amazonlinux2 \
+        swift:6.0-amazonlinux2 \
         bash -c "
             swift build -c ${BUILD_TYPE} \
                 --static-swift-stdlib \

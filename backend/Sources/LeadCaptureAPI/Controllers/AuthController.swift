@@ -18,7 +18,7 @@ struct SetTokenRequest: Content {
     let expiresIn: Int // seconds until expiration
 }
 
-struct AuthResponse: Content {
+public struct AuthResponse: Content {
     let success: Bool
     let error: String?
     let authenticated: Bool?
@@ -36,7 +36,7 @@ struct AuthResponse: Content {
     }
 }
 
-struct AuthUser: Content {
+public struct AuthUser: Content {
     let sub: String
     let email: String
     let groups: [String]?
@@ -136,19 +136,19 @@ public struct AuthController: RouteCollection {
     private func checkAuth(req: Request, cookieName: String) -> AuthResponse {
         guard let tokenCookie = req.cookies[cookieName]?.string,
               !tokenCookie.isEmpty else {
-            return AuthResponse(success: true, authenticated: false, error: "No authentication token")
+            return AuthResponse(success: true, error: "No authentication token", authenticated: false)
         }
 
         // Parse token payload
         guard let jsonData = tokenCookie.data(using: .utf8),
               let payload = try? JSONDecoder().decode(TokenPayload.self, from: jsonData) else {
-            return AuthResponse(success: true, authenticated: false, error: "Invalid token format")
+            return AuthResponse(success: true, error: "Invalid token format", authenticated: false)
         }
 
         // Check expiration
         let now = Int(Date().timeIntervalSince1970 * 1000)
         if payload.expiresAt < now {
-            return AuthResponse(success: true, authenticated: false, error: "Token expired", needsRefresh: true)
+            return AuthResponse(success: true, error: "Token expired", authenticated: false, needsRefresh: true)
         }
 
         // Parse user info from ID token (without verification - display only)
