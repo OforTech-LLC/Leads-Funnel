@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useState, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { exchangeCodeForTokens, verifyState } from '@/lib/auth';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -9,13 +9,14 @@ function CallbackContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const processedRef = useRef(false);
 
   useEffect(() => {
     // Prevent double execution
-    if (isProcessing) {
+    if (processedRef.current) {
       return;
     }
+    processedRef.current = true;
 
     const code = searchParams.get('code');
     const state = searchParams.get('state');
@@ -37,8 +38,6 @@ function CallbackContent() {
       return;
     }
 
-    setIsProcessing(true);
-
     async function handleCallback() {
       const success = await exchangeCodeForTokens(code!);
 
@@ -56,7 +55,7 @@ function CallbackContent() {
     }
 
     handleCallback();
-  }, [searchParams, router, isProcessing]);
+  }, [searchParams, router]);
 
   if (error) {
     return (

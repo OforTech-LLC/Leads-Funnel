@@ -6,7 +6,7 @@
  * Handles the redirect from Cognito Hosted UI after authentication.
  */
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { exchangeCodeForTokens, verifyState } from '@/lib/admin/auth';
@@ -15,8 +15,12 @@ export default function AdminCallback() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
+  const processedRef = useRef(false);
 
   const handleCallback = useCallback(async () => {
+    if (processedRef.current) return;
+    processedRef.current = true;
+
     // Get authorization code and state from URL
     const code = searchParams.get('code');
     const state = searchParams.get('state');
