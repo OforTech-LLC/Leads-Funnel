@@ -278,7 +278,7 @@ variable "notification_email" {
 # -----------------------------------------------------------------------------
 variable "content_security_policy" {
   type        = string
-  default     = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.kanjona.com https://*.amazonaws.com https://*.amazoncognito.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+  default     = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.kanjona.com https://*.amazonaws.com https://cognito-idp.us-east-1.amazonaws.com https://kanjona-platform-admin.auth.us-east-1.amazoncognito.com https://kanjona-admin-dev.auth.us-east-1.amazoncognito.com https://kanjona-platform-portal.auth.us-east-1.amazoncognito.com https://kanjona-portal-dev.auth.us-east-1.amazoncognito.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
   description = "Content Security Policy header value"
 }
 
