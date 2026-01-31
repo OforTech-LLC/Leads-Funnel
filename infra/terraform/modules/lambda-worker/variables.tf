@@ -18,14 +18,14 @@ variable "description" {
 # -----------------------------------------------------------------------------
 variable "runtime" {
   type        = string
-  description = "Lambda runtime (provided.al2023 for Swift custom runtime)"
-  default     = "provided.al2023"
+  description = "Lambda runtime (nodejs22.x for Node.js workers, provided.al2023 for Swift)"
+  default     = "nodejs22.x"
 }
 
 variable "handler" {
   type        = string
-  description = "Lambda handler entry point (bootstrap for Swift custom runtime)"
-  default     = "bootstrap"
+  description = "Lambda handler entry point (index.handler for Node.js, bootstrap for Swift)"
+  default     = "index.handler"
 }
 
 variable "architecture" {
