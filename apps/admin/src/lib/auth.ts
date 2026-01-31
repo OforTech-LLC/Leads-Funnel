@@ -70,7 +70,7 @@ function resolveCognitoConfig(): CognitoConfig {
     };
   }
 
-  if (host === 'admin.dev.kanjona.com' || host === 'localhost' || host === '127.0.0.1') {
+  if (host === 'admin-dev.kanjona.com' || host === 'localhost' || host === '127.0.0.1') {
     return {
       domain: devDomain || envDomain || FALLBACK_DEV_COGNITO_CONFIG.domain,
       clientId: devClientId || envClientId || FALLBACK_DEV_COGNITO_CONFIG.clientId,
