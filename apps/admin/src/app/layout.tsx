@@ -2,8 +2,6 @@ import type { Metadata } from 'next';
 import Providers from '@/components/Providers';
 import './globals.css';
 
-export const dynamic = 'force-dynamic';
-
 export const metadata: Metadata = {
   title: 'Admin Console - Leads Funnel',
   description: 'Administration console for the Leads Funnel platform',

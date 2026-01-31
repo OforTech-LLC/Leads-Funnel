@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from 'next';
 import AppProviders from '@/providers/AppProviders';
 import './globals.css';
 
-export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Portal | Leads Funnel',
