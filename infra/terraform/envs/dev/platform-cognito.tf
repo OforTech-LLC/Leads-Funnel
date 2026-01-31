@@ -19,7 +19,7 @@ module "cognito_admin" {
   advanced_security_mode       = "AUDIT"
   allow_admin_create_user_only = true
   challenge_on_new_device      = true
-  enable_sms_mfa               = true
+  enable_sms_mfa               = false
   enable_email_mfa             = var.enable_email_mfa
   enable_webauthn              = true
   webauthn_user_verification   = "preferred"
@@ -102,7 +102,7 @@ module "cognito_portal" {
   advanced_security_mode       = "AUDIT"
   allow_admin_create_user_only = true # Admin-only portal provisioning
   challenge_on_new_device      = true
-  enable_sms_mfa               = true
+  enable_sms_mfa               = false
   enable_email_mfa             = var.enable_email_mfa
   enable_webauthn              = true
   webauthn_user_verification   = "preferred"
