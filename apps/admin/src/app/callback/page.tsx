@@ -8,70 +8,82 @@
  * Verifies OAuth state parameter for CSRF protection.
  */
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useState, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { exchangeCodeForTokens, verifyState } from '@/lib/auth';
+import { exchangeCodeForTokens } from '@/lib/auth';
+
+// Module-level flag to prevent double execution across re-renders
+let isExchangingCode = false;
 
 function CallbackContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const hasRun = useRef(false);
 
   useEffect(() => {
+    // Prevent double execution (React StrictMode runs effects twice)
+    if (hasRun.current || isExchangingCode) {
+      return;
+    }
+    hasRun.current = true;
+    isExchangingCode = true;
+
     const code = searchParams.get('code');
     const state = searchParams.get('state');
     const errorParam = searchParams.get('error');
 
     if (errorParam) {
       setError(`Authentication failed: ${errorParam}`);
+      isExchangingCode = false;
       return;
     }
 
     if (!code) {
       setError('No authorization code received.');
+      isExchangingCode = false;
       return;
     }
 
-    // For now, skip strict state verification if state exists and is valid JSON
-    // This handles cases where sessionStorage state was lost
+    // Validate state exists and has valid structure
     if (state) {
       try {
         const decoded = JSON.parse(atob(state));
         if (!decoded.nonce || !decoded.timestamp) {
           setError('Invalid state format.');
+          isExchangingCode = false;
           return;
         }
-        // Check if state is not too old (5 minutes)
         const age = Date.now() - decoded.timestamp;
         if (age > 5 * 60 * 1000) {
           setError('Session expired. Please try logging in again.');
+          isExchangingCode = false;
           return;
         }
       } catch {
         setError('Could not verify session state.');
+        isExchangingCode = false;
         return;
       }
     } else {
       setError('Missing state parameter.');
+      isExchangingCode = false;
       return;
     }
 
     async function handleCallback() {
       try {
-        console.log('[Callback] Starting token exchange...');
-        console.log('[Callback] Code:', code?.substring(0, 10) + '...');
-
         const success = await exchangeCodeForTokens(code!);
-        console.log('[Callback] Token exchange result:', success);
 
         if (success) {
           router.replace('/');
         } else {
-          setError('Token exchange failed. Check browser console for details.');
+          setError('Token exchange failed. Please try again.');
         }
       } catch (err) {
-        console.error('[Callback] Error:', err);
         setError(`Authentication error: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      } finally {
+        isExchangingCode = false;
       }
     }
 
