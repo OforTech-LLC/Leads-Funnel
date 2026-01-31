@@ -15,51 +15,45 @@ import { exchangeCodeForTokens, verifyState } from '@/lib/auth';
 function CallbackContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [status, setStatus] = useState<'loading' | 'error' | 'success'>('loading');
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   useEffect(() => {
-    // Prevent double execution
-    if (isProcessing) {
-      return;
-    }
-
     const code = searchParams.get('code');
     const state = searchParams.get('state');
     const errorParam = searchParams.get('error');
 
     if (errorParam) {
-      setError('Authentication failed. Please try again.');
+      setStatus('error');
+      setErrorMessage('Authentication failed. Please try again.');
       return;
     }
 
     if (!code) {
-      setError('No authorization code received.');
+      setStatus('error');
+      setErrorMessage('No authorization code received.');
       return;
     }
 
-    // Security: Verify OAuth state parameter to prevent CSRF
     if (!state || !verifyState(state)) {
-      setError('Invalid session state. Please try logging in again.');
+      setStatus('error');
+      setErrorMessage('Invalid session state. Please try logging in again.');
       return;
     }
 
-    setIsProcessing(true);
-
-    async function handleCallback() {
-      const success = await exchangeCodeForTokens(code!);
-
+    // Exchange code for tokens
+    exchangeCodeForTokens(code).then((success) => {
       if (success) {
+        setStatus('success');
         router.replace('/');
       } else {
-        setError('Failed to complete authentication. Please try again.');
+        setStatus('error');
+        setErrorMessage('Failed to complete authentication. Please try again.');
       }
-    }
+    });
+  }, [searchParams, router]);
 
-    handleCallback();
-  }, [searchParams, router, isProcessing]);
-
-  if (error) {
+  if (status === 'error') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[var(--bg-secondary)]">
         <div className="w-full max-w-sm mx-4">
@@ -82,7 +76,7 @@ function CallbackContent() {
             <h2 className="mt-4 text-lg font-semibold text-[var(--text-primary)]">
               Authentication Error
             </h2>
-            <p className="mt-2 text-sm text-[var(--text-secondary)]">{error}</p>
+            <p className="mt-2 text-sm text-[var(--text-secondary)]">{errorMessage}</p>
             <button
               onClick={() => router.replace('/login')}
               className="mt-6 inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
@@ -99,7 +93,9 @@ function CallbackContent() {
     <div className="min-h-screen flex items-center justify-center bg-[var(--bg-secondary)]">
       <div className="text-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-        <p className="mt-4 text-sm text-[var(--text-secondary)]">Completing sign in...</p>
+        <p className="mt-4 text-sm text-[var(--text-secondary)]">
+          {status === 'success' ? 'Redirecting...' : 'Completing sign in...'}
+        </p>
       </div>
     </div>
   );
