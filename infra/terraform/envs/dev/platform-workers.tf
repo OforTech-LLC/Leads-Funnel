@@ -164,11 +164,12 @@ module "pre_token_admin" {
   ssm_parameter_arns = module.ssm.all_parameter_arns
 
   environment_variables = {
-    ENVIRONMENT            = var.environment
-    PROJECT_NAME           = var.project_name
-    LOG_LEVEL              = "DEBUG"
-    USERS_TABLE_NAME       = local.platform_users_table_name
-    MEMBERSHIPS_TABLE_NAME = local.platform_memberships_table_name
+    ENVIRONMENT              = var.environment
+    PROJECT_NAME             = var.project_name
+    LOG_LEVEL                = "DEBUG"
+    USERS_TABLE_NAME         = local.platform_users_table_name
+    MEMBERSHIPS_TABLE_NAME   = local.platform_memberships_table_name
+    ALLOWED_EMAILS_SSM_PATH  = "/${var.project_name}/${var.environment}/admin/allowed_emails"
   }
 
   enable_xray        = var.enable_xray

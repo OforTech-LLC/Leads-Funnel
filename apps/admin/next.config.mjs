@@ -35,7 +35,6 @@ loadEnvFile('.env.local');
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // Auth and API routes have been moved to the Swift backend
   // Trailing slashes for cleaner URLs
   trailingSlash: true,
 

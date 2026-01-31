@@ -24,27 +24,19 @@ data "archive_file" "lambda" {
 # -----------------------------------------------------------------------------
 # Lambda Function
 # -----------------------------------------------------------------------------
-# Lead capture Lambda function running Node.js 22.
-# The TypeScript code is compiled and deployed from apps/api/dist.
-#
-# Deployment options:
-#   1. ZIP deployment (default): Upload compiled JS from apps/api/dist
-#   2. Docker deployment: Build image with provided.al2023 for custom runtime
+# Lead capture Lambda function running Swift custom runtime.
+# The Swift code is compiled and deployed from backend/lambda/lambda.zip.
 # -----------------------------------------------------------------------------
 resource "aws_lambda_function" "lead_capture" {
   function_name = "${var.project_name}-${var.environment}-lead-capture"
   description   = "Lead capture handler for ${var.project_name}"
 
-  # For Docker deployment (alternative):
-  # package_type = "Image"
-  # image_uri    = var.lambda_image_uri  # ECR image
-
-  # ZIP deployment (default)
+  # ZIP deployment
   filename         = data.archive_file.lambda.output_path
   source_code_hash = data.archive_file.lambda.output_base64sha256
 
-  handler       = "handler.handler"
-  runtime       = "nodejs22.x"
+  handler       = "bootstrap"
+  runtime       = "provided.al2023"
   architectures = ["arm64"] # Graviton - cheaper and faster
 
   memory_size = var.lambda_memory_mb
@@ -55,8 +47,18 @@ resource "aws_lambda_function" "lead_capture" {
 
   role = aws_iam_role.lambda.arn
 
+  # Lambda Web Adapter layer - enables running HTTP servers in Lambda
+  # See: https://github.com/awslabs/aws-lambda-web-adapter
+  layers = [
+    "arn:aws:lambda:${data.aws_region.current.name}:753240598075:layer:LambdaAdapterLayerArm64:25"
+  ]
+
   environment {
     variables = {
+      # Lambda Web Adapter configuration
+      AWS_LAMBDA_EXEC_WRAPPER = "/opt/bootstrap"
+      PORT                     = "8080"
+
       # DynamoDB configuration
       DDB_TABLE_NAME = var.dynamodb_table_name
 

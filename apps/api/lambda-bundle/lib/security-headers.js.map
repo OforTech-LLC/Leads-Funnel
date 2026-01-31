@@ -1,0 +1,1 @@
+{"version":3,"file":"security-headers.js","sourceRoot":"","sources":["../../src/lib/security-headers.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,YAAY,EAAE,MAAM,gBAAgB,CAAC;AAE9C,MAAM,CAAC,MAAM,qBAAqB,GAAG;IACnC,CAAC,YAAY,CAAC,sBAAsB,CAAC,EAAE,SAAS;IAChD,CAAC,YAAY,CAAC,eAAe,CAAC,EAAE,MAAM;IACtC,CAAC,YAAY,CAAC,aAAa,CAAC,EAAE,8CAA8C;CACpE,CAAC"}

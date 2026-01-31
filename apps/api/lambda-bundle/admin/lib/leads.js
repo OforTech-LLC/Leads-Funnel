@@ -1,0 +1,351 @@
+/**
+ * Admin Lead Operations
+ *
+ * DynamoDB operations for querying and updating leads.
+ */
+import { DynamoDBClient, ListTablesCommand } from '@aws-sdk/client-dynamodb';
+import { QueryCommand, UpdateCommand, ScanCommand, GetCommand } from '@aws-sdk/lib-dynamodb';
+import { getDocClient } from '../../lib/clients.js';
+import { createLogger } from '../../lib/logging.js';
+import { DB_PREFIXES, DB_SORT_KEYS, GSI_KEYS, GSI_INDEX_NAMES } from '../../lib/constants.js';
+const log = createLogger('admin-leads');
+// Maximum number of scan iterations to prevent runaway queries
+const MAX_SCAN_ITERATIONS = 100;
+// Default page size limit
+const DEFAULT_PAGE_SIZE = 50;
+const MAX_PAGE_SIZE = 100;
+/**
+ * Get table name for a funnel
+ */
+function getTableName(config, funnelId) {
+    return `${config.projectName}-${config.env}-${funnelId}`;
+}
+/**
+ * Query leads with filters and pagination
+ */
+export async function queryLeads(config, request) {
+    const ddb = getDocClient();
+    const tableName = getTableName(config, request.funnelId);
+    const pageSize = Math.min(request.pageSize || DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE);
+    // Decode pagination token if provided
+    let exclusiveStartKey;
+    if (request.nextToken) {
+        try {
+            exclusiveStartKey = JSON.parse(Buffer.from(request.nextToken, 'base64').toString());
+        }
+        catch {
+            // Invalid token, start from beginning
+        }
+    }
+    // Build filter expression parts
+    const filterParts = ['begins_with(pk, :leadPrefix)'];
+    const expressionValues = {
+        ':leadPrefix': DB_PREFIXES.LEAD,
+    };
+    const expressionNames = {};
+    // Status filter
+    if (request.status) {
+        filterParts.push('#status = :status');
+        expressionNames['#status'] = 'status';
+        expressionValues[':status'] = request.status;
+    }
+    // Date range filter
+    if (request.startDate) {
+        filterParts.push('createdAt >= :startDate');
+        expressionValues[':startDate'] = request.startDate;
+    }
+    if (request.endDate) {
+        filterParts.push('createdAt <= :endDate');
+        expressionValues[':endDate'] = request.endDate;
+    }
+    // Search filter (email or name contains)
+    if (request.search) {
+        filterParts.push('(contains(#email, :search) OR contains(#name, :search))');
+        expressionNames['#email'] = 'email';
+        expressionNames['#name'] = 'name';
+        expressionValues[':search'] = request.search.toLowerCase();
+    }
+    let result;
+    // If querying by status without search, use GSI2
+    if (request.status && !request.search) {
+        result = await ddb.send(new QueryCommand({
+            TableName: tableName,
+            IndexName: GSI_INDEX_NAMES.GSI2,
+            KeyConditionExpression: 'gsi2pk = :statusKey',
+            ExpressionAttributeValues: {
+                ':statusKey': `${GSI_KEYS.STATUS}${request.status}`,
+                ...expressionValues,
+            },
+            ExpressionAttributeNames: Object.keys(expressionNames).length > 0 ? expressionNames : undefined,
+            FilterExpression: filterParts.length > 1 ? filterParts.slice(1).join(' AND ') : undefined,
+            Limit: pageSize,
+            ExclusiveStartKey: exclusiveStartKey,
+            ScanIndexForward: request.sortOrder !== 'desc',
+        }));
+    }
+    else {
+        // Full table scan with filters (for search or no status filter)
+        result = await ddb.send(new ScanCommand({
+            TableName: tableName,
+            FilterExpression: filterParts.join(' AND '),
+            ExpressionAttributeValues: expressionValues,
+            ExpressionAttributeNames: Object.keys(expressionNames).length > 0 ? expressionNames : undefined,
+            Limit: MAX_PAGE_SIZE, // Limit scan to prevent runaway queries
+            ExclusiveStartKey: exclusiveStartKey,
+        }));
+    }
+    // Build response
+    const leads = (result.Items || []).filter((item) => item.sk === DB_SORT_KEYS.META);
+    // Sort results if needed
+    if (request.sortField) {
+        leads.sort((a, b) => {
+            const aVal = a[request.sortField] || '';
+            const bVal = b[request.sortField] || '';
+            const cmp = String(aVal).localeCompare(String(bVal));
+            return request.sortOrder === 'desc' ? -cmp : cmp;
+        });
+    }
+    // Encode pagination token
+    let nextToken;
+    if (result.LastEvaluatedKey) {
+        nextToken = Buffer.from(JSON.stringify(result.LastEvaluatedKey)).toString('base64');
+    }
+    return {
+        leads,
+        totalCount: result.Count || 0,
+        nextToken,
+    };
+}
+/**
+ * Get a single lead by ID
+ */
+export async function getLead(config, funnelId, leadId) {
+    const ddb = getDocClient();
+    const tableName = getTableName(config, funnelId);
+    const result = await ddb.send(new GetCommand({
+        TableName: tableName,
+        Key: {
+            pk: `${DB_PREFIXES.LEAD}${leadId}`,
+            sk: DB_SORT_KEYS.META,
+        },
+        // Only fetch needed attributes
+        ProjectionExpression: 'leadId, #name, email, phone, #status, pipelineStatus, tags, notes, doNotContact, createdAt, updatedAt',
+        ExpressionAttributeNames: {
+            '#name': 'name',
+            '#status': 'status',
+        },
+    }));
+    return result.Item || null;
+}
+/**
+ * Update a single lead
+ */
+export async function updateLead(config, request) {
+    const ddb = getDocClient();
+    const tableName = getTableName(config, request.funnelId);
+    const timestamp = new Date().toISOString();
+    // Build update expression
+    const updateParts = ['#updatedAt = :updatedAt'];
+    const expressionNames = {
+        '#updatedAt': 'updatedAt',
+    };
+    const expressionValues = {
+        ':updatedAt': timestamp,
+    };
+    if (request.status !== undefined) {
+        updateParts.push('#status = :status');
+        updateParts.push('gsi2pk = :gsi2pk');
+        expressionNames['#status'] = 'status';
+        expressionValues[':status'] = request.status;
+        expressionValues[':gsi2pk'] = `${GSI_KEYS.STATUS}${request.status}`;
+    }
+    if (request.pipelineStatus !== undefined) {
+        updateParts.push('pipelineStatus = :pipelineStatus');
+        expressionValues[':pipelineStatus'] = request.pipelineStatus;
+    }
+    if (request.tags !== undefined) {
+        updateParts.push('tags = :tags');
+        expressionValues[':tags'] = request.tags;
+    }
+    if (request.notes !== undefined) {
+        updateParts.push('notes = :notes');
+        expressionValues[':notes'] = request.notes;
+    }
+    if (request.doNotContact !== undefined) {
+        updateParts.push('doNotContact = :doNotContact');
+        expressionValues[':doNotContact'] = request.doNotContact;
+        // If marking as DNC, also update status
+        if (request.doNotContact && request.status === undefined) {
+            updateParts.push('#status = :status');
+            updateParts.push('gsi2pk = :gsi2pk');
+            expressionNames['#status'] = 'status';
+            expressionValues[':status'] = 'dnc';
+            expressionValues[':gsi2pk'] = `${GSI_KEYS.STATUS}dnc`;
+        }
+    }
+    const result = await ddb.send(new UpdateCommand({
+        TableName: tableName,
+        Key: {
+            pk: `${DB_PREFIXES.LEAD}${request.leadId}`,
+            sk: DB_SORT_KEYS.META,
+        },
+        UpdateExpression: `SET ${updateParts.join(', ')}`,
+        ExpressionAttributeNames: expressionNames,
+        ExpressionAttributeValues: expressionValues,
+        ReturnValues: 'ALL_NEW',
+        ConditionExpression: 'attribute_exists(pk)', // Ensure lead exists
+    }));
+    return result.Attributes;
+}
+/**
+ * Bulk update multiple leads
+ */
+export async function bulkUpdateLeads(config, request) {
+    let updated = 0;
+    let failed = 0;
+    // Process in parallel with concurrency limit
+    const concurrency = 10;
+    const chunks = [];
+    for (let i = 0; i < request.leadIds.length; i += concurrency) {
+        chunks.push(request.leadIds.slice(i, i + concurrency));
+    }
+    for (const chunk of chunks) {
+        const results = await Promise.allSettled(chunk.map((leadId) => updateLead(config, {
+            funnelId: request.funnelId,
+            leadId,
+            status: request.status,
+            pipelineStatus: request.pipelineStatus,
+            tags: request.tags,
+            doNotContact: request.doNotContact,
+        })));
+        for (const result of results) {
+            if (result.status === 'fulfilled') {
+                updated++;
+            }
+            else {
+                failed++;
+            }
+        }
+    }
+    return { updated, failed };
+}
+/**
+ * Get funnel statistics with scan limits and pagination
+ */
+export async function getFunnelStats(config, funnelId) {
+    const ddb = getDocClient();
+    const tableName = getTableName(config, funnelId);
+    // Get counts by status
+    const statusCounts = {
+        new: 0,
+        contacted: 0,
+        qualified: 0,
+        converted: 0,
+        lost: 0,
+        dnc: 0,
+        quarantined: 0,
+    };
+    const pipelineCounts = {
+        none: 0,
+        nurturing: 0,
+        negotiating: 0,
+        closing: 0,
+        closed_won: 0,
+        closed_lost: 0,
+    };
+    // Scan table to count (for small tables, consider using DynamoDB Streams + aggregates for scale)
+    let totalLeads = 0;
+    let last24Hours = 0;
+    let last7Days = 0;
+    let last30Days = 0;
+    const now = new Date();
+    const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString();
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    let lastKey;
+    let scanIterations = 0;
+    do {
+        // Prevent runaway scans
+        if (scanIterations >= MAX_SCAN_ITERATIONS) {
+            log.warn('Reached max scan iterations for stats', {
+                funnelId,
+                iterations: scanIterations,
+            });
+            break;
+        }
+        scanIterations++;
+        const result = await ddb.send(new ScanCommand({
+            TableName: tableName,
+            FilterExpression: 'begins_with(pk, :leadPrefix) AND sk = :meta',
+            ExpressionAttributeValues: {
+                ':leadPrefix': DB_PREFIXES.LEAD,
+                ':meta': DB_SORT_KEYS.META,
+            },
+            // Only fetch needed attributes for stats calculation
+            ProjectionExpression: '#status, pipelineStatus, createdAt',
+            ExpressionAttributeNames: {
+                '#status': 'status',
+            },
+            ExclusiveStartKey: lastKey,
+            // Limit each scan to prevent timeouts
+            Limit: 1000,
+        }));
+        for (const item of result.Items || []) {
+            totalLeads++;
+            const status = item.status;
+            const pipelineStatus = item.pipelineStatus || 'none';
+            const createdAt = item.createdAt;
+            if (status in statusCounts) {
+                statusCounts[status]++;
+            }
+            if (pipelineStatus in pipelineCounts) {
+                pipelineCounts[pipelineStatus]++;
+            }
+            if (createdAt >= oneDayAgo)
+                last24Hours++;
+            if (createdAt >= sevenDaysAgo)
+                last7Days++;
+            if (createdAt >= thirtyDaysAgo)
+                last30Days++;
+        }
+        lastKey = result.LastEvaluatedKey;
+    } while (lastKey);
+    return {
+        funnelId,
+        totalLeads,
+        byStatus: statusCounts,
+        byPipelineStatus: pipelineCounts,
+        last24Hours,
+        last7Days,
+        last30Days,
+    };
+}
+/**
+ * List available funnels (tables)
+ *
+ * Note: ListTables requires the low-level DynamoDB client, not the
+ * Document client. We create a temporary client here since this is
+ * an infrequent admin-only operation.
+ */
+export async function listFunnels(config) {
+    // Get funnel IDs from environment or list tables
+    const prefix = `${config.projectName}-${config.env}-`;
+    const client = new DynamoDBClient({});
+    const funnelIds = [];
+    let lastTableName;
+    do {
+        const result = await client.send(new ListTablesCommand({
+            ExclusiveStartTableName: lastTableName,
+        }));
+        for (const tableName of result.TableNames || []) {
+            if (tableName.startsWith(prefix) &&
+                !tableName.includes('rate-limits') &&
+                !tableName.includes('idempotency')) {
+                funnelIds.push(tableName.replace(prefix, ''));
+            }
+        }
+        lastTableName = result.LastEvaluatedTableName;
+    } while (lastTableName);
+    return funnelIds.sort();
+}
+//# sourceMappingURL=leads.js.map

@@ -236,13 +236,15 @@ public struct AuthController: RouteCollection {
         let response = try createResponse(status: .ok, body: AuthResponse(success: true))
 
         // Set cookie
+        // SameSite=None is required for cross-origin requests (admin.kanjona.com -> api.kanjona.com)
+        // Secure must be true when SameSite=None
         let cookie = HTTPCookies.Value(
             string: payloadString,
             expires: Date().addingTimeInterval(TimeInterval(effectiveMaxAge)),
             maxAge: effectiveMaxAge,
-            isSecure: config.isProduction,
+            isSecure: true,
             isHTTPOnly: true,
-            sameSite: .lax
+            sameSite: HTTPCookies.SameSitePolicy.none
         )
         response.cookies[cookieName] = cookie
 
@@ -316,13 +318,15 @@ public struct AuthController: RouteCollection {
         let response = try createResponse(status: .ok, body: AuthResponse(success: true))
 
         // Set cookie
+        // SameSite=None is required for cross-origin requests (admin.kanjona.com -> api.kanjona.com)
+        // Secure must be true when SameSite=None
         let cookie = HTTPCookies.Value(
             string: payloadString,
             expires: Date().addingTimeInterval(TimeInterval(effectiveMaxAge)),
             maxAge: effectiveMaxAge,
-            isSecure: config.isProduction,
+            isSecure: true,
             isHTTPOnly: true,
-            sameSite: .lax
+            sameSite: HTTPCookies.SameSitePolicy.none
         )
         response.cookies[cookieName] = cookie
 
@@ -340,13 +344,14 @@ public struct AuthController: RouteCollection {
         let response = try createResponse(status: .ok, body: AuthResponse(success: true))
 
         // Clear token cookie
+        // SameSite=None is required for cross-origin requests
         let expiredCookie = HTTPCookies.Value(
             string: "",
             expires: Date(timeIntervalSince1970: 0),
             maxAge: 0,
-            isSecure: config.isProduction,
+            isSecure: true,
             isHTTPOnly: true,
-            sameSite: .lax
+            sameSite: HTTPCookies.SameSitePolicy.none
         )
         response.cookies[cookieName] = expiredCookie
 
@@ -355,9 +360,9 @@ public struct AuthController: RouteCollection {
             string: "",
             expires: Date(timeIntervalSince1970: 0),
             maxAge: 0,
-            isSecure: config.isProduction,
+            isSecure: true,
             isHTTPOnly: true,
-            sameSite: .lax
+            sameSite: HTTPCookies.SameSitePolicy.none
         )
         response.cookies["csrf_token"] = expiredCSRFCookie
 

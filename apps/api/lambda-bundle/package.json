@@ -1,0 +1,49 @@
+{
+  "name": "@leads-funnel/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx src/local.ts",
+    "build": "tsc -p tsconfig.json",
+    "bundle": "node scripts/bundle.mjs",
+    "bundle:lambdas": "node scripts/package-lambdas.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src --ext .ts",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:watch": "vitest watch",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.500.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.893.0",
+    "@aws-sdk/client-dynamodb": "^3.500.0",
+    "@aws-sdk/client-eventbridge": "^3.500.0",
+    "@aws-sdk/client-s3": "^3.500.0",
+    "@aws-sdk/client-secrets-manager": "^3.500.0",
+    "@aws-sdk/client-ses": "^3.500.0",
+    "@aws-sdk/client-sns": "^3.500.0",
+    "@aws-sdk/client-ssm": "^3.500.0",
+    "@aws-sdk/lib-dynamodb": "^3.500.0",
+    "@aws-sdk/s3-request-presigner": "^3.500.0",
+    "@google/gemini-cli": "0.1.1",
+    "@kanjona/shared": "*",
+    "@smithy/node-http-handler": "^3.0.0",
+    "@vitest/ui": "4.0.18",
+    "jose": "^5.2.0",
+    "next": "16.1.6",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.130",
+    "@types/node": "^22.0.0",
+    "@types/uuid": "^9.0.0",
+    "@vitest/coverage-v8": "^4.0.18",
+    "dotenv": "^16.3.0",
+    "esbuild": "^0.25.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0",
+    "vitest": "^4.0.18"
+  }
+}

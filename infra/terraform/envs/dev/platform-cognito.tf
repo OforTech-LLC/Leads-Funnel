@@ -44,21 +44,29 @@ module "cognito_admin" {
   callback_urls = concat(
     [
       "https://${local.admin_subdomain}.${var.root_domain}/callback",
+      "https://${local.admin_subdomain}.${var.root_domain}/callback/",
       "https://${local.env_subdomain}.${var.root_domain}/admin/callback",
+      "https://${local.env_subdomain}.${var.root_domain}/admin/callback/",
     ],
     [
       "http://localhost:3001/callback",
+      "http://localhost:3001/callback/",
       "http://localhost:3000/admin/callback",
+      "http://localhost:3000/admin/callback/",
     ]
   )
   logout_urls = concat(
     [
       "https://${local.admin_subdomain}.${var.root_domain}/login",
+      "https://${local.admin_subdomain}.${var.root_domain}/login/",
       "https://${local.env_subdomain}.${var.root_domain}/admin",
+      "https://${local.env_subdomain}.${var.root_domain}/admin/",
     ],
     [
       "http://localhost:3001/login",
+      "http://localhost:3001/login/",
       "http://localhost:3000/admin",
+      "http://localhost:3000/admin/",
     ]
   )
 

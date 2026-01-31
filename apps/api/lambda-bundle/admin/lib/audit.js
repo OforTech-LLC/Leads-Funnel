@@ -1,0 +1,87 @@
+/**
+ * Admin Audit Logging
+ *
+ * Logs all admin actions to DynamoDB for compliance and security.
+ */
+import { PutCommand } from '@aws-sdk/lib-dynamodb';
+import { v4 as uuidv4 } from 'uuid';
+import { getDocClient } from '../../lib/clients.js';
+// Default retention: 365 days (configurable via env)
+const AUDIT_RETENTION_DAYS = parseInt(process.env.AUDIT_RETENTION_DAYS || '365', 10);
+/**
+ * Log an admin action to the audit table
+ */
+export async function logAuditEvent(config, user, action, resourceType, resourceId, details, ipAddress, userAgent, funnelId) {
+    const ddb = getDocClient();
+    const timestamp = new Date().toISOString();
+    const auditId = uuidv4();
+    // TTL for automatic deletion after retention period
+    const ttl = Math.floor(Date.now() / 1000) + AUDIT_RETENTION_DAYS * 24 * 60 * 60;
+    const entry = {
+        pk: `USER#${user.sub}`,
+        sk: `AUDIT#${timestamp}#${auditId}`,
+        userId: user.sub,
+        userEmail: user.email,
+        action,
+        resourceType,
+        resourceId,
+        funnelId,
+        details,
+        ipAddress,
+        userAgent,
+        timestamp,
+        ttl,
+    };
+    await ddb.send(new PutCommand({
+        TableName: config.auditTable,
+        Item: entry,
+    }));
+}
+/**
+ * Log view leads action
+ */
+export async function logViewLeads(config, user, funnelId, filters, resultCount, ipAddress, userAgent) {
+    await logAuditEvent(config, user, 'VIEW_LEADS', 'lead', `funnel:${funnelId}`, {
+        filters,
+        resultCount,
+    }, ipAddress, userAgent, funnelId);
+}
+/**
+ * Log update lead action
+ */
+export async function logUpdateLead(config, user, funnelId, leadId, changes, ipAddress, userAgent) {
+    await logAuditEvent(config, user, 'UPDATE_LEAD', 'lead', leadId, {
+        changes,
+    }, ipAddress, userAgent, funnelId);
+}
+/**
+ * Log bulk update action
+ */
+export async function logBulkUpdate(config, user, funnelId, leadIds, changes, ipAddress, userAgent) {
+    await logAuditEvent(config, user, 'BULK_UPDATE_LEADS', 'lead', `bulk:${leadIds.length}`, {
+        leadIds,
+        changes,
+    }, ipAddress, userAgent, funnelId);
+}
+/**
+ * Log export creation action
+ */
+export async function logCreateExport(config, user, funnelId, jobId, format, filters, ipAddress, userAgent) {
+    await logAuditEvent(config, user, 'CREATE_EXPORT', 'export', jobId, {
+        format,
+        filters,
+    }, ipAddress, userAgent, funnelId);
+}
+/**
+ * Log export download action
+ */
+export async function logDownloadExport(config, user, jobId, funnelId, ipAddress, userAgent) {
+    await logAuditEvent(config, user, 'DOWNLOAD_EXPORT', 'export', jobId, {}, ipAddress, userAgent, funnelId);
+}
+/**
+ * Log view stats action
+ */
+export async function logViewStats(config, user, funnelId, ipAddress, userAgent) {
+    await logAuditEvent(config, user, 'VIEW_STATS', 'lead', `stats:${funnelId}`, {}, ipAddress, userAgent, funnelId);
+}
+//# sourceMappingURL=audit.js.map

@@ -83,20 +83,18 @@ function setCookieHeader(
   name: string,
   value: string,
   maxAge: number,
-  isProduction: boolean
+  _isProduction: boolean
 ): string {
-  const parts = [`${name}=${value}`, `Path=/`, `Max-Age=${maxAge}`, `HttpOnly`, `SameSite=Lax`];
-  if (isProduction) {
-    parts.push('Secure');
-  }
+  // SameSite=None is required for cross-origin requests (admin.kanjona.com -> api.kanjona.com)
+  // Secure is required when using SameSite=None
+  const parts = [`${name}=${value}`, `Path=/`, `Max-Age=${maxAge}`, `HttpOnly`, `SameSite=None`, `Secure`];
   return parts.join('; ');
 }
 
-function clearCookieHeader(name: string, isProduction: boolean): string {
-  const parts = [`${name}=`, `Path=/`, `Max-Age=0`, `HttpOnly`, `SameSite=Lax`];
-  if (isProduction) {
-    parts.push('Secure');
-  }
+function clearCookieHeader(name: string, _isProduction: boolean): string {
+  // SameSite=None is required for cross-origin requests
+  // Secure is required when using SameSite=None
+  const parts = [`${name}=`, `Path=/`, `Max-Age=0`, `HttpOnly`, `SameSite=None`, `Secure`];
   return parts.join('; ');
 }
 

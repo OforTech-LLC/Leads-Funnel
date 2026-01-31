@@ -80,8 +80,8 @@ resource "aws_kms_alias" "admin_logs" {
 resource "aws_lambda_function" "admin" {
   function_name = "${var.project_name}-${var.environment}-admin-handler"
   role          = aws_iam_role.admin_lambda.arn
-  handler       = "index.handler"
-  runtime       = "nodejs22.x"
+  handler       = "bootstrap"
+  runtime       = "provided.al2023"
   timeout       = 30
   memory_size   = 512
 
@@ -90,8 +90,18 @@ resource "aws_lambda_function" "admin" {
 
   architectures = ["arm64"]
 
+  # Lambda Web Adapter layer - enables running HTTP servers in Lambda
+  # See: https://github.com/awslabs/aws-lambda-web-adapter
+  layers = [
+    "arn:aws:lambda:${var.aws_region}:753240598075:layer:LambdaAdapterLayerArm64:25"
+  ]
+
   environment {
     variables = {
+      # Lambda Web Adapter configuration
+      AWS_LAMBDA_EXEC_WRAPPER = "/opt/bootstrap"
+      PORT                     = "8080"
+
       ENV                       = var.environment
       PROJECT_NAME              = var.project_name
       AWS_REGION_NAME           = var.aws_region

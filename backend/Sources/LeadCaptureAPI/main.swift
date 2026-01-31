@@ -3,7 +3,13 @@
 // LeadCaptureAPI
 // =============================================================================
 // Entry point for the Lead Capture API server.
-// Can be deployed as a standalone HTTP server or containerized.
+//
+// Deployment modes:
+// - Standalone HTTP server (local development, containers)
+// - AWS Lambda with Lambda Web Adapter (no code changes needed)
+//
+// The Lambda Web Adapter runs alongside this HTTP server and translates
+// Lambda events to HTTP requests. See: https://github.com/awslabs/aws-lambda-web-adapter
 // =============================================================================
 
 import Foundation
@@ -32,12 +38,23 @@ enum LeadCaptureApp {
     static func configure(_ app: Application) async throws {
         let config = AppConfig.shared
 
+        // Detect if running in Lambda (Lambda Web Adapter sets AWS_LAMBDA_RUNTIME_API)
+        let isLambda = ProcessInfo.processInfo.environment["AWS_LAMBDA_RUNTIME_API"] != nil
+
+        // Configure for Lambda Web Adapter if in Lambda environment
+        if isLambda {
+            // Lambda Web Adapter expects the app on port 8080 by default
+            app.http.server.configuration.port = 8080
+            app.http.server.configuration.hostname = "0.0.0.0"
+        }
+
         // Log configuration
         app.logger.info("Starting Lead Capture API", metadata: [
             "environment": .string(config.apiStage),
             "region": .string(config.awsRegion),
             "table": .string(config.dynamoDBTableName),
-            "project": .string(ProcessInfo.processInfo.environment["PROJECT"] ?? "kanjona")
+            "project": .string(ProcessInfo.processInfo.environment["PROJECT"] ?? "kanjona"),
+            "isLambda": .string(isLambda ? "true" : "false")
         ])
 
         // Configure middleware (order matters)
