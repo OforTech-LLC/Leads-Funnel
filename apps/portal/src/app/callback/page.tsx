@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useState, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { exchangeCodeForTokens, verifyState } from '@/lib/auth';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -9,8 +9,14 @@ function CallbackContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const processedRef = useRef(false);
 
   useEffect(() => {
+    // Prevent double execution (React StrictMode or re-renders)
+    if (processedRef.current) {
+      return;
+    }
+
     const code = searchParams.get('code');
     const state = searchParams.get('state');
     const errorParam = searchParams.get('error');
@@ -30,6 +36,9 @@ function CallbackContent() {
       setError('Invalid session state. Please try logging in again.');
       return;
     }
+
+    // Mark as processed before async operation
+    processedRef.current = true;
 
     async function handleCallback() {
       const success = await exchangeCodeForTokens(code!);

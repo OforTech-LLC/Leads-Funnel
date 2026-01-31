@@ -8,7 +8,7 @@
 // - GET/POST/DELETE on /api/auth
 // ──────────────────────────────────────────────
 
-import { AUTH_ENDPOINT, STORAGE_KEYS } from './constants';
+import { getAuthEndpoint, STORAGE_KEYS } from './constants';
 
 interface CognitoConfig {
   domain: string;
@@ -263,7 +263,7 @@ export async function exchangeCodeForTokens(code: string): Promise<boolean> {
     const tokens = await tokenResponse.json();
 
     // Step 2: Store tokens in httpOnly cookie via backend API
-    const storeResponse = await fetch(AUTH_ENDPOINT, {
+    const storeResponse = await fetch(getAuthEndpoint(), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -311,7 +311,7 @@ function parseJwt(token: string): TokenPayload | null {
  */
 export async function getCurrentUser(): Promise<CurrentUser | null> {
   try {
-    const response = await fetch(AUTH_ENDPOINT, {
+    const response = await fetch(getAuthEndpoint(), {
       method: 'GET',
       credentials: 'include',
     });
@@ -353,7 +353,7 @@ export function getUserFromToken(token: string): CurrentUser | null {
  */
 export async function logout(): Promise<void> {
   try {
-    await fetch(AUTH_ENDPOINT, {
+    await fetch(getAuthEndpoint(), {
       method: 'DELETE',
       credentials: 'include',
     });

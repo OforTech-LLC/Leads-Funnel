@@ -11,10 +11,17 @@ import { getApiBaseUrl } from './runtime-config';
 
 export const AUTH_COOKIE_NAME = 'portal_token';
 
-// Backend API base URL for auth endpoints
-const API_BASE = getApiBaseUrl();
+// Lazily evaluated AUTH_ENDPOINT to ensure window is available at runtime
+export const AUTH_ENDPOINTS = {
+  get AUTH() {
+    return `${getApiBaseUrl()}/auth/portal`;
+  },
+};
 
-export const AUTH_ENDPOINT = `${API_BASE}/auth/portal`;
+// Keep legacy AUTH_ENDPOINT for backward compatibility as a getter
+export function getAuthEndpoint(): string {
+  return `${getApiBaseUrl()}/auth/portal`;
+}
 
 // ── Storage Keys (localStorage/sessionStorage) ──
 

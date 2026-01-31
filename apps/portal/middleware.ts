@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { AUTH_COOKIE_NAME, AUTH_ENDPOINT } from '@/lib/constants';
+import { AUTH_COOKIE_NAME } from '@/lib/constants';
 
-const PUBLIC_PATHS = ['/login', '/callback', '/reset-password', AUTH_ENDPOINT];
+// Public paths that don't require authentication
+const PUBLIC_PATHS = ['/login', '/callback', '/reset-password'];
 
 function generateNonce(): string {
   const bytes = new Uint8Array(16);

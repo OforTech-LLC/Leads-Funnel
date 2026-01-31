@@ -40,22 +40,42 @@ export type AdminRole = (typeof ADMIN_ROLES)[keyof typeof ADMIN_ROLES];
 // API Endpoints
 // ---------------------------------------------------------------------------
 
-// Backend API base URL for auth endpoints
-const API_BASE = getApiBaseUrl();
-
+// Lazily evaluated API endpoints to ensure window is available at runtime
 export const API_ENDPOINTS = {
-  AUTH: `${API_BASE}/auth/admin`,
-  LEADS: `${API_BASE}/admin/leads`,
-  ORGS: `${API_BASE}/admin/orgs`,
-  USERS: `${API_BASE}/admin/users`,
-  RULES: `${API_BASE}/admin/rules`,
-  WEBHOOKS: `${API_BASE}/admin/webhooks`,
-  EXPORTS: `${API_BASE}/admin/exports`,
-  ANALYTICS: `${API_BASE}/admin/analytics`,
-  NOTIFICATIONS: `${API_BASE}/admin/notifications`,
-  FUNNELS: `${API_BASE}/admin/funnels`,
-  SETTINGS: `${API_BASE}/admin/settings`,
-} as const;
+  get AUTH() {
+    return `${getApiBaseUrl()}/auth/admin`;
+  },
+  get LEADS() {
+    return `${getApiBaseUrl()}/admin/leads`;
+  },
+  get ORGS() {
+    return `${getApiBaseUrl()}/admin/orgs`;
+  },
+  get USERS() {
+    return `${getApiBaseUrl()}/admin/users`;
+  },
+  get RULES() {
+    return `${getApiBaseUrl()}/admin/rules`;
+  },
+  get WEBHOOKS() {
+    return `${getApiBaseUrl()}/admin/webhooks`;
+  },
+  get EXPORTS() {
+    return `${getApiBaseUrl()}/admin/exports`;
+  },
+  get ANALYTICS() {
+    return `${getApiBaseUrl()}/admin/analytics`;
+  },
+  get NOTIFICATIONS() {
+    return `${getApiBaseUrl()}/admin/notifications`;
+  },
+  get FUNNELS() {
+    return `${getApiBaseUrl()}/admin/funnels`;
+  },
+  get SETTINGS() {
+    return `${getApiBaseUrl()}/admin/settings`;
+  },
+};
 
 // ---------------------------------------------------------------------------
 // Lead Status Labels & Colors
