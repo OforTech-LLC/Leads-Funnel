@@ -73,12 +73,25 @@ export async function verifyJwt(
 ): Promise<JwtClaims> {
   const jwks = getJwks(issuer);
 
-  const { payload } = await jwtVerify(token, jwks, { issuer });
+  // Cognito access tokens don't have 'aud' claim, they use 'client_id'
+  // We need to skip the default audience validation and handle it manually
+  const { payload } = await jwtVerify(token, jwks, {
+    issuer,
+    // Skip audience validation - Cognito access tokens use client_id instead
+    audience: undefined,
+  });
 
+  // Verify token_use if present (Cognito-specific)
+  const tokenUse = payload.token_use as string | undefined;
+  if (tokenUse && tokenUse !== 'access' && tokenUse !== 'id') {
+    throw new Error('Invalid token_use claim');
+  }
+
+  // Manual audience/client_id validation for Cognito compatibility
   if (audience) {
     const aud = payload.aud;
-    const clientId = payload.client_id;
-    const azp = payload.azp;
+    const clientId = payload.client_id as string | undefined;
+    const azp = payload.azp as string | undefined;
     const audMatches =
       typeof aud === 'string'
         ? aud === audience
