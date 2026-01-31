@@ -73,6 +73,12 @@ locals {
     var.enable_sms_mfa && length(aws_iam_role.sms_role) > 0 ? aws_iam_role.sms_role[0].arn : null
   )
   webauthn_relying_party_id = var.webauthn_relying_party_id != null ? var.webauthn_relying_party_id : "${var.domain_prefix}.auth.${data.aws_region.current.name}.amazoncognito.com"
+  recovery_mechanisms = var.enable_email_mfa ? [
+    { name = "verified_email", priority = 1 },
+    { name = "verified_phone_number", priority = 2 },
+    ] : [
+    { name = "verified_email", priority = 1 },
+  ]
 }
 
 # -----------------------------------------------------------------------------
@@ -118,11 +124,22 @@ resource "aws_cognito_user_pool" "this" {
     }
   }
 
+  dynamic "email_mfa_configuration" {
+    for_each = var.enable_email_mfa ? [1] : []
+    content {
+      subject = var.email_mfa_subject
+      message = var.email_mfa_message
+    }
+  }
+
   # Account recovery
   account_recovery_setting {
-    recovery_mechanism {
-      name     = "verified_email"
-      priority = 1
+    dynamic "recovery_mechanism" {
+      for_each = local.recovery_mechanisms
+      content {
+        name     = recovery_mechanism.value.name
+        priority = recovery_mechanism.value.priority
+      }
     }
   }
 

@@ -133,6 +133,32 @@ variable "webauthn_user_verification" {
 }
 
 # -----------------------------------------------------------------------------
+# Email MFA Configuration
+# -----------------------------------------------------------------------------
+variable "enable_email_mfa" {
+  type        = bool
+  description = "Enable Email MFA support (requires SES configuration)"
+  default     = false
+
+  validation {
+    condition     = !var.enable_email_mfa || (var.ses_email_arn != null && var.from_email_address != null)
+    error_message = "enable_email_mfa requires ses_email_arn and from_email_address to be set."
+  }
+}
+
+variable "email_mfa_subject" {
+  type        = string
+  description = "Subject line for Email MFA messages"
+  default     = "Your sign-in verification code"
+}
+
+variable "email_mfa_message" {
+  type        = string
+  description = "Message template for Email MFA (use {####} placeholder)"
+  default     = "Your verification code is {####}"
+}
+
+# -----------------------------------------------------------------------------
 # Security
 # -----------------------------------------------------------------------------
 variable "advanced_security_mode" {

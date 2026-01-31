@@ -44,8 +44,9 @@ enable_twilio      = false
 enable_elevenlabs  = false
 
 # --- CHEAP/FREE FEATURES ---
-enable_sqs = false
-enable_ses = false
+enable_sqs       = false
+enable_ses       = false
+enable_email_mfa = false
 
 # =============================================================================
 # RESOURCE CONFIGURATION

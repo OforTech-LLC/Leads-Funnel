@@ -146,6 +146,17 @@ variable "enable_ses" {
   description = "Enable SES for email notifications"
 }
 
+variable "enable_email_mfa" {
+  type        = bool
+  default     = false
+  description = "Enable Cognito Email MFA (requires SES)"
+
+  validation {
+    condition     = !var.enable_email_mfa || var.enable_ses
+    error_message = "enable_email_mfa requires enable_ses to be true."
+  }
+}
+
 variable "enable_xray" {
   type        = bool
   default     = false

@@ -46,8 +46,9 @@ enable_twilio      = false
 enable_elevenlabs  = false
 
 # --- ASYNC PROCESSING ---
-enable_sqs = true  # Enable SQS for async lead processing
-enable_ses = false # Enable when ready for email notifications
+enable_sqs       = true # Enable SQS for async lead processing
+enable_ses       = true # Required for email MFA + notifications
+enable_email_mfa = true
 
 # =============================================================================
 # RESOURCE CONFIGURATION

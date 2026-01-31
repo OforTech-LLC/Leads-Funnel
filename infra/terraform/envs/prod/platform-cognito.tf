@@ -20,8 +20,11 @@ module "cognito_admin" {
   allow_admin_create_user_only = true
   challenge_on_new_device      = true
   enable_sms_mfa               = true
+  enable_email_mfa             = var.enable_email_mfa
   enable_webauthn              = true
   webauthn_user_verification   = "preferred"
+  ses_email_arn                = var.enable_email_mfa && var.enable_ses ? module.ses[0].domain_identity_arn : null
+  from_email_address           = var.enable_email_mfa && var.enable_ses ? "no-reply@${var.root_domain}" : null
 
   custom_attributes = [
     {
@@ -86,13 +89,16 @@ module "cognito_portal" {
   pool_name     = "${local.prefix}-portal-userpool"
   domain_prefix = var.platform_portal_cognito_domain
 
-  mfa_configuration            = "OPTIONAL" # Optional for portal users
+  mfa_configuration            = "ON" # Required in production
   advanced_security_mode       = "ENFORCED"
   allow_admin_create_user_only = true # Admin-only portal provisioning
   challenge_on_new_device      = true
   enable_sms_mfa               = true
+  enable_email_mfa             = var.enable_email_mfa
   enable_webauthn              = true
   webauthn_user_verification   = "preferred"
+  ses_email_arn                = var.enable_email_mfa && var.enable_ses ? module.ses[0].domain_identity_arn : null
+  from_email_address           = var.enable_email_mfa && var.enable_ses ? "no-reply@${var.root_domain}" : null
 
   custom_attributes = [
     {
