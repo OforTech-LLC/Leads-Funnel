@@ -243,14 +243,19 @@ export interface TokenResponse {
 export async function exchangeCodeForTokens(code: string): Promise<boolean> {
   try {
     const { domain, clientId } = resolveCognitoConfig();
+    const redirectUri = getRedirectUri();
+
+    console.log('[Auth] Config:', { domain, clientId, redirectUri });
+
     // Step 1: Exchange code for tokens with Cognito
     const body = new URLSearchParams({
       grant_type: 'authorization_code',
       client_id: clientId,
       code,
-      redirect_uri: getRedirectUri(),
+      redirect_uri: redirectUri,
     });
 
+    console.log('[Auth] Step 1: Exchanging code with Cognito...');
     const tokenResponse = await fetch(`${domain}/oauth2/token`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -258,14 +263,19 @@ export async function exchangeCodeForTokens(code: string): Promise<boolean> {
     });
 
     if (!tokenResponse.ok) {
-      console.error('Token exchange failed:', await tokenResponse.text());
+      const errorText = await tokenResponse.text();
+      console.error('[Auth] Cognito token exchange failed:', tokenResponse.status, errorText);
       return false;
     }
 
     const tokens: TokenResponse = await tokenResponse.json();
+    console.log('[Auth] Step 1 success: Got tokens from Cognito');
 
     // Step 2: Store tokens in httpOnly cookie via backend API
-    const storeResponse = await fetch(API_ENDPOINTS.AUTH, {
+    const authEndpoint = API_ENDPOINTS.AUTH;
+    console.log('[Auth] Step 2: Storing tokens via API:', authEndpoint);
+
+    const storeResponse = await fetch(authEndpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -277,13 +287,17 @@ export async function exchangeCodeForTokens(code: string): Promise<boolean> {
       }),
     });
 
-    if (storeResponse.ok) {
-      sessionStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, tokens.access_token);
+    if (!storeResponse.ok) {
+      const errorText = await storeResponse.text();
+      console.error('[Auth] API store failed:', storeResponse.status, errorText);
+      return false;
     }
 
-    return storeResponse.ok;
+    console.log('[Auth] Step 2 success: Tokens stored');
+    sessionStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, tokens.access_token);
+    return true;
   } catch (error) {
-    console.error('Token exchange error:', error);
+    console.error('[Auth] Token exchange error:', error);
     return false;
   }
 }

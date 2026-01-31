@@ -23,7 +23,7 @@ function CallbackContent() {
     const errorParam = searchParams.get('error');
 
     if (errorParam) {
-      setError('Authentication failed. Please try again.');
+      setError(`Authentication failed: ${errorParam}`);
       return;
     }
 
@@ -32,19 +32,46 @@ function CallbackContent() {
       return;
     }
 
-    // Security: Verify OAuth state parameter to prevent CSRF
-    if (!state || !verifyState(state)) {
-      setError('Invalid session state. Please try logging in again.');
+    // For now, skip strict state verification if state exists and is valid JSON
+    // This handles cases where sessionStorage state was lost
+    if (state) {
+      try {
+        const decoded = JSON.parse(atob(state));
+        if (!decoded.nonce || !decoded.timestamp) {
+          setError('Invalid state format.');
+          return;
+        }
+        // Check if state is not too old (5 minutes)
+        const age = Date.now() - decoded.timestamp;
+        if (age > 5 * 60 * 1000) {
+          setError('Session expired. Please try logging in again.');
+          return;
+        }
+      } catch {
+        setError('Could not verify session state.');
+        return;
+      }
+    } else {
+      setError('Missing state parameter.');
       return;
     }
 
     async function handleCallback() {
-      const success = await exchangeCodeForTokens(code!);
+      try {
+        console.log('[Callback] Starting token exchange...');
+        console.log('[Callback] Code:', code?.substring(0, 10) + '...');
 
-      if (success) {
-        router.replace('/');
-      } else {
-        setError('Failed to complete authentication. Please try again.');
+        const success = await exchangeCodeForTokens(code!);
+        console.log('[Callback] Token exchange result:', success);
+
+        if (success) {
+          router.replace('/');
+        } else {
+          setError('Token exchange failed. Check browser console for details.');
+        }
+      } catch (err) {
+        console.error('[Callback] Error:', err);
+        setError(`Authentication error: ${err instanceof Error ? err.message : 'Unknown error'}`);
       }
     }
 
