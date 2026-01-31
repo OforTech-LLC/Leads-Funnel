@@ -21,8 +21,8 @@ const FALLBACK_DEV_COGNITO_CONFIG: CognitoConfig = {
 };
 
 const FALLBACK_PROD_COGNITO_CONFIG: CognitoConfig = {
-  domain: 'https://kanjona-prod-portal.auth.us-east-1.amazoncognito.com',
-  clientId: '4d5cd98s1ac44dna3t0mb59vfd',
+  domain: 'https://kanjona-platform-portal.auth.us-east-1.amazoncognito.com',
+  clientId: '1vpb1g035mcnu57v0oa83d6q43',
 };
 
 const DEFAULT_PORTAL_URL = 'http://localhost:3002';

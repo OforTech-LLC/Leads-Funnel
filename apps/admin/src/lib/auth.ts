@@ -36,8 +36,8 @@ const FALLBACK_DEV_COGNITO_CONFIG: CognitoConfig = {
 };
 
 const FALLBACK_PROD_COGNITO_CONFIG: CognitoConfig = {
-  domain: 'https://kanjona-prod-admin.auth.us-east-1.amazoncognito.com',
-  clientId: '2b9klbu72tj1vsav593kpdvnvl',
+  domain: 'https://kanjona-platform-admin.auth.us-east-1.amazoncognito.com',
+  clientId: '71fvarr8d96ln8k4futiegnd7r',
 };
 
 function getAppOrigin(): string | null {
