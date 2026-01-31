@@ -18,6 +18,22 @@ struct SetTokenRequest: Content {
     let expiresIn: Int // seconds until expiration
 }
 
+/// Request for server-side token exchange (avoids CORS issues)
+struct TokenExchangeRequest: Content {
+    let code: String
+    let redirectUri: String
+    let codeVerifier: String?
+}
+
+/// Response from Cognito token endpoint
+struct CognitoTokenResponse: Content {
+    let access_token: String
+    let id_token: String
+    let refresh_token: String?
+    let expires_in: Int
+    let token_type: String
+}
+
 public struct AuthResponse: Content {
     let success: Bool
     let error: String?
@@ -77,12 +93,14 @@ public struct AuthController: RouteCollection {
         admin.get(use: checkAdminAuth)
         admin.post(use: setAdminToken)
         admin.delete(use: clearAdminToken)
+        admin.post("callback", use: adminTokenExchange) // Server-side token exchange
 
         // Portal auth routes
         let portal = routes.grouped("auth", "portal")
         portal.get(use: checkPortalAuth)
         portal.post(use: setPortalToken)
         portal.delete(use: clearPortalToken)
+        portal.post("callback", use: portalTokenExchange) // Server-side token exchange
     }
 
     // MARK: - Admin Endpoints
@@ -129,6 +147,106 @@ public struct AuthController: RouteCollection {
     @Sendable
     public func clearPortalToken(req: Request) async throws -> Response {
         return try clearToken(req: req, cookieName: portalCookieName)
+    }
+
+    // MARK: - Server-Side Token Exchange (avoids CORS issues)
+
+    /// Exchange authorization code for tokens (admin)
+    /// - POST /auth/admin/callback
+    @Sendable
+    public func adminTokenExchange(req: Request) async throws -> Response {
+        let cognitoDomain = ProcessInfo.processInfo.environment["COGNITO_ADMIN_DOMAIN"] ?? "https://kanjona-admin-dev.auth.us-east-1.amazoncognito.com"
+        let clientId = ProcessInfo.processInfo.environment["COGNITO_ADMIN_CLIENT_ID"] ?? "jt92k3a0go8o1b50nup1c5f8e"
+        return try await exchangeCodeForTokens(req: req, cookieName: adminCookieName, maxAge: cookieMaxAge, cognitoDomain: cognitoDomain, clientId: clientId)
+    }
+
+    /// Exchange authorization code for tokens (portal)
+    /// - POST /auth/portal/callback
+    @Sendable
+    public func portalTokenExchange(req: Request) async throws -> Response {
+        let cognitoDomain = ProcessInfo.processInfo.environment["COGNITO_PORTAL_DOMAIN"] ?? "https://kanjona-portal-dev.auth.us-east-1.amazoncognito.com"
+        let clientId = ProcessInfo.processInfo.environment["COGNITO_PORTAL_CLIENT_ID"] ?? ""
+        return try await exchangeCodeForTokens(req: req, cookieName: portalCookieName, maxAge: portalCookieMaxAge, cognitoDomain: cognitoDomain, clientId: clientId)
+    }
+
+    /// Exchange authorization code for tokens via Cognito (server-side)
+    private func exchangeCodeForTokens(req: Request, cookieName: String, maxAge: Int, cognitoDomain: String, clientId: String) async throws -> Response {
+        // Parse request
+        let exchangeRequest: TokenExchangeRequest
+        do {
+            exchangeRequest = try req.content.decode(TokenExchangeRequest.self)
+        } catch {
+            let response = AuthResponse(success: false, error: "Invalid exchange request")
+            return try createResponse(status: .badRequest, body: response)
+        }
+
+        // Build token exchange request
+        var params = "grant_type=authorization_code"
+        params += "&client_id=\(clientId)"
+        params += "&code=\(exchangeRequest.code)"
+        params += "&redirect_uri=\(exchangeRequest.redirectUri.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? exchangeRequest.redirectUri)"
+        if let verifier = exchangeRequest.codeVerifier, !verifier.isEmpty {
+            params += "&code_verifier=\(verifier)"
+        }
+
+        // Make request to Cognito
+        let tokenURL = URI(string: "\(cognitoDomain)/oauth2/token")
+        var headers = HTTPHeaders()
+        headers.add(name: "Content-Type", value: "application/x-www-form-urlencoded")
+
+        let clientResponse = try await req.client.post(tokenURL, headers: headers) { clientReq in
+            clientReq.body = ByteBuffer(string: params)
+        }
+
+        // Check for error
+        guard clientResponse.status == .ok else {
+            let errorBody = clientResponse.body.map { String(buffer: $0) } ?? "Unknown error"
+            req.logger.error("Cognito token exchange failed: \(clientResponse.status) - \(errorBody)")
+            let response = AuthResponse(success: false, error: "Token exchange failed: \(errorBody)")
+            return try createResponse(status: .badRequest, body: response)
+        }
+
+        // Parse Cognito response
+        let cognitoResponse: CognitoTokenResponse
+        do {
+            cognitoResponse = try clientResponse.content.decode(CognitoTokenResponse.self)
+        } catch {
+            req.logger.error("Failed to parse Cognito response: \(error)")
+            let response = AuthResponse(success: false, error: "Invalid token response from Cognito")
+            return try createResponse(status: .badRequest, body: response)
+        }
+
+        // Create token payload
+        let expiresAt = Int(Date().timeIntervalSince1970 * 1000) + (cognitoResponse.expires_in * 1000)
+        let payload = TokenPayload(
+            accessToken: cognitoResponse.access_token,
+            idToken: cognitoResponse.id_token,
+            refreshToken: cognitoResponse.refresh_token ?? "",
+            expiresAt: expiresAt
+        )
+
+        // Encode payload
+        let payloadData = try JSONEncoder().encode(payload)
+        let payloadString = String(data: payloadData, encoding: .utf8) ?? ""
+
+        // Calculate max age
+        let effectiveMaxAge = min(cognitoResponse.expires_in, maxAge)
+
+        // Create response
+        let response = try createResponse(status: .ok, body: AuthResponse(success: true))
+
+        // Set cookie
+        let cookie = HTTPCookies.Value(
+            string: payloadString,
+            expires: Date().addingTimeInterval(TimeInterval(effectiveMaxAge)),
+            maxAge: effectiveMaxAge,
+            isSecure: config.isProduction,
+            isHTTPOnly: true,
+            sameSite: .lax
+        )
+        response.cookies[cookieName] = cookie
+
+        return response
     }
 
     // MARK: - Shared Implementation

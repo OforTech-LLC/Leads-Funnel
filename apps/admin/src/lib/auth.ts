@@ -271,75 +271,53 @@ export interface TokenResponse {
 }
 
 /**
- * Exchange authorization code for tokens via Cognito token endpoint,
- * then store tokens in httpOnly cookie via backend API.
+ * Exchange authorization code for tokens via backend API (server-side).
+ * This avoids CORS issues by having the backend call Cognito directly.
  * Returns success status and optional error message.
  */
 export async function exchangeCodeForTokens(code: string): Promise<{ success: boolean; error?: string }> {
   try {
-    const { domain, clientId } = resolveCognitoConfig();
     const redirectUri = getRedirectUri();
     const codeVerifier = sessionStorage.getItem(PKCE_VERIFIER_KEY);
 
-    console.log('[Auth] Config:', { domain, clientId, redirectUri });
+    console.log('[Auth] Config:', { redirectUri, hasCodeVerifier: !!codeVerifier });
 
-    const params: Record<string, string> = {
-      grant_type: 'authorization_code',
-      client_id: clientId,
-      code,
-      redirect_uri: redirectUri,
-    };
-
-    if (codeVerifier) {
-      params.code_verifier = codeVerifier;
-    }
-
-    // Step 1: Exchange code for tokens with Cognito
-    const body = new URLSearchParams(params);
-
-    console.log('[Auth] Step 1: Exchanging code with Cognito...');
-    const tokenResponse = await fetch(`${domain}/oauth2/token`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: body.toString(),
-    });
-
-    // Clean up PKCE verifier
+    // Clean up PKCE verifier before the request (in case of redirect/reload)
     sessionStorage.removeItem(PKCE_VERIFIER_KEY);
 
-    if (!tokenResponse.ok) {
-      const errorText = await tokenResponse.text();
-      console.error('[Auth] Cognito token exchange failed:', tokenResponse.status, errorText);
-      return { success: false, error: `Cognito exchange failed: ${errorText}` };
-    }
+    // Exchange code for tokens via backend API (server-side token exchange)
+    // This avoids CORS issues since the backend calls Cognito directly
+    const callbackEndpoint = `${API_ENDPOINTS.AUTH}/callback`;
+    console.log('[Auth] Exchanging code via backend:', callbackEndpoint);
 
-    const tokens: TokenResponse = await tokenResponse.json();
-    console.log('[Auth] Step 1 success: Got tokens from Cognito');
-
-    // Step 2: Store tokens in httpOnly cookie via backend API
-    const authEndpoint = API_ENDPOINTS.AUTH;
-    console.log('[Auth] Step 2: Storing tokens via API:', authEndpoint);
-
-    const storeResponse = await fetch(authEndpoint, {
+    const response = await fetch(callbackEndpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify({
-        accessToken: tokens.access_token,
-        idToken: tokens.id_token,
-        refreshToken: tokens.refresh_token || '',
-        expiresIn: tokens.expires_in,
+        code,
+        redirectUri,
+        codeVerifier: codeVerifier || undefined,
       }),
     });
 
-    if (!storeResponse.ok) {
-      const errorText = await storeResponse.text();
-      console.error('[Auth] API store failed:', storeResponse.status, errorText);
-      return { success: false, error: `Session storage failed: ${errorText}` };
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('[Auth] Token exchange failed:', response.status, errorText);
+      try {
+        const errorJson = JSON.parse(errorText);
+        return { success: false, error: errorJson.error || errorText };
+      } catch {
+        return { success: false, error: errorText };
+      }
     }
 
-    console.log('[Auth] Step 2 success: Tokens stored');
-    sessionStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, tokens.access_token);
+    const result = await response.json();
+    if (!result.success) {
+      return { success: false, error: result.error || 'Token exchange failed' };
+    }
+
+    console.log('[Auth] Token exchange success');
     return { success: true };
   } catch (error) {
     console.error('[Auth] Token exchange error:', error);
