@@ -8,7 +8,7 @@
  * Verifies OAuth state parameter for CSRF protection.
  */
 
-import { Suspense, useEffect, useState, useRef } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { exchangeCodeForTokens, verifyState } from '@/lib/auth';
 
@@ -16,11 +16,11 @@ function CallbackContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const processedRef = useRef(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
-    // Prevent double execution (React StrictMode or re-renders)
-    if (processedRef.current) {
+    // Prevent double execution
+    if (isProcessing) {
       return;
     }
 
@@ -44,8 +44,7 @@ function CallbackContent() {
       return;
     }
 
-    // Mark as processed before async operation
-    processedRef.current = true;
+    setIsProcessing(true);
 
     async function handleCallback() {
       const success = await exchangeCodeForTokens(code!);
@@ -58,7 +57,7 @@ function CallbackContent() {
     }
 
     handleCallback();
-  }, [searchParams, router]);
+  }, [searchParams, router, isProcessing]);
 
   if (error) {
     return (
