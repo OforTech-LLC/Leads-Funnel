@@ -54,7 +54,7 @@ variable "waf_web_acl_arn" {
 variable "content_security_policy" {
   type        = string
   description = "Content Security Policy header value"
-  default     = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.kanjona.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+  default     = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.kanjona.com https://*.amazonaws.com https://*.amazoncognito.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
 }
 
 # -----------------------------------------------------------------------------
