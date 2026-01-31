@@ -25,6 +25,8 @@ import {
   type FeatureFlagName,
 } from './feature-flag-utils.js';
 
+export type { FeatureFlagName };
+
 const log = createLogger('feature-flags');
 
 // ---------------------------------------------------------------------------

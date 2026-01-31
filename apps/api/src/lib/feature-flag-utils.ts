@@ -168,13 +168,11 @@ export function pickFeatureFlags<T extends readonly FeatureFlagName[]>(
   flags: Record<FeatureFlagName, boolean>,
   keys: T
 ): { [K in T[number]]: boolean } {
-  return keys.reduce(
-    (acc, key) => {
-      acc[key] = flags[key];
-      return acc;
-    },
-    {} as { [K in T[number]]: boolean }
-  );
+  const result: Record<string, boolean> = {};
+  for (const key of keys) {
+    result[key] = flags[key];
+  }
+  return result as { [K in T[number]]: boolean };
 }
 
 export const ALL_FEATURE_FLAGS = Object.keys(FLAG_DEFAULTS) as FeatureFlagName[];
