@@ -82,6 +82,15 @@ enum LeadCaptureApp {
         let spamDetectorService = SpamDetectorService(config: config)
         let leadService = LeadService(awsClient: awsClient, config: config)
 
+        // Create platform services
+        let usersService = UsersService(client: awsClient, config: config)
+        let orgsService = OrgsService(client: awsClient, config: config)
+        let membershipsService = MembershipsService(client: awsClient, config: config)
+        let rulesService = RulesService(client: awsClient, config: config)
+        let exportsService = ExportsService(client: awsClient, config: config)
+        let notificationsService = NotificationsService(client: awsClient, config: config)
+        let jwtService = JWTService()
+
         // Store services in app storage
         app.storage[LeadServiceStorageKey.self] = leadService
         app.storage[AWSClientStorageKey.self] = awsClient
@@ -89,6 +98,13 @@ enum LeadCaptureApp {
         app.storage[ConfigServiceKey.self] = configService
         app.storage[RateLimiterServiceKey.self] = rateLimiterService
         app.storage[SpamDetectorServiceStorageKey.self] = spamDetectorService
+        app.storage[UsersServiceStorageKey.self] = usersService
+        app.storage[OrgsServiceStorageKey.self] = orgsService
+        app.storage[MembershipsServiceStorageKey.self] = membershipsService
+        app.storage[RulesServiceStorageKey.self] = rulesService
+        app.storage[ExportsServiceStorageKey.self] = exportsService
+        app.storage[NotificationsServiceStorageKey.self] = notificationsService
+        app.storage[JWTServiceStorageKey.self] = jwtService
 
         // Configure routes using controllers
         try configureRoutes(
@@ -97,7 +113,14 @@ enum LeadCaptureApp {
             rateLimiterService: rateLimiterService,
             spamDetectorService: spamDetectorService,
             configService: configService,
-            dynamoDBService: dynamoDBService
+            dynamoDBService: dynamoDBService,
+            usersService: usersService,
+            orgsService: orgsService,
+            membershipsService: membershipsService,
+            rulesService: rulesService,
+            exportsService: exportsService,
+            notificationsService: notificationsService,
+            jwtService: jwtService
         )
 
         // Cleanup on shutdown
@@ -112,7 +135,14 @@ enum LeadCaptureApp {
         rateLimiterService: RateLimiterService,
         spamDetectorService: SpamDetectorService,
         configService: ConfigService,
-        dynamoDBService: DynamoDBService
+        dynamoDBService: DynamoDBService,
+        usersService: UsersService,
+        orgsService: OrgsService,
+        membershipsService: MembershipsService,
+        rulesService: RulesService,
+        exportsService: ExportsService,
+        notificationsService: NotificationsService,
+        jwtService: JWTService
     ) throws {
         // Register Health Controller
         let healthController = HealthController(
@@ -144,6 +174,28 @@ enum LeadCaptureApp {
         // Register Auth Controller
         let authController = AuthController(config: AppConfig.shared)
         try app.register(collection: authController)
+
+        // Register Portal Controller
+        let portalController = PortalController(
+            usersService: usersService,
+            orgsService: orgsService,
+            membershipsService: membershipsService,
+            jwtService: jwtService,
+            config: AppConfig.shared
+        )
+        try app.register(collection: portalController)
+
+        // Register Admin Controller
+        let adminController = AdminController(
+            orgsService: orgsService,
+            usersService: usersService,
+            membershipsService: membershipsService,
+            rulesService: rulesService,
+            exportsService: exportsService,
+            notificationsService: notificationsService,
+            config: AppConfig.shared
+        )
+        try app.register(collection: adminController)
 
         // Root endpoint
         app.get { req -> Response in
@@ -178,6 +230,34 @@ struct DynamoDBServiceStorageKey: Vapor.StorageKey {
 
 struct SpamDetectorServiceStorageKey: Vapor.StorageKey {
     typealias Value = SpamDetectorService
+}
+
+struct UsersServiceStorageKey: Vapor.StorageKey {
+    typealias Value = UsersService
+}
+
+struct OrgsServiceStorageKey: Vapor.StorageKey {
+    typealias Value = OrgsService
+}
+
+struct MembershipsServiceStorageKey: Vapor.StorageKey {
+    typealias Value = MembershipsService
+}
+
+struct JWTServiceStorageKey: Vapor.StorageKey {
+    typealias Value = JWTService
+}
+
+struct RulesServiceStorageKey: Vapor.StorageKey {
+    typealias Value = RulesService
+}
+
+struct ExportsServiceStorageKey: Vapor.StorageKey {
+    typealias Value = ExportsService
+}
+
+struct NotificationsServiceStorageKey: Vapor.StorageKey {
+    typealias Value = NotificationsService
 }
 
 // MARK: - AWS Client Lifecycle
