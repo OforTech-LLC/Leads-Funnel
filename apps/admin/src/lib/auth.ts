@@ -98,7 +98,8 @@ function resolveCognitoConfig(): CognitoConfig {
 function getRedirectUri(): string {
   const origin = getAppOrigin();
   if (origin) {
-    return `${origin}/callback`;
+    // Use trailing slash to match Next.js trailingSlash: true config
+    return `${origin}/callback/`;
   }
   return process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI || DEFAULT_REDIRECT_URI;
 }
@@ -106,7 +107,8 @@ function getRedirectUri(): string {
 function getLogoutUri(): string {
   const origin = getAppOrigin();
   if (origin) {
-    return `${origin}/login`;
+    // Use trailing slash to match Next.js trailingSlash: true config
+    return `${origin}/login/`;
   }
   return process.env.NEXT_PUBLIC_COGNITO_LOGOUT_URI || DEFAULT_LOGOUT_URI;
 }
