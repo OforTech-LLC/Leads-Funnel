@@ -402,10 +402,12 @@ module "admin" {
 
   # Production callback URLs only - NO localhost
   admin_console_callback_urls = [
+    "https://${local.admin_subdomain}.${var.root_domain}/callback",
     "https://${var.root_domain}/admin/callback",
     "https://www.${var.root_domain}/admin/callback",
   ]
   admin_console_logout_urls = [
+    "https://${local.admin_subdomain}.${var.root_domain}/login",
     "https://${var.root_domain}/admin",
     "https://www.${var.root_domain}/admin",
   ]

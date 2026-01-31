@@ -145,12 +145,12 @@ resource "aws_cognito_user_pool_client" "admin_web" {
   # Production environments should only have production URLs
   callback_urls = var.environment == "prod" ? var.admin_callback_urls : concat(
     var.admin_callback_urls,
-    var.enable_localhost_callbacks ? ["http://localhost:3000/admin/auth/callback"] : []
+    var.enable_localhost_callbacks ? ["http://localhost:3000/admin/callback", "http://localhost:3001/callback"] : []
   )
 
   logout_urls = var.environment == "prod" ? var.admin_logout_urls : concat(
     var.admin_logout_urls,
-    var.enable_localhost_callbacks ? ["http://localhost:3000/admin"] : []
+    var.enable_localhost_callbacks ? ["http://localhost:3000/admin", "http://localhost:3001/login"] : []
   )
 
   # Token validity

@@ -157,6 +157,8 @@ jobs:
       - name: Build admin app
         working-directory: apps/admin
         run: npm run build
+        env:
+          APP_ENV: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.environment || 'dev' }}
 
       - name: Upload admin artifact
         uses: actions/upload-artifact@v4
@@ -204,6 +206,8 @@ jobs:
       - name: Build portal app
         working-directory: apps/portal
         run: npm run build
+        env:
+          APP_ENV: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.environment || 'dev' }}
 
       - name: Upload portal artifact
         uses: actions/upload-artifact@v4

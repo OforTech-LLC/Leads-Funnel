@@ -10,9 +10,75 @@
 
 import { AUTH_ENDPOINT, STORAGE_KEYS } from './constants';
 
-const COGNITO_DOMAIN = process.env.NEXT_PUBLIC_COGNITO_DOMAIN || '';
-const CLIENT_ID = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID || '';
+interface CognitoConfig {
+  domain: string;
+  clientId: string;
+}
+
+const FALLBACK_DEV_COGNITO_CONFIG: CognitoConfig = {
+  domain: 'https://kanjona-portal-dev.auth.us-east-1.amazoncognito.com',
+  clientId: 'e5s3m88q4j2qobapqsfuhbhr4',
+};
+
+const FALLBACK_PROD_COGNITO_CONFIG: CognitoConfig = {
+  domain: 'https://kanjona-prod-portal.auth.us-east-1.amazoncognito.com',
+  clientId: '4d5cd98s1ac44dna3t0mb59vfd',
+};
+
 const DEFAULT_PORTAL_URL = 'http://localhost:3002';
+
+function resolveCognitoConfig(): CognitoConfig {
+  const envDomain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN || '';
+  const envClientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID || '';
+
+  const devDomain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN_DEV || '';
+  const devClientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID_DEV || '';
+  const prodDomain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN_PROD || '';
+  const prodClientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID_PROD || '';
+
+  if (typeof window === 'undefined') {
+    return {
+      domain: envDomain || prodDomain || devDomain,
+      clientId: envClientId || prodClientId || devClientId,
+    };
+  }
+
+  const host = window.location.hostname.toLowerCase();
+
+  if (host === 'portal.kanjona.com') {
+    return {
+      domain: prodDomain || envDomain || FALLBACK_PROD_COGNITO_CONFIG.domain,
+      clientId: prodClientId || envClientId || FALLBACK_PROD_COGNITO_CONFIG.clientId,
+    };
+  }
+
+  if (host === 'portal.dev.kanjona.com' || host === 'localhost' || host === '127.0.0.1') {
+    return {
+      domain: devDomain || envDomain || FALLBACK_DEV_COGNITO_CONFIG.domain,
+      clientId: devClientId || envClientId || FALLBACK_DEV_COGNITO_CONFIG.clientId,
+    };
+  }
+
+  if (host.includes('.dev.')) {
+    return {
+      domain: devDomain || envDomain || FALLBACK_DEV_COGNITO_CONFIG.domain,
+      clientId: devClientId || envClientId || FALLBACK_DEV_COGNITO_CONFIG.clientId,
+    };
+  }
+
+  if (envDomain && envClientId) {
+    return { domain: envDomain, clientId: envClientId };
+  }
+
+  return {
+    domain: prodDomain || FALLBACK_PROD_COGNITO_CONFIG.domain,
+    clientId: prodClientId || FALLBACK_PROD_COGNITO_CONFIG.clientId,
+  };
+}
+
+export function getCognitoConfig(): CognitoConfig {
+  return resolveCognitoConfig();
+}
 
 function getPortalBaseUrl(): string {
   if (typeof window !== 'undefined') {
@@ -123,41 +189,44 @@ export function verifyState(state: string): boolean {
 }
 
 export function isAuthConfigured(): boolean {
-  return Boolean(COGNITO_DOMAIN && CLIENT_ID);
+  const config = resolveCognitoConfig();
+  return Boolean(config.domain && config.clientId);
 }
 
 /**
  * Build the Cognito Hosted UI login URL with state parameter
  */
 export function getLoginUrl(): string {
-  if (!isAuthConfigured()) {
+  const { domain, clientId } = resolveCognitoConfig();
+  if (!domain || !clientId) {
     return '';
   }
   const state = generateState();
   const redirectUri = getRedirectUri();
   const params = new URLSearchParams({
     response_type: 'code',
-    client_id: CLIENT_ID,
+    client_id: clientId,
     redirect_uri: redirectUri,
     scope: 'openid profile email',
     state,
   });
-  return `${COGNITO_DOMAIN}/login?${params.toString()}`;
+  return `${domain}/login?${params.toString()}`;
 }
 
 /**
  * Build the Cognito logout URL
  */
 export function getLogoutUrl(): string {
-  if (!isAuthConfigured()) {
+  const { domain, clientId } = resolveCognitoConfig();
+  if (!domain || !clientId) {
     return '';
   }
   const portalUrl = getPortalBaseUrl();
   const params = new URLSearchParams({
-    client_id: CLIENT_ID,
+    client_id: clientId,
     logout_uri: `${portalUrl}/login`,
   });
-  return `${COGNITO_DOMAIN}/logout?${params.toString()}`;
+  return `${domain}/logout?${params.toString()}`;
 }
 
 /**
@@ -167,15 +236,20 @@ export function getLogoutUrl(): string {
  */
 export async function exchangeCodeForTokens(code: string): Promise<boolean> {
   try {
+    const { domain, clientId } = resolveCognitoConfig();
+    if (!domain || !clientId) {
+      console.error('Portal auth not configured: missing Cognito domain/clientId');
+      return false;
+    }
     // Step 1: Exchange code for tokens with Cognito
     const body = new URLSearchParams({
       grant_type: 'authorization_code',
-      client_id: CLIENT_ID,
+      client_id: clientId,
       code,
       redirect_uri: getRedirectUri(),
     });
 
-    const tokenResponse = await fetch(`${COGNITO_DOMAIN}/oauth2/token`, {
+    const tokenResponse = await fetch(`${domain}/oauth2/token`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: body.toString(),

@@ -5,12 +5,13 @@
 // Requires only clientId + username (email).
 // ──────────────────────────────────────────────
 
-const COGNITO_DOMAIN = process.env.NEXT_PUBLIC_COGNITO_DOMAIN || '';
-const CLIENT_ID = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID || '';
+import { getCognitoConfig } from './auth';
+
 const REGION_FALLBACK = process.env.NEXT_PUBLIC_COGNITO_REGION || 'us-east-1';
 
 function getCognitoRegion(): string {
-  const normalized = COGNITO_DOMAIN.replace(/^https?:\/\//, '');
+  const { domain } = getCognitoConfig();
+  const normalized = domain.replace(/^https?:\/\//, '');
   const match = normalized.match(/\.auth\.([a-z0-9-]+)\.amazoncognito\.com/i);
   return match?.[1] || REGION_FALLBACK;
 }
@@ -42,11 +43,12 @@ async function cognitoRequest<T>(target: string, body: Record<string, unknown>):
 }
 
 export async function requestPasswordReset(email: string): Promise<void> {
-  if (!CLIENT_ID) {
+  const { clientId } = getCognitoConfig();
+  if (!clientId) {
     throw new Error('Portal Cognito client is not configured');
   }
   await cognitoRequest('AWSCognitoIdentityProviderService.ForgotPassword', {
-    ClientId: CLIENT_ID,
+    ClientId: clientId,
     Username: email,
   });
 }
@@ -56,11 +58,12 @@ export async function confirmPasswordReset(
   code: string,
   newPassword: string
 ): Promise<void> {
-  if (!CLIENT_ID) {
+  const { clientId } = getCognitoConfig();
+  if (!clientId) {
     throw new Error('Portal Cognito client is not configured');
   }
   await cognitoRequest('AWSCognitoIdentityProviderService.ConfirmForgotPassword', {
-    ClientId: CLIENT_ID,
+    ClientId: clientId,
     Username: email,
     ConfirmationCode: code,
     Password: newPassword,

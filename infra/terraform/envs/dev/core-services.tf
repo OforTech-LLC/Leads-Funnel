@@ -403,9 +403,11 @@ module "admin" {
   existing_cognito_viewer_group_name = "OrgViewer"
 
   admin_console_callback_urls = [
+    "https://${local.admin_subdomain}.${var.root_domain}/callback",
     "https://${local.env_subdomain}.${var.root_domain}/admin/callback",
   ]
   admin_console_logout_urls = [
+    "https://${local.admin_subdomain}.${var.root_domain}/login",
     "https://${local.env_subdomain}.${var.root_domain}/admin",
   ]
 

@@ -41,7 +41,7 @@ fi
 # -----------------------------------------------------------------------------
 # Configuration
 # -----------------------------------------------------------------------------
-PROJECT_NAME="kanjona-funnel"
+PROJECT_NAME="kanjona"
 BUCKET_NAME="${PROJECT_NAME}-${ENVIRONMENT}-site-origin"
 AWS_REGION="${AWS_REGION:-us-east-1}"
 
