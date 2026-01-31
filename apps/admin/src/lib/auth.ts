@@ -16,6 +16,7 @@ import { API_ENDPOINTS, STORAGE_KEYS } from './constants';
 
 // Session storage key for OAuth state (CSRF protection)
 const OAUTH_STATE_KEY = STORAGE_KEYS.OAUTH_STATE;
+const PKCE_VERIFIER_KEY = 'pkce_code_verifier';
 
 // State expiration time (5 minutes)
 const STATE_EXPIRY_MS = 5 * 60 * 1000;
@@ -116,8 +117,31 @@ export function isAuthConfigured(): boolean {
 }
 
 // ---------------------------------------------------------------------------
-// OAuth State Parameter (CSRF Protection)
+// OAuth State Parameter (CSRF Protection) & PKCE
 // ---------------------------------------------------------------------------
+
+/**
+ * Generate a random string for PKCE code verifier
+ */
+function generateCodeVerifier(): string {
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
+  return Array.from(array, (b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+/**
+ * Generate PKCE code challenge from verifier (S256)
+ */
+async function generateCodeChallenge(verifier: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(verifier);
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  const base64 = btoa(String.fromCharCode(...new Uint8Array(hash)))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+  return base64;
+}
 
 /**
  * Generate a cryptographically secure state parameter for OAuth CSRF protection.
@@ -195,17 +219,26 @@ export function verifyState(state: string): boolean {
  * Build the Cognito Hosted UI login URL.
  * Uses authorization code flow (response_type=code) for security.
  * Includes state parameter for CSRF protection.
+ * Uses PKCE for public client security.
  */
-export function getLoginUrl(): string {
+export async function getLoginUrl(): Promise<string> {
   const { domain, clientId } = resolveCognitoConfig();
   const state = generateState();
   const redirectUri = getRedirectUri();
+  
+  // PKCE setup
+  const codeVerifier = generateCodeVerifier();
+  sessionStorage.setItem(PKCE_VERIFIER_KEY, codeVerifier);
+  const codeChallenge = await generateCodeChallenge(codeVerifier);
+
   const params = new URLSearchParams({
     client_id: clientId,
     response_type: 'code',
     scope: 'openid email profile',
     redirect_uri: redirectUri,
     state,
+    code_challenge: codeChallenge,
+    code_challenge_method: 'S256',
   });
   return `${domain}/login?${params.toString()}`;
 }
@@ -244,16 +277,23 @@ export async function exchangeCodeForTokens(code: string): Promise<boolean> {
   try {
     const { domain, clientId } = resolveCognitoConfig();
     const redirectUri = getRedirectUri();
+    const codeVerifier = sessionStorage.getItem(PKCE_VERIFIER_KEY);
 
     console.log('[Auth] Config:', { domain, clientId, redirectUri });
 
-    // Step 1: Exchange code for tokens with Cognito
-    const body = new URLSearchParams({
+    const params: Record<string, string> = {
       grant_type: 'authorization_code',
       client_id: clientId,
       code,
       redirect_uri: redirectUri,
-    });
+    };
+
+    if (codeVerifier) {
+      params.code_verifier = codeVerifier;
+    }
+
+    // Step 1: Exchange code for tokens with Cognito
+    const body = new URLSearchParams(params);
 
     console.log('[Auth] Step 1: Exchanging code with Cognito...');
     const tokenResponse = await fetch(`${domain}/oauth2/token`, {
@@ -261,6 +301,9 @@ export async function exchangeCodeForTokens(code: string): Promise<boolean> {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: body.toString(),
     });
+
+    // Clean up PKCE verifier
+    sessionStorage.removeItem(PKCE_VERIFIER_KEY);
 
     if (!tokenResponse.ok) {
       const errorText = await tokenResponse.text();
@@ -298,6 +341,7 @@ export async function exchangeCodeForTokens(code: string): Promise<boolean> {
     return true;
   } catch (error) {
     console.error('[Auth] Token exchange error:', error);
+    sessionStorage.removeItem(PKCE_VERIFIER_KEY);
     return false;
   }
 }

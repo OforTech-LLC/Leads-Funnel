@@ -53,9 +53,9 @@ function LoginContent() {
           {/* Login Button */}
           <button
             type="button"
-            onClick={() => {
+            onClick={async () => {
               if (!isAuthConfigured()) return;
-              window.location.href = getLoginUrl();
+              window.location.href = await getLoginUrl();
             }}
             disabled={!isAuthConfigured()}
             className="flex items-center justify-center w-full px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"

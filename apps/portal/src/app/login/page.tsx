@@ -10,7 +10,7 @@ function LoginContent() {
   const expired = searchParams.get('expired') === '1';
   const returnTo = searchParams.get('returnTo');
 
-  function handleSignIn() {
+  async function handleSignIn() {
     if (!isAuthConfigured()) {
       return;
     }
@@ -19,7 +19,7 @@ function LoginContent() {
     if (returnTo && returnTo.startsWith('/') && !returnTo.startsWith('//')) {
       sessionStorage.setItem('portal_returnTo', returnTo);
     }
-    window.location.href = getLoginUrl();
+    window.location.href = await getLoginUrl();
   }
 
   return (

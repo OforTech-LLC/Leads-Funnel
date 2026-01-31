@@ -49,6 +49,7 @@ export interface AuthTokens {
 
 // Session storage key for CSRF state (safe - not sensitive)
 const AUTH_STATE_KEY = 'auth_state';
+const PKCE_VERIFIER_KEY = 'pkce_code_verifier';
 
 // State expiration time (5 minutes)
 // Security: Short window limits replay attack opportunity
@@ -65,6 +66,29 @@ interface AuthState {
 }
 
 /**
+ * Generate a random string for PKCE code verifier
+ */
+function generateCodeVerifier(): string {
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
+  return Array.from(array, (b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+/**
+ * Generate PKCE code challenge from verifier (S256)
+ */
+async function generateCodeChallenge(verifier: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(verifier);
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  const base64 = btoa(String.fromCharCode(...new Uint8Array(hash)))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+  return base64;
+}
+
+/**
  * Initiates the Cognito login flow by redirecting to the hosted UI.
  *
  * OAuth2 Flow Step 1: Authorization Request
@@ -75,11 +99,20 @@ interface AuthState {
  * Security: State parameter prevents CSRF attacks where an attacker
  * tricks a user into completing an OAuth flow initiated by the attacker.
  */
-export function redirectToLogin(): void {
+export async function redirectToLogin(): Promise<void> {
   const config = getAdminConfig();
   const state = generateState();
   sessionStorage.setItem(AUTH_STATE_KEY, state);
-  window.location.href = buildLoginUrl(config, state);
+
+  // PKCE setup
+  const codeVerifier = generateCodeVerifier();
+  sessionStorage.setItem(PKCE_VERIFIER_KEY, codeVerifier);
+  const codeChallenge = await generateCodeChallenge(codeVerifier);
+
+  window.location.href = buildLoginUrl(config, state, {
+    codeChallenge,
+    codeChallengeMethod: 'S256',
+  });
 }
 
 /**
@@ -113,6 +146,18 @@ export async function redirectToLogout(): Promise<void> {
  */
 export async function exchangeCodeForTokens(code: string): Promise<AuthTokens> {
   const config = getAdminConfig();
+  const codeVerifier = sessionStorage.getItem(PKCE_VERIFIER_KEY);
+
+  const params = new URLSearchParams({
+    grant_type: 'authorization_code',
+    client_id: config.cognitoClientId,
+    code,
+    redirect_uri: config.redirectUri,
+  });
+
+  if (codeVerifier) {
+    params.append('code_verifier', codeVerifier);
+  }
 
   // Exchange code with Cognito using standard OAuth2 token endpoint
   const response = await fetch(buildTokenUrl(config), {
@@ -120,13 +165,11 @@ export async function exchangeCodeForTokens(code: string): Promise<AuthTokens> {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
-    body: new URLSearchParams({
-      grant_type: 'authorization_code',
-      client_id: config.cognitoClientId,
-      code,
-      redirect_uri: config.redirectUri,
-    }),
+    body: params,
   });
+
+  // Clean up PKCE verifier
+  sessionStorage.removeItem(PKCE_VERIFIER_KEY);
 
   if (!response.ok) {
     const error = await response.text();

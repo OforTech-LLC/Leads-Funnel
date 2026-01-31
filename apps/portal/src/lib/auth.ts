@@ -121,6 +121,7 @@ export interface CurrentUser {
 
 // Session storage key for OAuth state (CSRF protection)
 const OAUTH_STATE_KEY = STORAGE_KEYS.OAUTH_STATE;
+const PKCE_VERIFIER_KEY = 'pkce_code_verifier';
 
 // State expiration time (5 minutes)
 const STATE_EXPIRY_MS = 5 * 60 * 1000;
@@ -128,6 +129,29 @@ const STATE_EXPIRY_MS = 5 * 60 * 1000;
 interface OAuthState {
   nonce: string;
   timestamp: number;
+}
+
+/**
+ * Generate a random string for PKCE code verifier
+ */
+function generateCodeVerifier(): string {
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
+  return Array.from(array, (b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+/**
+ * Generate PKCE code challenge from verifier (S256)
+ */
+async function generateCodeChallenge(verifier: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(verifier);
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  const base64 = btoa(String.fromCharCode(...new Uint8Array(hash)))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+  return base64;
 }
 
 /**
@@ -196,19 +220,27 @@ export function isAuthConfigured(): boolean {
 /**
  * Build the Cognito Hosted UI login URL with state parameter
  */
-export function getLoginUrl(): string {
+export async function getLoginUrl(): Promise<string> {
   const { domain, clientId } = resolveCognitoConfig();
   if (!domain || !clientId) {
     return '';
   }
   const state = generateState();
   const redirectUri = getRedirectUri();
+  
+  // PKCE setup
+  const codeVerifier = generateCodeVerifier();
+  sessionStorage.setItem(PKCE_VERIFIER_KEY, codeVerifier);
+  const codeChallenge = await generateCodeChallenge(codeVerifier);
+
   const params = new URLSearchParams({
     response_type: 'code',
     client_id: clientId,
     redirect_uri: redirectUri,
     scope: 'openid profile email',
     state,
+    code_challenge: codeChallenge,
+    code_challenge_method: 'S256',
   });
   return `${domain}/login?${params.toString()}`;
 }
@@ -237,23 +269,35 @@ export function getLogoutUrl(): string {
 export async function exchangeCodeForTokens(code: string): Promise<boolean> {
   try {
     const { domain, clientId } = resolveCognitoConfig();
+    const codeVerifier = sessionStorage.getItem(PKCE_VERIFIER_KEY);
+
     if (!domain || !clientId) {
       console.error('Portal auth not configured: missing Cognito domain/clientId');
       return false;
     }
-    // Step 1: Exchange code for tokens with Cognito
-    const body = new URLSearchParams({
+
+    const params: Record<string, string> = {
       grant_type: 'authorization_code',
       client_id: clientId,
       code,
       redirect_uri: getRedirectUri(),
-    });
+    };
+
+    if (codeVerifier) {
+      params.code_verifier = codeVerifier;
+    }
+
+    // Step 1: Exchange code for tokens with Cognito
+    const body = new URLSearchParams(params);
 
     const tokenResponse = await fetch(`${domain}/oauth2/token`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: body.toString(),
     });
+
+    // Clean up PKCE verifier
+    sessionStorage.removeItem(PKCE_VERIFIER_KEY);
 
     if (!tokenResponse.ok) {
       console.error('Token exchange failed:', await tokenResponse.text());
@@ -278,6 +322,7 @@ export async function exchangeCodeForTokens(code: string): Promise<boolean> {
     return storeResponse.ok;
   } catch (error) {
     console.error('Token exchange error:', error);
+    sessionStorage.removeItem(PKCE_VERIFIER_KEY);
     return false;
   }
 }

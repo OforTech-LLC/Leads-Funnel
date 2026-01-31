@@ -46,5 +46,9 @@
   },
   "engines": {
     "node": ">=22.0.0"
+  },
+  "dependencies": {
+    "@google/gemini-cli": "^0.26.0",
+    "next": "16.1.6"
   }
 }

@@ -32,13 +32,21 @@ export function getAdminConfig(): AdminConfig {
 /**
  * Build Cognito Hosted UI login URL
  */
-export function buildLoginUrl(config: AdminConfig, state?: string): string {
+export function buildLoginUrl(
+  config: AdminConfig,
+  state?: string,
+  pkce?: { codeChallenge: string; codeChallengeMethod: string }
+): string {
   const params = new URLSearchParams({
     response_type: 'code',
     client_id: config.cognitoClientId,
     redirect_uri: config.redirectUri,
     scope: 'openid email profile',
     ...(state && { state }),
+    ...(pkce && {
+      code_challenge: pkce.codeChallenge,
+      code_challenge_method: pkce.codeChallengeMethod,
+    }),
   });
 
   return `${config.cognitoDomain}/login?${params.toString()}`;
