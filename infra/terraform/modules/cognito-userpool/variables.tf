@@ -81,6 +81,58 @@ variable "mfa_configuration" {
 }
 
 # -----------------------------------------------------------------------------
+# SMS MFA Configuration
+# -----------------------------------------------------------------------------
+variable "enable_sms_mfa" {
+  type        = bool
+  description = "Enable SMS MFA support (creates IAM role + SNS permissions if needed)"
+  default     = false
+}
+
+variable "sms_external_id" {
+  type        = string
+  description = "External ID for Cognito to assume the SNS publishing role (optional)"
+  default     = null
+}
+
+variable "sms_sns_caller_arn" {
+  type        = string
+  description = "Existing SNS caller role ARN for Cognito (optional)"
+  default     = null
+
+  validation {
+    condition     = var.sms_sns_caller_arn == null || var.sms_external_id != null
+    error_message = "sms_external_id must be set when sms_sns_caller_arn is provided."
+  }
+}
+
+# -----------------------------------------------------------------------------
+# WebAuthn / Passkey Configuration
+# -----------------------------------------------------------------------------
+variable "enable_webauthn" {
+  type        = bool
+  description = "Enable WebAuthn (passkeys) for the user pool"
+  default     = false
+}
+
+variable "webauthn_relying_party_id" {
+  type        = string
+  description = "Relying Party ID for WebAuthn (defaults to Cognito hosted UI domain)"
+  default     = null
+}
+
+variable "webauthn_user_verification" {
+  type        = string
+  description = "WebAuthn user verification requirement: required, preferred, or discouraged"
+  default     = "preferred"
+
+  validation {
+    condition     = contains(["required", "preferred", "discouraged"], var.webauthn_user_verification)
+    error_message = "webauthn_user_verification must be required, preferred, or discouraged."
+  }
+}
+
+# -----------------------------------------------------------------------------
 # Security
 # -----------------------------------------------------------------------------
 variable "advanced_security_mode" {

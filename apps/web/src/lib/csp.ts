@@ -12,18 +12,18 @@ import { headers } from 'next/headers';
  * Used for inline scripts and styles that need to bypass CSP
  */
 export function generateNonce(): string {
-  // In Node.js environment, use crypto
-  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-    // Use randomUUID and encode as base64-like string
-    const uuid = crypto.randomUUID();
-    return Buffer.from(uuid).toString('base64').slice(0, 24);
+  const bytes = new Uint8Array(16);
+  crypto.getRandomValues(bytes);
+
+  if (typeof Buffer !== 'undefined') {
+    return Buffer.from(bytes).toString('base64');
   }
 
-  // Fallback for edge runtime - use Array.from for compatibility
-  const array = new Uint8Array(16);
-  crypto.getRandomValues(array);
-  const chars = Array.from(array, (byte) => String.fromCharCode(byte));
-  return btoa(chars.join('')).slice(0, 24);
+  let binary = '';
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
+  }
+  return btoa(binary);
 }
 
 /**
@@ -77,8 +77,8 @@ export function buildCSP(directives: CSPDirectives, nonce?: string): string {
       // Array directives
       const sources = [...value];
 
-      // Add nonce to script-src and style-src if provided
-      if (nonce && (key === 'script-src' || key === 'style-src')) {
+      // Add nonce to script-src if provided
+      if (nonce && key === 'script-src') {
         sources.push(`'nonce-${nonce}'`);
       }
 
@@ -95,24 +95,16 @@ export function buildCSP(directives: CSPDirectives, nonce?: string): string {
  */
 export const defaultCSPDirectives: CSPDirectives = {
   'default-src': ["'self'"],
-  'script-src': [
-    "'self'",
-    "'strict-dynamic'",
-    'https://www.googletagmanager.com',
-    'https://www.google-analytics.com',
-  ],
-  'style-src': [
-    "'self'",
-    "'unsafe-inline'", // Required for CSS-in-JS (inline styles via React)
-    'https://fonts.googleapis.com',
-  ],
-  'img-src': ["'self'", 'data:', 'https:', 'blob:'],
-  'font-src': ["'self'", 'https://fonts.gstatic.com'],
+  'script-src': ["'self'", "'strict-dynamic'"],
+  'style-src': ["'self'", "'unsafe-inline'"],
+  'img-src': ["'self'", 'data:', 'https:'],
+  'font-src': ["'self'", 'data:'],
   'connect-src': [
     "'self'",
     'https://api.kanjona.com',
+    'https://api-dev.kanjona.com',
     'https://*.amazonaws.com',
-    'https://www.google-analytics.com',
+    'https://*.amazoncognito.com',
   ],
   'frame-src': ["'none'"],
   'frame-ancestors': ["'none'"],
@@ -120,7 +112,7 @@ export const defaultCSPDirectives: CSPDirectives = {
   'form-action': ["'self'"],
   'object-src': ["'none'"],
   'media-src': ["'self'"],
-  'worker-src': ["'self'", 'blob:'],
+  'worker-src': ["'self'"],
   'manifest-src': ["'self'"],
   'upgrade-insecure-requests': true,
 };
@@ -131,11 +123,7 @@ export const defaultCSPDirectives: CSPDirectives = {
  */
 export const strictCSPDirectives: CSPDirectives = {
   ...defaultCSPDirectives,
-  'style-src': [
-    "'self'",
-    'https://fonts.googleapis.com',
-    // Nonce will be added dynamically
-  ],
+  'style-src': ["'self'"],
 };
 
 /**
@@ -146,12 +134,7 @@ export const animationCSPDirectives: CSPDirectives = {
   ...defaultCSPDirectives,
   // GSAP 3.12+ works without unsafe-eval for basic animations
   // Only add if you use GSAP's Expression plugin or MotionPath with complex expressions
-  'script-src': [
-    "'self'",
-    "'strict-dynamic'",
-    'https://www.googletagmanager.com',
-    'https://www.google-analytics.com',
-  ],
+  'script-src': ["'self'", "'strict-dynamic'"],
 };
 
 /**

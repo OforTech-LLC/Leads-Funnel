@@ -1,7 +1,8 @@
 import { notFound } from 'next/navigation';
+import { headers } from 'next/headers';
 import { setRequestLocale } from 'next-intl/server';
-import { routing, type Locale } from '@/i18n/routing';
-import { getServiceBySlug, getAllServiceSlugs } from '@/config/services';
+import { type Locale } from '@/i18n/routing';
+import { getServiceBySlug } from '@/config/services';
 import {
   generateFunnelMetadata,
   generateFunnelFAQJsonLd,
@@ -9,22 +10,6 @@ import {
   generateBreadcrumbJsonLd,
 } from '@/seo/funnelMetadata';
 import { FunnelPageContent } from '@/components/funnel/FunnelPageContent';
-
-/**
- * Generate static params for all locales and services
- * Creates 47 services x 2 locales = 94 static pages
- */
-export function generateStaticParams() {
-  const params: { locale: string; service: string }[] = [];
-
-  for (const locale of routing.locales) {
-    for (const slug of getAllServiceSlugs()) {
-      params.push({ locale, service: slug });
-    }
-  }
-
-  return params;
-}
 
 /**
  * Generate metadata for each funnel page
@@ -57,8 +42,10 @@ export default async function ServiceFunnelPage({
   params: Promise<{ locale: string; service: string }>;
 }) {
   const { locale, service: serviceSlug } = await params;
+  const headersList = await headers();
+  const nonce = headersList.get('x-nonce') ?? '';
 
-  // Enable static rendering
+  // Enable locale rendering
   setRequestLocale(locale);
 
   // Get service configuration
@@ -79,6 +66,7 @@ export default async function ServiceFunnelPage({
       {faqJsonLd && (
         <script
           type="application/ld+json"
+          nonce={nonce}
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
         />
       )}
@@ -86,12 +74,14 @@ export default async function ServiceFunnelPage({
       {ratingJsonLd && (
         <script
           type="application/ld+json"
+          nonce={nonce}
           dangerouslySetInnerHTML={{ __html: JSON.stringify(ratingJsonLd) }}
         />
       )}
       {/* BreadcrumbList Schema JSON-LD */}
       <script
         type="application/ld+json"
+        nonce={nonce}
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 

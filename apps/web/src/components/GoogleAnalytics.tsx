@@ -80,7 +80,7 @@ export function trackFormAbandonment(funnelId: string, lastField: string) {
  * Respects cookie consent -- will not load GA if the user has not consented
  * to analytics cookies. Listens for runtime consent changes via a custom event.
  */
-export function GoogleAnalytics() {
+export function GoogleAnalytics({ nonce }: { nonce?: string }) {
   const [consented, setConsented] = useState(false);
 
   useEffect(() => {
@@ -109,8 +109,9 @@ export function GoogleAnalytics() {
       <Script
         src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
         strategy="afterInteractive"
+        nonce={nonce}
       />
-      <Script id="google-analytics" strategy="afterInteractive">
+      <Script id="google-analytics" strategy="afterInteractive" nonce={nonce}>
         {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}

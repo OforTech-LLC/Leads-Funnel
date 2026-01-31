@@ -1,14 +1,6 @@
 import { useTranslations } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
-import { routing } from '@/i18n/routing';
 import { Link } from '@/i18n/navigation';
-
-/**
- * Generate static params for all locales
- */
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }));
-}
 
 /**
  * Generate metadata for the terms page

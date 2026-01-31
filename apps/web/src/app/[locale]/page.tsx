@@ -1,16 +1,8 @@
 import { useTranslations } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
-import { routing } from '@/i18n/routing';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import LeadForm from '@/components/LeadForm';
 import { Footer } from '@/components/Footer';
-
-/**
- * Generate static params for all locales
- */
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }));
-}
 
 /**
  * Home Page Component
@@ -19,7 +11,7 @@ export function generateStaticParams() {
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
 
-  // Enable static rendering
+  // Enable locale rendering
   setRequestLocale(locale);
 
   return <HomePageContent />;

@@ -35,13 +35,11 @@ loadEnvFile('.env.local');
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // Static export for S3/CloudFront deployment
   // Auth and API routes have been moved to the Swift backend
-  output: 'export',
-  // Ensure directory index output for CloudFront S3 origins
+  // Trailing slashes for cleaner URLs
   trailingSlash: true,
 
-  // Disable image optimization for static export
+  // Disable image optimization for deployment parity
   images: {
     unoptimized: true,
   },
@@ -67,10 +65,6 @@ const nextConfig = {
           {
             key: 'Strict-Transport-Security',
             value: 'max-age=31536000; includeSubDomains',
-          },
-          {
-            key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.kanjona.com https://*.amazonaws.com https://*.amazoncognito.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';",
           },
         ],
       },

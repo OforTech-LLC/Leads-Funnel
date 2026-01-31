@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
+import { headers } from 'next/headers';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { routing, type Locale } from '@/i18n/routing';
@@ -14,12 +15,7 @@ import { SkipToContent } from '@/components/SkipToContent';
 
 import '../globals.css';
 
-/**
- * Generate static params for all supported locales
- */
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }));
-}
+export const dynamic = 'force-dynamic';
 
 /**
  * Generate metadata for the locale
@@ -63,13 +59,15 @@ export default async function LocaleLayout({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  const headersList = await headers();
+  const nonce = headersList.get('x-nonce') ?? '';
 
   // Validate locale
   if (!routing.locales.includes(locale as Locale)) {
     notFound();
   }
 
-  // Enable static rendering
+  // Enable locale rendering
   setRequestLocale(locale);
 
   // Get messages for the locale
@@ -82,14 +80,14 @@ export default async function LocaleLayout({
     <html lang={locale}>
       <head>
         {/* JSON-LD Structured Data */}
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
+        <script type="application/ld+json" nonce={nonce} dangerouslySetInnerHTML={{ __html: jsonLd }} />
       </head>
       <body style={bodyStyles}>
         {/* Skip-to-content link (WCAG 2.4.1 - Bypass Blocks) */}
         <SkipToContent />
 
         {/* Google Analytics 4 - respects cookie consent */}
-        <GoogleAnalytics />
+        <GoogleAnalytics nonce={nonce} />
         <NextIntlClientProvider messages={messages}>
           <StoreProvider>
             {/* ErrorBoundary is a Client Component - do not pass onError from Server Component */}

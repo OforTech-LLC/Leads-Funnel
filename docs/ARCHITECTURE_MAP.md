@@ -1,6 +1,6 @@
 # Architecture Map: Kanjona Lead Generation Platform
 
-> Last Updated: 2026-01-30 Map Version: 13
+> Last Updated: 2026-01-31 Map Version: 15
 
 ## 1. System Overview
 
@@ -13,13 +13,14 @@
 - **Database:** DynamoDB (47 funnel tables + shared tables)
 - **Message Queue:** EventBridge (async events)
 - **Infrastructure:** Terraform, AWS Lambda, API Gateway, CloudFront, S3
+- **Auth:** Cognito User Pools with TOTP + SMS MFA + WebAuthn (configurable)
 - **AI (optional):** Amazon Bedrock (feature-flagged lead analysis)
 - **State Management:** Redux Toolkit (Frontend)
 - **Validation:** Zod (TypeScript), Vapor Validatable (Swift)
 
-**Deployment:**
+**Deployment:** [Updated: 2026-01-31]
 
-- Frontend: Static export → CloudFront + S3 (landing), plus separate admin/portal apps
+- Frontend: Next.js server (App Router) with middleware CSP + per-request nonces
 - Backend: Node Lambda (apps/api router) → API Gateway; Swift binary → AWS Lambda (LeadCaptureAPI)
 - Infrastructure: Terraform (dev + prod environments)
 
@@ -27,7 +28,7 @@
 
 ## 2. Module/Service Inventory
 
-### Frontend (apps/web) [Updated: 2026-01-29]
+### Frontend (apps/web) [Updated: 2026-01-31]
 
 | Component         | Purpose                                           | Key Files                         |
 | ----------------- | ------------------------------------------------- | --------------------------------- |
@@ -40,20 +41,20 @@
 | Runtime Config    | API base URL inference for dev/prod               | `lib/runtime-config.ts`           |
 | Validators        | Client-side validation                            | `lib/validators.ts`               |
 
-### Frontend (apps/admin) [Updated: 2026-01-29]
+### Frontend (apps/admin) [Updated: 2026-01-31]
 
 | Component     | Purpose                                      | Key Files                     |
 | ------------- | -------------------------------------------- | ----------------------------- |
 | Admin Console | Admin UI & management                        | `src/app/(dashboard)/*`       |
-| Auth Gate     | Client auth check + redirect (static export) | `src/components/AuthGate.tsx` |
+| Auth Gate     | Client auth check + redirect                 | `src/components/AuthGate.tsx` |
 | API Client    | RTK Query + fetch helpers                    | `src/store/api.ts`            |
 
-### Frontend (apps/portal) [Updated: 2026-01-30]
+### Frontend (apps/portal) [Updated: 2026-01-31]
 
 | Component    | Purpose                                      | Key Files                     |
 | ------------ | -------------------------------------------- | ----------------------------- |
 | Agent Portal | Contractor workflows                         | `src/app/*`                   |
-| Auth Gate    | Client auth check + redirect (static export) | `src/components/AuthGate.tsx` |
+| Auth Gate    | Client auth check + redirect                 | `src/components/AuthGate.tsx` |
 | API Client   | Fetch + retries                              | `src/lib/api.ts`              |
 | UI Store     | Redux UI state for portal screens            | `src/store/*`, `src/providers/AppProviders.tsx` |
 

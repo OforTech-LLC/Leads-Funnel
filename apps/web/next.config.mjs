@@ -58,8 +58,8 @@ const staticCSP = [
   "script-src 'self'",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: https:",
-  "font-src 'self' https://fonts.gstatic.com",
-  "connect-src 'self'",
+  "font-src 'self' data:",
+  "connect-src 'self' https://api.kanjona.com https://api-dev.kanjona.com https://*.amazonaws.com https://*.amazoncognito.com",
   "frame-src 'none'",
   "frame-ancestors 'none'",
   "base-uri 'self'",
@@ -119,9 +119,7 @@ const cacheHeaders = [
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Static export for S3/CloudFront deployment
   // API routes have been moved to the Swift backend
-  output: 'export',
 
   // Enable strict mode for React
   reactStrictMode: true,
@@ -129,8 +127,8 @@ const nextConfig = {
   // Trailing slashes for cleaner URLs
   trailingSlash: true,
 
-  // Image settings for static export
-  // Note: Image optimization requires a server, so we use unoptimized for static export
+  // Image settings for deployment parity
+  // Note: Image optimization is disabled to keep behavior consistent in all environments
   images: {
     unoptimized: true,
     // Allow images from these remote sources (for development/reference)

@@ -18,6 +18,64 @@
 data "aws_region" "current" {}
 
 # -----------------------------------------------------------------------------
+# Optional SMS MFA Support
+# -----------------------------------------------------------------------------
+resource "random_id" "sms_external_id" {
+  count       = var.enable_sms_mfa && var.sms_external_id == null ? 1 : 0
+  byte_length = 8
+}
+
+resource "aws_iam_role" "sms_role" {
+  count = var.enable_sms_mfa && var.sms_sns_caller_arn == null ? 1 : 0
+  name  = "${var.pool_name}-sms-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "cognito-idp.amazonaws.com"
+        },
+        Action = "sts:AssumeRole",
+        Condition = {
+          StringEquals = {
+            "sts:ExternalId" = var.sms_external_id != null ? var.sms_external_id : random_id.sms_external_id[0].hex
+          }
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "sms_publish" {
+  count = var.enable_sms_mfa && var.sms_sns_caller_arn == null ? 1 : 0
+  name  = "${var.pool_name}-sms-publish"
+  role  = aws_iam_role.sms_role[0].id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect   = "Allow",
+        Action   = ["sns:Publish"],
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+locals {
+  sms_external_id = var.sms_external_id != null ? var.sms_external_id : (
+    var.enable_sms_mfa && length(random_id.sms_external_id) > 0 ? random_id.sms_external_id[0].hex : null
+  )
+  sms_sns_caller_arn = var.sms_sns_caller_arn != null ? var.sms_sns_caller_arn : (
+    var.enable_sms_mfa && length(aws_iam_role.sms_role) > 0 ? aws_iam_role.sms_role[0].arn : null
+  )
+  webauthn_relying_party_id = var.webauthn_relying_party_id != null ? var.webauthn_relying_party_id : "${var.domain_prefix}.auth.${data.aws_region.current.name}.amazoncognito.com"
+}
+
+# -----------------------------------------------------------------------------
 # Cognito User Pool
 # -----------------------------------------------------------------------------
 resource "aws_cognito_user_pool" "this" {
@@ -42,6 +100,22 @@ resource "aws_cognito_user_pool" "this" {
 
   software_token_mfa_configuration {
     enabled = true
+  }
+
+  dynamic "sms_configuration" {
+    for_each = var.enable_sms_mfa ? [1] : []
+    content {
+      external_id    = local.sms_external_id
+      sns_caller_arn = local.sms_sns_caller_arn
+    }
+  }
+
+  dynamic "web_authn_configuration" {
+    for_each = var.enable_webauthn ? [1] : []
+    content {
+      relying_party_id  = local.webauthn_relying_party_id
+      user_verification = var.webauthn_user_verification
+    }
   }
 
   # Account recovery

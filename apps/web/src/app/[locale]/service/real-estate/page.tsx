@@ -6,19 +6,12 @@
  */
 
 import { setRequestLocale } from 'next-intl/server';
-import { routing, type Locale } from '@/i18n/routing';
+import { type Locale } from '@/i18n/routing';
 import { ServiceLandingLayout } from '@/components/landing';
 import { getLocalizedLandingPageConfig } from '@/config/localized-landing-pages';
 import { notFound } from 'next/navigation';
 
 const SERVICE_ID = 'real-estate';
-
-/**
- * Generate static params for all locales
- */
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }));
-}
 
 /**
  * Generate metadata for this service page
@@ -58,7 +51,7 @@ export default async function RealEstatePage({
 }) {
   const { locale } = await params;
 
-  // Enable static rendering
+  // Enable locale rendering
   setRequestLocale(locale);
 
   // Get localized service configuration
