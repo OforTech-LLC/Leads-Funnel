@@ -264,16 +264,16 @@ export function getLogoutUrl(): string {
 /**
  * Exchange authorization code for tokens via Cognito token endpoint,
  * then store tokens in httpOnly cookie via backend API.
- * Returns true on success, false on failure.
+ * Returns success status and optional error message.
  */
-export async function exchangeCodeForTokens(code: string): Promise<boolean> {
+export async function exchangeCodeForTokens(code: string): Promise<{ success: boolean; error?: string }> {
   try {
     const { domain, clientId } = resolveCognitoConfig();
     const codeVerifier = sessionStorage.getItem(PKCE_VERIFIER_KEY);
 
     if (!domain || !clientId) {
       console.error('Portal auth not configured: missing Cognito domain/clientId');
-      return false;
+      return { success: false, error: 'Auth configuration missing' };
     }
 
     const params: Record<string, string> = {
@@ -300,8 +300,9 @@ export async function exchangeCodeForTokens(code: string): Promise<boolean> {
     sessionStorage.removeItem(PKCE_VERIFIER_KEY);
 
     if (!tokenResponse.ok) {
-      console.error('Token exchange failed:', await tokenResponse.text());
-      return false;
+      const errorText = await tokenResponse.text();
+      console.error('Token exchange failed:', errorText);
+      return { success: false, error: `Cognito exchange failed: ${errorText}` };
     }
 
     const tokens = await tokenResponse.json();
@@ -319,11 +320,16 @@ export async function exchangeCodeForTokens(code: string): Promise<boolean> {
       }),
     });
 
-    return storeResponse.ok;
+    if (!storeResponse.ok) {
+      const errorText = await storeResponse.text();
+      return { success: false, error: `Session storage failed: ${errorText}` };
+    }
+
+    return { success: true };
   } catch (error) {
     console.error('Token exchange error:', error);
     sessionStorage.removeItem(PKCE_VERIFIER_KEY);
-    return false;
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown network error' };
   }
 }
 

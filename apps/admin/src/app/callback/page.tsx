@@ -73,12 +73,12 @@ function CallbackContent() {
 
     async function handleCallback() {
       try {
-        const success = await exchangeCodeForTokens(code!);
+        const result = await exchangeCodeForTokens(code!);
 
-        if (success) {
+        if (result.success) {
           router.replace('/');
         } else {
-          setError('Token exchange failed. Please try again.');
+          setError(`Token exchange failed: ${result.error || 'Unknown error'}`);
         }
       } catch (err) {
         setError(`Authentication error: ${err instanceof Error ? err.message : 'Unknown error'}`);

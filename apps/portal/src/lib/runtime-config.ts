@@ -13,10 +13,18 @@ function inferApiBaseUrlFromHost(host: string): string {
 
   const parts = normalized.split('.').filter(Boolean);
   const devIndex = parts.indexOf('dev');
+  const firstLabel = parts[0] || '';
 
   if (devIndex !== -1 && devIndex < parts.length - 1) {
     const rootDomain = parts.slice(devIndex + 1).join('.');
     return `https://api-dev.${rootDomain}`;
+  }
+
+  if (firstLabel.endsWith('-dev') || firstLabel.startsWith('dev-')) {
+    const rootDomain = parts.slice(1).join('.');
+    if (rootDomain) {
+      return `https://api-dev.${rootDomain}`;
+    }
   }
 
   if (parts.length >= 2) {

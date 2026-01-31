@@ -39,9 +39,9 @@ function CallbackContent() {
     }
 
     async function handleCallback() {
-      const success = await exchangeCodeForTokens(code!);
+      const result = await exchangeCodeForTokens(code!);
 
-      if (success) {
+      if (result.success) {
         // Check for stored returnTo path
         const returnTo = sessionStorage.getItem('portal_returnTo') || '/';
         sessionStorage.removeItem('portal_returnTo');
@@ -50,7 +50,7 @@ function CallbackContent() {
           returnTo.startsWith('/') && !returnTo.startsWith('//') ? returnTo : '/';
         router.replace(safeReturnTo);
       } else {
-        setError('Failed to complete authentication');
+        setError(`Failed to complete authentication: ${result.error || 'Unknown error'}`);
       }
     }
 

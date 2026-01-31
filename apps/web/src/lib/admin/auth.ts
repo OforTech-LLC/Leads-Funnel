@@ -159,59 +159,60 @@ export async function exchangeCodeForTokens(code: string): Promise<AuthTokens> {
     params.append('code_verifier', codeVerifier);
   }
 
-  // Exchange code with Cognito using standard OAuth2 token endpoint
-  const response = await fetch(buildTokenUrl(config), {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: params,
-  });
+  try {
+    // Exchange code with Cognito using standard OAuth2 token endpoint
+    const response = await fetch(buildTokenUrl(config), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params,
+    });
 
-  // Clean up PKCE verifier
-  sessionStorage.removeItem(PKCE_VERIFIER_KEY);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Cognito exchange failed: ${errorText}`);
+    }
 
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Token exchange failed: ${error}`);
+    const data = await response.json();
+
+    const tokens: AuthTokens = {
+      accessToken: data.access_token,
+      idToken: data.id_token,
+      refreshToken: data.refresh_token,
+      expiresAt: Date.now() + data.expires_in * 1000,
+    };
+
+    // Security: CSRF token prevents cross-site request to store tokens
+    const csrfToken = await csrfTokenManager.getToken();
+
+    // Store tokens in httpOnly cookie via backend API
+    const apiUrl = getApiBaseUrl();
+    const cookieResponse = await fetch(`${apiUrl}/auth/admin`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken,
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        accessToken: tokens.accessToken,
+        idToken: tokens.idToken,
+        refreshToken: tokens.refreshToken,
+        expiresIn: data.expires_in,
+      }),
+    });
+
+    if (!cookieResponse.ok) {
+      const errorText = await cookieResponse.text();
+      throw new Error(`Session storage failed: ${errorText}`);
+    }
+
+    return tokens;
+  } finally {
+    // Clean up PKCE verifier
+    sessionStorage.removeItem(PKCE_VERIFIER_KEY);
   }
-
-  const data = await response.json();
-
-  const tokens: AuthTokens = {
-    accessToken: data.access_token,
-    idToken: data.id_token,
-    refreshToken: data.refresh_token,
-    expiresAt: Date.now() + data.expires_in * 1000,
-  };
-
-  // Security: CSRF token prevents cross-site request to store tokens
-  const csrfToken = await csrfTokenManager.getToken();
-
-  // Store tokens in httpOnly cookie via backend API
-  // Security: httpOnly prevents XSS attacks from stealing tokens
-  // Security: credentials: 'include' ensures cookies are sent/received
-  const apiUrl = getApiBaseUrl();
-  const cookieResponse = await fetch(`${apiUrl}/auth/admin`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-CSRF-Token': csrfToken,
-    },
-    credentials: 'include',
-    body: JSON.stringify({
-      accessToken: tokens.accessToken,
-      idToken: tokens.idToken,
-      refreshToken: tokens.refreshToken,
-      expiresIn: data.expires_in,
-    }),
-  });
-
-  if (!cookieResponse.ok) {
-    throw new Error('Failed to store authentication tokens');
-  }
-
-  return tokens;
 }
 
 /**

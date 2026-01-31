@@ -271,9 +271,9 @@ export interface TokenResponse {
 /**
  * Exchange authorization code for tokens via Cognito token endpoint,
  * then store tokens in httpOnly cookie via backend API.
- * Returns true on success, false on failure.
+ * Returns success status and optional error message.
  */
-export async function exchangeCodeForTokens(code: string): Promise<boolean> {
+export async function exchangeCodeForTokens(code: string): Promise<{ success: boolean; error?: string }> {
   try {
     const { domain, clientId } = resolveCognitoConfig();
     const redirectUri = getRedirectUri();
@@ -308,7 +308,7 @@ export async function exchangeCodeForTokens(code: string): Promise<boolean> {
     if (!tokenResponse.ok) {
       const errorText = await tokenResponse.text();
       console.error('[Auth] Cognito token exchange failed:', tokenResponse.status, errorText);
-      return false;
+      return { success: false, error: `Cognito exchange failed: ${errorText}` };
     }
 
     const tokens: TokenResponse = await tokenResponse.json();
@@ -333,16 +333,16 @@ export async function exchangeCodeForTokens(code: string): Promise<boolean> {
     if (!storeResponse.ok) {
       const errorText = await storeResponse.text();
       console.error('[Auth] API store failed:', storeResponse.status, errorText);
-      return false;
+      return { success: false, error: `Session storage failed: ${errorText}` };
     }
 
     console.log('[Auth] Step 2 success: Tokens stored');
     sessionStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, tokens.access_token);
-    return true;
+    return { success: true };
   } catch (error) {
     console.error('[Auth] Token exchange error:', error);
     sessionStorage.removeItem(PKCE_VERIFIER_KEY);
-    return false;
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown network error' };
   }
 }
 
