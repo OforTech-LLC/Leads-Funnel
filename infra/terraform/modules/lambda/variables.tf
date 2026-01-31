@@ -76,6 +76,18 @@ variable "portal_cognito_pool_id" {
   default     = ""
 }
 
+variable "admin_cognito_domain" {
+  type        = string
+  description = "Admin Cognito hosted UI domain (e.g., https://prefix.auth.region.amazoncognito.com)"
+  default     = ""
+}
+
+variable "portal_cognito_domain" {
+  type        = string
+  description = "Portal Cognito hosted UI domain (e.g., https://prefix.auth.region.amazoncognito.com)"
+  default     = ""
+}
+
 variable "allowed_emails_ssm_path" {
   type        = string
   description = "SSM path for admin allowlist"

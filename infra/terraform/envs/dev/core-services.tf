@@ -128,8 +128,10 @@ module "lambda" {
   # Cognito (admin + portal)
   admin_cognito_client_id  = local.platform_admin_cognito_client_id
   admin_cognito_issuer     = local.platform_admin_cognito_issuer
+  admin_cognito_domain     = local.platform_admin_cognito_domain
   portal_cognito_client_id = local.platform_portal_cognito_client_id
   portal_cognito_issuer    = local.platform_portal_cognito_issuer
+  portal_cognito_domain    = local.platform_portal_cognito_domain
   portal_cognito_pool_id   = local.platform_portal_cognito_pool_id
   allowed_emails_ssm_path  = "/${var.project_name}/${var.environment}/admin/allowed_emails"
 

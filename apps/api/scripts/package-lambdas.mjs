@@ -58,7 +58,7 @@ async function bundleEntry(entry) {
     platform: 'node',
     target: 'node22',
     format: 'esm',
-    outfile: join(bundleDir, 'index.mjs'),
+    outfile: join(bundleDir, 'index.js'),
     sourcemap: true,
     minify: false,
     external: [],

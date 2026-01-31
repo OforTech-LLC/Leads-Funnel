@@ -149,8 +149,10 @@ resource "aws_lambda_function" "lead_handler" {
         COGNITO_CLIENT_ID         = var.admin_cognito_client_id
         ADMIN_COGNITO_ISSUER      = var.admin_cognito_issuer
         ADMIN_COGNITO_CLIENT_ID   = var.admin_cognito_client_id
+        ADMIN_COGNITO_DOMAIN      = var.admin_cognito_domain
         PORTAL_COGNITO_ISSUER     = var.portal_cognito_issuer
         PORTAL_COGNITO_CLIENT_ID  = var.portal_cognito_client_id
+        PORTAL_COGNITO_DOMAIN     = var.portal_cognito_domain
         PORTAL_COGNITO_POOL_ID    = var.portal_cognito_pool_id
         ALLOWED_EMAILS_SSM_PATH   = var.allowed_emails_ssm_path
         EXPORTS_BUCKET            = var.exports_bucket_name
